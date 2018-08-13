@@ -1,0 +1,52 @@
+Getting Started
+===============
+
+Installing QMix
+---------------
+
+You can either download or clone the QMix repository from `GitHub`_. To clone the repository, use:
+
+
+
+.. _GitHub: https://github.com/garrettj403/QMix/
+
+.. code-block:: bash
+   
+   git clone https://github.com/garrettj403/QMix.git
+
+.. warning::
+
+   The QMix package is currently private. You can still get private access if you email me (john.garrett@astro.ox.ac.uk), but access is currently limited to those in my research group.
+
+You then need to add the QMix directory to your ``PYTHONPATH`` environment variable. On macOS, this is done by adding the following to your ``.bash_profile``:
+
+.. code-block:: bash
+
+   export PYTHONPATH=/path/to/qmix:$PYTHONPATH
+
+Running a simulation
+--------------------
+
+Each simulation consists of 5 basic steps:
+
+   1. Define the embedding circuit: list all frequencies/harmonics and their corresponding voltages and impedances
+
+      - an instance of the ``qmix.circuit.EmbeddingCircuit`` class
+
+   2. Define the response function: provide or generate the dc I-V curve to characterize the junction
+
+      - an instance of the ``qmix.respfn.RespFn`` class
+
+   3. Perform harmonic balance to solve for the junction voltage at each frequency/harmonic/bias voltage
+
+      - using the ``qmix.harmonic_balance.harmonic_balance`` function
+
+   4. Calculate the tunnelling currents at whatever frequencies that you like
+
+      - using the ``qmix.qtcurrent.qtcurrent`` function
+
+   5. Plot your results
+
+The easiest way to learn how to use these classes/functions is to take a look at the examples provided in ``workflow-examples``. Simple 1 tone simulations are included in ``workflow-examples/single-tone-simulations/`` and more complex heterodyne mixing simulations are included in ``workflow-examples/multi-tone-simulations/``.
+
+Remember that you can always use ``pydoc`` to figure out how to use these functions/classes as well. For example, if you don't know what arguments ``qtcurrent`` takes, you can type ``pydoc qmix.qtcurrent.qtcurrent`` into the terminal to list the help page.

@@ -1,0 +1,310 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Appendix &mdash; QMix 0.1.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="QMix 0.1.1 documentation" href="index.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> QMix
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="project.html">1. The QMix Package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="setup.html">2. Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="important_modules.html">3. Key Modules</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">QMix</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Appendix</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/appendix.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="appendix">
+<h1>Appendix<a class="headerlink" href="#appendix" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="i-v-curve-models">
+<h2>I-V Curve Models<a class="headerlink" href="#i-v-curve-models" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="chalmers-i-v-curve-model">
+<h3>Chalmers I-V Curve Model<a class="headerlink" href="#chalmers-i-v-curve-model" title="Permalink to this headline">¶</a></h3>
+<p>An I-V curve model is used in:</p>
+<blockquote>
+<div><ol class="upperalpha simple" start="8">
+<li>Rashid, et al., &#8220;Harmonic and reactive behavior of the quasiparticle tunnel current in SIS junctions,&#8221; AIP Advances, vol. 6, 2016.</li>
+</ol>
+</div></blockquote>
+<p>that includes the ability to add subgap resistance, and control the smearing/non-linearity width at the transition voltage (<span class="math">\(V_g\)</span>).</p>
+<div class="math">
+\[\begin{split}I_{dc}(V)  &amp;= \left[\dfrac{V}{R_L} \left(  \dfrac{1}{1 + e^{-a(V+V_g)}}   \right)   +    \dfrac{V}{R_N} \left(  \dfrac{1}{1 + e^{a(V+V_g)}}   \right)    \right]\\
+           &amp;+ \left[\dfrac{V}{R_L} \left(  \dfrac{1}{1 + e^{a(V-V_g)}}   \right)   +    \dfrac{V}{R_N} \left(  \dfrac{1}{1 + e^{-a(V-V_g)}}   \right)    \right]\end{split}\]</div>
+<p>where</p>
+<blockquote>
+<div><ul class="simple">
+<li><span class="math">\(I_{dc}\)</span> is the dc I-V curve</li>
+<li><span class="math">\(V\)</span> is the bias voltage</li>
+<li><span class="math">\(V_g\)</span> is the gap voltage</li>
+<li><span class="math">\(a\)</span> describes the non-linearity at <span class="math">\(V_g\)</span></li>
+<li><span class="math">\(R_L\)</span> is the subgap resistance</li>
+<li><span class="math">\(R_N\)</span> is the normal resistance</li>
+</ul>
+</div></blockquote>
+<p>The normalized I-V curve for this model are shown below.</p>
+<a class="reference internal image-reference" href="_images/ivmodel_chalmers.jpg"><img alt="alternate text" class="align-center" src="_images/ivmodel_chalmers.jpg" style="width: 500px;" /></a>
+</div>
+<div class="section" id="expanded-i-v-curve-model">
+<h3>Expanded I-V Curve Model<a class="headerlink" href="#expanded-i-v-curve-model" title="Permalink to this headline">¶</a></h3>
+<p>I began with the model described in sec:<a class="reference internal" href="#chalmers-i-v-curve-model">Chalmers I-V Curve Model</a>, but I then added leakage current, the notch often seen above the gap, and the ability to add a current offset above the gap.</p>
+<p>This is the model that I fit to experimental I-V data.</p>
+<div class="math">
+\[\begin{split}I_{dc}(V)  &amp;= 2 I_L \left( \dfrac{1}{1+e^{-a_0 V}}\right) - I_L \\
+     &amp;+ I_L \left( \dfrac{1}{1 + e^{a(V+V_g)}} -  \dfrac{1}{1 + e^{-a(V-V_g)}}\right)  \\
+     &amp;+ \dfrac{V}{2R_L} \left( \dfrac{1}{1 + e^{-a(V+V_g)}} - \dfrac{1}{1 + e^{a(V+V_g)}}\right) \\
+     &amp;+ \dfrac{V}{2R_L} \left(  \dfrac{1}{1 + e^{a(V-V_g)}} -\dfrac{1}{1 + e^{-a(V-V_g)}} \right) \\
+     &amp;+ \dfrac{V}{R_N} \left( \dfrac{1}{1 + e^{a(V+V_g)}} + \dfrac{1}{1 + e^{-a(V-V_g)}}\right) \\
+     &amp;+ I_n \left( \dfrac{1}{1 + e^{a_n(V-V_n)}} + \dfrac{1}{1 + e^{a_n(V+V_n)}} \right) - I_n \\
+     &amp;+ I_o \left( \dfrac{1}{1 + e^{a(V-V_g)}} + \dfrac{1}{1 + e^{a(V+V_g)}} \right) - I_o\end{split}\]</div>
+<p>where</p>
+<blockquote>
+<div><ul class="simple">
+<li><span class="math">\(I_{dc}\)</span> is the dc I-V curve</li>
+<li><span class="math">\(I_L\)</span> is the leakage current</li>
+<li><span class="math">\(a_0\)</span> describes the non-linearity width seen at the origin</li>
+<li><span class="math">\(V\)</span> is the bias voltage</li>
+<li><span class="math">\(V_g\)</span> is the gap voltage</li>
+<li><span class="math">\(a\)</span> describes the non-linearity width seen at <span class="math">\(V_g\)</span></li>
+<li><span class="math">\(R_L\)</span> is the subgap resistance</li>
+<li><span class="math">\(R_N\)</span> is the normal resistance</li>
+<li><span class="math">\(I_n\)</span> is the notch current</li>
+<li><span class="math">\(V_n\)</span> is the notch voltage</li>
+<li><span class="math">\(a_n\)</span> describes the non-linearity width of the notch</li>
+<li><span class="math">\(I_o\)</span> is the offset current (above the gap)</li>
+</ul>
+</div></blockquote>
+<p>Note:</p>
+<blockquote>
+<div><ul class="simple">
+<li>Line 1-2 describe the leakage current</li>
+<li>Line 3-4 describe the subgap resistance</li>
+<li>Line 5 describes the transition at <span class="math">\(V_g\)</span> and the normal resistance</li>
+<li>Line 6 describes the notch</li>
+<li>Line 7 describes the current offset above <span class="math">\(V_g\)</span></li>
+</ul>
+</div></blockquote>
+<p>This model contains 10 independent parameters (excluding the bias voltage). As long as a reasonable initial guess is provided, these parameters can be fit to experimental data using a standard non-linear least squares fit (e.g., <a class="reference external" href="http://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.curve_fit.html">curve_fit in the SciPy package for Python</a>).</p>
+<p>The model is shown below. Note the differences between this model and the one shown under sec:<a class="reference internal" href="#chalmers-i-v-curve-model">Chalmers I-V Curve Model</a>.</p>
+<blockquote>
+<div><ul class="simple">
+<li>there is a sharp initial rise just above <span class="math">\(V=0\)</span> to account for leakage current</li>
+<li>there is a notch above the transition voltage</li>
+<li>the current is reduced above the gap.</li>
+</ul>
+</div></blockquote>
+<a class="reference internal image-reference" href="_images/ivmodel_extended.jpg"><img alt="alternate text" class="align-center" src="_images/ivmodel_extended.jpg" style="width: 500px;" /></a>
+<p>The addition of leakage current really helps fit the model to experimental data below the gap.</p>
+<a class="reference internal image-reference" href="_images/ivmodel_extended_exp1.png"><img alt="alternate text" class="align-center" src="_images/ivmodel_extended_exp1.png" style="width: 500px;" /></a>
+<p>And the addition of the notch and current offset likewise help fit the model to experimental data above the gap.</p>
+<a class="reference internal image-reference" href="_images/ivmodel_extended_exp2.png"><img alt="alternate text" class="align-center" src="_images/ivmodel_extended_exp2.png" style="width: 500px;" /></a>
+<p>The mean residual error for the example shown above is 0.68 uA. The worst fitting area is just below the gap voltage. Additional parameters could be added to fit this area as well, but I feel that 10 is enough for now.</p>
+</div>
+</div>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, John Garrett.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.1.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
