@@ -66,13 +66,15 @@ def dciv_curve(filename, **kwargs):
     rseries = kwargs.get('rseries', None)
     vmax = kwargs.get('vmax', 6e-3)
     npts = kwargs.get('npts', 6001)
-    
+    iv_multiplier = kwargs.get('iv_multiplier', 1)
+
     # Import and do some basic cleaning (V in V, I in A)
     volt_v, curr_a = _load_iv(filename, **kwargs)
+    curr_a *= iv_multiplier
     vraw, iraw = volt_v, curr_a
 
     # # Debug
-    # import matplotlib.pyplot as plt 
+    # import matplotlib.pyplot as plt
     # plt.figure()
     # plt.plot(volt_v, curr_a)
     # plt.show()
@@ -91,7 +93,7 @@ def dciv_curve(filename, **kwargs):
     rsg = _find_subgap_resistance(volt_v, curr_a, **kwargs)
     vgap = _find_gap_voltage(volt_v, curr_a, **kwargs)
     fgap = sc.e * vgap / sc.h
-    igap = vgap / rn 
+    igap = vgap / rn
 
     # Normalize
     voltage = volt_v / vgap
@@ -104,9 +106,9 @@ def dciv_curve(filename, **kwargs):
 
     dc = DCIVData(vraw=vraw,     iraw=iraw,
                   vnorm=voltage, inorm=current,
-                  vgap=vgap,     igap=igap, 
-                  fgap=fgap,     rn=rn, 
-                  rsg=rsg,       offset=offset, 
+                  vgap=vgap,     igap=igap,
+                  fgap=fgap,     rn=rn,
+                  rsg=rsg,       offset=offset,
                   vint=vint,     rseries=rseries)
 
     return voltage, current, dc
@@ -141,9 +143,11 @@ def iv_curve(filename, dc, **kwargs):
 
     vmax = kwargs.get('vmax', 6e-3)
     npts = kwargs.get('npts', 6001)
+    iv_multiplier = kwargs.get('iv_multiplier', 1.)
 
     # Import and do some basic cleaning
     volt_v, curr_a = _load_iv(filename, **kwargs)
+    curr_a *= iv_multiplier
 
     # Correct offset
     volt_v -= dc.offset[0]
@@ -174,7 +178,7 @@ def _load_iv(filename, v_fmt='mV', i_fmt='mA', usecols=(0, 1), delim=',', **kw):
 
     Args:
         filename: I-V filename (csv, 2 columns, no header)
-        
+
     Keyword Arguments:
         v_fmt: voltage units ('mV', 'V', etc.)
         i_fmt: current units ('uA', 'mA', etc.)
@@ -204,7 +208,7 @@ def _load_iv(filename, v_fmt='mV', i_fmt='mA', usecols=(0, 1), delim=',', **kw):
 # Filter i-v data ------------------------------------------------------------
 
 def _filter_iv_data(volt_v, curr_a, filter_data=True, vgap_guess=2.7e-3,
-                    igap_guess=2-4, filter_nwind=21, filter_npoly=3,
+                    igap_guess=2 - 4, filter_nwind=21, filter_npoly=3,
                     filter_theta=0.785, npts=6001, **kw):
     """Filter i-v data.
 
@@ -419,7 +423,7 @@ def _find_gap_voltage(volt_v, curr_a, vgap_threshold=None, **kw):
     vstep = volt_v[1] - volt_v[0]
     mask = (1.5e-3 < volt_v) & (volt_v < 3.5e-3)
     der = slope(volt_v[mask], curr_a[mask])
-    der = gauss_conv(der, sigma=0.2e-3/vstep)
+    der = gauss_conv(der, sigma=0.2e-3 / vstep)
     v_g = volt_v[mask][der.argmax()]
 
     return v_g
@@ -443,7 +447,7 @@ def _find_subgap_resistance(volt_v, curr_a, vrsg=2.e-3, **kw):
     mask = (vrsg - 1e-4 < volt_v) & (volt_v < vrsg + 1e-4)
     p = np.polyfit(volt_v[mask], curr_a[mask], 1)
 
-    return 1/p[0]
+    return 1 / p[0]
 
 
 def _correct_series_resistance(vmeas, imeas, rseries=None, **kw):
@@ -471,6 +475,6 @@ def _correct_series_resistance(vmeas, imeas, rseries=None, **kw):
     rj = rstatic - rseries
     v0 = imeas[mask] * rj[mask]
 
-    idc = imeas.copy()[mask] #* (rstatic + rseries) / rstatic
+    idc = imeas.copy()[mask]  # * (rstatic + rseries) / rstatic
 
     return v0, idc
