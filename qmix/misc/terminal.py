@@ -188,5 +188,5 @@ def printc(complex_number):
     else:
         sign = '-'
 
-    return str("{:+6.2f} {} j{:5.2f}".format(complex_number.real, sign, 
+    return str("{:+6.2f} {} j{:5.2f}".format(complex_number.real, sign,
                                              complex_number.imag))

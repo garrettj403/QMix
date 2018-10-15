@@ -3,14 +3,14 @@
 """
 
 import numpy as np
-from scipy.signal import hilbert 
+from scipy.signal import hilbert
 
 
 # Functions -------------------------------------------------------------------
 
 def kk_trans(v, i, n=50):
     """Kramers-Kronig transform.
-    
+
     Used to find the real component of the response function from the dc I-V
     curve.
 
@@ -30,7 +30,7 @@ def kk_trans(v, i, n=50):
     assert np.abs((v[1] - v[0]) - (v[1:] - v[:-1])).max() < 1e-5
 
     # Subtract v to make i-v curve defined at v=infinity
-    ikk = -np.imag(hilbert(i-v, N=np.alen(v)*n))
+    ikk = -np.imag(hilbert(i - v, N=np.alen(v) * n))
     ikk = ikk[:np.alen(v)]
 
     return ikk
@@ -41,12 +41,12 @@ def kk_trans_trapz(v, i):
 
     Used to find the real component of the response function from the dc I-V
     curve.
-    
+
     Note: v spacing must be constant!
 
     This function is (much!) slower than the hilbert transform version. It also
     has problems with how it is integrated around the singularity.
-    
+
     Args:
         v (ndarray): dc i-v curve, normalized voltage
         i (ndarray): dc i-v curve, normalized current

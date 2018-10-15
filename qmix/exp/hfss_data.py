@@ -8,7 +8,7 @@ import skrf as rf
 
 def input_impedance(filename, port, frequency, port_impedance=None):
     """Get input impedance from touchstone file.
-    
+
     Args:
         filename (str): filename
         port (int): port number
@@ -21,25 +21,25 @@ def input_impedance(filename, port, frequency, port_impedance=None):
     network = rf.Network(filename)
 
     if port_impedance is None:
-        port_impedance = network.z0[port,port]
+        port_impedance = network.z0[port, port]
 
     zin = _zin(network, port, port_impedance)
 
     zin_real = np.interp(frequency, network.f, zin.real)
     zin_imag = np.interp(frequency, network.f, zin.imag)
 
-    return zin_real + 1j*zin_imag
+    return zin_real + 1j * zin_imag
 
 
 def _zin(network, port, port_impedance):
 
-    return port_impedance * (1 + network.s[:,port,port]) / \
-                            (1 - network.s[:,port,port])
+    return port_impedance * (1 + network.s[:, port, port]) / \
+                            (1 - network.s[:, port, port])
 
 
 def zt_from_csv(filename, freq_out, rez_col=1, imz_col=2):
     """Import impedance from impedance results.
-    
+
     Args:
         filename: filename
         freq_out: desired frequency (in GHz)
@@ -58,10 +58,10 @@ def zt_from_csv(filename, freq_out, rez_col=1, imz_col=2):
     re_z = data[:, rez_col]
     im_z = data[:, imz_col]
 
-    re_z_out = np.interp(freq_out, freq*1e9, re_z)
-    im_z_out = np.interp(freq_out, freq*1e9, im_z)
+    re_z_out = np.interp(freq_out, freq * 1e9, re_z)
+    im_z_out = np.interp(freq_out, freq * 1e9, im_z)
 
-    return re_z_out + 1j*im_z_out
+    return re_z_out + 1j * im_z_out
 
 
 # Quick test -----------------------------------------------------------------

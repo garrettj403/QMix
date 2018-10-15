@@ -32,6 +32,7 @@ from qmix.misc.terminal import cprint
 
 # EMBEDDING CIRCUIT CLASS ----------------------------------------------------
 
+
 class EmbeddingCircuit(object):
     """Class to contain the embedding circuit. All voltages, impedances and
     frequencies.
@@ -77,6 +78,7 @@ class EmbeddingCircuit(object):
         # Junction information (optional)
         self.fgap = None
         self.vgap = None
+        self.igap = None
         self.rn = None
         if fgap is not None:
             self.fgap = float(fgap)
@@ -84,6 +86,8 @@ class EmbeddingCircuit(object):
             self.vgap = float(vgap)
         if rn is not None:
             self.rn = float(rn)
+        if vgap is not None and rn is not None:
+            self.igap = vgap / rn
 
         # Initialize embedding circuit
         self.vph = np.zeros((num_f + 1), dtype=float)
@@ -96,8 +100,8 @@ class EmbeddingCircuit(object):
 
         # Initialize comment list to label tones/harmonics
         self.comment = []
-        for f in range(num_f+1):
-            self.comment.append(['' for _ in range(num_p+1)])
+        for f in range(num_f + 1):
+            self.comment.append(['' for _ in range(num_p + 1)])
 
     def __str__(self):
 
@@ -176,7 +180,7 @@ class EmbeddingCircuit(object):
 
         self.vt[f, p] = volt_v / self.vgap
 
-    def set_alpha(self, alpha, f, p, zj=2./3):
+    def set_alpha(self, alpha, f, p, zj=2. / 3):
         """ Set drive level of tone f and harmonic p.
 
         Note: Gap voltage and normal resistance must be set prior!
@@ -204,6 +208,19 @@ class EmbeddingCircuit(object):
         """
 
         self.vph[f] = freq / self.fgap
+
+    def set_name(self, name, f, p):
+        """ Set name of tone/harmonic.
+
+        This has no effect on the actual sim. Just for keeping track
+        of the signals.
+
+        Args:
+            name (str): name of tone/harmonic
+
+        """
+
+        self.comment[f][p] = name
 
     def print_info(self):
         """ Print information about the embedding circuit.
@@ -286,9 +303,9 @@ class EmbeddingCircuit(object):
                         power_dbm = 10 * np.log10(power * 1000)
                     fout.write(str2.format(f, p, fq))
                     fout.write(str3.format(float(vt.real)))
-                    fout.write(str6.format(float(vt.real / (self.vph[f]*p))))
+                    fout.write(str6.format(float(vt.real / (self.vph[f] * p))))
                     fout.write(str4.format(zt))
-                    fout.write(str5.format(power/1e-9))
+                    fout.write(str5.format(power / 1e-9))
                     fout.write(str7.format(power_dbm))
 
     def lock(self):
@@ -350,8 +367,8 @@ def read_cct(filename):
             f = int(re.search(r'\d+', split_line[0]).group())
             p = int(re.search(r'\d+', split_line[1]).group())
             vph = float(split_line[4])
-            vt = float(data[i+1].split()[2])
-            zt = complex(data[i+2].split()[2])
+            vt = float(data[i + 1].split()[2])
+            zt = complex(data[i + 2].split()[2])
             cct.vph[f] = vph
             cct.vt[f, p] = vt
             cct.zt[f, p] = zt

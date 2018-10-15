@@ -144,7 +144,7 @@ def sort_matrix(matrix, col=0):
 
 def remove_doubles_matrix(matrix, col=0):
     """Remove double values.
-    
+
     Args:
         matrix: 2-column matrix
         col: column to remove doubles from (default 0)

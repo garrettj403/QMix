@@ -50,7 +50,7 @@ def recover_zemb(pump, dciv, **kwargs):
     vgap = dciv.vgap  # mV
     rn = dciv.rn  # ohms
     vph = pump.freq * sc.giga / dciv.fgap
-    resp = dciv.resp #_smear
+    resp = dciv.resp  # _smear
 
     # Only consider linear region of first photon step
     # Ratio removed at either end of step
@@ -60,7 +60,7 @@ def recover_zemb(pump, dciv, **kwargs):
     exp_voltage = pump.voltage[mask]
     exp_current = pump.current[mask]
 
-    idx_middle = np.abs(exp_voltage - (1 - vph/2.)).argmin()
+    idx_middle = np.abs(exp_voltage - (1 - vph / 2.)).argmin()
 
     # Calculate alpha for every bias voltage
     alpha = _find_alpha(dciv, exp_voltage, exp_current, vph)
@@ -78,7 +78,7 @@ def recover_zemb(pump, dciv, **kwargs):
     for i in xrange(len(zt_real)):
         for j in xrange(len(zt_imag)):
             err_surf[i, j] = _error_function(ac_voltage, ac_impedance,
-                                             zt_real[i] + 1j*zt_imag[j])
+                                             zt_real[i] + 1j * zt_imag[j])
 
     ibest, jbest = np.unravel_index(err_surf.argmin(), err_surf.shape)
     zt_real_best, zt_imag_best = zt_real[ibest], zt_imag[jbest]
@@ -167,7 +167,7 @@ def plot_zemb_results(pump, dciv, fig_folder=None,
     for i in xrange(len(zt_real)):
         for j in xrange(len(zt_imag)):
             err_surf[i, j] = _error_function(ac_voltage, ac_impedance,
-                                             zt_real[i] + 1j*zt_imag[j])
+                                             zt_real[i] + 1j * zt_imag[j])
 
     # Best thevenin circuit
     ibest, jbest = np.unravel_index(err_surf.argmin(), err_surf.shape)
@@ -183,7 +183,7 @@ def plot_zemb_results(pump, dciv, fig_folder=None,
     plt.pcolor(xx, yy, zz.T, cmap='viridis')
     err_str = 'Minimum Error at\n' + r'$Z_\mathrm{{T}}$={0:.2f}'.format(zt_best)
     plt.annotate(err_str, xy=(zt_re_best, zt_im_best),
-                 xytext=(zt_re_best+0.1, zt_im_best+0.4),
+                 xytext=(zt_re_best + 0.1, zt_im_best + 0.4),
                  bbox=dict(boxstyle="round", fc="w", alpha=0.5),
                  va="bottom", ha="center",
                  fontsize=8,
@@ -574,7 +574,7 @@ def _find_ac_current(resp, vb, vph, alpha, num_b=15):
 
     ac_current = np.zeros_like(vb, dtype=complex)
 
-    for n in range(-num_b, num_b+1):
+    for n in range(-num_b, num_b + 1):
         idc_tmp = resp.f_idc(vb + n * vph)
         ikk_tmp = resp.f_ikk(vb + n * vph)
 
@@ -591,7 +591,7 @@ def _find_ac_current(resp, vb, vph, alpha, num_b=15):
 def _find_pumped_iv_curve(resp, vb, vph, alpha, num_b=15):
 
     dc_current = np.zeros_like(vb, dtype=float)
-    for n in range(-num_b, num_b+1):
+    for n in range(-num_b, num_b + 1):
         dc_current += special.jv(n, alpha) ** 2 * resp.f_idc(vb + n * vph)
 
     return dc_current

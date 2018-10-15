@@ -172,7 +172,7 @@ def expanded(voltage, vgap=2.8e-3, rn=14, rsg=5e2, agap=5e4, a0=1e4,
     return i_a / igap
 
 
-# # Fit exp data to IV curve models ---------------------------------------------
+# # Fit exp data to IV curve models --------------------------------------
 #
 # def fit_polynomial_model(voltage, current):
 #     """Fit polynomial model to exp data.

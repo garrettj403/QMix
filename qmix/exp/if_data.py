@@ -50,14 +50,15 @@ def dcif_data(dcif_file, dc, **kwargs):
 
     shot_noise = np.vstack((if_data[:, 0], i_slope)).T
 
-    dcif = DCIFData(if_noise=if_noise, corr=corr, if_fit=if_fit, shot_slope=shot_noise, vmax=if_data[:,0].max()*dc.vgap)
+    dcif = DCIFData(if_noise=if_noise, corr=corr, if_fit=if_fit,
+                    shot_slope=shot_noise, vmax=if_data[:, 0].max() * dc.vgap)
 
     return if_data, dcif
 
 
-def if_data(hot_filename, cold_filename, dc, **kwargs): #dcif=None, v_fmt='mV'):
+def if_data(hot_filename, cold_filename, dc, **kwargs):
     """Analyze results from a hot/cold load experiment.
-    
+
     Args:
         hot_filename: Hot IF filename
         cold_filename: Cold IF filename
@@ -105,7 +106,7 @@ def if_data(hot_filename, cold_filename, dc, **kwargs): #dcif=None, v_fmt='mV'):
                         corr=corr,
                         if_fit=if_fit,
                         shot_slope=shot_slope,
-                        vmax=if_hot[:,0].max()*dc.vgap)
+                        vmax=if_hot[:, 0].max() * dc.vgap)
 
     return results, idx_best, dcif_out
 
@@ -114,7 +115,7 @@ def if_data(hot_filename, cold_filename, dc, **kwargs): #dcif=None, v_fmt='mV'):
 
 def _find_tn_gain(if_data_hot, if_data_cold, dc, t_hot=295., t_cold=80., verbose=True, vbest=None, **kw):
     """Find the noise temperature and gain from IF data.
-    
+
     This function will search for the best noise temperature, but it makes an
     effort to not take noise temperatures that are found in narrow dips.
 
@@ -133,8 +134,8 @@ def _find_tn_gain(if_data_hot, if_data_cold, dc, t_hot=295., t_cold=80., verbose
     """
 
     # Unpack
-    vnorm  = if_data_hot[:, 0]
-    p_hot  = if_data_hot[:, 1]
+    vnorm = if_data_hot[:, 0]
+    p_hot = if_data_hot[:, 1]
     p_cold = if_data_cold[:, 1]
 
     assert (vnorm == if_data_cold[:, 0]).all(), \
@@ -156,7 +157,7 @@ def _find_tn_gain(if_data_hot, if_data_cold, dc, t_hot=295., t_cold=80., verbose
 
     if verbose:
         tn_best = tn[idx_out]
-        gain_best = 10*np.log10(gain[idx_out])
+        gain_best = 10 * np.log10(gain[idx_out])
         print "     - noise temp:         {0:.1f} K".format(tn_best)
         print "     - gain:              {0:.2f} dB".format(gain_best)
 
@@ -169,7 +170,7 @@ def _find_if_noise(if_data, dc, vshot=None, **kw):
     """Determine IF noise from shot noise slope.
 
     Woody's method (Woody 1985).
-    
+
     Args:
         if_data: IF data, 2-column numpy array: voltage x power
         dc: DC data structure
@@ -182,13 +183,13 @@ def _find_if_noise(if_data, dc, vshot=None, **kw):
     # It still makes mistakes occasionally, make sure to check/plot your data
 
     # TODO: Sort out this function
-    
+
     # Unpack
     x = if_data[:, 0]
     y = if_data[:, 1]
 
     # DEBUG
-    # import matplotlib.pyplot as plt 
+    # import matplotlib.pyplot as plt
     # plt.plot(x, y)
     # plt.show()
 
@@ -214,7 +215,7 @@ def _find_if_noise(if_data, dc, vshot=None, **kw):
     else:
         mask = np.zeros_like(x, dtype=bool)
         for vrange in vshot:
-            mask_tmp = (vrange[0] < x*dc.vgap) & (x*dc.vgap < vrange[1])
+            mask_tmp = (vrange[0] < x * dc.vgap) & (x * dc.vgap < vrange[1])
             mask = mask | mask_tmp
 
     # Combine criteria
@@ -246,8 +247,10 @@ def _find_if_noise(if_data, dc, vshot=None, **kw):
     # plt.show()
 
     # Correct shot noise slope to 5.8/mV
-    corr = 5.8 / slope * dc.vgap * 1e3
-    i_slope *= corr 
+    # gamma = (dc.rn - 50.) / (dc.rn + 50.)
+    # trans = (1 - gamma**2)
+    corr = 5.8 / slope * dc.vgap * 1e3  # * trans
+    i_slope *= corr
 
     # IF noise contribution
     if_noise = np.interp(dc.vint / dc.vgap, x, i_slope)
@@ -263,7 +266,7 @@ def _find_if_noise(if_data, dc, vshot=None, **kw):
 
 def load_if(filename, dc, **kwargs):
     """Load IF data.
-    
+
     Args:
         filename: filename
         dc: DC data structure 
@@ -274,12 +277,12 @@ def load_if(filename, dc, **kwargs):
     """
 
     # Unpack keyword arguments
-    delim   = kwargs.get('delimiter',    ',')
-    v_fmt   = kwargs.get('v_fmt',        'mV')
+    delim = kwargs.get('delimiter',    ',')
+    v_fmt = kwargs.get('v_fmt',        'mV')
     usecols = kwargs.get('usecols',      (0, 1))
-    vmax    = kwargs.get('ifdata_vmax',  2.25)
-    sigma   = kwargs.get('ifdata_sigma', 5)
-    npts    = kwargs.get('ifdata_npts',  3000)
+    vmax = kwargs.get('ifdata_vmax',  2.25)
+    sigma = kwargs.get('ifdata_sigma', 5)
+    npts = kwargs.get('ifdata_npts',  3000)
 
     # Import
     if_data = np.genfromtxt(filename, delimiter=delim, usecols=usecols)

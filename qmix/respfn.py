@@ -83,7 +83,7 @@ class RespFn(object):
         # Smear (optional)
         if params['v_smear'] is not None:
             v_step = voltage[1] - voltage[0]
-            current = gauss_conv(current - voltage, sigma=params['v_smear']/v_step) + voltage
+            current = gauss_conv(current-voltage, sigma=params['v_smear']/v_step) + voltage
             if params['verbose']:
                 print " - Voltage smear: {:.4f}".format(params['v_smear'])
 
@@ -103,7 +103,7 @@ class RespFn(object):
         self.voltage_kk = voltage
         self.current_kk = current_kk
 
-    def show_current(self, fig_name=None):
+    def show_current(self, fig_name=None, ax=None):
         """Plot the dc I-V and KK current.
 
         Args:
@@ -112,21 +112,28 @@ class RespFn(object):
 
         """
 
-        plt.figure()
-        plt.plot(self.voltage, self.current, 'k--', label=r'$I_\text{{dc}}(V_0)$: imported')
-        plt.plot(self.voltage, self.f_idc(self.voltage), 'k-', label=r'$I_\text{{dc}}(V_0)$: interpolated')
-        plt.plot(self.voltage_kk, self.current_kk, 'r--', label=r'$I_\text{{kk}}(V_0)$: imported')
-        plt.plot(self.voltage_kk, self.f_ikk(self.voltage_kk), 'r-', label=r'$I_\text{{kk}}(V_0)$: interpolated')
-        plt.xlabel(r'Voltage / $V_\text{{gap}}$')
-        plt.ylabel(r'Current / $I_\text{{gap}}$')
-        plt.xlim([-2, 2])
-        plt.ylim([-2, 2])
-        plt.legend(loc='best', fontsize=8)
-        plt.grid()
-        if fig_name is None:
-            plt.show()
+        if ax is None:
+            fig, ax = plt.subplots()
+        ax.plot(self.voltage, self.current, 'k--',
+                label=r'$I_\mathrm{{dc}}^0(V_0)$: imported')
+        ax.plot(self.voltage, self.f_idc(self.voltage), 'k-',
+                label=r'$I_\mathrm{{dc}}^0(V_0)$: interpolated')
+        ax.plot(self.voltage_kk, self.current_kk, 'r--',
+                label=r'$I_\mathrm{{kk}}^0(V_0)$: imported')
+        ax.plot(self.voltage_kk, self.f_ikk(self.voltage_kk), 'r-',
+                label=r'$I_\mathrm{{kk}}^0(V_0)$: interpolated')
+        ax.set_xlabel(r'Bias Voltage / $V_\mathrm{{gap}}$')
+        ax.set_ylabel(r'Current / $I_\mathrm{{gap}}$')
+        ax.set_xlim([-2, 2])
+        ax.set_ylim([-2, 2])
+        ax.legend(loc=0, fontsize=8, frameon=True)
+        ax.grid()
+        if fig_name is not None:
+            fig.savefig(fig_name, bbox_inches='tight')
+        elif ax is not None:
+            return ax
         else:
-            plt.savefig(fig_name, bbox_inches='tight')
+            plt.show()
 
     def resp(self, vbias):
         """Interpolate the response function current
@@ -307,7 +314,8 @@ class RespFnPerfect(RespFn):
 
 #     """
 
-#     def __init__(self, filename, v_smear=None, max_npts_dc=81, max_npts_kk=101, check_error=True):
+# def __init__(self, filename, v_smear=None, max_npts_dc=81,
+# max_npts_kk=101, check_error=True):
 
 #         print "Loading response function:"
 
@@ -380,7 +388,7 @@ class RespFnPerfect(RespFn):
 #         print "\tnotch voltage:            {0:.2f} mV".format(popt[6] / MILLI)
 #         print "\tnotch current:            {0:.2f} uA".format(popt[7] / MICRO)
 #         print "\tnotch linearity:          {0:.2f} ".format(popt[8])
-#         print "\tabove gap current offset: {0:.2f} uA".format(popt[9] / MICRO)
+# print "\tabove gap current offset: {0:.2f} uA".format(popt[9] / MICRO)
 
 #         vgap = popt[0]
 #         rn = popt[1]
@@ -455,11 +463,11 @@ class RespFnPerfect(RespFn):
 def _setup_interpolation(voltage, current, current_kk, **params):
 
     # Interpolation parameters
-    npts_dciv    = params['max_npts_dc']
-    npts_kkiv    = params['max_npts_kk']
+    npts_dciv = params['max_npts_dc']
+    npts_kkiv = params['max_npts_kk']
     interp_error = params['max_interp_error']
-    check_error  = params['check_error']
-    verbose      = params['verbose']
+    check_error = params['check_error']
+    verbose = params['verbose']
     spline_order = params['spline_order']
 
     if verbose:
@@ -550,7 +558,7 @@ def _sample_curve(voltage, current, max_npts, v_smear):
     for i in range(len(voltage) - int(1 / VSTEP) - 1, len(voltage), int(1 / VSTEP / 10)):
         idx_list.append(i)
     # Add 30 pts to middle
-    ind_low  = np.abs(voltage + 1.).argmin()
+    ind_low = np.abs(voltage + 1.).argmin()
     ind_high = np.abs(voltage - 1.).argmin()
     npts = ind_high - ind_low
     for i in range(ind_low, ind_high, npts / 30):
@@ -566,14 +574,14 @@ def _default_params(kwargs, max_dc=101, max_kk=151, max_error=0.001,
                     check_error=False, verbose=True, v_smear=None, kk_n=50,
                     spline_order=3):
 
-    params = {'max_npts_dc'      : max_dc,
-              'max_npts_kk'      : max_kk,
-              'max_interp_error' : max_error,
-              'check_error'      : check_error,
-              'verbose'          : verbose,
-              'v_smear'          : v_smear,
-              'kk_n'             : kk_n,
-              'spline_order'     : spline_order,
+    params = {'max_npts_dc': max_dc,
+              'max_npts_kk': max_kk,
+              'max_interp_error': max_error,
+              'check_error': check_error,
+              'verbose': verbose,
+              'v_smear': v_smear,
+              'kk_n': kk_n,
+              'spline_order': spline_order,
               }
 
     params.update(kwargs)
