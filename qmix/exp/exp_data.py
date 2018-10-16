@@ -286,7 +286,7 @@ class RawData0(object):
 
         """
 
-        print self
+        print(self)
 
     def plot_if_noise(self, fig_folder=None):
         """Plot IF noise.
@@ -410,11 +410,11 @@ class RawData(object):
         # Print to terminal
         if verbose:
             cprint('Importing: {}'.format(comment), 'HEADER')
-            print " -> Files:"
-            print "\tI-V file:    \t{}".format(iv_file)
-            print "\tIF hot file: \t{}".format(if_hot_file)
-            print "\tIF cold file:\t{}".format(if_cold_file)
-            print " -> Frequency: ", str(self.freq), " GHz"
+            print(" -> Files:")
+            print("\tI-V file:    \t{}".format(iv_file))
+            print("\tIF hot file: \t{}".format(if_hot_file))
+            print("\tIF cold file:\t{}".format(if_cold_file))
+            print(" -> Frequency: ", str(self.freq), " GHz")
 
         # Import/analyze pumped I-V curve
         self.voltage, self.current = iv_curve(iv_file, self.dc, **kwargs)
@@ -471,7 +471,7 @@ class RawData(object):
             self.tn_best = None
             self.g_db = None
         if verbose:
-            print ""
+            print("")
 
     def plot_all(self, fig_folder):
         """Plot everything using the standard file hierarchy.
@@ -900,7 +900,7 @@ def plot_if_spectrum(data_folder, fig_folder=None):
     for if_file in if_spectra_files:
 
         filename = os.path.basename(if_file)[:-4]
-        print " - {}".format(filename)
+        print(" - {}".format(filename))
         base = filename.split('_')[0][1:]
 
         freq, t_n, p_hot_db, p_cold_db = if_spectrum(if_file).T
@@ -939,7 +939,7 @@ def plot_if_spectrum(data_folder, fig_folder=None):
     ax1.set_ylim([0, 2000])
     fig1.savefig(fig_folder + 'if_spectra_smooth2.pdf', bbox_inches='tight')
 
-    print ""
+    print("")
 
 
 # Plot overall results --------------------------------------------------------
@@ -1293,7 +1293,7 @@ def plot_overall_results(dciv_data, data_list, fig_folder):
             fout.write(string + '\n')
 
     rcParams.update({'figure.autolayout': False})
-    print " -> Done\n"
+    print(" -> Done\n")
 
 
 # Save figures properly -------------------------------------------------------
@@ -1339,13 +1339,13 @@ def initialize_dir(fig_folder):
     """
 
     folder_list = ['']
-    folder_list += file_structure.values()
+    folder_list += list(file_structure.values())
 
     for folder in folder_list:
         if not os.path.exists(fig_folder + folder):
             os.makedirs(fig_folder + folder)
-            print '   - Created: ' + folder
-    print " "
+            print('   - Created: ' + folder)
+    print(" ")
 
 
 def check_iv_if_matching(iv_dat, hot_dat, cold_dat):
@@ -1379,9 +1379,9 @@ def check_iv_if_matching(iv_dat, hot_dat, cold_dat):
         if freq in f_hot and freq in f_cold:
             f_out.append(freq)
 
-    print " - Complete data for " + str(len(f_out)) + " frequencies."
-    print " - Frequencies: " + str(f_out[0]) + " to " + str(f_out[-1]) + " GHz"
-    print ""
+    print(" - Complete data for " + str(len(f_out)) + " frequencies.")
+    print(" - Frequencies: " + str(f_out[0]) + " to " + str(f_out[-1]) + " GHz")
+    print("")
 
     return f_out
 

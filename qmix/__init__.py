@@ -19,6 +19,10 @@ from qmix.misc.terminal import print_intro
 # from qmix.harmonic_balance import harmonic_balance
 # from qmix.qtcurrent import qtcurrent
 
+# Suppress warning from scipy
+import warnings
+warnings.simplefilter(action='ignore', category=FutureWarning)
+
 __author__ = "John Garrett"
 __email__ = "john.garrett@physics.ox.ac.uk"
 __version__ = "0.1.dev"

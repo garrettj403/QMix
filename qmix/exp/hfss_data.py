@@ -68,11 +68,11 @@ def zt_from_csv(filename, freq_out, rez_col=1, imz_col=2):
 
 def _main():
 
-    print "\nTesting import_hfss.py ...\n"
+    print("\nTesting import_hfss.py ...\n")
 
     filename = '../../my-projects/230ghz-receiver/hfss_results/RF/Full_Circuit_3port_model.s3p'
     zin = input_impedance(filename, 0, 230e9, 15)
-    print "Z_in at J: ", zin, " @ 230 GHz\n"
+    print("Z_in at J: ", zin, " @ 230 GHz\n")
 
     # filename = '../../my-projects/230ghz-receiver/hfss_results/old/Z_IF.csv'
     # z = zt_from_csv(filename, 20, 2, 1)
@@ -80,7 +80,7 @@ def _main():
 
     filename = '../../my-projects/230ghz-receiver/hfss_results/IF/Full_Circuit_3port_model.s3p'
     zin = input_impedance(filename, 1, 10e9, 50)
-    print "Z_in at MS: ", zin, " @ 2 GHz\n"
+    print("Z_in at MS: ", zin, " @ 2 GHz\n")
 
 if __name__ == '__main__':
     _main()

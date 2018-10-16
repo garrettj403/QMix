@@ -30,7 +30,7 @@ def gauss_conv(x, sigma=10, ext_x=3):
 
     s = np.r_[x[wlen - 1:0:-1], x, x[-2:-wlen - 1:-1]]
     y_out = np.convolve(wind / wind.sum(), s, mode='valid')
-    y_out = y_out[wlen / 2:-wlen / 2 + 1]
+    y_out = y_out[wlen // 2:-wlen // 2 + 1]
 
     return y_out
 

@@ -45,11 +45,11 @@ def cprint(text, color='HEADER'):
     else:
         try:
             tcolour = _terminal_colors[color.upper()]
-            print(tcolour + text + _terminal_colors['ENDC'])
+            print((tcolour + text + _terminal_colors['ENDC']))
         except KeyError:
             print("\'color\' must be one of:")
-            print(sorted(_terminal_colors.keys()))
-            print text, color
+            print((sorted(_terminal_colors.keys())))
+            print(text, color)
             return
 
 

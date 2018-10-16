@@ -22,13 +22,13 @@ clean_test:
 
 clean_bytecode:
 	find . -name '*.pyc' -exec rm -f {} +
-	find . -name '__pycache__' -exec rm -rf {} +
 
 clean_hidden:
 	find . -name '.coverage' -exec rm -rf {} +
 	find . -name '.cache' -exec rm -rf {} +
 	find . -name '.ropeproject' -exec rm -rf {} +
 	find . -name '.DS_Store' -exec rm -rf {} +
+	find . -name '__pycache__' -exec rm -rf {} +
 
 clean: clean_bytecode clean_hidden clean_test
 

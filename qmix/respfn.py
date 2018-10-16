@@ -71,7 +71,7 @@ class RespFn(object):
         params = _default_params(params)
 
         if params['verbose']:
-            print "Generating response function:"
+            print("Generating response function:")
 
         assert voltage[0] == 0., "First voltage value must be zero"
         assert voltage[-1] > 5, "Voltage must extend to at least 5"
@@ -85,7 +85,7 @@ class RespFn(object):
             v_step = voltage[1] - voltage[0]
             current = gauss_conv(current-voltage, sigma=params['v_smear']/v_step) + voltage
             if params['verbose']:
-                print " - Voltage smear: {:.4f}".format(params['v_smear'])
+                print(" - Voltage smear: {:.4f}".format(params['v_smear']))
 
         # KK transform
         current_kk = qmix.mathfn.kktrans.kk_trans(voltage, current, params['kk_n'])
@@ -182,10 +182,10 @@ class RespFn(object):
         testdc = (idctmp[1:] > idctmp[:-1])
 
         if not testdc.all():
-            print " **DC I-V NOT INCREASING MONOTONICALLY**\n"
-            print vtmp[1:][np.invert(testdc)]
+            print(" **DC I-V NOT INCREASING MONOTONICALLY**\n")
+            print(vtmp[1:][np.invert(testdc)])
         else:
-            print " - Dc I-V increases monotonically\n"
+            print(" - Dc I-V increases monotonically\n")
 
         return testdc.all()  # & testkk.all()
 
@@ -238,7 +238,7 @@ class RespFnPolynomial(RespFn):
 
     """
 
-    def __init__(self, p_order, **kwargs):
+    def __init__(self, p_order=50, **kwargs):
 
         params = _default_params(kwargs)
 
@@ -471,7 +471,7 @@ def _setup_interpolation(voltage, current, current_kk, **params):
     spline_order = params['spline_order']
 
     if verbose:
-        print " - Interpolating:"
+        print(" - Interpolating:")
 
     # Reduce data
     dc_idx = _sample_curve(voltage, current, npts_dciv, 0.25)
@@ -505,15 +505,15 @@ def _setup_interpolation(voltage, current, current_kk, **params):
 
     # Print to terminal
     if verbose:
-        print "    - dc I-V curve:"
-        print "       - npts for dc i-v: {0}".format(len(dc_idx))
-        print "       - avg. error: {0:.4E}".format(np.mean(np.abs(error_dc)))
-        print "       - max. error: {0:.4f} at v={1:.2f}".format(error_dc.max(), error_v[error_dc.argmax()])
-        print "    - KK curve:"
-        print "       - npts for kk i-v: {0}".format(len(kk_idx))
-        print "       - avg. error: {0:.4E}".format(np.mean(np.abs(error_kk)))
-        print "       - max. error: {0:.4f} at v={1:.2f}".format(error_kk.max(), error_v[error_kk.argmax()])
-        print ""
+        print("    - DC I-V curve:")
+        print("       - npts for DC I-V: {0}".format(len(dc_idx)))
+        print("       - avg. error: {0:.4E}".format(np.mean(np.abs(error_dc))))
+        print("       - max. error: {0:.4f} at v={1:.2f}".format(error_dc.max(), error_v[error_dc.argmax()]))
+        print("    - KK curve:")
+        print("       - npts for KK I-V: {0}".format(len(kk_idx)))
+        print("       - avg. error: {0:.4E}".format(np.mean(np.abs(error_kk))))
+        print("       - max. error: {0:.4f} at v={1:.2f}".format(error_kk.max(), error_v[error_kk.argmax()]))
+        print("")
 
     # Check error
     if check_error:
@@ -561,7 +561,7 @@ def _sample_curve(voltage, current, max_npts, v_smear):
     ind_low = np.abs(voltage + 1.).argmin()
     ind_high = np.abs(voltage - 1.).argmin()
     npts = ind_high - ind_low
-    for i in range(ind_low, ind_high, npts / 30):
+    for i in range(ind_low, ind_high, npts // 30):
         idx_list.append(i)
 
     idx_list = list(set(idx_list))

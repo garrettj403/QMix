@@ -9,7 +9,7 @@ import numpy as np
 import scipy.constants as sc
 from scipy.signal import savgol_filter
 
-from clean_data import remove_doubles_xy, remove_nans_xy, sort_xy
+from .clean_data import remove_doubles_xy, remove_nans_xy, sort_xy
 from qmix.mathfn.filters import gauss_conv
 from qmix.mathfn.misc import slope
 

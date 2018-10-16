@@ -13,13 +13,13 @@ VBIAS = np.linspace(0, VMAX, NPTS)
 VBIAS.flags.writeable = False
 
 def test_compare_qtcurrent_to_tucker():
-    print """ 
+    print(""" 
     This test will compare the DC/AC currents calculated by two different modules:
     qtcurrent.py (multi-tone module) and tucker.py (Tucker module).
 
     The tucker.py module only works for a single tone/harmonic. When
     only one tone/harmonic is present, they should provide identical results.
-    """
+    """)
 
     vph1 = 0.33
     alpha1 = 0.8
@@ -58,7 +58,7 @@ def test_compare_qtcurrent_to_tucker():
     np.testing.assert_almost_equal(idc_meth1, idc_meth2, decimal=15)
     np.testing.assert_almost_equal(iac_meth1, iac_meth2, decimal=15)
 
-    print """All arrays in my software use data type 'complex128'. This gives 64 
+    print("""All arrays in my software use data type 'complex128'. This gives 64 
     bits to the floating point real number and 64 bits to the floating point 
     imaginary number. Each floating point number then gets:
        - 1 sign bit
@@ -67,7 +67,7 @@ def test_compare_qtcurrent_to_tucker():
     52 mantissa bits gives roughly 15-17 significant figure accuracy in decimal 
     notation. Therefore, if the average absolute error is on the order of 1e-15 
     to 1e-17, the comparison should be considered a success. 
-    """
+    """)
 
 
 def test_adding_more_tones():

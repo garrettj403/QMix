@@ -205,11 +205,11 @@ def _main():
     matrix_data = xy_to_matrix(x_data, y_data)
 
     print('\nOriginal x/y data:')
-    print(xy_to_matrix(x_data, y_data))
+    print((xy_to_matrix(x_data, y_data)))
 
     print('\nAfter cleaning:')
     x, y = clean_xy(x_data, y_data)
-    print(xy_to_matrix(x, y))
+    print((xy_to_matrix(x, y)))
 
     print('\nOriginal data in matrix form:')
     print(matrix_data)

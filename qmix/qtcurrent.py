@@ -84,9 +84,9 @@ def qtcurrent(vj, cct, resp, vph_list, num_b=15, verbose=True, resp_matrix=None)
     num_b_max = max(nb_list)
 
     if verbose:
-        print "Calculating tunneling current..."
-        print " - {0} tone(s)".format(cct.num_f)
-        print " - {0} harmonic(s)".format(cct.num_p)
+        print("Calculating tunneling current...")
+        print(" - {0} tone(s)".format(cct.num_f))
+        print(" - {0} harmonic(s)".format(cct.num_p))
         start_time = timer()
 
     # Convolution coefficients ------------------------------------------------
@@ -103,16 +103,16 @@ def qtcurrent(vj, cct, resp, vph_list, num_b=15, verbose=True, resp_matrix=None)
     current_out = np.zeros((nvph, cct.vb_npts), dtype=complex)
 
     if num_f == 1:
-        for i in xrange(nvph):
+        for i in range(nvph):
             current_out[i] = _current_1_tone(vph_list[i], ccc, vph, resp_matrix, num_p, npts, *nb_list)
     elif num_f == 2:
-        for i in xrange(nvph):
+        for i in range(nvph):
             current_out[i] = _current_2_tones(vph_list[i], ccc, vph, resp_matrix, num_p, num_b_max, npts, *nb_list)
     elif num_f == 3:
-        for i in xrange(nvph):
+        for i in range(nvph):
             current_out[i] = _current_3_tones(vph_list[i], ccc, vph, resp_matrix, num_p, num_b_max, npts, *nb_list)
     elif num_f == 4:
-        for i in xrange(nvph):
+        for i in range(nvph):
             current_out[i] = _current_4_tones(vph_list[i], ccc, vph, resp_matrix, num_p, num_b_max, npts, *nb_list)
     else:
         raise ValueError
@@ -120,8 +120,8 @@ def qtcurrent(vj, cct, resp, vph_list, num_b=15, verbose=True, resp_matrix=None)
     # Done --------------------------------------------------------------------
 
     if verbose:
-        print "Done."
-        print "Time: {0:.4f} s\n".format(timer() - start_time)
+        print("Done.")
+        print("Time: {0:.4f} s\n".format(timer() - start_time))
 
     cct.unlock()
     vj.flags.writeable = True
@@ -301,9 +301,9 @@ def _find_resp_current_3_tones(resp, vb, vph, num_b1, num_b2, num_b3):
 
     npts = np.alen(vb)
     voltage = np.zeros((num_b1 * 2 + 1, num_b2 * 2 + 1, num_b3 * 2 + 1, npts))
-    for k in xrange(-num_b1, num_b1 + 1):
-        for l in xrange(-num_b2, num_b2 + 1):
-            for m in xrange(-num_b3, num_b3 + 1):
+    for k in range(-num_b1, num_b1 + 1):
+        for l in range(-num_b2, num_b2 + 1):
+            for m in range(-num_b3, num_b3 + 1):
                 voltage[k, l, m] = vb + k * vph[1] + l * vph[2] + m * vph[3]
     resp_current_out = resp.resp(voltage)
 
@@ -314,10 +314,10 @@ def _find_resp_current_4_tones(resp, vb, vph, num_b1, num_b2, num_b3, num_b4):
 
     npts = np.alen(vb)
     voltage = np.zeros((num_b1 * 2 + 1, num_b2 * 2 + 1, num_b3 * 2 + 1, num_b4 * 2 + 1, npts))
-    for k in xrange(-num_b1, num_b1 + 1):
-        for l in xrange(-num_b2, num_b2 + 1):
-            for m in xrange(-num_b3, num_b3 + 1):
-                for n in xrange(-num_b4, num_b4 + 1):
+    for k in range(-num_b1, num_b1 + 1):
+        for l in range(-num_b2, num_b2 + 1):
+            for m in range(-num_b3, num_b3 + 1):
+                for n in range(-num_b4, num_b4 + 1):
                     voltage[k, l, m, n] = vb + k * vph[1] + l * vph[2] + m * vph[3] + n * vph[4]
     resp_current_out = resp.resp(voltage)
 
@@ -346,8 +346,8 @@ def _convolution_coefficient(vj, vph, num_f, num_p, num_b):
 
     # Junction drive level:  alpha[f, p, i] in R^(num_f+1)(num_p+1)(npts)
     alpha = np.zeros((num_f + 1, num_p + 1, npts))
-    for f in xrange(1, num_f + 1):
-        for p in xrange(1, num_p + 1):
+    for f in range(1, num_f + 1):
+        for p in range(1, num_p + 1):
             alpha[f, p, :] = np.abs(vj[f, p, :]) / (p * vph[f])
 
     # Junction voltage phase:  phi[f, p, i] in R^(num_f+1)(num_p+1)(npts)
@@ -356,9 +356,9 @@ def _convolution_coefficient(vj, vph, num_f, num_p, num_b):
     # Jacobi-Angers coefficients: 
     # jac[f, p, n, i] in C^(num_f+1)(num_p+1)(num_b*2+1)(npts)
     jac = np.zeros((num_f + 1, num_p + 1, num_b * 2 + 1, npts), dtype=complex)
-    for f in xrange(1, num_f + 1):
-        for p in xrange(1, num_p + 1):
-            for n in xrange(-num_b, num_b + 1):
+    for f in range(1, num_f + 1):
+        for p in range(1, num_p + 1):
+            for n in range(-num_b, num_b + 1):
                 jac[f, p, n] = bessel(n, alpha[f, p]) * np.exp(-1j * n * phi[f, p])
 
     # Convolution coefficients: cc[f, k, i] in C^(num_f+1)(num_b*2+1)(npts)
@@ -387,10 +387,10 @@ def _calculate_coeff(aaa):
     if num_p == 1:
         return ccc_last
 
-    for p in xrange(2, num_p + 1):
+    for p in range(2, num_p + 1):
         ccc_next = np.zeros_like(ccc_last)
-        for k in xrange(-num_b, num_b + 1):
-            for l in xrange(-num_b, num_b + 1):
+        for k in range(-num_b, num_b + 1):
+            for l in range(-num_b, num_b + 1):
                 idx = k - p * l
                 if -num_b <= idx <= num_b:
                     ccc_next[1:, k] += ccc_last[1:, idx] * aaa[1:, p, l]
@@ -417,7 +417,7 @@ def _current_1_tone(vph_out, ccc, vph, resp_matrix, num_p, npts, num_b1):
     vph_out = round(vph_out, ROUND_VPH)
     current_out = np.zeros(npts, dtype=complex)
     
-    for a in xrange(num_p, -(num_p + 1), -1):
+    for a in range(num_p, -(num_p + 1), -1):
 
         vph_a = round(a * vph[1], ROUND_VPH)
 
@@ -438,7 +438,7 @@ def _current_coeff_1_tone(a, ccc, resp_matrix, num_b1, npts):
     rsp_p = np.zeros(npts, dtype=complex)  # positive coefficients p
     rsp_m = np.zeros(npts, dtype=complex)  # negative coefficients p
     ccc_conj = np.conj(ccc[1])
-    for k in xrange(-num_b1, num_b1 + 1):
+    for k in range(-num_b1, num_b1 + 1):
 
         if -num_b1 <= k + a <= num_b1:
             rsp_p += ccc[1, k, :] * ccc_conj[k + a, :] * resp_matrix[k]
@@ -465,8 +465,8 @@ def _current_2_tones(vph_out, ccc, vph, resp_matrix, num_p, num_b, npts, num_b1,
     vph_out = round(vph_out, ROUND_VPH)
     current_out = np.zeros(npts, dtype=complex)
     
-    for a in xrange(num_p, -(num_p + 1), -1):
-        for b in xrange(num_p, -(num_p + 1), -1):
+    for a in range(num_p, -(num_p + 1), -1):
+        for b in range(num_p, -(num_p + 1), -1):
 
             vph_ab = round(a * vph[1] + b * vph[2], ROUND_VPH)
 
@@ -488,8 +488,8 @@ def _current_coeff_2_tones(a, b, ccc, resp_matrix, num_b, num_b1, num_b2, npts):
     rsp_p = np.zeros(npts, dtype=complex)
     rsp_m = np.zeros(npts, dtype=complex)
     ccc_conj = np.conj(ccc)
-    for k in xrange(-num_b1, num_b1 + 1):
-        for l in xrange(-num_b2, num_b2 + 1):
+    for k in range(-num_b1, num_b1 + 1):
+        for l in range(-num_b2, num_b2 + 1):
 
             if -num_b1 <= k + a <= num_b1 and \
                -num_b2 <= l + b <= num_b2:
@@ -525,9 +525,9 @@ def _current_3_tones(vph_out, ccc, vph, resp_matrix, num_p, num_b, npts, num_b1,
     vph_out = round(vph_out, ROUND_VPH)
     current_out = np.zeros(npts, dtype=complex)
 
-    for a in xrange(num_p, -(num_p + 1), -1):
-        for b in xrange(num_p, -(num_p + 1), -1):
-            for c in xrange(num_p, -(num_p + 1), -1):
+    for a in range(num_p, -(num_p + 1), -1):
+        for b in range(num_p, -(num_p + 1), -1):
+            for c in range(num_p, -(num_p + 1), -1):
 
                 vph_abc = round(a * vph[1] + b * vph[2] + c * vph[3], ROUND_VPH)
 
@@ -571,9 +571,9 @@ def _current_coeff_3_tones(a, b, c, ccc, resp_matrix, num_b1, num_b2, num_b3):
     rsp_p = np.zeros_like(ccc1[0,:], dtype=complex)
     rsp_m = np.zeros_like(ccc1[0,:], dtype=complex)
 
-    for k in xrange(-num_b1, num_b1 + 1):
-        for l in xrange(-num_b2, num_b2 + 1):
-            for m in xrange(-num_b3, num_b3 + 1):
+    for k in range(-num_b1, num_b1 + 1):
+        for l in range(-num_b2, num_b2 + 1):
+            for m in range(-num_b3, num_b3 + 1):
 
                 current_found = False
 
@@ -641,10 +641,10 @@ def _current_4_tones(vph_out, ccc, vph, resp_matrix, num_p, num_b, npts, num_b1,
     vph_out = round(vph_out, ROUND_VPH)
     current_out = np.zeros(npts, dtype=complex)
 
-    for a in xrange(num_p, -(num_p + 1), -1):
-        for b in xrange(num_p, -(num_p + 1), -1):
-            for c in xrange(num_p, -(num_p + 1), -1):
-                for d in xrange(num_p, -(num_p + 1), -1):
+    for a in range(num_p, -(num_p + 1), -1):
+        for b in range(num_p, -(num_p + 1), -1):
+            for c in range(num_p, -(num_p + 1), -1):
+                for d in range(num_p, -(num_p + 1), -1):
 
                     vph_abcd = round(a * vph[1] + b * vph[2] + c * vph[3] + d * vph[4], ROUND_VPH)
 
@@ -676,10 +676,10 @@ def _current_coeff_4_tones(a, b, c, d, ccc, resp_matrix, num_b, num_b1, num_b2, 
     # Equation 5.25
     rsp_p = np.zeros(npts, dtype=complex)
     rsp_m = np.zeros(npts, dtype=complex)
-    for k in xrange(-num_b1, num_b1 + 1):
-        for l in xrange(-num_b2, num_b2 + 1):
-            for m in xrange(-num_b3, num_b3 + 1):
-                for n in xrange(-num_b4, num_b4 + 1):
+    for k in range(-num_b1, num_b1 + 1):
+        for l in range(-num_b2, num_b2 + 1):
+            for m in range(-num_b3, num_b3 + 1):
+                for n in range(-num_b4, num_b4 + 1):
 
                     current_found = False
 

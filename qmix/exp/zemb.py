@@ -75,8 +75,8 @@ def recover_zemb(pump, dciv, **kwargs):
     zt_real = np.linspace(remb_range[0], remb_range[1], 101)
     zt_imag = np.linspace(xemb_range[0], xemb_range[1], 201)
     err_surf = np.empty((len(zt_real), len(zt_imag)), dtype=float)
-    for i in xrange(len(zt_real)):
-        for j in xrange(len(zt_imag)):
+    for i in range(len(zt_real)):
+        for j in range(len(zt_imag)):
             err_surf[i, j] = _error_function(ac_voltage, ac_impedance,
                                              zt_real[i] + 1j * zt_imag[j])
 
@@ -95,18 +95,18 @@ def recover_zemb(pump, dciv, **kwargs):
     else:
         cprint('     - bad fit', 'WARNING')
     # the embedding circuit
-    print "     - embedding circuit:"
-    print "          - voltage:      {:+6.2f}  x Vgap".format(vt_best)
-    print "          - impedance:    {:+12.2f}  x Rn".format(zt_best)
+    print("     - embedding circuit:")
+    print("          - voltage:      {:+6.2f}  x Vgap".format(vt_best))
+    print("          - impedance:    {:+12.2f}  x Rn".format(zt_best))
     with np.errstate(divide='ignore', invalid='ignore'):
         power_avail = np.abs(vt_best * vgap) ** 2 / 8 / np.real(zt_best * rn)
-    print "          - avail. power: {:+6.2f}  nW   ".format(power_avail / 1e-9)
+    print("          - avail. power: {:+6.2f}  nW   ".format(power_avail / 1e-9))
     # power_avail_dbm = 10 * np.log10(power_avail / 1e-3)
     # print "                          {:+6.2f}  dBm  ".format(power_avail_dbm)
     # the junction
-    print "     - junction:"
-    print "          - alpha:        {:+6.2f}       ".format(alpha[idx_middle])
-    print "          - impedance:    {:+12.2f}  norm.".format(zw)
+    print("     - junction:")
+    print("          - alpha:        {:+6.2f}       ".format(alpha[idx_middle]))
+    print("          - impedance:    {:+12.2f}  norm.".format(zw))
 
     return zt_best, vt_best, good_fit, zw, alpha[idx_middle]
 
@@ -164,8 +164,8 @@ def plot_zemb_results(pump, dciv, fig_folder=None,
     zt_real = np.linspace(remb_range[0], remb_range[1], 101)
     zt_imag = np.linspace(xemb_range[0], xemb_range[1], 201)
     err_surf = np.empty((len(zt_real), len(zt_imag)), dtype=float)
-    for i in xrange(len(zt_real)):
-        for j in xrange(len(zt_imag)):
+    for i in range(len(zt_real)):
+        for j in range(len(zt_imag)):
             err_surf[i, j] = _error_function(ac_voltage, ac_impedance,
                                              zt_real[i] + 1j * zt_imag[j])
 

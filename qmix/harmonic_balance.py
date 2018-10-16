@@ -52,7 +52,7 @@ def harmonic_balance(cct, resp, num_b=15, max_it=10, stop_rerror=0.001, vj_initi
     """
 
     if verbose:
-        print "Running harmonic balance:"
+        print("Running harmonic balance:")
 
     start_time = timer()
 
@@ -70,7 +70,7 @@ def harmonic_balance(cct, resp, num_b=15, max_it=10, stop_rerror=0.001, vj_initi
         if verbose:
             string = "\n**Harmonic balance isn't needed when zt = 0.**"
             cprint(string, 'WARNING')
-            print "  - returning vt as vj"
+            print("  - returning vt as vj")
         return vt[:, :, None] * np.ones(npts, dtype=complex)
 
     # Check whether any Thevenin voltages (vt) are zero (prevents div0 errors)
@@ -100,9 +100,9 @@ def harmonic_balance(cct, resp, num_b=15, max_it=10, stop_rerror=0.001, vj_initi
     zt_2d = zt[1:, 1:].reshape(num_n)
 
     if verbose:
-        print " - {0} tone(s) and {1} harmonic(s)".format(num_f, num_p)
+        print((" - {0} tone(s) and {1} harmonic(s)".format(num_f, num_p)))
         msg = " - {0} calls to the tunneling current function per iteration"
-        print msg.format(num_n * 2 + 1)
+        print((msg.format(num_n * 2 + 1)))
 
     # Interpolate response function for all required voltages
     respfn_interp = interpolate_respfn(cct, resp, num_b)
@@ -110,7 +110,7 @@ def harmonic_balance(cct, resp, num_b=15, max_it=10, stop_rerror=0.001, vj_initi
     # Perform harmonic balance -----------------------------------------------
 
     iteration = 0
-    for iteration in xrange(max_it + 1):
+    for iteration in range(max_it + 1):
 
         # time_it = timer()
 
@@ -118,24 +118,24 @@ def harmonic_balance(cct, resp, num_b=15, max_it=10, stop_rerror=0.001, vj_initi
         time_current = timer()
         ij_2d = _qt_current_for_hb(vj_2d, cct, resp, num_b, resp_matrix=respfn_interp)
         if iteration == 0 and verbose:
-            print "Estimated time:"
+            print("Estimated time:")
             call_time = timer() - time_current
             # print ' - time per call:      {:.2f} s'.format(call_time)
             it_time = call_time * (num_n * 2 + 1)
-            print ' - time per iteration: {:7.2f} s / {:6.2f} min / {:5.2f} hrs'.format(it_time, it_time/60., it_time/3600.)
+            print((' - time per iteration: {:7.2f} s / {:6.2f} min / {:5.2f} hrs'.format(it_time, it_time/60., it_time/3600.)))
             max_time = it_time * max_it
-            print ' - max time:           {:7.2f} s / {:6.2f} min / {:5.2f} hrs'.format(max_time, max_time/60., max_time/3600.)
+            print((' - max time:           {:7.2f} s / {:6.2f} min / {:5.2f} hrs'.format(max_time, max_time/60., max_time/3600.)))
 
         # Error vector
         err_all = vt_2d[:, None] - zt_2d[:, None] * ij_2d - vj_2d
 
         # Check error at each tone and harmonic
         if verbose:
-            print "Error after {0} iteration(s):".format(iteration)
+            print(("Error after {0} iteration(s):".format(iteration)))
         max_rel_error = 0.  # initialize maximum relative error of all signals
         msg = "\tf:{}, p:{},   med. r.error: {:9.3f},   max r.error: {:9.3f},   {:5.1f} % complete"
         finished_points = np.ones(npts, dtype=bool)
-        for k in xrange(num_n):
+        for k in range(num_n):
             with np.errstate(divide='ignore'):
                 # Check relative error at k
                 abs_error = np.abs(err_all[k, :])
@@ -149,17 +149,17 @@ def harmonic_balance(cct, resp, num_b=15, max_it=10, stop_rerror=0.001, vj_initi
             # Print to terminal
             if verbose:
                 f, p = _k_to_fp(k, num_p)
-                print msg.format(f, p, med_rel_error, np.max(rel_error), complete * 100)
+                print((msg.format(f, p, med_rel_error, np.max(rel_error), complete * 100)))
 
         # Exit if the error is good enough
         if max_rel_error <= stop_rerror:
             if verbose:
-                print "Done: Minimum error target was achieved."
+                print("Done: Minimum error target was achieved.")
             break
 
         # Exit if this is the last iteration
         if max_rel_error > stop_rerror and iteration == max_it:
-            print "*** DID NOT ACHIEVE TARGET ERROR VALUE ***\n"
+            print("*** DID NOT ACHIEVE TARGET ERROR VALUE ***\n")
             break
 
         # Update junction voltages (i.e., the business end of this function)
@@ -167,10 +167,10 @@ def harmonic_balance(cct, resp, num_b=15, max_it=10, stop_rerror=0.001, vj_initi
         if verbose:
             # it_time = timer() - time_it
             # print ' -> last iteration time: {0:.1f} s / {1:.1f} min'.format(it_time, it_time/60.)
-            print "Applying correction"
+            print("Applying correction")
         corr = np.zeros((num_n, npts), dtype=complex)
-        for p in xrange(num_n):
-            for q in xrange(num_n):
+        for p in range(num_n):
+            for q in range(num_n):
                 corr[p, :] -=      (inv_j[p * 2,     q * 2    ] * np.real(err_all[q]) +
                                     inv_j[p * 2,     q * 2 + 1] * np.imag(err_all[q]))
                 corr[p, :] -= 1j * (inv_j[p * 2 + 1, q * 2    ] * np.real(err_all[q]) +
@@ -183,15 +183,15 @@ def harmonic_balance(cct, resp, num_b=15, max_it=10, stop_rerror=0.001, vj_initi
 
     time = timer() - start_time
     if verbose:
-        print " - time: {0:.2f} s / {1:.2f} min.".format(time, time/60.)
+        print((" - time: {0:.2f} s / {1:.2f} min.".format(time, time/60.)))
         if iteration >= 1:
             tit = time / iteration  # time per iteration
             msg = " - {} iterations required"
-            print msg.format(iteration)
+            print((msg.format(iteration)))
             msg =  "\t- {:.2f} s / iteration"
-            print msg.format(tit)
+            print((msg.format(tit)))
             msg =  "\t- {:.2f} min / iteration"
-            print msg.format(tit/60.)
+            print((msg.format(tit/60.)))
 
     if mode == "o":  # return vj
         return vj_out
@@ -227,13 +227,13 @@ def check_hb_error(vj_check, cct, resp, num_b, stop_rerror=0.001):
 
     # Note: speed is not important here...
 
-    print "Double-checking harmonic balance error:"
+    print("Double-checking harmonic balance error:")
 
     # Tunnelling current for all tones/harmonics
     ij_all = qtcurrent_all_freq(vj_check, cct, resp, num_b)
 
-    for f in xrange(1, cct.num_f + 1):
-        for p in xrange(1, cct.num_p + 1):
+    for f in range(1, cct.num_f + 1):
+        for p in range(1, cct.num_p + 1):
             error_fp = cct.vt[f, p] - \
                 cct.zt[f, p] * ij_all[f, p, :] - \
                 vj_check[f, p, :]
@@ -245,9 +245,9 @@ def check_hb_error(vj_check, cct, resp, num_b, stop_rerror=0.001):
             else:
                 err_str = 'No'
             msg = "\tf:{0},\tp:{1},\tmax rel. error: {2:.2E},\tPass? {3}"
-            print msg.format(f, p, max_rel_error, err_str)
+            print((msg.format(f, p, max_rel_error, err_str)))
             assert good_error
-    print ""
+    print("")
 
 
 # Calculate Jacobian matrix and its inverse ----------------------------------
@@ -264,7 +264,7 @@ def _inv_jacobian(error_all, vj_2d, vt_2d, zt_2d, cct, resp, num_b, resp_matrix=
     npts = cct.vb_npts
 
     jacobian = np.zeros((num_n * 2, num_n * 2, npts), dtype=float)
-    for q in xrange(num_n):
+    for q in range(num_n):
 
         if verbose:
             progress_bar(q, num_n, prefix="Calculating Jacobian")
@@ -282,7 +282,7 @@ def _inv_jacobian(error_all, vj_2d, vt_2d, zt_2d, cct, resp, num_b, resp_matrix=
 
         # Calculate the 2x2 Jacobian block
         block = np.zeros((2, 2, npts), dtype=float)
-        for p in xrange(num_n):
+        for p in range(num_n):
             block[0, 0, :] = np.real((error_drev - error_all) / DV)[p]
             block[0, 1, :] = np.real((error_dimv - error_all) / DV)[p]
             block[1, 0, :] = np.imag((error_drev - error_all) / DV)[p]
@@ -294,7 +294,7 @@ def _inv_jacobian(error_all, vj_2d, vt_2d, zt_2d, cct, resp, num_b, resp_matrix=
 
     # Invert the Jacobian matrix
     inv_jacobian = np.zeros((num_n * 2, num_n * 2, npts), dtype=float)
-    for i in xrange(npts):
+    for i in range(npts):
         inv_jacobian[:, :, i] = np.linalg.inv(jacobian[:, :, i])
 
     return inv_jacobian
@@ -327,8 +327,8 @@ def _qt_current_for_hb(vj_2d, cct, resp, num_b, resp_matrix=None):
     vj[1:, 1:, :] = vj_2d.reshape((cct.num_f, cct.num_p, cct.vb_npts))
 
     vph_list = []
-    for ft in xrange(1, cct.num_f + 1):
-        for pt in xrange(1, cct.num_p + 1):
+    for ft in range(1, cct.num_f + 1):
+        for pt in range(1, cct.num_p + 1):
             vph_list.append(round(cct.vph[ft] * pt, ROUND_VPH))
 
     current_out = qmix.qtcurrent.qtcurrent(vj, cct, resp, vph_list, num_b, verbose=False, resp_matrix=resp_matrix)

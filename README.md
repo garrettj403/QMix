@@ -6,7 +6,7 @@ QMix is a software package that consists of modules and scripts to simulate SIS 
 
 **Author:** John Garrett (john.garrett@physics.ox.ac.uk)
 
-**Language:** Python 2.7
+**Language:** Python 3.7
 
 **Version:** 0.1
 

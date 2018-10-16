@@ -57,7 +57,7 @@ class EmbeddingCircuit(object):
 
     """
 
-    def __init__(self, num_f, num_p, vb_min=0, vb_max=2, vb_npts=201, fgap=None, vgap=None, rn=None, name=None):
+    def __init__(self, num_f=1, num_p=1, vb_min=0, vb_max=2, vb_npts=201, fgap=None, vgap=None, rn=None, name=None):
 
         self.name = name  # used to identify the circuit
 
@@ -227,7 +227,7 @@ class EmbeddingCircuit(object):
 
         """
 
-        print self
+        print(self)
 
         str1 = "   f={0}, p={1}\t\t\tvph = {2:.4f} x {1}\t\t{3}"
         str2 = "   f={0}, p={1}\t\t\t{2:.1f} GHz x {1}\t\t{3}"
@@ -238,17 +238,17 @@ class EmbeddingCircuit(object):
         str8 = "\t                \t{:.3f} dBm"
 
         if self.fgap is None or self.vgap is None or self.rn is None:
-            for f in xrange(1, self.num_f + 1):
-                for p in xrange(1, self.num_p + 1):
+            for f in range(1, self.num_f + 1):
+                for p in range(1, self.num_p + 1):
                     vph = self.vph[f]
                     vt = self.vt[f, p]
                     zt = self.zt[f, p]
                     cprint(str1.format(f, p, vph, self.comment[f][p]), 'GREEN')
-                    print str3.format(float(vt.real))
-                    print str4.format(zt)
+                    print(str3.format(float(vt.real)))
+                    print(str4.format(zt))
         else:
-            for f in xrange(1, self.num_f + 1):
-                for p in xrange(1, self.num_p + 1):
+            for f in range(1, self.num_f + 1):
+                for p in range(1, self.num_p + 1):
                     fq = self.vph[f] * self.fgap / 1e9
                     vt = self.vt[f, p]
                     zt = self.zt[f, p]
@@ -256,12 +256,12 @@ class EmbeddingCircuit(object):
                     with np.errstate(divide='ignore'):
                         power_dbm = 10 * np.log10(power * 1000)
                     cprint(str2.format(f, p, fq, self.comment[f][p]), 'GREEN')
-                    print str3.format(float(vt.real))
-                    print str6.format(float(vt.real / (self.vph[f] * p)))
-                    print str4.format(zt)
-                    print str7.format(power)
-                    print str8.format(power_dbm)
-        print ""
+                    print(str3.format(float(vt.real)))
+                    print(str6.format(float(vt.real / (self.vph[f] * p))))
+                    print(str4.format(zt))
+                    print(str7.format(power))
+                    print(str8.format(power_dbm))
+        print("")
 
     def save_info(self, filename):
         """Save information about the embedding circuit.
@@ -284,8 +284,8 @@ class EmbeddingCircuit(object):
         fout.write("\tf = {0}\n".format(self.num_f))
         fout.write("\tp = {0}\n".format(self.num_p))
         if self.fgap is None or self.vgap is None or self.rn is None:
-            for f in xrange(1, self.num_f + 1):
-                for p in xrange(1, self.num_p + 1):
+            for f in range(1, self.num_f + 1):
+                for p in range(1, self.num_p + 1):
                     vph = self.vph[f]
                     vt = self.vt[f, p]
                     zt = self.zt[f, p]
@@ -293,8 +293,8 @@ class EmbeddingCircuit(object):
                     fout.write(str3.format(float(vt.real)))
                     fout.write(str4.format(zt))
         else:
-            for f in xrange(1, self.num_f + 1):
-                for p in xrange(1, self.num_p + 1):
+            for f in range(1, self.num_f + 1):
+                for p in range(1, self.num_p + 1):
                     fq = self.vph[f] * self.fgap / 1e9
                     vt = self.vt[f, p]
                     zt = self.zt[f, p]

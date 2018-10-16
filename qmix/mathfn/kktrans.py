@@ -26,12 +26,14 @@ def kk_trans(v, i, n=50):
 
     """
 
+    npts = np.alen(v)
+
     # Ensure v has even spacing
     assert np.abs((v[1] - v[0]) - (v[1:] - v[:-1])).max() < 1e-5
 
     # Subtract v to make i-v curve defined at v=infinity
-    ikk = -np.imag(hilbert(i - v, N=np.alen(v) * n))
-    ikk = ikk[:np.alen(v)]
+    ikk = -np.imag(hilbert(i - v, N=npts * n))
+    ikk = ikk[:npts]
 
     return ikk
 
@@ -60,7 +62,7 @@ def kk_trans_trapz(v, i):
     assert ((v[1:] - v[:-1]) - (v[1] - v[0])).max() < 1e-5
 
     ikk = []
-    for a in xrange(np.alen(v)):
+    for a in range(np.alen(v)):
         v_prime, i_prime = np.delete(v, a), np.delete(i, a)
         ikk.append(np.trapz((i_prime - v_prime) / (v_prime - v[a]), x=v_prime))
     ikk = np.array(ikk) / np.pi
