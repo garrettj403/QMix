@@ -16,8 +16,6 @@ QMix is a software package that can be used to simulate SIS mixers. It uses mult
 
 **GitHub:** https://github.com/garrettj403/QMix/
 
-**Website:** https://garrettj403.github.io/QMix/
-
 Contents
 ========
 
