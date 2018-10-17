@@ -2,13 +2,11 @@
 
 *Quantum Mixing Software*
 
-QMix is a software package that can be used to simulate [SIS mixers](https://en.wikipedia.org/wiki/Superconducting_tunnel_junction#Radio_astronomy). It uses multi-tone spectral domain analysis, which makes QMix ideal for simulating higher-order harmonics, power saturation and wide IF bandwidth devices. QMix was developed by John Garrett at the University of Oxford ([thesis](https://ora.ox.ac.uk/objects/uuid:d47fbf3b-1cf3-4e58-be97-767b9893066e)) based on the work of Kittara, Withington and Yassin (see references below).
+QMix is a software package that can be used to simulate SIS mixers. It uses multi-tone spectral domain analysis, which makes QMix ideal for simulating higher-order harmonics, power saturation and wide IF bandwidth devices. 
 
 **Author:** John Garrett (john.garrett@physics.ox.ac.uk)
 
 **Language:** Python 3.7
-
-**GitHub:** https://github.com/garrettj403/QMix/
 
 **Website:** https://garrettj403.github.io/QMix/
 
