@@ -8,8 +8,6 @@ Welcome to QMix's Documentation
 
 QMix is a software package that can be used to simulate SIS mixers. It uses multi-tone spectral domain analysis, which makes QMix ideal for simulating higher-order harmonics, power saturation and wide IF bandwidth devices.
 
-.. _thesis: https://ora.ox.ac.uk/objects/uuid:d47fbf3b-1cf3-4e58-be97-767b9893066e
-
 **Author:** John Garrett (john.garrett@physics.ox.ac.uk)
 
 **Language:** Python 3.7
