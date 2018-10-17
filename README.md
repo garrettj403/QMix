@@ -1,20 +1,31 @@
 # QMix
 
-*Multi-Tone Spectral Domain Analysis of Quasiparticle Tunnelling in SIS Mixers*
+*Quantum Mixing Software*
 
-QMix is a software package that consists of modules and scripts to simulate SIS mixer operation. See the ``workflow-examples`` directory for examples on how to use this software or [John Garrett's thesis](https://ora.ox.ac.uk/objects/uuid:d47fbf3b-1cf3-4e58-be97-767b9893066e) for examples on how this software has been applied to analyze experimental data.
+QMix is a software package that can be used to simulate [SIS mixers](https://en.wikipedia.org/wiki/Superconducting_tunnel_junction#Radio_astronomy). It uses multi-tone spectral domain analysis, which makes QMix ideal for simulating higher-order harmonics, power saturation and wide IF bandwidth devices. QMix was developed by John Garrett at the University of Oxford ([thesis](https://ora.ox.ac.uk/objects/uuid:d47fbf3b-1cf3-4e58-be97-767b9893066e)) based on the work of Kittara, Withington and Yassin (see references below).
 
 **Author:** John Garrett (john.garrett@physics.ox.ac.uk)
 
 **Language:** Python 3.7
 
-**Version:** 0.1
+**GitHub:** https://github.com/garrettj403/QMix/
 
-**Release:** 0.1.dev
+**Website:** https://garrettj403.github.io/QMix/
 
-**Installation:** Clone the repo and then add QMix to your Python path environment variable. Note that it is only intended for macOS, but should work on other machines with minor tweaks.
+Installation
+------------
 
-**References:**
+Clone the repository and then add QMix to your Python path environment variable. See the [QMix website](https://garrettj403.github.io/QMix/setup.html) for more information.
+
+Examples
+--------
+
+Here is an example of a simple SIS mixer simulation. See ``workflow-examples/`` for more!
+
+![alt text](workflow-examples/multi-tone.png)
+
+References
+----------
 
 - J. Garrett, ["A 230 GHz Focal Plane Array Using a Wide IF Bandwidth SIS Receiver,"](https://ora.ox.ac.uk/objects/uuid:d47fbf3b-1cf3-4e58-be97-767b9893066e) DPhil thesis, University of Oxford, Oxford, UK, 2018.
 

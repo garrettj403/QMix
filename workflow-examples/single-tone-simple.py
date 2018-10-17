@@ -19,6 +19,7 @@ import qmix
 import numpy as np
 import matplotlib.pyplot as plt
 
+# see: https://github.com/garrettj403/SciencePlots/
 # plt.style.use(['science'])
 
 qmix.print_intro()
@@ -124,9 +125,10 @@ ax3.set(ylabel=admittance_label)
 ax3.legend(frameon=False)
 
 # plot ac power delivered to junction
-ax4.plot(cct.vb, 0.5 * np.real(vj[1, 1] * np.conj(current[1])))
+ax4.plot(cct.vb, 0.5 * np.real(vj[1,1] * np.conj(iac)))
 ax4.set(xlabel=voltage_label, xlim=[0,2])
 ax4.set(ylabel=power_label, ylim=[0,0.15])
 
 plt.tight_layout()
-fig.savefig('single-tone-simple.pdf')
+
+fig.savefig('single-tone-simple.png', dpi=500)

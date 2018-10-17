@@ -26,7 +26,8 @@ import qmix.misc.terminal
 from qmix.misc.terminal import cprint
 from qmix.mathfn.misc import slope
 
-# plt.style.use('thesis')
+# see: https://github.com/garrettj403/SciencePlots/
+# plt.style.use('science')
 
 qmix.print_intro()
 
@@ -91,16 +92,13 @@ idc, ilo, iif = qmix.qtcurrent.qtcurrent_std(vj, cct, resp, num_b=num_b)
 
 pusb = cct.available_power(2)
 
-zload = cct.zt[3,1]
-rdyn  = slope(idc, cct.vb)
-iload = iif * rdyn / (rdyn + zload)
-pload = 0.5 * np.abs(iload*igap) ** 2 * zload.real*rn
+pload = 0.5 * np.abs(iif*igap)**2 * cct.zt[3,1].real*rn
 
 gain = pload / pusb
 
 # Post-processing ------------------------------------------------------------
 
-fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(8, 3.5))
+fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, figsize=(8*0.8,7*0.8))
 plt.subplots_adjust(wspace = 0.4)
 
 vmv = vgap / sc.milli 
@@ -113,13 +111,28 @@ ax1.plot(resp.voltage*vmv, resp.current*iua, label='Unpumped')
 ax1.plot(cct.vb*vmv, idc*iua, 'r', label='Pumped')
 ax1.set(xlabel='Bias Voltage (mV)', xlim=(0,4))
 ax1.set(ylabel='DC Tunnelling Current (uA)', ylim=(0,270))
-ax1.legend()
+ax1.legend(frameon=False)
 
-# plot IF current
-ax2.plot(cct.vb*vmv, gain*100)
-ax2.set(xlabel='Bias Voltage (mV)', xlim=(0,4))
-ax2.set(ylabel=r'Gain (%)')
-ax2.set_ylim(bottom=0)
+# plot ac currents (lo frequency)
+ax2.plot(cct.vb*vmv, np.abs(ilo)*iua, 'k--', label=r'Absolute')
+ax2.plot(cct.vb*vmv, np.real(ilo)*iua, 'b', label=r"Real")
+ax2.plot(cct.vb*vmv, np.imag(ilo)*iua, 'r', label=r"Imaginary")
+ax2.set(xlabel='Bias Voltage (mV)', xlim=[0,4])
+ax2.set(ylabel='AC Tunnelling Current (uA)')
+ax2.legend(frameon=False)
+
+# plot lo power delivered to junction
+ax3.plot(cct.vb*vmv, 0.5*np.real(vj[1,1]*vgap*np.conj(ilo)*igap)/sc.nano)
+ax3.set(xlabel='Bias Voltage (mV)', xlim=[0,4])
+ax3.set(ylabel='LO Power Deliv. to Junc. (nW)')
+ax3.set_ylim(bottom=0)
+
+# plot gain
+ax4.plot(cct.vb*vmv, gain*100)
+ax4.set(xlabel='Bias Voltage (mV)', xlim=(0,4))
+ax4.set(ylabel=r'Gain (%)')
+ax4.set_ylim(bottom=0)
 
 plt.tight_layout()
-plt.savefig('multi-tone.pdf')
+
+fig.savefig('multi-tone.png', dpi=500)

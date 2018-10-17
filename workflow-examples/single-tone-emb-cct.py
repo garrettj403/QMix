@@ -20,6 +20,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import scipy.constants as sc
 
+# see: https://github.com/garrettj403/SciencePlots/
 # plt.style.use('science')
 
 qmix.print_intro()
@@ -110,8 +111,6 @@ ax4.set(xlabel=voltage_label, xlim=(0,5))
 ax4.set(ylabel='Power (uW)', ylim=(0,2))
 ax4.legend(frameon=False,loc=2)
 
-# plt.tight_layout()
-
 fig.suptitle(r'$\nu_\mathrm{{LO}}=230$~GHz, $V_\mathrm{{LO}}={:.1f}$ mV, $Z_\mathrm{{LO}}={:.1f} - j {:.1f}~\Omega$'.format(cct.vt[1,1].real*vgap*1e3, cct.zt[1,1].real*rn, -cct.zt[1,1].imag*rn))
 
-fig.savefig('single-tone-emb-cct.pdf')
+fig.savefig('single-tone-emb-cct.png', dpi=500)
