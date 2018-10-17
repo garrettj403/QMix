@@ -16,7 +16,7 @@ This will download QMix into a new directory called ``QMix/``. You then need to 
 
 .. code-block:: bash
 
-   . install.sh
+   source install.sh
 
 This will apppend the QMix directory to your ``.bash_profile``, which will then tell Python where to find QMix in the future.
 

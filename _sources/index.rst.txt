@@ -8,7 +8,7 @@ Welcome to QMix's Documentation
 
 *Multi-Tone Spectral Domain Analysis of Quasiparticle Tunnelling in SIS Mixers*
 
-QMix is a software package that consists of modules and scripts to simulate SIS mixer operation. Please take a look at John Garrett's `thesis`_ (Chapter 4) for examples on how this software has been applied to analyze experimental data.
+QMix is a software package that can be used to simulate SIS mixer operation. Please take a look at John Garrett's `thesis`_ (Chapter 4) for examples on how this software has been applied to analyze experimental data.
 
 .. _thesis: https://ora.ox.ac.uk/objects/uuid:d47fbf3b-1cf3-4e58-be97-767b9893066e
 
@@ -27,6 +27,8 @@ QMix is a software package that consists of modules and scripts to simulate SIS 
 - P. Kittara, "The Development of a 700 GHz SIS Mixer with Nb Finline Devices: Nonlinear Mixer Theory, Design Techniques and Experimental Investigation," DPhil thesis, University of Cambridge, Cambridge, UK, 2002.
 
 - P. Kittara, S. Withington, G. Yassin, "Theoretical and numerical analysis of very high harmonic superconducting tunnel junction mixers," *Journal of Applied Physics,* 101, 2, pp. 024508, Jan. 2007.
+
+**Contents:**
 
 .. toctree::
    :maxdepth: 2
