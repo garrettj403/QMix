@@ -6,21 +6,27 @@
 Welcome to QMix's Documentation
 ================================
 
-*Spectral Domain Analysis of Quasiparticle Tunneling in SIS Mixers*
+*Multi-Tone Spectral Domain Analysis of Quasiparticle Tunnelling in SIS Mixers*
 
-QMix is a software package that consists of modules and scripts to simulate SIS mixer operation. It is currently under development by John Garrett at the University of Oxford.
+QMix is a software package that consists of modules and scripts to simulate SIS mixer operation. Please take a look at John Garrett's `thesis`_ (Chapter 4) for examples on how this software has been applied to analyze experimental data.
 
-.. warning:: The QMix package is still under constant revision. The operation of the modules will likely change before any type of stable release.
+.. _thesis: https://ora.ox.ac.uk/objects/uuid:d47fbf3b-1cf3-4e58-be97-767b9893066e
 
 **Author:** John Garrett (john.garrett@physics.ox.ac.uk)
 
-**Licensing:** This package is only for private use at the moment. Please email me if you would like access.
-
-**Language:** Python 2.7
+**Language:** Python 3.7
 
 **Version:** 0.1
 
 **Release:** 0.1.dev
+
+**References:**
+
+- J. Garrett, "A 230 GHz Focal Plane Array Using a Wide IF Bandwidth SIS Receiver," DPhil thesis, University of Oxford, Oxford, UK, 2018.
+
+- P. Kittara, "The Development of a 700 GHz SIS Mixer with Nb Finline Devices: Nonlinear Mixer Theory, Design Techniques and Experimental Investigation," DPhil thesis, University of Cambridge, Cambridge, UK, 2002.
+
+- P. Kittara, S. Withington, G. Yassin, "Theoretical and numerical analysis of very high harmonic superconducting tunnel junction mixers," *Journal of Applied Physics,* 101, 2, pp. 024508, Jan. 2007.
 
 .. toctree::
    :maxdepth: 2
@@ -28,7 +34,8 @@ QMix is a software package that consists of modules and scripts to simulate SIS 
    
    project
    setup
-   important_modules
+   single-tone-simple
+   multi-tone
 
 Indices and tables
 ==================
@@ -36,17 +43,3 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
-
-
-
-
-
-
-
-
-
-
-
-
-
-

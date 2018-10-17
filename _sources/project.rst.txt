@@ -3,13 +3,13 @@ The QMix Package
 
 *What can you do with QMix?*
 
-The QMix package allows you to simulate the dc and ac quasiparticle tunnelling currents in an SIS junction.
+The QMix package allows you to simulate the quasiparticle tunnelling currents in an SIS junction.
 
 Unlike SuperMix:
 
    1. QMix can analyze higher-order harmonics
 
-      - QMix uses spectral domain analysis for all of the tones and harmonics. The junction's operation is never linearized, which allows higher-order harmonics to be simulated faithfully.
+      - QMix uses multi-tone spectral domain analysis (MTSDA) to calculate the tunnelling currents for each tone/harmonic. The junction's operation is never linearized, which allows higher-order harmonics to be simulated faithfully.
 
    2. QMix can handle multiple strong tones
 
@@ -29,7 +29,7 @@ Unlike SuperMix:
          - MatplotLib: extensive plotting tools.
          - Scikit-rf: microwave engineering tools including importing touchstone files, plotting Smith charts, and cascading S-matrices.
 
-   4. QMix is open-source (or will be soon)
+   4. QMix is open-source
 
       - QMix is hosted on GitHub. Having it open source will allow QMix to grow and develop new features as they are needed.
 

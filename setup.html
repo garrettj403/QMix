@@ -24,27 +24,19 @@
 
   
 
-  
-  
-    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  
-
-  
-
-  
-        <link rel="index" title="Index"
-              href="genindex.html"/>
-        <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="QMix 0.1.1 documentation" href="index.html"/>
-        <link rel="next" title="3. Key Modules" href="important_modules.html"/>
-        <link rel="prev" title="1. The QMix Package" href="project.html"/> 
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="3. A simple single tone simulation" href="single-tone-simple.html" />
+    <link rel="prev" title="1. The QMix Package" href="project.html" /> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
 
 </head>
 
-<body class="wy-body-for-nav" role="document">
+<body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
@@ -94,10 +86,11 @@
 <li class="toctree-l1"><a class="reference internal" href="project.html">1. The QMix Package</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">2. Getting Started</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#installing-qmix">2.1. Installing QMix</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#running-a-simulation">2.2. Running a simulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#configuring-python">2.2. Configuring Python</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="important_modules.html">3. Key Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="single-tone-simple.html">3. A simple single tone simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multi-tone.html">4. Simulating an SIS mixer</a></li>
 </ul>
 
             
@@ -109,7 +102,7 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
 
       
-      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+      <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="index.html">QMix</a>
@@ -117,9 +110,10 @@
       </nav>
 
 
-      
       <div class="wy-nav-content">
+        
         <div class="rst-content">
+        
           
 
 
@@ -161,63 +155,60 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="getting-started">
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast,
+.nboutput.nblast {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast + .nbinput {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+</style>
+<div class="section" id="getting-started">
 <h1>2. Getting Started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="installing-qmix">
 <h2>2.1. Installing QMix<a class="headerlink" href="#installing-qmix" title="Permalink to this headline">¶</a></h2>
 <p>You can either download or clone the QMix repository from <a class="reference external" href="https://github.com/garrettj403/QMix/">GitHub</a>. To clone the repository, use:</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>git clone https://github.com/garrettj403/QMix.git
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git clone https://github.com/garrettj403/QMix.git
 </pre></div>
 </div>
-<div class="admonition warning">
-<p class="first admonition-title">Warning</p>
-<p class="last">The QMix package is currently private. You can still get private access if you email me (<a class="reference external" href="mailto:john&#46;garrett&#37;&#52;&#48;astro&#46;ox&#46;ac&#46;uk">john<span>&#46;</span>garrett<span>&#64;</span>astro<span>&#46;</span>ox<span>&#46;</span>ac<span>&#46;</span>uk</a>), but access is currently limited to those in my research group.</p>
-</div>
-<p>You then need to add the QMix directory to your <code class="docutils literal"><span class="pre">PYTHONPATH</span></code> environment variable. On macOS, this is done by adding the following to your <code class="docutils literal"><span class="pre">.bash_profile</span></code>:</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">PYTHONPATH</span><span class="o">=</span>/path/to/qmix:<span class="nv">$PYTHONPATH</span>
+<p>You then need to add the QMix directory to your <code class="docutils literal notranslate"><span class="pre">PYTHONPATH</span></code> environment variable. On macOS, this is done by adding the following to your <code class="docutils literal notranslate"><span class="pre">.bash_profile</span></code>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">PYTHONPATH</span><span class="o">=</span>/path/to/qmix:<span class="nv">$PYTHONPATH</span>
 </pre></div>
 </div>
 </div>
-<div class="section" id="running-a-simulation">
-<h2>2.2. Running a simulation<a class="headerlink" href="#running-a-simulation" title="Permalink to this headline">¶</a></h2>
-<p>Each simulation consists of 5 basic steps:</p>
-<blockquote>
-<div><ol class="arabic simple">
-<li>Define the embedding circuit: list all frequencies/harmonics and their corresponding voltages and impedances<ul>
-<li>an instance of the <code class="docutils literal"><span class="pre">qmix.circuit.EmbeddingCircuit</span></code> class</li>
-</ul>
-</li>
-<li>Define the response function: provide or generate the dc I-V curve to characterize the junction<ul>
-<li>an instance of the <code class="docutils literal"><span class="pre">qmix.respfn.RespFn</span></code> class</li>
-</ul>
-</li>
-<li>Perform harmonic balance to solve for the junction voltage at each frequency/harmonic/bias voltage<ul>
-<li>using the <code class="docutils literal"><span class="pre">qmix.harmonic_balance.harmonic_balance</span></code> function</li>
-</ul>
-</li>
-<li>Calculate the tunnelling currents at whatever frequencies that you like<ul>
-<li>using the <code class="docutils literal"><span class="pre">qmix.qtcurrent.qtcurrent</span></code> function</li>
-</ul>
-</li>
-<li>Plot your results</li>
-</ol>
-</div></blockquote>
-<p>The easiest way to learn how to use these classes/functions is to take a look at the examples provided in <code class="docutils literal"><span class="pre">workflow-examples</span></code>. Simple 1 tone simulations are included in <code class="docutils literal"><span class="pre">workflow-examples/single-tone-simulations/</span></code> and more complex heterodyne mixing simulations are included in <code class="docutils literal"><span class="pre">workflow-examples/multi-tone-simulations/</span></code>.</p>
-<p>Remember that you can always use <code class="docutils literal"><span class="pre">pydoc</span></code> to figure out how to use these functions/classes as well. For example, if you don&#8217;t know what arguments <code class="docutils literal"><span class="pre">qtcurrent</span></code> takes, you can type <code class="docutils literal"><span class="pre">pydoc</span> <span class="pre">qmix.qtcurrent.qtcurrent</span></code> into the terminal to list the help page.</p>
+<div class="section" id="configuring-python">
+<h2>2.2. Configuring Python<a class="headerlink" href="#configuring-python" title="Permalink to this headline">¶</a></h2>
+<p>I have included a file in the root directory to setup a virtual environment. Assuming that you are using Anaconda, enter:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda env create -f environment.yml
+</pre></div>
+</div>
+<p>You can then activate the virtual environment using:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">source</span> activate qmix
+</pre></div>
+</div>
 </div>
 </div>
 
 
            </div>
-           <div class="articleComments">
-            
-           </div>
+           
           </div>
           <footer>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="important_modules.html" class="btn btn-neutral float-right" title="3. Key Modules" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="single-tone-simple.html" class="btn btn-neutral float-right" title="3. A simple single tone simulation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="project.html" class="btn btn-neutral" title="1. The QMix Package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
@@ -229,11 +220,11 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2017, John Garrett.
+        &copy; Copyright 2017, John Garrett
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -248,36 +239,24 @@
 
   
 
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'./',
-            VERSION:'0.1.1',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true,
-            SOURCELINK_SUFFIX: '.txt'
-        };
-    </script>
-      <script type="text/javascript" src="_static/jquery.js"></script>
-      <script type="text/javascript" src="_static/underscore.js"></script>
-      <script type="text/javascript" src="_static/doctools.js"></script>
-      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
 
   
 
-  
-  
-    <script type="text/javascript" src="_static/js/theme.js"></script>
-  
+  <script type="text/javascript" src="_static/js/theme.js"></script>
 
-  
-  
   <script type="text/javascript">
       jQuery(function () {
-          SphinxRtdTheme.StickyNav.enable();
+          SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-   
+  </script> 
 
 </body>
 </html>

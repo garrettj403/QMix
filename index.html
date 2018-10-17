@@ -24,26 +24,18 @@
 
   
 
-  
-  
-    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  
-
-  
-
-  
-        <link rel="index" title="Index"
-              href="genindex.html"/>
-        <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="QMix 0.1.1 documentation" href="#"/>
-        <link rel="next" title="1. The QMix Package" href="project.html"/> 
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="1. The QMix Package" href="project.html" /> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
 
 </head>
 
-<body class="wy-body-for-nav" role="document">
+<body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
@@ -92,7 +84,8 @@
               <ul>
 <li class="toctree-l1"><a class="reference internal" href="project.html">1. The QMix Package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="setup.html">2. Getting Started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="important_modules.html">3. Key Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="single-tone-simple.html">3. A simple single tone simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multi-tone.html">4. Simulating an SIS mixer</a></li>
 </ul>
 
             
@@ -104,7 +97,7 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
 
       
-      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+      <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="#">QMix</a>
@@ -112,9 +105,10 @@
       </nav>
 
 
-      
       <div class="wy-nav-content">
+        
         <div class="rst-content">
+        
           
 
 
@@ -137,7 +131,7 @@
     
       <li><a href="#">Docs</a> &raquo;</li>
         
-      <li>Welcome to QMix&#8217;s Documentation</li>
+      <li>Welcome to QMix’s Documentation</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -156,32 +150,75 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="welcome-to-qmix-s-documentation">
-<h1>Welcome to QMix&#8217;s Documentation<a class="headerlink" href="#welcome-to-qmix-s-documentation" title="Permalink to this headline">¶</a></h1>
-<p><em>Spectral Domain Analysis of Quasiparticle Tunneling in SIS Mixers</em></p>
-<p>QMix is a software package that consists of modules and scripts to simulate SIS mixer operation. It is currently under development by John Garrett at the University of Oxford.</p>
-<div class="admonition warning">
-<p class="first admonition-title">Warning</p>
-<p class="last">The QMix package is still under constant revision. The operation of the modules will likely change before any type of stable release.</p>
-</div>
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast,
+.nboutput.nblast {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast + .nbinput {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+</style>
+<div class="section" id="welcome-to-qmix-s-documentation">
+<h1>Welcome to QMix’s Documentation<a class="headerlink" href="#welcome-to-qmix-s-documentation" title="Permalink to this headline">¶</a></h1>
+<p><em>Multi-Tone Spectral Domain Analysis of Quasiparticle Tunnelling in SIS Mixers</em></p>
+<p>QMix is a software package that consists of modules and scripts to simulate SIS mixer operation. Please take a look at John Garrett’s <a class="reference external" href="https://ora.ox.ac.uk/objects/uuid:d47fbf3b-1cf3-4e58-be97-767b9893066e">thesis</a> (Chapter 4) for examples on how this software has been applied to analyze experimental data.</p>
 <p><strong>Author:</strong> John Garrett (<a class="reference external" href="mailto:john&#46;garrett&#37;&#52;&#48;physics&#46;ox&#46;ac&#46;uk">john<span>&#46;</span>garrett<span>&#64;</span>physics<span>&#46;</span>ox<span>&#46;</span>ac<span>&#46;</span>uk</a>)</p>
-<p><strong>Licensing:</strong> This package is only for private use at the moment. Please email me if you would like access.</p>
-<p><strong>Language:</strong> Python 2.7</p>
+<p><strong>Language:</strong> Python 3.7</p>
 <p><strong>Version:</strong> 0.1</p>
 <p><strong>Release:</strong> 0.1.dev</p>
+<p><strong>References:</strong></p>
+<ul class="simple">
+<li><ol class="first upperalpha" start="10">
+<li>Garrett, “A 230 GHz Focal Plane Array Using a Wide IF Bandwidth SIS Receiver,” DPhil thesis, University of Oxford, Oxford, UK, 2018.</li>
+</ol>
+</li>
+<li><ol class="first upperalpha" start="16">
+<li>Kittara, “The Development of a 700 GHz SIS Mixer with Nb Finline Devices: Nonlinear Mixer Theory, Design Techniques and Experimental Investigation,” DPhil thesis, University of Cambridge, Cambridge, UK, 2002.</li>
+</ol>
+</li>
+<li><ol class="first upperalpha" start="16">
+<li>Kittara, S. Withington, G. Yassin, “Theoretical and numerical analysis of very high harmonic superconducting tunnel junction mixers,” <em>Journal of Applied Physics,</em> 101, 2, pp. 024508, Jan. 2007.</li>
+</ol>
+</li>
+</ul>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="project.html">1. The QMix Package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="setup.html">2. Getting Started</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="setup.html#installing-qmix">2.1. Installing QMix</a></li>
-<li class="toctree-l2"><a class="reference internal" href="setup.html#running-a-simulation">2.2. Running a simulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="setup.html#configuring-python">2.2. Configuring Python</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="important_modules.html">3. Key Modules</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="important_modules.html#module-qmix.circuit">3.1. Embedding Circuit &#8211; <code class="docutils literal"><span class="pre">qmix.circuit</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="important_modules.html#module-qmix.respfn">3.2. Response Function &#8211; <code class="docutils literal"><span class="pre">qmix.respfn</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="important_modules.html#module-qmix.harmonic_balance">3.3. Harmonic Balance &#8211; <code class="docutils literal"><span class="pre">qmix.harmonic_balance</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="important_modules.html#module-qmix.qtcurrent">3.4. QP Tunnelling  Current &#8211; <code class="docutils literal"><span class="pre">qmix.qtcurrent</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="single-tone-simple.html">3. A simple single tone simulation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="single-tone-simple.html#Define-embedding-circuit">3.1. Define embedding circuit</a></li>
+<li class="toctree-l2"><a class="reference internal" href="single-tone-simple.html#Generate-response-function">3.2. Generate response function</a></li>
+<li class="toctree-l2"><a class="reference internal" href="single-tone-simple.html#Calculate-desired-tunnelling-currents">3.3. Calculate desired tunnelling currents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="single-tone-simple.html#Plot-the-pumped-I-V-curve">3.4. Plot the pumped I-V curve</a></li>
+<li class="toctree-l2"><a class="reference internal" href="single-tone-simple.html#Plot-AC-currents">3.5. Plot AC currents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="single-tone-simple.html#Plot-AC-admittance">3.6. Plot AC admittance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="single-tone-simple.html#Plot-AC-power-delivered-to-the-junction">3.7. Plot AC power delivered to the junction</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="multi-tone.html">4. Simulating an SIS mixer</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="multi-tone.html#Define-junction-properties">4.1. Define junction properties</a></li>
+<li class="toctree-l2"><a class="reference internal" href="multi-tone.html#Define-embedding-circuit">4.2. Define embedding circuit</a></li>
+<li class="toctree-l2"><a class="reference internal" href="multi-tone.html#Generate-response-function">4.3. Generate response function</a></li>
+<li class="toctree-l2"><a class="reference internal" href="multi-tone.html#Perform-harmonic-balance">4.4. Perform harmonic balance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="multi-tone.html#Calculate-desired-tunnelling-currents">4.5. Calculate desired tunnelling currents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="multi-tone.html#Calculate-the-mixer’s-gain">4.6. Calculate the mixer’s gain</a></li>
+<li class="toctree-l2"><a class="reference internal" href="multi-tone.html#Plot-the-pumped-I-V-curve">4.7. Plot the pumped I-V curve</a></li>
+<li class="toctree-l2"><a class="reference internal" href="multi-tone.html#Plot-gain">4.8. Plot gain</a></li>
 </ul>
 </li>
 </ul>
@@ -198,9 +235,7 @@
 
 
            </div>
-           <div class="articleComments">
-            
-           </div>
+           
           </div>
           <footer>
   
@@ -216,11 +251,11 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2017, John Garrett.
+        &copy; Copyright 2017, John Garrett
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -235,36 +270,24 @@
 
   
 
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'./',
-            VERSION:'0.1.1',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true,
-            SOURCELINK_SUFFIX: '.txt'
-        };
-    </script>
-      <script type="text/javascript" src="_static/jquery.js"></script>
-      <script type="text/javascript" src="_static/underscore.js"></script>
-      <script type="text/javascript" src="_static/doctools.js"></script>
-      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
 
   
 
-  
-  
-    <script type="text/javascript" src="_static/js/theme.js"></script>
-  
+  <script type="text/javascript" src="_static/js/theme.js"></script>
 
-  
-  
   <script type="text/javascript">
       jQuery(function () {
-          SphinxRtdTheme.StickyNav.enable();
+          SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-   
+  </script> 
 
 </body>
 </html>
