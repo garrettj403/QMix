@@ -6,9 +6,7 @@
 Welcome to QMix's Documentation
 ================================
 
-*Multi-Tone Spectral Domain Analysis of Quasiparticle Tunnelling in SIS Mixers*
-
-QMix is a software package that consists of modules and scripts to simulate SIS mixer operation. Please take a look at John Garrett's `thesis`_ (Chapter 4) for examples on how this software has been applied to analyze experimental data.
+QMix is a software package that can be used to simulate SIS mixers. It uses multi-tone spectral domain analysis, which makes QMix ideal for simulating higher-order harmonics, power saturation and wide IF bandwidth devices.
 
 .. _thesis: https://ora.ox.ac.uk/objects/uuid:d47fbf3b-1cf3-4e58-be97-767b9893066e
 
@@ -16,17 +14,12 @@ QMix is a software package that consists of modules and scripts to simulate SIS 
 
 **Language:** Python 3.7
 
-**Version:** 0.1
+**GitHub:** https://github.com/garrettj403/QMix/
 
-**Release:** 0.1.dev
+**Website:** https://garrettj403.github.io/QMix/
 
-**References:**
-
-- J. Garrett, "A 230 GHz Focal Plane Array Using a Wide IF Bandwidth SIS Receiver," DPhil thesis, University of Oxford, Oxford, UK, 2018.
-
-- P. Kittara, "The Development of a 700 GHz SIS Mixer with Nb Finline Devices: Nonlinear Mixer Theory, Design Techniques and Experimental Investigation," DPhil thesis, University of Cambridge, Cambridge, UK, 2002.
-
-- P. Kittara, S. Withington, G. Yassin, "Theoretical and numerical analysis of very high harmonic superconducting tunnel junction mixers," *Journal of Applied Physics,* 101, 2, pp. 024508, Jan. 2007.
+Contents
+========
 
 .. toctree::
    :maxdepth: 2
@@ -43,3 +36,12 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
+
+References
+==========
+
+- J. Garrett, ["A 230 GHz Focal Plane Array Using a Wide IF Bandwidth SIS Receiver,"](https://ora.ox.ac.uk/objects/uuid:d47fbf3b-1cf3-4e58-be97-767b9893066e) DPhil thesis, University of Oxford, Oxford, UK, 2018.
+
+- P. Kittara, "The Development of a 700 GHz SIS Mixer with Nb Finline Devices: Nonlinear Mixer Theory, Design Techniques and Experimental Investigation," DPhil thesis, University of Cambridge, Cambridge, UK, 2002.
+
+- P. Kittara, S. Withington, G. Yassin, "Theoretical and numerical analysis of very high harmonic superconducting tunnel junction mixers," *Journal of Applied Physics,* 101, 2, pp. 024508, Jan. 2007.

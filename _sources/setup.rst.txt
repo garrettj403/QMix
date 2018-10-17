@@ -4,31 +4,35 @@ Getting Started
 Installing QMix
 ---------------
 
-You can either download or clone the QMix repository from `GitHub`_. To clone the repository, use:
+QMix is hosted on `GitHub`_. To clone the repository, open a terminal window, navigate to the directory in which you would like to put QMix, and then run:
 
 .. _GitHub: https://github.com/garrettj403/QMix/
 
 .. code-block:: bash
    
-   git clone https://github.com/garrettj403/QMix.git
+   git clone https://github.com/garrettj403/QMix.git QMix
 
-You then need to add the QMix directory to your ``PYTHONPATH`` environment variable. On macOS, this is done by adding the following to your ``.bash_profile``:
+This will download QMix into a new directory called ``QMix/``. You then need to add the QMix directory to your ``PYTHONPATH`` environment variable. If you are on a macOS system, first navigate into ``QMix/`` directory and then run:
 
 .. code-block:: bash
 
-   export PYTHONPATH=/path/to/qmix:$PYTHONPATH
+   source install.sh
+
+This will apppend the QMix directory to your ``.bash_profile``, which will then tell Python where to find QMix in the future.
 
 Configuring Python
 ------------------
 
-I have included a file in the root directory to setup a virtual environment. Assuming that you are using Anaconda, enter:
+QMix is written in Python 3. If you don't want to change your Python installation or in case you are missing any packages, I have included a virtual environment with all the packages that are required to run QMix. Assuming that you are using the Anaconda package manager, enter:
 
 .. code-block:: bash
 
    conda env create -f environment.yml
 
-You can then activate the virtual environment using:
+This may take a few minutes. You can then activate the virtual environment using:
 
 .. code-block:: bash
 
    source activate qmix
+
+Once activated, you should be able to run all of the scripts contained in QMix.

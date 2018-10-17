@@ -1,19 +1,17 @@
 The QMix Package
 ================
 
-*What can you do with QMix?*
+QMix allows you to simulate quasiparticle tunnelling in SIS junctions.
 
-The QMix package allows you to simulate the quasiparticle tunnelling currents in an SIS junction.
-
-Unlike SuperMix:
+Unlike other software packages, like SuperMix:
 
    1. QMix can analyze higher-order harmonics
 
-      - QMix uses multi-tone spectral domain analysis (MTSDA) to calculate the tunnelling currents for each tone/harmonic. The junction's operation is never linearized, which allows higher-order harmonics to be simulated faithfully.
+      - QMix uses multi-tone spectral domain analysis (MTSDA) to calculate the tunnelling currents for each tone/harmonic. The junction's operation is never linearized, which allows higher-order harmonics to be simulated accurately.
 
    2. QMix can handle multiple strong tones
 
-      - QMix doesn't split the simulation into large-signal and small-signal analysis. Instead, all of the tones are treated in the same manner.
+      - QMix doesn't split the simulation into large-signal and small-signal analysis. Instead, all of the tones are treated in the same.
 
    3. QMix is written in Python
 
