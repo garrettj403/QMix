@@ -3,7 +3,7 @@ The QMix Package
 
 QMix allows you to simulate quasiparticle tunnelling in SIS junctions.
 
-Unlike other software packages, like SuperMix:
+Unlike other software packages:
 
    1. QMix can analyze higher-order harmonics
 

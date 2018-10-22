@@ -25,6 +25,7 @@ Contents
    setup
    single-tone-simple
    multi-tone
+   analyze-experimental-data
 
 Indices and tables
 ==================
