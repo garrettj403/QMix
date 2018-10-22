@@ -4,7 +4,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "# Creating a 1 tone simulation\n",
+    "# Creating a simple simulation\n",
     "\n",
     "- This simulation is very simple:\n",
     "   - The input consists of only one tone\n",

@@ -4,7 +4,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "# Analyzing Experimental Data with QMix\n",
+    "# Analyzing experimental data\n",
     "\n",
     "This notebook will show a brief example of how QMix can be used to analyze experimental data. Note that a wide range of parameters can be passed to these functions in order to import data that has been stored in different formats.\n",
     "\n",
