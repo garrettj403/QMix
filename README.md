@@ -20,7 +20,7 @@ Examples
 
 Here is an example of a simple SIS mixer simulation. See ``workflow-examples/`` for more!
 
-![alt text](workflow-examples/multi-tone.png)
+![](example.png)
 
 References
 ----------
