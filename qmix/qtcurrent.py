@@ -72,8 +72,11 @@ def qtcurrent(vj, cct, resp, vph_list, num_b=15, verbose=True, resp_matrix=None)
 
     try:
         vph_list = list(vph_list)
+        vph_is_list = True
     except TypeError:
-        vph_list = [vph_list]
+        vph_list = [float(vph_list)]
+        vph_is_list = False
+
     for i, vph_val in enumerate(vph_list):
         vph_list[i] = round(vph_list[i], ROUND_VPH)
     nvph = len(vph_list)
@@ -126,7 +129,13 @@ def qtcurrent(vj, cct, resp, vph_list, num_b=15, verbose=True, resp_matrix=None)
     cct.unlock()
     vj.flags.writeable = True
 
-    return current_out
+    if vph_is_list:
+        return current_out
+    else:
+        if vph_list[0] == 0.:
+            return current_out[0].real
+        else:
+            return current_out[0]
 
 
 # Other tunneling current functions ------------------------------------------
