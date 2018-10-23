@@ -37,7 +37,9 @@ Indices and tables
 References
 ==========
 
-- J. Garrett, ["A 230 GHz Focal Plane Array Using a Wide IF Bandwidth SIS Receiver,"](https://ora.ox.ac.uk/objects/uuid:d47fbf3b-1cf3-4e58-be97-767b9893066e) DPhil thesis, University of Oxford, Oxford, UK, 2018.
+- J. Garrett, "A 230 GHz Focal Plane Array Using a Wide IF Bandwidth SIS Receiver," DPhil thesis, University of Oxford, Oxford, UK, 2018.
+
+   - https://ora.ox.ac.uk/objects/uuid:d47fbf3b-1cf3-4e58-be97-767b9893066e
 
 - P. Kittara, "The Development of a 700 GHz SIS Mixer with Nb Finline Devices: Nonlinear Mixer Theory, Design Techniques and Experimental Investigation," DPhil thesis, University of Cambridge, Cambridge, UK, 2002.
 

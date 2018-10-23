@@ -365,146 +365,6 @@ directory called <code class="docutils literal notranslate"><span class="pre">eg
 <p>There are two main classes that can be used to analyze experimental
 data: - <code class="docutils literal notranslate"><span class="pre">qmix.exp.RawData0</span></code> which is used for DC data (no LO pumping),
 and - <code class="docutils literal notranslate"><span class="pre">qmix.exp.RawData</span></code> which is used to analyze pumped data.</p>
-<p>Remember that documentation on each of these classes can be found with
-the <code class="docutils literal notranslate"><span class="pre">help</span></code> function. For example:</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
-<span></span>In [2]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">help</span><span class="p">(</span><span class="n">qmix</span><span class="o">.</span><span class="n">exp</span><span class="o">.</span><span class="n">RawData</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-Help on class RawData in module qmix.exp.exp_data:
-
-class RawData(builtins.object)
- |  Class for experimental pumped I-V data.
- |
- |  Args:
- |      iv_file: file path to pumped I-V data
- |      dciv: DC I-V data class (i.e., result of RawData_dc)
- |      if_hot_file: file path to hot IF data
- |      if_cold_file: file path to cold IF data
- |
- |  Methods defined here:
- |
- |  __init__(self, iv_file, dciv, if_hot_file=None, if_cold_file=None, **kwargs)
- |      Initialize self.  See help(type(self)) for accurate signature.
- |
- |  plot_error_surface(self, fig_name=None)
- |      Plot error surface (impedance recovery).
- |
- |      Args:
- |          fig_name: figure filename
- |          vmax_plot: max voltage to include in plot (in mV)
- |
- |  plot_gain(self, fig_name=None, vmax_plot=4.0)
- |      Plot gain.
- |
- |      Args:
- |          fig_name: figure filename
- |          vmax_plot: max voltage to include in plot (in mV)
- |
- |  plot_gain_noise_temp(self, fig_name=None, vmax_plot=4.0)
- |      Plot gain and noise temperature.
- |
- |      Args:
- |          fig_name: figure filename
- |          vmax_plot: max voltage to include in plot (in mV)
- |
- |  plot_if(self, fig_name=None, vmax_plot=4.0)
- |      Plot IF data.
- |
- |      Args:
- |          fig_name: figure filename
- |          vmax_plot: max voltage to include in plot (in mV)
- |
- |  plot_if_noise(self, fig_name=None)
- |      Plot IF noise.
- |
- |      Args:
- |          fig_name: figure filename
- |
- |  plot_iv(self, fig_name=None, vmax_plot=4.0)
- |      Plot pumped I-V curve.
- |
- |      Args:
- |          fig_name: figure filename
- |          vmax_plot: max voltage to include in plot (in mV)
- |
- |  plot_ivif(self, fig_name=None, vmax_plot=4.0)
- |      Plot IV and IF data on same plot.
- |
- |      Args:
- |          fig_name: figure filename
- |          vmax_plot: max voltage to include in plot (in mV)
- |
- |  plot_noise_temp(self, fig_name=None, vmax_plot=4.0)
- |      Plot noise temperature.
- |
- |      Args:
- |          fig_name: figure filename
- |          vmax_plot: max voltage to include in plot (in mV)
- |
- |  plot_rdyn(self, fig_name=None, vmax_plot=4.0)
- |      Plot dynamic resistance.
- |
- |      Args:
- |          fig_name: figure filename
- |          vmax_plot: max voltage to include in plot (in mV)
- |
- |  plot_shapiro(self, fig_name=None)
- |      Plot shapiro steps.
- |
- |      Args:
- |          fig_name: figure filename
- |          vmax_plot: max voltage to include in plot (in mV)
- |
- |  plot_simulated(self, fig_name=None, vmax_plot=4.0)
- |      Plot simulated I-V curve (based on impedance recovery).
- |
- |      Args:
- |          fig_name: figure filename
- |          vmax_plot: max voltage to include in plot (in mV)
- |
- |  plot_yfac_noise_temp(self, fig_name=None, vmax_plot=4.0)
- |      Plot Y-factor and noise temperature.
- |
- |      Args:
- |          fig_name: figure filename
- |          vmax_plot: max voltage to include in plot (in mV)
- |
- |  recover_zemb(self, **kwargs)
- |      Recover the embedded impedance (a.k.a., the Thevenin impedance).
- |
- |      Note that all currents and voltages are normalized to the gap voltage and
- |      to the normal resistance. The technique used here is RF voltage match
- |      method described by Skalare (1989) and Withington et al. (1995).
- |
- |      Args:
- |          pump: pumped I-V data (instance of RawData class)
- |          dciv: dc I-V curve (instance of RawData0 class)
- |
- |      Returns: thevenin impedance, voltage, and fit (boolean)
- |
- |  ----------------------------------------------------------------------
- |  Data descriptors defined here:
- |
- |  __dict__
- |      dictionary for instance variables (if defined)
- |
- |  __weakref__
- |      list of weak references to the object (if defined)
-
-</pre></div></div>
-</div>
 <div class="section" id="Import-DC-I-V-data">
 <h2>5.1. Import DC I-V data<a class="headerlink" href="#Import-DC-I-V-data" title="Permalink to this headline">¶</a></h2>
 <p>This class will automatically load, filter, and analyze the DC I-V data.
@@ -563,7 +423,7 @@ DC I-V data:</span>
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="_images/analyze-experimental-data_6_0.png" src="_images/analyze-experimental-data_6_0.png" />
+<img alt="_images/analyze-experimental-data_5_0.png" src="_images/analyze-experimental-data_5_0.png" />
 </div>
 </div>
 <div class="nbinput docutils container">
@@ -580,7 +440,7 @@ DC I-V data:</span>
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="_images/analyze-experimental-data_7_0.png" src="_images/analyze-experimental-data_7_0.png" />
+<img alt="_images/analyze-experimental-data_6_0.png" src="_images/analyze-experimental-data_6_0.png" />
 </div>
 </div>
 <p>This plot shows the DC tunnelling current at the origin. This plot can
@@ -600,7 +460,7 @@ corrected properly.</p>
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="_images/analyze-experimental-data_9_0.png" src="_images/analyze-experimental-data_9_0.png" />
+<img alt="_images/analyze-experimental-data_8_0.png" src="_images/analyze-experimental-data_8_0.png" />
 </div>
 </div>
 </div>
@@ -666,7 +526,7 @@ embedding circuit.</p>
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="_images/analyze-experimental-data_12_0.png" src="_images/analyze-experimental-data_12_0.png" />
+<img alt="_images/analyze-experimental-data_11_0.png" src="_images/analyze-experimental-data_11_0.png" />
 </div>
 </div>
 <div class="nbinput docutils container">
@@ -683,7 +543,7 @@ embedding circuit.</p>
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="_images/analyze-experimental-data_13_0.png" src="_images/analyze-experimental-data_13_0.png" />
+<img alt="_images/analyze-experimental-data_12_0.png" src="_images/analyze-experimental-data_12_0.png" />
 </div>
 </div>
 <div class="section" id="Plot-embedding-impedance">
@@ -702,7 +562,7 @@ embedding circuit.</p>
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="_images/analyze-experimental-data_15_0.png" src="_images/analyze-experimental-data_15_0.png" />
+<img alt="_images/analyze-experimental-data_14_0.png" src="_images/analyze-experimental-data_14_0.png" />
 </div>
 </div>
 <div class="nbinput docutils container">
@@ -719,7 +579,7 @@ embedding circuit.</p>
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="_images/analyze-experimental-data_16_0.png" src="_images/analyze-experimental-data_16_0.png" />
+<img alt="_images/analyze-experimental-data_15_0.png" src="_images/analyze-experimental-data_15_0.png" />
 </div>
 </div>
 </div>
