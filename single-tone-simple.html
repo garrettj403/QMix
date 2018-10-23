@@ -90,9 +90,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#Generate-response-function">3.2. Generate response function</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#Calculate-desired-tunnelling-currents">3.3. Calculate desired tunnelling currents</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#Plot-the-pumped-I-V-curve">3.4. Plot the pumped I-V curve</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#Plot-AC-currents">3.5. Plot AC currents</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#Plot-AC-admittance">3.6. Plot AC admittance</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#Plot-AC-power-delivered-to-the-junction">3.7. Plot AC power delivered to the junction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Plot-AC-tunneling-currents">3.5. Plot AC tunneling currents</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="multi-tone.html">4. Simulating an SIS mixer</a></li>
@@ -484,8 +482,8 @@ by adding <code class="docutils literal notranslate"><span class="pre">[0]</span
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">idc</span> <span class="o">=</span> <span class="n">qmix</span><span class="o">.</span><span class="n">qtcurrent</span><span class="o">.</span><span class="n">qtcurrent</span><span class="p">(</span><span class="n">vj</span><span class="p">,</span> <span class="n">cct</span><span class="p">,</span> <span class="n">resp</span><span class="p">,</span> <span class="mi">0</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">real</span>
-<span class="n">iac</span> <span class="o">=</span> <span class="n">qmix</span><span class="o">.</span><span class="n">qtcurrent</span><span class="o">.</span><span class="n">qtcurrent</span><span class="p">(</span><span class="n">vj</span><span class="p">,</span> <span class="n">cct</span><span class="p">,</span> <span class="n">resp</span><span class="p">,</span> <span class="n">cct</span><span class="o">.</span><span class="n">vph</span><span class="p">[</span><span class="mi">1</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+<span></span><span class="n">idc</span> <span class="o">=</span> <span class="n">qmix</span><span class="o">.</span><span class="n">qtcurrent</span><span class="o">.</span><span class="n">qtcurrent</span><span class="p">(</span><span class="n">vj</span><span class="p">,</span> <span class="n">cct</span><span class="p">,</span> <span class="n">resp</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="n">iac</span> <span class="o">=</span> <span class="n">qmix</span><span class="o">.</span><span class="n">qtcurrent</span><span class="o">.</span><span class="n">qtcurrent</span><span class="p">(</span><span class="n">vj</span><span class="p">,</span> <span class="n">cct</span><span class="p">,</span> <span class="n">resp</span><span class="p">,</span> <span class="n">cct</span><span class="o">.</span><span class="n">vph</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
@@ -498,7 +496,7 @@ Calculating tunneling current...
  - 1 tone(s)
  - 1 harmonic(s)
 Done.
-Time: 0.0046 s
+Time: 0.0252 s
 
 Calculating tunneling current...
  - 1 tone(s)
@@ -554,8 +552,8 @@ Time: 0.0037 s
 </div>
 </div>
 </div>
-<div class="section" id="Plot-AC-currents">
-<h2>3.5. Plot AC currents<a class="headerlink" href="#Plot-AC-currents" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="Plot-AC-tunneling-currents">
+<h2>3.5. Plot AC tunneling currents<a class="headerlink" href="#Plot-AC-tunneling-currents" title="Permalink to this headline">¶</a></h2>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre>
 <span></span>In [6]:
@@ -578,58 +576,6 @@ Time: 0.0037 s
 </div>
 <div class="output_area docutils container">
 <img alt="_images/single-tone-simple_11_0.png" src="_images/single-tone-simple_11_0.png" />
-</div>
-</div>
-</div>
-<div class="section" id="Plot-AC-admittance">
-<h2>3.6. Plot AC admittance<a class="headerlink" href="#Plot-AC-admittance" title="Permalink to this headline">¶</a></h2>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
-<span></span>In [7]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
-
-<span class="n">y</span> <span class="o">=</span> <span class="n">iac</span> <span class="o">/</span> <span class="n">vj</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">cct</span><span class="o">.</span><span class="n">vb</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">y</span><span class="p">),</span> <span class="s1">&#39;k--&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;Absolute&#39;</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">cct</span><span class="o">.</span><span class="n">vb</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">real</span><span class="p">(</span><span class="n">y</span><span class="p">),</span> <span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;Real&#39;</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">cct</span><span class="o">.</span><span class="n">vb</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">imag</span><span class="p">(</span><span class="n">y</span><span class="p">),</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;Imaginary&#39;</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">xlabel</span><span class="o">=</span><span class="s1">&#39;Bias voltage / Vgap&#39;</span><span class="p">,</span> <span class="n">xlim</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">])</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">ylabel</span><span class="o">=</span><span class="s1">&#39;AC admittance&#39;</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">frameon</span><span class="o">=</span><span class="bp">False</span><span class="p">);</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="_images/single-tone-simple_13_0.png" src="_images/single-tone-simple_13_0.png" />
-</div>
-</div>
-</div>
-<div class="section" id="Plot-AC-power-delivered-to-the-junction">
-<h2>3.7. Plot AC power delivered to the junction<a class="headerlink" href="#Plot-AC-power-delivered-to-the-junction" title="Permalink to this headline">¶</a></h2>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
-<span></span>In [8]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
-
-<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">cct</span><span class="o">.</span><span class="n">vb</span><span class="p">,</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">real</span><span class="p">(</span><span class="n">vj</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">conj</span><span class="p">(</span><span class="n">iac</span><span class="p">)))</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">xlabel</span><span class="o">=</span><span class="s1">&#39;Bias voltage / Vgap&#39;</span><span class="p">,</span> <span class="n">xlim</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">])</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">ylabel</span><span class="o">=</span><span class="s1">&#39;AC Power / Pgap&#39;</span><span class="p">,</span> <span class="n">ylim</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mf">0.15</span><span class="p">]);</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="_images/single-tone-simple_15_0.png" src="_images/single-tone-simple_15_0.png" />
 </div>
 </div>
 </div>
