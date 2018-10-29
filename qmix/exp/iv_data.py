@@ -144,14 +144,20 @@ def iv_curve(filename, dc, **kwargs):
     vmax = kwargs.get('vmax', 6e-3)
     npts = kwargs.get('npts', 6001)
     iv_multiplier = kwargs.get('iv_multiplier', 1.)
+    voffset = kwargs.get('voffset', None)
+    ioffset = kwargs.get('ioffset', None)
 
     # Import and do some basic cleaning
     volt_v, curr_a = _load_iv(filename, **kwargs)
     curr_a *= iv_multiplier
 
     # Correct offset
-    volt_v -= dc.offset[0]
-    curr_a -= dc.offset[1]
+    if voffset is not None and ioffset is not None:
+        volt_v -= voffset 
+        curr_a -= ioffset
+    else:
+        volt_v -= dc.offset[0]
+        curr_a -= dc.offset[1]
 
     # Filter
     volt_v, curr_a = _filter_iv_data(volt_v, curr_a, **kwargs)
@@ -343,7 +349,10 @@ def _correct_offset(volt_v, curr_a, voffset=None, ioffset=None,
     if voffset is None:  # Find voffset and ioffset
 
         # Search over a limited voltage range
-        mask = (-voffset_range < volt_v) & (volt_v < voffset_range)
+        if isinstance(voffset_range, tuple):
+            mask = (voffset_range[0] < volt_v) & (volt_v < voffset_range[1])
+        else:  # if int or float
+            mask = (-voffset_range < volt_v) & (volt_v < voffset_range)
         v = volt_v[mask]
         i = curr_a[mask]
 
@@ -356,7 +365,9 @@ def _correct_offset(volt_v, curr_a, voffset=None, ioffset=None,
         # Offset is at max derivative
         idx = der_smooth.argmax()
         voffset = v[idx]
-        ioffset = np.interp(voffset, v, i)
+        # ioffset = np.interp(voffset, v, i)
+        ioffset = (np.interp(voffset - 0.1e-3, v, i) + 
+                   np.interp(voffset + 0.1e-3, v, i)) / 2
 
     if ioffset is None:  # Find ioffset
 
