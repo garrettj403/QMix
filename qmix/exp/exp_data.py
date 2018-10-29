@@ -240,6 +240,7 @@ class RawData0(object):
             plt.show()
         else:
             fig.savefig(fig_name, **_plot_params)
+            plt.close(fig)
 
     def plot_offset(self, fig_name=None):
         """Plot offset in DC I-V data.
@@ -268,6 +269,7 @@ class RawData0(object):
             plt.show()
         else:
             fig.savefig(fig_name, **_plot_params)
+            plt.close(fig)
 
     def plot_rdyn(self, fig_name=None, vmax_plot=4.):
         """Plot dynamic resistance of DC I-V data.
@@ -293,6 +295,7 @@ class RawData0(object):
             plt.show()
         else:
             fig.savefig(fig_name, **_plot_params)
+            plt.close(fig)
 
     def plot_rstat(self, fig_name=None, vmax_plot=4.):
         """Plot static resistance of DC I-V data.
@@ -320,6 +323,7 @@ class RawData0(object):
             plt.show()
         else:
             fig.savefig(fig_name, **_plot_params)
+            plt.close(fig)
 
     def plot_if_noise(self, fig_name=None, vmax_plot=4.):
         """Plot IF noise.
@@ -378,20 +382,20 @@ class RawData0(object):
         else:
             fig1.savefig(fig_name, **_plot_params)
 
-    # def plot_all(self, fig_folder):
-    #     """Plot all DC data.
+    def plot_all(self, fig_folder):
+        """Plot all DC data.
 
-    #     This function will save the data in the standard format.
+        This function will save the data in the standard format.
 
-    #     Args:
-    #         fig_folder: directory where the figures go
+        Args:
+            fig_folder: directory where the figures go
 
-    #     """
+        """
 
-    #     self.print_info()
-    #     self.plot_dciv()
-    #     self.plot_offset()
-    #     self.plot_if_noise()
+        self.plot_dciv(fig_folder     + '01_dciv/dciv.png')
+        self.plot_offset(fig_folder   + '01_dciv/dciv-offset.png')
+        self.plot_rdyn(fig_folder     + '01_dciv/dciv-rdyn.png')
+        self.plot_if_noise(fig_folder + '01_dciv/dcif-shot-noise.png')
 
 class RawData(object):
     """Class for experimental pumped I-V data.
@@ -549,11 +553,11 @@ class RawData(object):
         idx_middle = np.abs(exp_voltage - (1 - vph / 2.)).argmin()
 
         # Calculate alpha for every bias voltage
-        alpha = _find_alpha(self.dciv, exp_voltage, exp_current, vph)
+        alpha = _find_alpha(self.dciv, exp_voltage, exp_current, vph, **kwargs)
         ac_voltage = alpha * vph
 
         # Calculate AC junction impedance
-        ac_current = _find_ac_current(resp, exp_voltage, vph, alpha)
+        ac_current = _find_ac_current(resp, exp_voltage, vph, alpha, **kwargs)
         ac_impedance = ac_voltage / ac_current
         zw = ac_impedance[idx_middle]
 
@@ -627,6 +631,7 @@ class RawData(object):
             plt.show()
         else:
             fig.savefig(fig_name, **_plot_params)
+            plt.close(fig)
 
     def plot_if(self, fig_name=None, vmax_plot=4.):
         """Plot IF data.
@@ -656,6 +661,7 @@ class RawData(object):
             plt.show()
         else:
             fig.savefig(fig_name, **_plot_params)
+            plt.close(fig)
 
     def plot_ivif(self, fig_name=None, vmax_plot=4.):
         """Plot IV and IF data on same plot.
@@ -700,6 +706,7 @@ class RawData(object):
             plt.show()
         else:
             fig.savefig(fig_name, **_plot_params)
+            plt.close(fig)
 
     def plot_shapiro(self, fig_name=None):
         """Plot shapiro steps.
@@ -729,6 +736,7 @@ class RawData(object):
             plt.show()
         else:
             fig.savefig(fig_name, **_plot_params)
+            plt.close(fig)
 
     def plot_if_noise(self, fig_name=None):
         """Plot IF noise.
@@ -821,6 +829,7 @@ class RawData(object):
             plt.show()
         else:
             fig.savefig(fig_name, **_plot_params)
+            plt.close(fig)
 
     def plot_yfac_noise_temp(self, fig_name=None, vmax_plot=4.):
         """Plot Y-factor and noise temperature.
@@ -869,6 +878,7 @@ class RawData(object):
             plt.show()
         else:
             fig.savefig(fig_name, **_plot_params)
+            plt.close(fig)
 
     def plot_gain_noise_temp(self, fig_name=None, vmax_plot=4.):
         """Plot gain and noise temperature.
@@ -926,6 +936,7 @@ class RawData(object):
             plt.show()
         else:
             fig.savefig(fig_name, **_plot_params)
+            plt.close(fig)
 
     def plot_rdyn(self, fig_name=None, vmax_plot=4.):
         """Plot dynamic resistance.
@@ -976,6 +987,7 @@ class RawData(object):
             plt.show()
         else:
             fig.savefig(fig_name, **_plot_params)
+            plt.close(fig)
 
     def plot_gain(self, fig_name=None, vmax_plot=4.):
         """Plot gain.
@@ -1000,6 +1012,7 @@ class RawData(object):
             plt.show()
         else:
             fig.savefig(fig_name, **_plot_params)
+            plt.close(fig)
 
     def plot_error_surface(self, fig_name=None):
         """Plot error surface (impedance recovery).
@@ -1010,35 +1023,67 @@ class RawData(object):
 
         """
 
+
         remb_range = self.kwargs.get('remb_range', (0, 1))
         xemb_range = self.kwargs.get('xemb_range', (-1, 1))
         
-        zt_real = np.linspace(remb_range[0], remb_range[1], 101)
-        zt_imag = np.linspace(xemb_range[0], xemb_range[1], 201)
+        zt_real = np.linspace(remb_range[0], remb_range[1], 101) * self.rn
+        zt_imag = np.linspace(xemb_range[0], xemb_range[1], 201) * self.rn
+        zt_real_range = zt_real[-1] - zt_real[0]
+        zt_imag_range = zt_imag[-1] - zt_imag[0]
         
-        zt_best = self.zt
+        zt_best = self.zt * self.rn
         zt_re_best, zt_im_best = zt_best.real, zt_best.imag
 
-        fig = plt.figure()
         xx, yy = np.meshgrid(zt_real, zt_imag)
         zz = np.log10(self.err_surf)
-        plt.pcolor(xx, yy, zz.T, cmap='viridis')
-        err_str = 'Minimum Error at\n' + r'$Z_\mathrm{{T}}$={0:.2f}'.format(zt_best)
-        plt.annotate(err_str, xy=(zt_re_best, zt_im_best),
-                     xytext=(zt_re_best + 0.1, zt_im_best + 0.4),
-                     bbox=dict(boxstyle="round", fc="w", alpha=0.5),
-                     va="bottom", ha="center",
-                     fontsize=8,
-                     arrowprops=dict(color='black', arrowstyle="->", lw=2))
-        plt.xlabel(r'Real $Z_\mathrm{{T}}$ / $R_\mathrm{{n}}$')
-        plt.ylabel(r'Imaginary $Z_\mathrm{{T}}$ / $R_\mathrm{{n}}$')
-        cbar = plt.colorbar()
-        cbar.ax.set_ylabel(r'$\log_{{10}}(\varepsilon)$', rotation=90, fontsize=12)
+
+        fig, ax = plt.subplots()
+        pc = ax.pcolor(xx, yy, zz.T, cmap='viridis')
+        # Add color bar
+        cbar = plt.colorbar(pc, ax=ax)
+        cbar.ax.set_ylabel(r'$\log_{10}(\varepsilon)$', rotation=90)
+        # Left or right half of plot?
+        zt_re_mid = (zt_real[0] + zt_real[-1]) / 2.
+        if zt_re_best > zt_re_mid:
+            text_posx = zt_re_best - zt_real_range / 10.
+            text_ha = "right"
+        else:
+            text_posx = zt_re_best + zt_real_range / 10.
+            text_ha = "left"
+        # Top or bottom half of plot?
+        zt_im_mid = (zt_imag[0] + zt_imag[-1]) / 2.
+        if zt_im_best > zt_im_mid:
+            text_posy = zt_im_best - zt_imag_range / 10.
+            text_va = "top"
+        else:
+            text_posy = zt_im_best + zt_imag_range / 10.
+            text_va = "bottom"
+        # Annotate best value
+        err_str1 = 'Minimum Error at\n'
+        err_str2 = r'$Z_\mathrm{{T}}$={0:.2f} $\Omega$'.format(zt_best)    
+        err_str = err_str1 + err_str2
+        text_pos = text_posx, text_posy
+        bbox_props = dict(boxstyle="round", fc="w", alpha=0.5)
+        ax.annotate(err_str, xy=(zt_re_best, zt_im_best),
+                    xytext=text_pos, bbox=bbox_props,
+                    va=text_va, ha=text_ha,
+                    fontsize=8,
+                    arrowprops=dict(color='black', arrowstyle="->", lw=2))
+        plt.xlabel(r'$R_\mathrm{{T}}$ ($\Omega$)')
+        plt.ylabel(r'$X_\mathrm{{T}}$ ($\Omega$)')
+        # Add text box
+        textstr1 = 'Embedding impedance:\n'
+        textstr2 = r'$Z_\mathrm{{T}}=R_\mathrm{{T}}+j\,X_\mathrm{{T}}$'
+        textstr = textstr1 + textstr2
+        ax.text(0.05, 0.95, textstr, transform=ax.transAxes, fontsize=7,
+                verticalalignment='top', bbox=bbox_props)
 
         if fig_name is None:
             plt.show()
         else:
             fig.savefig(fig_name, **_plot_params)
+            plt.close(fig)
 
     def plot_simulated(self, fig_name=None, vmax_plot=4.):
         """Plot simulated I-V curve (based on impedance recovery).
@@ -1064,9 +1109,9 @@ class RawData(object):
         cct.zt[1, 1] = self.zt
         cct.vt[1, 1] = self.vt
 
-        vj = harmonic_balance(cct, resp, num_b=20, verbose=False)
+        vj = harmonic_balance(cct, resp, num_b=30, verbose=False)
         vph_list = [0, cct.vph[1]]
-        current = qtcurrent(vj, cct, resp, vph_list, num_b=20, verbose=False)
+        current = qtcurrent(vj, cct, resp, vph_list, num_b=30, verbose=False)
 
         fig = plt.figure()
         plt.plot(self.dciv.voltage * self.vgap * 1e3, 
@@ -1087,32 +1132,34 @@ class RawData(object):
         plt.ylim([0, np.interp(vmax_plot, 
                                self.dciv.voltage * self.vgap * 1e3, 
                                self.dciv.current * self.igap * 1e6)])
-        plt.xlabel(r'Bias Voltage / $V_\mathrm{{gap}}$')
-        plt.ylabel(r'DC Current / $I_\mathrm{{gap}}$')
-        msg = 'LO: {0:.1f} GHz\n$V_T^{{LO}}$ = {1:.2f}\n$Z_T^{{LO}}$ = {2:.2f}'
-        msg = msg.format(self.freq, self.vt, self.zt)
-        plt.legend(title=msg)
+        plt.xlabel(r'Bias Voltage (mV)')
+        plt.ylabel(r'DC Current (uA)')
+        msg = 'LO: {0:.1f} GHz\n$V_T^{{LO}}$ = {1:.2f} mV\n$Z_T^{{LO}}$ = {2:.2f} $\Omega$'
+        msg = msg.format(self.freq, self.vt*self.vgap*1e3, self.zt*self.rn)
+        plt.legend(title=msg, frameon=False)
 
         if fig_name is None:
             plt.show()
         else:
             fig.savefig(fig_name, **_plot_params)
+            plt.close(fig)
 
-    # def plot_all(self, fig_folder):
-    #     """Plot everything using the standard file hierarchy.
+    def plot_all(self, fig_folder):
+        """Plot everything using the standard file hierarchy.
 
-    #     Args:
-    #         fig_folder: figure destination
+        Args:
+            fig_folder: figure destination
 
-    #     """
+        """
 
-    #     self.plot_iv(fig_folder + file_structure['Pumped IV data'])
-    #     # self.plot_dynamic_resistance(fig_folder + file_structure['Pumped IV data'])
-    #     self.plot_if(fig_folder + file_structure['IF data'])
-    #     self.plot_zemb_recovery(self.dciv, fig_folder + file_structure['Impedance recovery'])
-    #     self.plot_if_noise(fig_folder + file_structure['IF noise'])
-    #     self.plot_noise_temp(fig_folder + file_structure['Noise temperature'])
-    #     # self.plot_gain(fig_folder + file_structure['Noise temperature'])
+        fstr = str(self.freq)
+
+        self.plot_iv(fig_folder + '02_iv_curves/f' + fstr + '-iv.png')
+        self.plot_ivif(fig_folder + '03_if_data/f' + fstr + '-ivif.png')
+        self.plot_error_surface(fig_folder + '04_impedance/f' + fstr + '-err-surf.png')
+        self.plot_simulated(fig_folder + '04_impedance/f' + fstr + '-sim.png')
+        self.plot_noise_temp(fig_folder + '06_noise_temp/f' + fstr + '-tn.png')
+        self.plot_gain_noise_temp(fig_folder + '06_noise_temp/f' + fstr + '-tn-gain.png')
 
 # ANALYZE IF SPECTRUM DATA ----------------------------------------------------
 
@@ -1299,7 +1346,6 @@ def plot_overall_results(dciv_data, data_list, fig_folder):
     for tl in ax2.get_yticklabels():
         tl.set_color(BLUE)
     plt.savefig(fig_folder + '08_overall_performance/noise_temperature_and_gain.png')
-    plt.savefig(fig_folder + '08_overall_performance/noise_temperature_and_gain.pgf')
     plt.close()
 
     # Plot IF noise contribution results -------------------------------------
