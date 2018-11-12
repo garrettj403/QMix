@@ -12,8 +12,18 @@ all: test clean_all
 
 # Run tests (with Py.Test) ---------------------------------------------------
 
-test: clean
+test:
 	pytest --verbose --color=yes $(TEST_PATH) 
+	echo "Ignore FutureWarnings... this comes from the SciPy package."
+
+test_cov:
+	pytest --verbose --color=yes --cov=$(QMIX_PATH) $(TEST_PATH)
+	echo "Ignore FutureWarnings... this comes from the SciPy package."
+
+test_report: 
+	pytest --verbose --color=yes --cov=$(QMIX_PATH) --cov-report=html $(TEST_PATH)
+	open htmlcov/index.html
+	echo "Ignore FutureWarnings... this comes from the SciPy package."
 
 # Clean ----------------------------------------------------------------------
 
@@ -26,8 +36,6 @@ clean_bytecode:
 clean_hidden:
 	find . -name '.coverage' -exec rm -rf {} +
 	find . -name '.cache' -exec rm -rf {} +
-	find . -name '.ropeproject' -exec rm -rf {} +
-	find . -name '.DS_Store' -exec rm -rf {} +
 	find . -name '__pycache__' -exec rm -rf {} +
 
 clean: clean_bytecode clean_hidden clean_test
