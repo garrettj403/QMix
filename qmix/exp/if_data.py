@@ -1,5 +1,7 @@
 """Import and analyze IF data.
 
+The IF data is the IF output power versus bias voltage.
+
 """
 
 from collections import namedtuple
@@ -63,7 +65,7 @@ def if_data(hot_filename, cold_filename, dc, **kwargs):
         hot_filename: Hot IF filename
         cold_filename: Cold IF filename
         dc: DC IF data structure
-        v_fmt: format of voltage data
+        kwargs: Keyword arguments
 
     Returns:
         ndarray: Hot IF data
@@ -257,7 +259,7 @@ def _find_if_noise(if_data, dc, vshot=None, **kw):
     # if_noise = np.interp(vint, x, i_slope)
 
     # Is it a reasonable IF noise estimate?
-    good_if_noise_fit = 0 < if_noise and if_noise < 50
+    good_if_noise_fit = 0 < if_noise < 50
 
     return if_noise, corr, i_slope, good_if_noise_fit
 
@@ -270,7 +272,7 @@ def load_if(filename, dc, **kwargs):
     Args:
         filename: filename
         dc: DC data structure 
-        v_fmt: voltage format
+        kwargs: Keyword arguments
 
     Returns: IF data matrix
 

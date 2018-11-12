@@ -1,4 +1,4 @@
-"""Kramers-Kronig transform.
+"""Generate Kramers-Kronig transform.
 
 """
 

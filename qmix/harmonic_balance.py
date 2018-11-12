@@ -7,8 +7,8 @@ circuits. Uses Newton's method to find the solution numerically.
 
 import qmix
 import numpy as np
-from scipy.special import jv
-from qmix.misc.terminal import cprint
+# from scipy.special import jv
+# from qmix.misc.terminal import cprint
 from timeit import default_timer as timer
 from qmix.misc.progbar import progress_bar
 from qmix.qtcurrent import qtcurrent_all_freq, interpolate_respfn
@@ -68,9 +68,7 @@ def harmonic_balance(cct, resp, num_b=15, max_it=10, stop_rerror=0.001, vj_initi
 
     if (zt == 0).all():
         if verbose:
-            string = "\n**Harmonic balance isn't needed when zt = 0.**"
-            cprint(string, 'WARNING')
-            print("  - returning vt as vj")
+            print("Done.\n")
         return vt[:, :, None] * np.ones(npts, dtype=complex)
 
     # Check whether any Thevenin voltages (vt) are zero (prevents div0 errors)
@@ -149,7 +147,18 @@ def harmonic_balance(cct, resp, num_b=15, max_it=10, stop_rerror=0.001, vj_initi
             # Print to terminal
             if verbose:
                 f, p = _k_to_fp(k, num_p)
-                print((msg.format(f, p, med_rel_error, np.max(rel_error), complete * 100)))
+
+                if med_rel_error > 99999.999:
+                    _med_rel_error = 99999.
+                else:
+                    _med_rel_error = med_rel_error
+
+                if np.max(rel_error) > 99999.999:
+                    _rel_error = 99999.
+                else:
+                    _rel_error = np.max(rel_error)
+                    
+                print((msg.format(f, p, _med_rel_error, _rel_error, complete * 100)))
 
         # Exit if the error is good enough
         if max_rel_error <= stop_rerror:
@@ -267,7 +276,7 @@ def _inv_jacobian(error_all, vj_2d, vt_2d, zt_2d, cct, resp, num_b, resp_matrix=
     for q in range(num_n):
 
         if verbose:
-            progress_bar(q, num_n, prefix="Calculating Jacobian")
+            progress_bar(q, num_n, prefix="Calculating inverse Jacobian")
 
         dvj = np.zeros((num_n, npts), dtype=float)
         dvj[q, :] = DV
@@ -346,96 +355,3 @@ def _k_to_fp(k, num_p):
     f = (k + num_p - p + 1) / num_p
 
     return f, p
-
-
-# # Run quick test ------------------------------------------------------------
-#
-# def _main():
-#
-#     import matplotlib.pyplot as plt
-#
-#     print """
-#     The harmonic_balance module can be tested by running a harmonic balance
-#     process, and then checking that the optimized voltage (vj) does actually
-#     lead to a balanced circuit.
-#
-#     Note that it is possible to control the accuracy of the harmonic balance
-#     function. Here it was just left at the default value for error."""
-#
-#     cprint("CYAN", "\nRunning workflow...")
-#
-#     # Input parameters ------------------------------------------------------
-#
-#     resp = qmix.respfn.RespFnPolynomial(50)
-#
-#     num_b = (15, 10, 10)
-#     num_f = 3
-#     num_p = 1
-#
-#     cct = qmix.circuit.EmbeddingCircuit(num_f, num_p)
-#
-#     cct.vph[1] = 0.300
-#     cct.vph[2] = 0.315
-#     cct.vph[3] = 0.015
-#
-#     cct.vt[1, 1] = cct.vph[1] * 1.5
-#     cct.vt[2, 1] = cct.vph[2] * 0.01
-#     cct.vt[3, 1] = 0.
-#
-#     cct.zt[1, 1] = 0.3 - 1j * 0.3
-#     cct.zt[2, 1] = 0.3 - 1j * 0.3
-#     cct.zt[3, 1] = 0.5
-#
-#     # Perform harmonic balance ----------------------------------------------
-#
-#     vj = harmonic_balance(cct, resp, num_b)
-#
-#     # Solve for the tunneling currents -------------------------------------
-#
-#     ij = _qt_current_for_hb(vj, cct, resp, num_b)
-#
-#     # Plot results ----------------------------------------------------------
-#
-#     # V_n with error
-#     plt.figure(figsize=(12, 5))
-#     plt.subplot(121)
-#     err_str = 'error, f={0}, p={1}'
-#     for f in xrange(1, num_f + 1):
-#         for p in xrange(1, num_p + 1):
-#             error = np.abs(cct.vt[f, p] - vj[f, p, :] -
-#                            cct.zt[f, p] * ij[f, p, :])
-#             plt.plot(cct.vb, error, label=err_str.format(f, p))
-#     plt.xlabel('Bias voltage')
-#     plt.ylabel('Absolute error')
-#     plt.legend(loc=1)
-#
-#     plt.subplot(122)
-#     for f in xrange(1, num_f + 1):
-#         for p in xrange(1, num_p + 1):
-#             error = np.abs(cct.vt[f, p] - vj[f, p, :] -
-#                            cct.zt[f, p] * ij[f, p, :])
-#             rerror = np.abs(error) / np.abs(vj[f, p, :]) * 100
-#             plt.plot(cct.vb, rerror, label=err_str.format(f, p))
-#     plt.xlabel('Bias voltage')
-#     plt.ylabel('Relative error (%)')
-#     plt.legend(loc=1)
-#     # plt.show()
-#
-#     cprint("HEADER", "\nAnalysis:")
-#     print """
-#     The harmonic balance function ends when the relative error drops below
-#     0.1% (default value). Make sure that all values in the plot on the right
-#     are below this value.
-#     """
-#
-#     idc, ilo, iif = qmix.qt_current.qt_current_std(vj, cct, resp,
-#                                                          num_b=num_b)
-#     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 5))
-#     ax1.plot(cct.vb, idc)
-#     ax2.plot(cct.vb, np.abs(iif)**2)
-#
-#     plt.show()
-#
-#
-# if __name__ == "__main__":
-#     _main()

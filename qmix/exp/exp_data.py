@@ -1,31 +1,19 @@
 """Analyze experimental SIS data.
 
-This module contains functions related to importing, cleaing and analyzing raw
-I-V and IF data obtained from SIS mixer experiments. Two classes (i.e.,
-"RawData0" and "RawData") are provided to help manage the data.
+This module contains functions related to importing, cleaning and analyzing raw
+I-V and IF data obtained from SIS mixer experiments. Two classes ("RawData0" 
+and "RawData") are provided to help manage the data.
 
 Notes:
 
     1. These functions assume that you are importing data that has been
-    stored in a very specific manner. Please see the "example_data" folder
-    for an example of this format. This includes how the csv files are
-    structured, and the names of the files themselves. E.g.:
-        unpumped I-V data:      iv_nopump.csv
-        pumped I-V data:        f230_6_ivmax.csv --> for f_LO = 230.6 GHz
-        hot IF data:            f230_6_hot.csv
-        cold IF data:           f230_6_cold.csv
-    If your data does not match this format, it is likely easier to create
-    a script to restructure your data, than to attempt changing this code.
+    stored in a very specific format. Please see the 
+    ``workflows/analyze-experimental-data.ipynb`` notebook for an example.
 
-    2. All currents and voltages are stored in normalized quantities, but
-    other values are unnormalized! (Unless a comment says otherwise.)
-    Voltage is in mV and current is in mA.
+    2. All currents and voltages are stored as normalized values, but
+    other values are unnormalized!
 
-    4. Figures are given predefined names.
-
-    5. Please check the resultant plots to ensure that they make sense.
-    Especially the IF noise plots because there are often peaks in the
-    data that are not taken into account.
+    3. Make sure to plot all of the data to make sure that it makes sense.
 
 """
 
@@ -50,21 +38,24 @@ from qmix.mathfn.misc import slope_span_n
 from qmix.misc.terminal import cprint
 from qmix.qtcurrent import qtcurrent
 
-PALE_BLUE = '#6ba2f9'
-PALE_GREEN = 'mediumseagreen'
-PALE_RED = '#f96b6b'
-RED = 'r'
-BLUE = '#1f77b4'
-DBLUE = '#1f77b4'
-ORANGE = '#ff7f0e'
+# Colors for plotting
+_pale_blue = '#6ba2f9'
+_pale_green = 'mediumseagreen'
+_pale_red = '#f96b6b'
+_red = 'r'
+_blue = '#1f77b4'
+_dark_blue = '#1f77b4'
 
+# Impedance recovery parameters
 GOOD_ERROR = 7e-7
 STEP = 1e-5
 
+# Parameters for saving figures
 _plot_params = {'dpi': 300, 'bbox_inches': 'tight'}
 
 # Note: All plotting functions are excluded from coverage.py 
 # by using:  "# pragma: no cover"
+
 
 # CLASSES FOR RAW DATA --------------------------------------------------------
 
@@ -72,8 +63,8 @@ class RawData0(object):
     """Class for DC experimental data (ie., unpumped).
 
     Args:
-        dciv_file: file path to unpumped I-V data
-        dcif_file: file path to unpumped IF data
+        dciv_file: file path for unpumped I-V data
+        dcif_file: file path for unpumped IF data
 
     Keyword arguments:
         area (float): area of the junction in um^2 (default is 1.5)
@@ -99,6 +90,7 @@ class RawData0(object):
         tmp.update(kwargs)
         kwargs = tmp
 
+        # Unpack keyword arguments
         comment = kwargs['comment']
         v_smear = kwargs['v_smear']
         vleak = kwargs['vleak']
@@ -122,8 +114,9 @@ class RawData0(object):
         self.offset = self.dc.offset
         self.vint = self.dc.vint
         self.vleak = vleak
-        self.ileak = np.interp(
-            vleak / self.vgap, self.voltage, self.current) * self.igap
+        self.ileak = np.interp(vleak / self.vgap,
+                               self.voltage,
+                               self.current) * self.igap
 
         # Generate response function from DC I-V curve
         self.resp = qmix.respfn.RespFnFromIVData(self.voltage, self.current,
@@ -137,7 +130,7 @@ class RawData0(object):
                                                        verbose=False,
                                                        v_smear=v_smear)
 
-        # Import DC IF data (if it exsists)
+        # Import DC IF data (if it exists)
         if dcif_file is not None:
             self.if_data, dcif = dcif_data(dcif_file, self.dc, **kwargs)
             self.dcif = dcif
@@ -323,12 +316,11 @@ class RawData0(object):
             fig.savefig(fig_name, **_plot_params)
             plt.close(fig)
 
-    def plot_if_noise(self, fig_name=None, vmax_plot=4.):  # pragma: no cover
+    def plot_if_noise(self, fig_name=None):  # pragma: no cover
         """Plot IF noise.
 
         Args:
             fig_name: figure filename
-            vmax_plot: max voltage to include in plot (in mV)
 
         """
 
@@ -340,10 +332,8 @@ class RawData0(object):
         mv = self.vgap * 1e3
         ua = self.igap * 1e6
 
-        v_mv = self.if_data[:, 0] * mv
         rslope = (self.voltage * self.vgap /
                   self.rn - self.vint / self.rn) * 1e6
-        vmax = v_mv.max()
 
         v_mv = self.voltage * mv
         i_ua = self.current * ua
@@ -362,7 +352,7 @@ class RawData0(object):
         ax1.legend(loc=4, fontsize=8, frameon=False)
 
         v_mv = self.if_data[:, 0] * mv
-        ax2.plot(v_mv, self.if_data[:, 1], PALE_RED, label='IF (unpumped)')
+        ax2.plot(v_mv, self.if_data[:, 1], _pale_red, label='IF (unpumped)')
         ax2.plot(self.shot_slope[:, 0] * self.vgap * 1e3,
                  self.shot_slope[:, 1], 'k--', label='Shot noise slope')
         plt.plot(self.vint * 1e3, self.if_noise,
@@ -372,7 +362,7 @@ class RawData0(object):
         ax2.axvline(self.vint * 1e3, c='k', ls=':', lw=0.5)
         ax2.set_xlabel('Bias Voltage (mV)')
         ax2.set_ylabel('IF Power (K)')
-        ax2.set_xlim([0, np.max(v_mv)])
+        ax2.set_xlim([0, v_mv.max()])
         ax2.set_ylim(bottom=0)
         ax2.legend(loc=4, fontsize=8, frameon=False)
         if fig_name is None:
@@ -460,7 +450,7 @@ class RawData(object):
 
         # Impedance recovery
         if analyze_iv:
-            self.recover_zemb()
+            self._recover_zemb()
         else:  # pragma: no cover
             self.zt = None
             self.vt = None
@@ -511,7 +501,7 @@ class RawData(object):
         if verbose:
             print("")
 
-    def recover_zemb(self, **kwargs):
+    def _recover_zemb(self, **kwargs):
         """Recover the embedded impedance (a.k.a., the Thevenin impedance).
 
         Note that all currents and voltages are normalized to the gap voltage and
@@ -519,8 +509,17 @@ class RawData(object):
         method described by Skalare (1989) and Withington et al. (1995).
 
         Args:
-            pump: pumped I-V data (instance of RawData class)
-            dciv: dc I-V curve (instance of RawData0 class)
+            kwargs: Keyword arguments
+            
+        Keyword Args:
+            cut_low (float): only fit over first photon step,
+                start at Vgap - vph + vph * cut_low
+            cut_high: only fit over first photon step,
+                finish at Vgap - vph * cut_high
+            remb_range (tuple): range of embedding resistances to check,
+                normalized to the normal-state resistance
+            xemb_range (tuple): range of embedding reactances to check,
+                normalized to the normal-state resistance
 
         Returns: thevenin impedance, voltage, and fit (boolean)
 
@@ -644,8 +643,8 @@ class RawData(object):
 
         # Plot IF data
         fig, ax = plt.subplots()
-        plt.plot(v_mv, self.if_hot[:, 1], PALE_RED, label='Hot')
-        plt.plot(v_mv, self.if_cold[:, 1], PALE_BLUE, label='Cold')
+        plt.plot(v_mv, self.if_hot[:, 1], _pale_red, label='Hot')
+        plt.plot(v_mv, self.if_cold[:, 1], _pale_blue, label='Cold')
         if self.dciv.if_data is not None:
             v_tmp = self.dciv.if_data[:, 0] * self.vgap * 1e3
             plt.plot(v_tmp, self.dciv.if_data[:, 1], 'k--', label='No LO')
@@ -711,7 +710,6 @@ class RawData(object):
 
         Args:
             fig_name: figure filename
-            vmax_plot: max voltage to include in plot (in mV)
 
         """
 
@@ -767,15 +765,15 @@ class RawData(object):
         
         v_mv = self.if_hot[:, 0] * self.vgap * 1e3
 
-        ax2.plot(v_mv, self.if_hot[:, 1], PALE_RED, label='Hot')
-        ax2.plot(v_mv, self.if_cold[:, 1], PALE_BLUE, label='Cold')
+        ax2.plot(v_mv, self.if_hot[:, 1], _pale_red, label='Hot')
+        ax2.plot(v_mv, self.if_cold[:, 1], _pale_blue, label='Cold')
         ax2.plot(self.shot_slope[:, 0] * self.vgap * 1e3,
                  self.shot_slope[:, 1], 'k--', label='Shot noise slope')
         ax2.plot(self.vint * 1e3, self.if_noise, 'ro',
-                 label='IF Noise: %.2f K' % self.if_noise)
+                 label='IF Noise: {:.2f} K'.format(self.if_noise))
         ax2.set_xlabel('Bias Voltage (mV)')
         ax2.set_ylabel('IF Power (K)')
-        ax2.set_xlim([0, np.max(v_mv)])
+        ax2.set_xlim([0, v_mv.max()])
         ax2.set_ylim([0, np.max(self.shot_slope) * 1.1])
         ax2.legend(loc=0)
         
@@ -798,15 +796,15 @@ class RawData(object):
         cold = gauss_conv(self.if_cold[:, 1], 5)
 
         fig, ax1 = plt.subplots()
-        l1 = ax1.plot(v_mv, hot, PALE_RED, label='Hot IF')
-        l2 = ax1.plot(v_mv, cold, PALE_BLUE, label='Cold IF')
+        l1 = ax1.plot(v_mv, hot, _pale_red, label='Hot IF')
+        l2 = ax1.plot(v_mv, cold, _pale_blue, label='Cold IF')
         ax1.set_xlabel('Bias Voltage (mV)')
         ax1.set_ylabel('IF Power (K)')
         ax1.set_xlim([1, 3.5])
         ax1.set_ylim([0, hot.max() * 1.3])
 
         ax2 = ax1.twinx()
-        l3 = ax2.plot(v_mv, self.tn, PALE_GREEN, ls='--', label='Noise Temp.')
+        l3 = ax2.plot(v_mv, self.tn, _pale_green, ls='--', label='Noise Temp.')
         l4 = ax2.plot(v_mv[self.idx_best], self.tn_best,
                       label=r'$T_\mathrm{{n}}={:.1f}$ K'.format(self.tn_best),
                       marker='o', ls='None', color='k',
@@ -846,16 +844,16 @@ class RawData(object):
         
         fig, ax1 = plt.subplots()
         
-        ax1.plot(v_mv, yfac, DBLUE, label='Y-factor')
-        ax1.axhline(293./77., c=DBLUE, ls=':')
+        ax1.plot(v_mv, yfac, _dark_blue, label='Y-factor')
+        ax1.axhline(293. / 77., c=_dark_blue, ls=':')
         ax1.set_xlabel('Bias Voltage (mV)')
-        ax1.set_ylabel('Y-factor', color=DBLUE)
+        ax1.set_ylabel('Y-factor', color=_dark_blue)
         for tl in ax1.get_yticklabels():
-            tl.set_color(DBLUE)
+            tl.set_color(_dark_blue)
         ax1.set_ylim([1., 4.])
         
         ax2 = ax1.twinx()
-        ax2.plot(v_mv, self.tn, RED, label='Noise Temp.')
+        ax2.plot(v_mv, self.tn, _red, label='Noise Temp.')
         ax2.plot(v_mv[self.idx_best], self.tn_best,
                  marker='o', ls='None', color='k',
                  mfc='None', markeredgewidth=1)
@@ -866,9 +864,9 @@ class RawData(object):
                      bbox=dict(boxstyle="round", fc="w", alpha=0.5),
                      arrowprops=dict(color='black', arrowstyle="->", lw=1),
                      )
-        ax2.set_ylabel('Noise Temperature (K)', color=RED)
+        ax2.set_ylabel('Noise Temperature (K)', color=_red)
         for tl in ax2.get_yticklabels():
-            tl.set_color(RED)
+            tl.set_color(_red)
         ax2.set_ylim([0, 300.])
         ax2.set_xlim([0., vmax_plot])
         
@@ -891,7 +889,7 @@ class RawData(object):
 
         fig, ax1 = plt.subplots()
         
-        ax1.plot(v_mv, self.gain, label=r'Gain', color=DBLUE)
+        ax1.plot(v_mv, self.gain, label=r'Gain', color=_dark_blue)
         ax1.plot(v_mv[self.idx_best], self.gain[self.idx_best],
                  marker='o', ls='None', color='k',
                  mfc='None', markeredgewidth=1)
@@ -904,14 +902,14 @@ class RawData(object):
                      va="center", ha="left",
                      )
         ax1.set_xlabel('Bias Voltage (mV)')
-        ax1.set_ylabel('Gain', color=DBLUE)
+        ax1.set_ylabel('Gain', color=_dark_blue)
         for tl in ax1.get_yticklabels():
-            tl.set_color(DBLUE)
+            tl.set_color(_dark_blue)
         ax1.set_ylim(bottom=0)
         ax1.minorticks_on()
         
         ax2 = ax1.twinx()
-        ax2.plot(v_mv, self.tn, RED, label='Noise Temp.')
+        ax2.plot(v_mv, self.tn, _red, label='Noise Temp.')
         ax2.plot(v_mv[self.idx_best], self.tn_best,
                  marker='o', ls='None', color='k',
                  mfc='None', markeredgewidth=1)
@@ -923,9 +921,9 @@ class RawData(object):
                      va="center", ha="left",
                      )
         
-        ax2.set_ylabel('Noise Temperature (K)', color=RED)
+        ax2.set_ylabel('Noise Temperature (K)', color=_red)
         for tl in ax2.get_yticklabels():
-            tl.set_color(RED)
+            tl.set_color(_red)
         ax2.set_ylim([0, self.tn_best * 5])
         ax2.set_xlim([0., vmax_plot])
         ax2.minorticks_on()
@@ -956,9 +954,6 @@ class RawData(object):
                       1 - self.vph * np.arange(3, -4, -1)]
         v_steps = steps * self.vgap * 1e3
         r_steps = np.interp(v_steps, v_mv, rdyn)
-
-        gap = np.array([-1., 0., 1.])
-        vgap = gap * self.vgap * 1e3
 
         # Dynamic resistance at 'best' bias point (where TN is best)
         vb_best = (self.if_hot[:, 0] * self.vgap * 1e3)[self.idx_best]
@@ -1017,7 +1012,6 @@ class RawData(object):
 
         Args:
             fig_name: figure filename
-            vmax_plot: max voltage to include in plot (in mV)
 
         """
 
@@ -1265,8 +1259,6 @@ def plot_overall_results(dciv_data, data_list, fig_folder):  # pragma: no cover
         data_list: list of pumped data (instances of RawData)
         fig_folder: figure destination
 
-    Returns:
-
     """
 
     cprint("\nPlotting results.", 'HEADER')
@@ -1305,7 +1297,8 @@ def plot_overall_results(dciv_data, data_list, fig_folder):  # pragma: no cover
     plt.plot(dciv_data.voltage, dciv_data.current, 'k')
     for i, data in enumerate(data_list):
         plt.plot(data.voltage, data.current,
-                 color=plt.cm.winter(i / num_data), label=data.freq)
+                 color=plt.cm.winter(i / num_data),
+                 label=data.freq)
     plt.xlabel(r'Voltage / $V_\mathrm{{gap}}$')
     plt.ylabel(r'Current / $I_\mathrm{{gap}}$')
     plt.xlim([0, 1.5])
@@ -1319,10 +1312,7 @@ def plot_overall_results(dciv_data, data_list, fig_folder):  # pragma: no cover
     plt.plot(freq, rdyn, marker='o', ls='--')
     plt.xlabel('Frequency (GHz)')
     plt.ylabel(r'Dynamic resistance ($\Omega$)')
-    # plt.xlim([0, 1.5])
-    # plt.ylim([0, 1.5])
     plt.ylim(bottom=0)
-    # plt.legend(fontsize=6)
     plt.savefig(fig_folder + '08_overall_performance/rdyn.png')
     plt.close()
 
@@ -1351,18 +1341,18 @@ def plot_overall_results(dciv_data, data_list, fig_folder):  # pragma: no cover
     # Plot noise temperature and gain ----------------------------------------
 
     fig, ax1 = plt.subplots()
-    ax1.plot(freq, t_n, c=PALE_RED, ls='--', marker='o')
+    ax1.plot(freq, t_n, c=_pale_red, ls='--', marker='o')
     ax1.set_xlabel('Frequency (GHz)')
-    ax1.set_ylabel('Noise Temperature (K)', color=PALE_RED)
+    ax1.set_ylabel('Noise Temperature (K)', color=_pale_red)
     ax1.set_ylim([0, 120])
     ax1.grid()
     for tl in ax1.get_yticklabels():
-        tl.set_color(PALE_RED)
+        tl.set_color(_pale_red)
     ax2 = ax1.twinx()
-    ax2.plot(freq, gain, c=BLUE, ls='--', marker='o')
-    ax2.set_ylabel('Gain (dB)', color=BLUE)
+    ax2.plot(freq, gain, c=_blue, ls='--', marker='o')
+    ax2.set_ylabel('Gain (dB)', color=_blue)
     for tl in ax2.get_yticklabels():
-        tl.set_color(BLUE)
+        tl.set_color(_blue)
     ax2.set_ylim([-10, 2])
     plt.savefig(fig_folder + '08_overall_performance/noise_temperature_and_gain.png')
     plt.close()
@@ -1370,7 +1360,7 @@ def plot_overall_results(dciv_data, data_list, fig_folder):  # pragma: no cover
     # Plot IF noise contribution results -------------------------------------
 
     plt.figure()
-    plt.plot(if_noise_f, if_noise, 'o--', color=PALE_RED)
+    plt.plot(if_noise_f, if_noise, 'o--', color=_pale_red)
     plt.xlabel('Frequency (GHz)')
     plt.ylabel(r'IF Noise Contribution (K)')
     plt.ylim([0, 30])
@@ -1442,9 +1432,9 @@ def plot_overall_results(dciv_data, data_list, fig_folder):  # pragma: no cover
     # Plot embedding impedance results ---------------------------------------
 
     plt.figure()
-    plt.plot(f_z, z.real / data.rn, c=PALE_BLUE,
+    plt.plot(f_z, z.real / data.rn, c=_pale_blue,
              ls='--', marker='o', label='Real')
-    plt.plot(f_z, z.imag / data.rn, c=PALE_RED,
+    plt.plot(f_z, z.imag / data.rn, c=_pale_red,
              ls='--', marker='o', label='Imaginary')
     plt.xlabel('Frequency (GHz)')
     plt.ylabel(r'Embedding Impedance / $R_n$')
@@ -1456,7 +1446,7 @@ def plot_overall_results(dciv_data, data_list, fig_folder):  # pragma: no cover
     # Plot embedding impedance results ---------------------------------------
 
     plt.figure()
-    plt.plot(f_z, v / data.vgap, c=PALE_GREEN, ls='--', marker='o')
+    plt.plot(f_z, v / data.vgap, c=_pale_green, ls='--', marker='o')
     plt.xlabel('Frequency (GHz)')
     plt.ylabel(r'Embedding Voltage / $V_{{gap}}$')
     # plt.legend(frameon=False)
@@ -1509,7 +1499,7 @@ def plot_overall_results(dciv_data, data_list, fig_folder):  # pragma: no cover
     # Plot embedding impedance results ---------------------------------------
 
     plt.figure()
-    plt.plot(freq, aj, c=PALE_GREEN, ls='--', marker='o')
+    plt.plot(freq, aj, c=_pale_green, ls='--', marker='o')
     plt.xlabel('Frequency (GHz)')
     plt.ylabel(r'Drive Level, $\alpha$')
     # plt.legend(frameon=False)

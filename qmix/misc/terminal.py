@@ -24,8 +24,6 @@ def print_intro():  # pragma: no cover
     """
     intro = """
             *** SIS Mixer Analysis Software ***
-                      John Garrett
-                         0.1.dev
     """
     cprint(art, color='MAGENTA')
     print(intro)

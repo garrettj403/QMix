@@ -8,7 +8,7 @@ import numpy as np
 # Simple derivatives ---------------------------------------------------------
 
 def slope(x, y):
-    """Simple derivative dy/dx.
+    """Take a simple derivative, dy/dx.
 
     The derivative is centered and it is the same number of points as x/y.
 

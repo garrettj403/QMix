@@ -107,8 +107,8 @@ class RespFn(object):
         """Plot the dc I-V and KK current.
 
         Args:
-            output (string): 'show' or 'save' the figure
             fig_name (string): figure name if saved
+            ax: figure axis
 
         """
 
@@ -128,10 +128,10 @@ class RespFn(object):
         ax.set_ylim([-2, 2])
         ax.legend(loc=0, fontsize=8, frameon=True)
         ax.grid()
-        if fig_name is not None:
-            fig.savefig(fig_name, bbox_inches='tight')
-        elif ax is not None:
+        if ax is not None:
             return ax
+        elif fig_name is not None:
+            fig.savefig(fig_name, bbox_inches='tight')
         else:
             plt.show()
 
@@ -488,7 +488,7 @@ def _setup_interpolation(voltage, current, current_kk, **params):
 
     # Find max error
     v_check_range = VRANGE - 1
-    idx_start = (voltage + v_check_range).argmin()
+    # idx_start = (voltage + v_check_range).argmin()
     idx_check = (-v_check_range < voltage) & (voltage < v_check_range)
     error_v = voltage[idx_check]
     error_dc = current[idx_check] - f_dc(voltage[idx_check])

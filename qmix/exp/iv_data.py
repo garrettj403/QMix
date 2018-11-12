@@ -402,9 +402,9 @@ def _find_normal_resistance(volt_v, curr_a, rn_vmin=3.5e-3, rn_vmax=4.5e-3, **kw
 
     p = np.polyfit(v, i, 1)
 
-    slope = p[0]
-    rn = 1 / slope
-    vint = -p[1] / slope
+    rnslope = p[0]
+    rn = 1 / rnslope
+    vint = -p[1] / rnslope
 
     return rn, vint
 

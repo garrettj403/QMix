@@ -1,6 +1,6 @@
 """Print a progress bar to the console.
 
-From:
+Taken from:
 
    http://stackoverflow.com/questions/3173320/text-progress-bar-in-the-console
 
@@ -31,29 +31,3 @@ def progress_bar(iteration, total, prefix='Progress:', suffix='Complete',
     if iteration == total:
         sys.stdout.write('\n')
         sys.stdout.flush()
-
-
-# # Run -----------------------------------------------------------------------
-#
-# def _main():  # pragma: no cover
-#
-#     from time import sleep
-#
-#     print "\nTesting progbar.py ...\n"
-#
-#     items = list(range(0, 100))
-#     i = 0
-#     l = len(items)
-#
-#     # Initial call to print 0% progress
-#     progress_bar(i, l, prefix='Progress:', suffix='Complete', bar_length=50)
-#     for _ in items:
-#         sleep(0.1)
-#         i += 1
-#         progress_bar(i, l, prefix='Progress:', suffix='Complete',
-#                      bar_length=50)
-#     print ""
-#
-#
-# if __name__ == "__main__":  # pragma: no cover
-#     _main()

@@ -1,4 +1,4 @@
-"""Basic filters for cleaning experimental data.
+"""Filter cleaning experimental data.
 
 """
 
@@ -8,7 +8,7 @@ import numpy as np
 # Filters -------------------------------------------------------------------
 
 def gauss_conv(x, sigma=10, ext_x=3):
-    """Gaussian convolution filter
+    """Filter data using a Gaussian convolution.
 
     Args:
         x (ndarray): noisy data
@@ -36,7 +36,9 @@ def gauss_conv(x, sigma=10, ext_x=3):
 
 
 def _gauss(sigma, n_sigma=3):
-    """Discrete, normalized Gaussian centered on zero. Used for filtering data.
+    """Generate a discrete, normalized Gaussian centered on zero. 
+    
+    Used for filtering data.
 
     Args:
         sigma (float): standard deviation

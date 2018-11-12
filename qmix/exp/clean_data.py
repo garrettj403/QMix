@@ -1,4 +1,10 @@
-"""Clean x/y data.
+"""Clean experimental data.
+
+These functions can be used to clean experimental data. This includes removing 
+NaN values, removing double values, and sorting.
+
+The data can either be in x/y format (i.e., two arrays of equal length) or in
+matrix form (i.e., a matrix with two columns).
 
 """
 
@@ -15,26 +21,25 @@ def remove_nans_xy(x, y):
         y (ndarray): y array
 
     Returns:
-        ndarray: x array
-        ndarray: y array
+        x/y data with NaNs removed
 
     """
 
-    mask = np.invert(np.isnan(x)) & np.invert(np.isnan(y))
+    mask = np.invert(np.isnan(x)) & \
+           np.invert(np.isnan(y))
 
     return x[mask], y[mask]
 
 
 def sort_xy(x, y):
-    """Sort x/y data by x
+    """Sort x/y data by the x values.
 
     Args:
         x (ndarray): x array
         y (ndarray): y array
 
     Returns:
-        ndarray: x array
-        ndarray: y array
+        x/y data sorted by x
 
     """
 
@@ -43,21 +48,26 @@ def sort_xy(x, y):
     return x[idx], y[idx]
 
 
-def remove_doubles_xy(x, y):
+def remove_doubles_xy(x, y, check=True):
     """Given x/y data, remove double values of x.
 
-    Assumes that data is already sorted by x!
+    This function assumes that the data is already sorted by x!
 
     Args:
         x (ndarray): x array
         y (ndarray): y array
+        check (bool): check that x is sorted
 
     Returns:
-        ndarray: x array
-        ndarray: y array
+        x/y data with doubles values of x removed
 
     """
 
+    # Check to see if x is sorted
+    if check:
+        assert (x[1:] - x[:-1]).min() >= 0
+
+    # Find doubles
     mask = np.ones(np.alen(x), dtype=bool)
     mask[1:] = (x[1:] != x[:-1])
 
@@ -74,7 +84,7 @@ def clean_xy(x, y):
         y (ndarray): y data
 
     Returns:
-        ndarray: cleaned x/y data
+        Cleaned x/y data
 
     """
 
@@ -95,7 +105,7 @@ def xy_to_matrix(x, y):
         y (ndarray): y data
 
     Returns:
-        ndarray: data in matrix form
+        Matrix of x/y data
 
     """
 
@@ -106,13 +116,13 @@ def xy_to_matrix(x, y):
 # Assuming that the matrix is in 2-column form
 
 def remove_nans_matrix(matrix):
-    """Remove all NaN data from a matrix
+    """Remove all NaN values data from a matrix
 
     Args:
         matrix (ndarray): 2-column matrix
 
     Returns:
-        ndarray: matrix data without NaNs
+        2-column matrix with NaNs removed
 
     """
 
@@ -130,7 +140,7 @@ def sort_matrix(matrix, col=0):
         col (int): column to sort by
 
     Returns:
-        ndarray: sorted matrix data
+        2-column matrix sorted by the given column
 
     """
 
@@ -139,16 +149,22 @@ def sort_matrix(matrix, col=0):
     return matrix[idx]
 
 
-def remove_doubles_matrix(matrix, col=0):
-    """Remove double values.
+def remove_doubles_matrix(matrix, col=0, check=True):
+    """Remove double values from 2-column matrix.
 
     Args:
         matrix: 2-column matrix
         col: column to remove doubles from (default 0)
+        check (bool): check that x data is sorted
 
-    Returns: x/y data in a matrix.
+    Returns: 
+        2-column matrix with double values of given column removed
 
     """
+
+    if check:
+        # Check to see if x is sorted
+        assert (matrix[1:, 0] - matrix[:-1, 0]).min() >= 0
 
     column = matrix[:, col]
     mask = np.ones_like(column, dtype=bool)
@@ -157,7 +173,7 @@ def remove_doubles_matrix(matrix, col=0):
     return matrix[mask, :]
 
 
-def clean_matrix(matrix):
+def clean_matrix(matrix, check=True):
     """Clean 2D matrix data.
 
     Remove NaNs, sort by first column, remove double values for first column.
@@ -166,7 +182,7 @@ def clean_matrix(matrix):
         matrix (ndarray): 2-column matrix
 
     Returns:
-        ndarray: clean matrix data
+        Cleaned 2-column matrix
 
     """
 
@@ -180,13 +196,13 @@ def clean_matrix(matrix):
 
 
 def matrix_to_xy(matrix):
-    """Pull x/y data from matrix.
+    """Convert matrix into x/y data.
 
     Args:
         matrix (ndarray): 2-column matrix
 
     Returns:
-        ndarray: x/y data
+        x/y data
 
     """
 
