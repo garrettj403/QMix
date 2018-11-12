@@ -68,7 +68,7 @@ def qtcurrent(vj, cct, resp, vph_list, num_b=15, verbose=True, resp_matrix=None)
     num_p = cct.num_p
     npts = cct.vb_npts
 
-    assert (cct.vph[1:] > 0).all(), "All vph must be > 0!"
+    assert cct.vph[1:].min() > 0., "All vph must be > 0!"
 
     try:
         vph_list = list(vph_list)
@@ -84,7 +84,6 @@ def qtcurrent(vj, cct, resp, vph_list, num_b=15, verbose=True, resp_matrix=None)
     vph = cct.vph
 
     nb_list = _unpack_num_b(num_b, num_f)
-    num_b_max = max(nb_list)
 
     if verbose:
         print("Calculating tunneling current...")
@@ -110,13 +109,13 @@ def qtcurrent(vj, cct, resp, vph_list, num_b=15, verbose=True, resp_matrix=None)
             current_out[i] = _current_1_tone(vph_list[i], ccc, vph, resp_matrix, num_p, npts, *nb_list)
     elif num_f == 2:
         for i in range(nvph):
-            current_out[i] = _current_2_tones(vph_list[i], ccc, vph, resp_matrix, num_p, num_b_max, npts, *nb_list)
+            current_out[i] = _current_2_tones(vph_list[i], ccc, vph, resp_matrix, num_p, npts, *nb_list)
     elif num_f == 3:
         for i in range(nvph):
-            current_out[i] = _current_3_tones(vph_list[i], ccc, vph, resp_matrix, num_p, num_b_max, npts, *nb_list)
+            current_out[i] = _current_3_tones(vph_list[i], ccc, vph, resp_matrix, num_p, npts, *nb_list)
     elif num_f == 4:
         for i in range(nvph):
-            current_out[i] = _current_4_tones(vph_list[i], ccc, vph, resp_matrix, num_p, num_b_max, npts, *nb_list)
+            current_out[i] = _current_4_tones(vph_list[i], ccc, vph, resp_matrix, num_p, npts, *nb_list)
     else:
         raise ValueError
 
@@ -200,7 +199,7 @@ def qtcurrent_std(vj, cct, resp, num_b=15):
     vph_rf = cct.vph[2]
     vph_if = abs(vph_lo - vph_rf)
 
-    vph_list = (0, vph_lo, vph_if)
+    vph_list = [0, vph_lo, vph_if]
     results = qtcurrent(vj, cct, resp, vph_list, num_b, verbose=False)
 
     current_dc = results[0, :].real
@@ -389,8 +388,8 @@ def _calculate_coeff(aaa):
     """Find convolution coefficients (recursively)."""
 
     _, num_p, num_b, _ = aaa.shape
-    num_p -= 1               # number of harmonics
-    num_b = (num_b - 1) / 2  # number of bessel functions
+    num_p -= 1                # number of harmonics
+    num_b = (num_b - 1) // 2  # number of bessel functions
 
     ccc_last = aaa[:, 1, :, :]
     if num_p == 1:
@@ -464,7 +463,7 @@ def _current_coeff_1_tone(a, ccc, resp_matrix, num_b1, npts):
 
 ### Two tones ###
 
-def _current_2_tones(vph_out, ccc, vph, resp_matrix, num_p, num_b, npts, num_b1, num_b2):
+def _current_2_tones(vph_out, ccc, vph, resp_matrix, num_p, npts, num_b1, num_b2):
     """ Calculate the tunneling current at a specific frequency.
 
     Two tones.
@@ -481,12 +480,12 @@ def _current_2_tones(vph_out, ccc, vph, resp_matrix, num_p, num_b, npts, num_b1,
 
             if vph_ab == vph_out:
 
-                current_out += _current_coeff_2_tones(a, b, ccc, resp_matrix, num_b, num_b1, num_b2, npts)
+                current_out += _current_coeff_2_tones(a, b, ccc, resp_matrix, num_b1, num_b2, npts)
 
     return current_out
 
 
-def _current_coeff_2_tones(a, b, ccc, resp_matrix, num_b, num_b1, num_b2, npts):
+def _current_coeff_2_tones(a, b, ccc, resp_matrix, num_b1, num_b2, npts):
     """ This function will calculate the tunneling current coefficient
         (I(a,b)) for a two tone system (i.e., for a (a,b) pair versus
         calculating the entire matrix for every (a,b) pair). Equations 5.25
@@ -521,7 +520,7 @@ def _current_coeff_2_tones(a, b, ccc, resp_matrix, num_b, num_b1, num_b2, npts):
 
 ### Three tones ###
 
-def _current_3_tones(vph_out, ccc, vph, resp_matrix, num_p, num_b, npts, num_b1, num_b2, num_b3):
+def _current_3_tones(vph_out, ccc, vph, resp_matrix, num_p, npts, num_b1, num_b2, num_b3):
     """ Calculate the tunneling current at a specific frequency.
 
     Three tones.
@@ -640,7 +639,7 @@ def _multiply_ccc3m(ccc1, ccc2, ccc3, k, l, m, a, b, c):
 
 ### Four tones ###
 
-def _current_4_tones(vph_out, ccc, vph, resp_matrix, num_p, num_b, npts, num_b1, num_b2, num_b3, num_b4):
+def _current_4_tones(vph_out, ccc, vph, resp_matrix, num_p, npts, num_b1, num_b2, num_b3, num_b4):
     """ Calculate the tunneling current at a specific frequency.
 
     Four tones.
@@ -660,12 +659,12 @@ def _current_4_tones(vph_out, ccc, vph, resp_matrix, num_p, num_b, npts, num_b1,
                     if vph_abcd == vph_out:
 
                         current_out += _current_coeff_4_tones(a, b, c, d, ccc, resp_matrix, 
-                                                              num_b, num_b1, num_b2, num_b3, num_b4, npts)
+                                                              num_b1, num_b2, num_b3, num_b4, npts)
 
     return current_out
 
 
-def _current_coeff_4_tones(a, b, c, d, ccc, resp_matrix, num_b, num_b1, num_b2, num_b3, num_b4, npts):
+def _current_coeff_4_tones(a, b, c, d, ccc, resp_matrix, num_b1, num_b2, num_b3, num_b4, npts):
     """ This function will calculate the tunneling current coefficient
         (I(a,b,c,d)) for a four tone system (i.e., for an (a,b,c,d) pair
         versus calculating the entire matrix for every (a,b,c) pair).
@@ -760,43 +759,3 @@ def _unpack_num_b(num_b, num_f):
         return num_b
 
     return tuple([num_b] * num_f)
-
-
-# Run main ------------------------------------------------------------------
-
-# def _main():
-#
-#     import qmix
-#
-#     resp = qmix.respfn.RespFnPolynomial(50)
-#
-#     num_b = (10, 3, 3, 3)
-#     num_f = 4
-#     num_p = 1
-#
-#     v_ph1 = 0.300
-#     v_ph2 = 0.315
-#     v_ph3 = 0.285
-#     v_ph4 = 0.015
-#
-#     circuit = qmix.circuit.EmbeddingCircuit(num_f, num_p)
-#     circuit.vph[1] = v_ph1
-#     circuit.vph[2] = v_ph2
-#     circuit.vph[3] = v_ph3
-#     circuit.vph[4] = v_ph4
-#     vj = circuit.initialize_vj()
-#     vj[1,1] = 0.3
-#     vj[2,1] = 0.003
-#     vj[3,1] = 0.003
-#     vj[4,1] = 0.
-#
-#     results = qtcurrent(vj, circuit, resp, [0], num_b=num_b)
-#
-#     import matplotlib.pyplot as plt
-#     plt.figure()
-#     plt.plot(results[0].real)
-#     plt.show()
-#
-#
-# if __name__ == "__main__":
-#     _main()
