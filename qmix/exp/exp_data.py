@@ -44,8 +44,6 @@ import qmix
 from qmix.exp.if_data import dcif_data, if_data
 from qmix.exp.iv_data import dciv_curve, iv_curve
 from qmix.exp.parameters import file_structure, params
-from qmix.exp.spectrum_analyzer import if_spectrum
-# from qmix.exp.zemb import plot_zemb_results, recover_zemb
 from qmix.harmonic_balance import harmonic_balance
 from qmix.mathfn.filters import gauss_conv
 from qmix.mathfn.misc import slope_span_n
@@ -63,10 +61,10 @@ ORANGE = '#ff7f0e'
 GOOD_ERROR = 7e-7
 STEP = 1e-5
 
-FIGSIZE_SINGLE = (3.5, 2.625)
-FIGSIZE_SUBFIG = (2.9, 2.625)
-
 _plot_params = {'dpi': 300, 'bbox_inches': 'tight'}
+
+# Note: All plotting functions are excluded from coverage.py 
+# by using:  "# pragma: no cover"
 
 # CLASSES FOR RAW DATA --------------------------------------------------------
 
@@ -147,7 +145,7 @@ class RawData0(object):
             self.corr = dcif.corr
             self.shot_slope = dcif.shot_slope
             self.if_fit = dcif.if_fit
-        else:
+        else:  # pragma: no cover
             self.dcif = None
             self.if_data = None
             self.if_noise = None
@@ -158,7 +156,7 @@ class RawData0(object):
         if verbose:
             print(self)
 
-    def __str__(self):
+    def __str__(self):  # pragma: no cover
 
         message = "\033[35m\nDC I-V data:\033[0m {0}\n".format(self.comment)
         message += "\tVgap:  \t\t{:6.2f}\tmV\n".format(self.vgap * 1e3)
@@ -181,11 +179,11 @@ class RawData0(object):
 
         return message
 
-    def __repr__(self):
+    def __repr__(self):  # pragma: no cover
 
         return self.__str__()
 
-    def plot_dciv(self, fig_name=None, vmax_plot=4.):
+    def plot_dciv(self, fig_name=None, vmax_plot=4.):  # pragma: no cover
         """Plot DC I-V data.
 
         Args:
@@ -230,7 +228,7 @@ class RawData0(object):
         plt.plot(v_mv, rn_slope, 'k--', label=lgd_str2)
         plt.plot(v_mv, np.polyval(psg, v_mv), 'k:', label=lgd_str5)
         plt.xlabel('Bias Voltage (mV)')
-        plt.ylabel('Current ($\mu$A)')
+        plt.ylabel(r'Current ($\mu$A)')
         idx = np.abs(vmax_plot - v_mv).argmin()
         plt.xlim([0, v_mv[idx]])
         plt.ylim([0, i_ua[idx]])
@@ -242,7 +240,7 @@ class RawData0(object):
             fig.savefig(fig_name, **_plot_params)
             plt.close(fig)
 
-    def plot_offset(self, fig_name=None):
+    def plot_offset(self, fig_name=None):  # pragma: no cover
         """Plot offset in DC I-V data.
 
         Args:
@@ -262,7 +260,7 @@ class RawData0(object):
                 self.current[mask] * ua)
         ax.set_xlim([-0.2, 0.2])
         ax.set_xlabel('Bias Voltage (mV)')
-        ax.set_ylabel('Current ($\mu$A)')
+        ax.set_ylabel(r'Current ($\mu$A)')
         ax.minorticks_on()
         ax.grid()
         if fig_name is None:
@@ -271,7 +269,7 @@ class RawData0(object):
             fig.savefig(fig_name, **_plot_params)
             plt.close(fig)
 
-    def plot_rdyn(self, fig_name=None, vmax_plot=4.):
+    def plot_rdyn(self, fig_name=None, vmax_plot=4.):  # pragma: no cover
         """Plot dynamic resistance of DC I-V data.
 
         Args:
@@ -288,7 +286,7 @@ class RawData0(object):
         fig, ax = plt.subplots()
         ax.semilogy(x, 1 / d_r_filt)
         ax.set_xlabel('Bias Voltage (mV)')
-        ax.set_ylabel('Dynamic Resistance ($\Omega$)')
+        ax.set_ylabel(r'Dynamic Resistance ($\Omega$)')
         ax.set_xlim([0, vmax_plot])
         ax.minorticks_on()
         if fig_name is None:
@@ -297,7 +295,7 @@ class RawData0(object):
             fig.savefig(fig_name, **_plot_params)
             plt.close(fig)
 
-    def plot_rstat(self, fig_name=None, vmax_plot=4.):
+    def plot_rstat(self, fig_name=None, vmax_plot=4.):  # pragma: no cover
         """Plot static resistance of DC I-V data.
 
         Args:
@@ -315,7 +313,7 @@ class RawData0(object):
         fig, ax = plt.subplots()
         plt.plot(x, r_stat)
         plt.xlabel('Bias Voltage (mV)')
-        plt.ylabel('Static Resistance ($\Omega$)')
+        plt.ylabel(r'Static Resistance ($\Omega$)')
         plt.xlim([0, vmax_plot])
         plt.ylim(bottom=0)
         plt.minorticks_on()
@@ -325,7 +323,7 @@ class RawData0(object):
             fig.savefig(fig_name, **_plot_params)
             plt.close(fig)
 
-    def plot_if_noise(self, fig_name=None, vmax_plot=4.):
+    def plot_if_noise(self, fig_name=None, vmax_plot=4.):  # pragma: no cover
         """Plot IF noise.
 
         Args:
@@ -358,7 +356,7 @@ class RawData0(object):
         ax1.plot(v_mv, rslope, 'k--', label=r'$R_\mathrm{{n}}^{{-1}}$ slope')
         ax1.axvline(self.vint * 1e3, c='k', ls=':',
                     lw=0.5, label=r'$V_\mathrm{{int}}$')
-        ax1.set_ylabel('Current ($\mu$A)')
+        ax1.set_ylabel(r'Current ($\mu$A)')
         ax1.set_ylim([0, imax])
         ax1.set_xlim([0, vmax])
         ax1.legend(loc=4, fontsize=8, frameon=False)
@@ -382,7 +380,7 @@ class RawData0(object):
         else:
             fig1.savefig(fig_name, **_plot_params)
 
-    def plot_all(self, fig_folder):
+    def plot_all(self, fig_folder):  # pragma: no cover
         """Plot all DC data.
 
         This function will save the data in the standard format.
@@ -463,7 +461,7 @@ class RawData(object):
         # Impedance recovery
         if analyze_iv:
             self.recover_zemb()
-        else:
+        else:  # pragma: no cover
             self.zt = None
             self.vt = None
             self.fit_good = None
@@ -497,7 +495,7 @@ class RawData(object):
             p = np.polyfit(self.voltage[idx:idx + 10],
                            self.current[idx:idx + 10], 1)
             self.zj_if = self.rn / p[0]
-        else:
+        else:  # pragma: no cover
             self.filename_hot = None
             self.filename_cold = None
             self.if_hot = None
@@ -603,7 +601,7 @@ class RawData(object):
 
         self.err_surf = err_surf
 
-    def plot_iv(self, fig_name=None, vmax_plot=4.):
+    def plot_iv(self, fig_name=None, vmax_plot=4.):  # pragma: no cover
         """Plot pumped I-V curve.
 
         Args:
@@ -633,7 +631,7 @@ class RawData(object):
             fig.savefig(fig_name, **_plot_params)
             plt.close(fig)
 
-    def plot_if(self, fig_name=None, vmax_plot=4.):
+    def plot_if(self, fig_name=None, vmax_plot=4.):  # pragma: no cover
         """Plot IF data.
 
         Args:
@@ -663,7 +661,7 @@ class RawData(object):
             fig.savefig(fig_name, **_plot_params)
             plt.close(fig)
 
-    def plot_ivif(self, fig_name=None, vmax_plot=4.):
+    def plot_ivif(self, fig_name=None, vmax_plot=4.):  # pragma: no cover
         """Plot IV and IF data on same plot.
 
         Args:
@@ -708,7 +706,7 @@ class RawData(object):
             fig.savefig(fig_name, **_plot_params)
             plt.close(fig)
 
-    def plot_shapiro(self, fig_name=None):
+    def plot_shapiro(self, fig_name=None):  # pragma: no cover
         """Plot shapiro steps.
 
         Args:
@@ -738,7 +736,7 @@ class RawData(object):
             fig.savefig(fig_name, **_plot_params)
             plt.close(fig)
 
-    def plot_if_noise(self, fig_name=None):
+    def plot_if_noise(self, fig_name=None):  # pragma: no cover
         """Plot IF noise.
 
         Args:
@@ -762,7 +760,7 @@ class RawData(object):
         ax1.plot(self.voltage * self.vgap * 1e3, 
                  rslope, 'k--', label=r'$R_\mathrm{{n}}^{{-1}}$ slope')
         ax1.plot(self.vint * 1e3, 0, 'ro', label=r'$V_\mathrm{{int}}$')
-        ax1.set_ylabel('Current ($\mu$A)')
+        ax1.set_ylabel(r'Current ($\mu$A)')
         ax1.set_ylim([0, imax])
         ax1.set_xlim([0, vmax])
         ax1.legend()
@@ -786,7 +784,7 @@ class RawData(object):
         else:
             fig1.savefig(fig_name, **_plot_params)
 
-    def plot_noise_temp(self, fig_name=None, vmax_plot=4.):
+    def plot_noise_temp(self, fig_name=None, vmax_plot=4.):  # pragma: no cover
         """Plot noise temperature.
 
         Args:
@@ -831,7 +829,7 @@ class RawData(object):
             fig.savefig(fig_name, **_plot_params)
             plt.close(fig)
 
-    def plot_yfac_noise_temp(self, fig_name=None, vmax_plot=4.):
+    def plot_yfac_noise_temp(self, fig_name=None, vmax_plot=4.):  # pragma: no cover
         """Plot Y-factor and noise temperature.
 
         Args:
@@ -880,7 +878,7 @@ class RawData(object):
             fig.savefig(fig_name, **_plot_params)
             plt.close(fig)
 
-    def plot_gain_noise_temp(self, fig_name=None, vmax_plot=4.):
+    def plot_gain_noise_temp(self, fig_name=None, vmax_plot=4.):  # pragma: no cover
         """Plot gain and noise temperature.
 
         Args:
@@ -938,7 +936,7 @@ class RawData(object):
             fig.savefig(fig_name, **_plot_params)
             plt.close(fig)
 
-    def plot_rdyn(self, fig_name=None, vmax_plot=4.):
+    def plot_rdyn(self, fig_name=None, vmax_plot=4.):  # pragma: no cover
         """Plot dynamic resistance.
 
         Args:
@@ -977,7 +975,7 @@ class RawData(object):
         plt.axvline(1 * self.vgap * 1e3, c='k', ls='--', lw=0.5)
         
         plt.xlabel('Bias Voltage (mV)')
-        plt.ylabel('Dynamic Resistance ($\Omega$)')
+        plt.ylabel(r'Dynamic Resistance ($\Omega$)')
         plt.xlim([0, vmax_plot])
         plt.ylim(bottom=0)
         plt.legend(loc=0, title='LO: ' + str(self.freq) + ' GHz')
@@ -989,7 +987,7 @@ class RawData(object):
             fig.savefig(fig_name, **_plot_params)
             plt.close(fig)
 
-    def plot_gain(self, fig_name=None, vmax_plot=4.):
+    def plot_gain(self, fig_name=None, vmax_plot=4.):  # pragma: no cover
         """Plot gain.
 
         Args:
@@ -1014,7 +1012,7 @@ class RawData(object):
             fig.savefig(fig_name, **_plot_params)
             plt.close(fig)
 
-    def plot_error_surface(self, fig_name=None):
+    def plot_error_surface(self, fig_name=None):  # pragma: no cover
         """Plot error surface (impedance recovery).
 
         Args:
@@ -1085,7 +1083,7 @@ class RawData(object):
             fig.savefig(fig_name, **_plot_params)
             plt.close(fig)
 
-    def plot_simulated(self, fig_name=None, vmax_plot=4.):
+    def plot_simulated(self, fig_name=None, vmax_plot=4.):  # pragma: no cover
         """Plot simulated I-V curve (based on impedance recovery).
 
         Args:
@@ -1134,8 +1132,10 @@ class RawData(object):
                                self.dciv.current * self.igap * 1e6)])
         plt.xlabel(r'Bias Voltage (mV)')
         plt.ylabel(r'DC Current (uA)')
-        msg = 'LO: {0:.1f} GHz\n$V_T^{{LO}}$ = {1:.2f} mV\n$Z_T^{{LO}}$ = {2:.2f} $\Omega$'
-        msg = msg.format(self.freq, self.vt*self.vgap*1e3, self.zt*self.rn)
+        msg1 = 'LO: {:.1f} GHz'.format(self.freq)
+        msg2 = r'$V_T^{{LO}}$ = {:.2f} mV'.format(self.vt*self.vgap*1e3)
+        msg3 = r'$Z_T^{{LO}}$ = {:.2f} $\Omega$'.format(self.zt*self.rn)
+        msg = msg1 + '\n' + msg2 + '\n' + msg3
         plt.legend(title=msg, frameon=False)
 
         if fig_name is None:
@@ -1144,7 +1144,7 @@ class RawData(object):
             fig.savefig(fig_name, **_plot_params)
             plt.close(fig)
 
-    def plot_all(self, fig_folder):
+    def plot_all(self, fig_folder):  # pragma: no cover
         """Plot everything using the standard file hierarchy.
 
         Args:
@@ -1163,7 +1163,37 @@ class RawData(object):
 
 # ANALYZE IF SPECTRUM DATA ----------------------------------------------------
 
-def plot_if_spectrum(data_folder, fig_folder=None):
+def _if_spectrum(filename, t_hot=293., t_cold=78.5):
+        """Get noise temperature from hot/cold spectrum measurements.
+        
+        Args:
+            filename: filename
+            t_hot: hot load temperature
+            t_cold: cold load tempearture
+
+        Returns: frequency, noise temp, hot power, cold power
+
+        """
+
+        freq, p_hot_db, p_cold_db = np.genfromtxt(filename).T
+
+        y_fac = _db_to_lin(p_hot_db) / _db_to_lin(p_cold_db)
+        y_fac[y_fac <= 1] = 1 + 1e-6
+
+        t_n = (t_hot - t_cold * y_fac) / (y_fac - 1)
+
+        data = np.vstack((freq, t_n, p_hot_db, p_cold_db)).T
+
+        return data
+
+
+def _db_to_lin(db):
+    """dB to linear units."""
+
+    return 10 ** (db / 10.)
+
+
+def plot_if_spectrum(data_folder, fig_folder=None):  # pragma: no cover
     """Plot all IF spectra.
 
     Args:
@@ -1177,11 +1207,8 @@ def plot_if_spectrum(data_folder, fig_folder=None):
 
     if_spectra_files = glob.glob(data_folder + '*comb*.dat')
 
-    figw = 5
-    figh = figw / (4. / 3.)
-
-    fig, ax = plt.subplots(figsize=(figw, figh))
-    fig1, ax1 = plt.subplots(figsize=(figw, figh))
+    fig, ax = plt.subplots()
+    fig1, ax1 = plt.subplots()
 
     for if_file in if_spectra_files:
 
@@ -1189,9 +1216,9 @@ def plot_if_spectrum(data_folder, fig_folder=None):
         print(" - {}".format(filename))
         base = filename.split('_')[0][1:]
 
-        freq, t_n, p_hot_db, p_cold_db = if_spectrum(if_file).T
+        freq, t_n, p_hot_db, p_cold_db = _if_spectrum(if_file).T
 
-        fig2, ax2 = plt.subplots(figsize=(figw, figh))
+        fig2, ax2 = plt.subplots()
         ax2.plot(freq, t_n)
         ax.plot(freq, t_n, label="{} GHz".format(base))
         ax1.plot(freq, gauss_conv(t_n, sigma=1), label="{} GHz".format(base))
@@ -1230,7 +1257,7 @@ def plot_if_spectrum(data_folder, fig_folder=None):
 
 # Plot overall results --------------------------------------------------------
 
-def plot_overall_results(dciv_data, data_list, fig_folder):
+def plot_overall_results(dciv_data, data_list, fig_folder):  # pragma: no cover
     """Plot overall results.
 
     Args:
@@ -1274,7 +1301,7 @@ def plot_overall_results(dciv_data, data_list, fig_folder):
     gain = np.array(gain)
 
     # Plot all pumped iv curves ----------------------------------------------
-    plt.figure(figsize=FIGSIZE_SINGLE)
+    plt.figure()
     plt.plot(dciv_data.voltage, dciv_data.current, 'k')
     for i, data in enumerate(data_list):
         plt.plot(data.voltage, data.current,
@@ -1288,7 +1315,7 @@ def plot_overall_results(dciv_data, data_list, fig_folder):
     plt.close()
 
     # Plot dynamic resistance ------------------------------------------------
-    plt.figure(figsize=FIGSIZE_SINGLE)
+    plt.figure()
     plt.plot(freq, rdyn, marker='o', ls='--')
     plt.xlabel('Frequency (GHz)')
     plt.ylabel(r'Dynamic resistance ($\Omega$)')
@@ -1323,34 +1350,26 @@ def plot_overall_results(dciv_data, data_list, fig_folder):
 
     # Plot noise temperature and gain ----------------------------------------
 
-    fig, ax1 = plt.subplots(figsize=(4, 3))
+    fig, ax1 = plt.subplots()
     ax1.plot(freq, t_n, c=PALE_RED, ls='--', marker='o')
     ax1.set_xlabel('Frequency (GHz)')
     ax1.set_ylabel('Noise Temperature (K)', color=PALE_RED)
-    # ax1.set_ylim([0, t_n.max()*1.05])
-    # ax1.set_ylim([0, t_n.max() * 1.05])
-    # ax1.set_ylim([])
-    # ax1.set_ylim(bottom=0)
-    # ax1.set_ylim([20, 90])
-    ax1.set_ylim([0, 250])
+    ax1.set_ylim([0, 120])
     ax1.grid()
     for tl in ax1.get_yticklabels():
         tl.set_color(PALE_RED)
     ax2 = ax1.twinx()
     ax2.plot(freq, gain, c=BLUE, ls='--', marker='o')
     ax2.set_ylabel('Gain (dB)', color=BLUE)
-    # ax2.set_ylim([gain.min()*1.05, 0])
-    # ax2.set_ylim([gain.min() - 0.5, gain.max() + 0.5])
-    # ax2.set_ylim([-6, 1])
-    ax2.set_ylim([-10, 0])
     for tl in ax2.get_yticklabels():
         tl.set_color(BLUE)
+    ax2.set_ylim([-10, 2])
     plt.savefig(fig_folder + '08_overall_performance/noise_temperature_and_gain.png')
     plt.close()
 
     # Plot IF noise contribution results -------------------------------------
 
-    plt.figure(figsize=FIGSIZE_SINGLE)
+    plt.figure()
     plt.plot(if_noise_f, if_noise, 'o--', color=PALE_RED)
     plt.xlabel('Frequency (GHz)')
     plt.ylabel(r'IF Noise Contribution (K)')
@@ -1422,7 +1441,7 @@ def plot_overall_results(dciv_data, data_list, fig_folder):
 
     # Plot embedding impedance results ---------------------------------------
 
-    plt.figure(figsize=FIGSIZE_SUBFIG)
+    plt.figure()
     plt.plot(f_z, z.real / data.rn, c=PALE_BLUE,
              ls='--', marker='o', label='Real')
     plt.plot(f_z, z.imag / data.rn, c=PALE_RED,
@@ -1436,7 +1455,7 @@ def plot_overall_results(dciv_data, data_list, fig_folder):
 
     # Plot embedding impedance results ---------------------------------------
 
-    plt.figure(figsize=FIGSIZE_SUBFIG)
+    plt.figure()
     plt.plot(f_z, v / data.vgap, c=PALE_GREEN, ls='--', marker='o')
     plt.xlabel('Frequency (GHz)')
     plt.ylabel(r'Embedding Voltage / $V_{{gap}}$')
@@ -1654,7 +1673,7 @@ def _find_alpha(dciv, vdc_exp, idc_exp, vph, alpha_max=1.5, num_b=20):
 
 # FILE MANAGEMENT HELPER FUNCTIONS --------------------------------------------
 
-def initialize_dir(fig_folder):
+def initialize_dir(fig_folder):  # pragma: no cover
     """Initialize directory for results.
 
     Args:
@@ -1672,7 +1691,7 @@ def initialize_dir(fig_folder):
     print(" ")
 
 
-def check_iv_if_matching(iv_dat, hot_dat, cold_dat):
+def check_iv_if_matching(iv_dat, hot_dat, cold_dat):  # pragma: no cover
     """Based on file names, make sure that frequencies line up.
 
     Args:
@@ -1710,7 +1729,7 @@ def check_iv_if_matching(iv_dat, hot_dat, cold_dat):
     return f_out
 
 
-def generate_filename_from_f(freq):
+def generate_filename_from_f(freq):  # pragma: no cover
     """Generate file name from frequency.
 
     Using my naming scheme.
@@ -1731,7 +1750,7 @@ def generate_filename_from_f(freq):
     return iv_filename, hot_filename, cold_filename
 
 
-def generate_latex_iv_nt(frequencies, file_name):
+def generate_latex_iv_nt(frequencies, file_name):  # pragma: no cover
     """Generate Latex text for quick plotting.
 
     Args:
@@ -1743,9 +1762,9 @@ def generate_latex_iv_nt(frequencies, file_name):
     with open(file_name, 'w') as f:
         for freq in frequencies:
             freq_string = str(int(freq)) + '_' + str(int(freq * 10 % 10))
-            f.write(" \\noindent \includegraphics[height=6.2cm]{fig_iv_" +
+            f.write(r" \noindent \includegraphics[height=6.2cm]{fig_iv_" +
                     freq_string +
-                    ".pdf}\includegraphics[height=6.2cm]{fig_noise_temp_" +
+                    r".pdf}\includegraphics[height=6.2cm]{fig_noise_temp_" +
                     freq_string + ".pdf}\n\n")
 
 

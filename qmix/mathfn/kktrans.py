@@ -5,7 +5,6 @@
 import numpy as np
 from scipy.signal import hilbert
 
-
 # Functions -------------------------------------------------------------------
 
 def kk_trans(v, i, n=50):
@@ -26,13 +25,13 @@ def kk_trans(v, i, n=50):
 
     """
 
-    npts = np.alen(v)
+    npts = v.shape[0]
 
     # Ensure v has even spacing
     assert np.abs((v[1] - v[0]) - (v[1:] - v[:-1])).max() < 1e-5
 
-    # Subtract v to make i-v curve defined at v=infinity
-    ikk = -np.imag(hilbert(i - v, N=npts * n))
+    # Subtract v to make kk defined at v=infinity
+    ikk = -(hilbert(i - v, N=npts * n)).imag
     ikk = ikk[:npts]
 
     return ikk

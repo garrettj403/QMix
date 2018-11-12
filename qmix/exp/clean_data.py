@@ -5,13 +5,10 @@
 import numpy as np
 
 
-# All of these functions should return new numpy arrays.
-
-
 # Basic functions to clean x/y data ------------------------------------------
 
 def remove_nans_xy(x, y):
-    """Remove Nans from x/y data.
+    """Remove NaNs from x/y data.
 
     Args:
         x (ndarray): x array
@@ -90,19 +87,19 @@ def clean_xy(x, y):
     return x, y
 
 
-# def xy_to_matrix(x, y):
-#     """Take x/y data in separate arrays and combine into a matrix.
-#
-#     Args:
-#         x (ndarray): x data
-#         y (ndarray): y data
-#
-#     Returns:
-#         ndarray: data in matrix form
-#
-#     """
-#
-#     return np.vstack((x, y)).T
+def xy_to_matrix(x, y):
+    """Take x/y data in separate arrays and combine into a matrix.
+
+    Args:
+        x (ndarray): x data
+        y (ndarray): y data
+
+    Returns:
+        ndarray: data in matrix form
+
+    """
+
+    return np.vstack((x, y)).T
 
 
 # Basic functions to clean x/y data in matrix form ---------------------------
@@ -194,33 +191,3 @@ def matrix_to_xy(matrix):
     """
 
     return matrix[:, 0], matrix[:, 1]
-
-
-# Quick test -----------------------------------------------------------------
-
-def _main():
-
-    x_data = np.array([7, 5, 3, 4, 4, 4, 7, 6, np.NaN, 10])
-    y_data = np.array([1, 2, 3, 4, 5, 6, 7, 8, 10, np.NaN])
-    matrix_data = xy_to_matrix(x_data, y_data)
-
-    print('\nOriginal x/y data:')
-    print((xy_to_matrix(x_data, y_data)))
-
-    print('\nAfter cleaning:')
-    x, y = clean_xy(x_data, y_data)
-    print((xy_to_matrix(x, y)))
-
-    print('\nOriginal data in matrix form:')
-    print(matrix_data)
-
-    print('\nAfter cleaning:')
-    matrix = clean_matrix(matrix_data)
-    print(matrix)
-    print('')
-
-    np.testing.assert_array_equal(matrix, xy_to_matrix(x, y))
-
-
-if __name__ == "__main__":
-    _main()

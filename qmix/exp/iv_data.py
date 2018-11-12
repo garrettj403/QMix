@@ -239,7 +239,7 @@ def _filter_iv_data(volt_v, curr_a, filter_data=True, vgap_guess=2.7e-3,
 
     """
 
-    if not filter_data:
+    if not filter_data:  # pragma: no cover
         return volt_v, curr_a
 
     vnorm, inorm = volt_v / vgap_guess, curr_a / igap_guess
@@ -301,11 +301,11 @@ def _take_one_pass(v, i):
     idx_imin, idx_imax = i.argmin(), i.argmax()
 
     # If data is already sorted
-    if idx_imin == 0 and idx_imax == np.alen(i) - 1:
+    if idx_imin == 0 and idx_imax == np.alen(i) - 1:  # pragma: no cover
         return v, i
 
     # If data is already sorted, but in reverse order
-    if idx_imax == 0 and idx_imin == np.alen(i) - 1:
+    if idx_imax == 0 and idx_imin == np.alen(i) - 1:  # pragma: no cover
         return v, i
 
     # If the sweep starts in the middle.

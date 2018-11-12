@@ -1,84 +1,64 @@
-import qmix
 import numpy as np
-import scipy.constants as sc 
-from qmix.misc.tucker import dc_tunneling_current, ac_tunneling_current
+import scipy.constants as sc
+from scipy.special import jv
 
+import qmix
 
-ORDER = 50
-RESP = qmix.respfn.RespFnPolynomial(ORDER)
+RESP = qmix.respfn.RespFnPolynomial(50)
+VBIAS = np.linspace(0, 2, 101)
 
-VMAX = 2
-NPTS = 101
-VBIAS = np.linspace(0, VMAX, NPTS)
-VBIAS.flags.writeable = False
+def test_compare_qtcurrent_to_tucker_theory():
+    """ This test will compare the DC and AC tunneling currents calculated
+    by qmix.qtcurrent to results from Tucker theory (Tucker1985).
 
-def test_compare_qtcurrent_to_tucker():
-    print(""" 
-    This test will compare the DC/AC currents calculated by two different modules:
-    qtcurrent.py (multi-tone module) and tucker.py (Tucker module).
-
-    The tucker.py module only works for a single tone/harmonic. When
+    The Tucker theory equations only work for a single tone/harmonic. When
     only one tone/harmonic is present, they should provide identical results.
-    """)
 
-    vph1 = 0.33
-    alpha1 = 0.8
+    """
 
-    num_f = 1
-    num_p = 1
-    cct = qmix.circuit.EmbeddingCircuit(num_f, num_p, vb_min=0, vb_max=VMAX, vb_npts=NPTS)
+    # Build embedding circuit for QMix
+    cct = qmix.circuit.EmbeddingCircuit(1, 1, vb_min=0, vb_npts=101)
+    vph = 0.33
+    cct.vph[1] = vph
 
-    cct.vph[1] = vph1
+    # Set voltage across junction
+    alpha = 0.8
     vj = cct.initialize_vj()
-    vj[1, 1, :] = cct.vph[1] * alpha1
-
-    num_b = 15
+    vj[1, 1, :] = cct.vph[1] * alpha
 
     # Method 1: using qtcurrent
-    i_meth1 = qmix.qtcurrent.qtcurrent(vj, cct, RESP, cct.vph, num_b)
-    idc_meth1 = i_meth1[0, :].real
-    iac_meth1 = i_meth1[1, :]
+    idc_meth1 = qmix.qtcurrent.qtcurrent(vj, cct, RESP, 0.)
+    iac_meth1 = qmix.qtcurrent.qtcurrent(vj, cct, RESP, cct.vph[1])
 
     # Method 2: using the function from the tucker theory module
-    idc_meth2 = qmix.misc.tucker.dc_tunneling_current(VBIAS, RESP, alpha1, vph1)
-    iac_meth2 = qmix.misc.tucker.ac_tunneling_current(VBIAS, RESP, alpha1, vph1)
-
-    # # DEBUG
-    # import matplotlib.pyplot as plt 
-    # plt.figure()
-    # plt.plot(cct.vb, idc_meth1)
-    # plt.plot(VBIAS, idc_meth2, ls='--')
-
-    # plt.figure()
-    # plt.plot(cct.vb, iac_meth1.real)
-    # plt.plot(VBIAS, iac_meth2.real, ls='--')
-    # plt.show()
+    idc_meth2 = _tucker_dc_current(VBIAS, RESP, alpha, vph)
+    iac_meth2 = _tucker_ac_current(VBIAS, RESP, alpha, vph)
 
     # Compare methods
     np.testing.assert_almost_equal(idc_meth1, idc_meth2, decimal=15)
     np.testing.assert_almost_equal(iac_meth1, iac_meth2, decimal=15)
 
-    print("""All arrays in my software use data type 'complex128'. This gives 64 
-    bits to the floating point real number and 64 bits to the floating point 
-    imaginary number. Each floating point number then gets:
-       - 1 sign bit
-       - 11 exponent bits 
-       - 52 mantissa bits
-    52 mantissa bits gives roughly 15-17 significant figure accuracy in decimal 
-    notation. Therefore, if the average absolute error is on the order of 1e-15 
-    to 1e-17, the comparison should be considered a success. 
-    """)
+    # Note: All arrays in my software use data type 'complex128'. This gives 
+    # 64 bits to the floating point real number and 64 bits to the floating 
+    # point imaginary number. Each floating point number then gets:
+    #    - 1 sign bit
+    #    - 11 exponent bits 
+    #    - 52 mantissa bits
+    # 52 mantissa bits gives roughly 15-17 significant figure accuracy in decimal 
+    # notation. Therefore, if the average absolute error is on the order of 1e-15 
+    # to 1e-17, the comparison should be considered a success. 
 
 
-def test_adding_more_tones():
-    """ 
-    This function simulates the QTCs for a 1 tone/1 harmonic simulation. Then, 
-    more and more tones are added except only the first tone/harmonic is defined.
-    This should result in the same tunnelling currents being calculated.
-    """
+def test_effect_of_adding_more_tones():
+    """ This function simulates the QTCs for a 1 tone/1 harmonic simulation. 
+    Then, more and more tones are added except only the first tone/harmonic is
+    defined. This should result in the same tunnelling currents being 
+    calculated. """
 
     num_b = (9, 2, 2, 2)
-    # num_b = 9
+
+    alpha1 = 0.8           
+    vph1 = 0.33
 
     # Setup 1st tone for comparison ------------------------------------------
 
@@ -86,8 +66,6 @@ def test_adding_more_tones():
     num_p = 1
     cct1 = qmix.circuit.EmbeddingCircuit(num_f, num_p)
 
-    alpha1 = 0.8           
-    vph1 = 0.33
     cct1.vph[1] = vph1
     vj = cct1.initialize_vj()
     vj[1, 1, :] = cct1.vph[1] * alpha1
@@ -144,24 +122,6 @@ def test_adding_more_tones():
 
     # Compare results --------------------------------------------------------
 
-    # # DEBUG
-    # import matplotlib.pyplot as plt 
-    # plt.figure()
-    # plt.plot(cct.vb, idc1-idc2, label='1 - 2')
-    # plt.plot(cct.vb, idc1-idc3, label='1 - 3')
-    # plt.plot(cct.vb, idc1-idc4, label='1 - 4')
-    # plt.legend()
-
-    # plt.figure()
-    # plt.plot(cct.vb, np.real(iac1)-np.real(iac2), label='1-2 Real')
-    # plt.plot(cct.vb, np.imag(iac1)-np.imag(iac2), label='1-2 Imag')
-    # plt.plot(cct.vb, np.real(iac1)-np.real(iac3), label='1-3 Real')
-    # plt.plot(cct.vb, np.imag(iac1)-np.imag(iac3), label='1-3 Imag')
-    # plt.plot(cct.vb, np.real(iac1)-np.real(iac4), label='1-4 Real')
-    # plt.plot(cct.vb, np.imag(iac1)-np.imag(iac4), label='1-4 Imag')
-    # plt.legend()
-    # plt.show()
-
     # Compare methods
     # dc
     np.testing.assert_equal(idc1, idc2)
@@ -180,14 +140,16 @@ def test_adding_more_tones():
     np.testing.assert_equal(i4[4,:], np.zeros_like(i4[4,:]))
 
 
-def test_adding_more_harmonics():
-    """ 
-    This function simulates the QTCs for a 1 tone/1 harmonic simulation. Then, 
-    more and more tones are added except only the first tone/harmonic is defined.
-    This should result in the same tunnelling currents being calculated.
-    """
+def test_effect_of_adding_more_harmonics():
+    """ This function simulates the QTCs for a 1 tone/1 harmonic simulation. 
+    Then, more and more harmonics are added except only the first 
+    tone/harmonic is defined. This should result in the same tunnelling 
+    currents being calculated. """
 
     num_b = 9
+
+    alpha1 = 0.8           
+    vph1 = 0.33
 
     # Setup 1st tone for comparison ------------------------------------------
 
@@ -195,8 +157,6 @@ def test_adding_more_harmonics():
     num_p = 1
     cct1 = qmix.circuit.EmbeddingCircuit(num_f, num_p)
 
-    alpha1 = 0.8           
-    vph1 = 0.33
     cct1.vph[1] = vph1
     vj = cct1.initialize_vj()
     vj[1, 1, :] = cct1.vph[1] * alpha1
@@ -250,40 +210,6 @@ def test_adding_more_harmonics():
 
     # Compare results --------------------------------------------------------
 
-    # # DEBUG
-    # import matplotlib.pyplot as plt 
-    # plt.figure()
-    # plt.plot(cct.vb, idc1-idc2, label='1 - 2')
-    # plt.plot(cct.vb, idc1-idc3, label='1 - 3')
-    # plt.plot(cct.vb, idc1-idc4, label='1 - 4')
-    # plt.legend()
-
-    # plt.figure()
-    # plt.plot(cct.vb, np.real(iac1)-np.real(iac2), label='1-2 Real')
-    # plt.plot(cct.vb, np.imag(iac1)-np.imag(iac2), label='1-2 Imag')
-    # plt.plot(cct.vb, np.real(iac1)-np.real(iac3), label='1-3 Real')
-    # plt.plot(cct.vb, np.imag(iac1)-np.imag(iac3), label='1-3 Imag')
-    # plt.plot(cct.vb, np.real(iac1)-np.real(iac4), label='1-4 Real')
-    # plt.plot(cct.vb, np.imag(iac1)-np.imag(iac4), label='1-4 Imag')
-    # plt.legend()
-
-    # plt.figure()
-    # plt.plot(cct.vb, i2[2,:].real, label='2 Real')
-    # plt.plot(cct.vb, i3[2,:].real, label='3 Real')
-    # plt.plot(cct.vb, i4[2,:].real, label='4 Real')
-    # plt.legend()
-
-    # plt.figure()
-    # plt.plot(cct.vb, i3[3,:].real, label='3 Real')
-    # plt.plot(cct.vb, i4[3,:].real, label='4 Real')
-    # plt.legend()
-
-    # plt.figure()
-    # plt.plot(cct.vb, i4[4,:].real, label='4 Real')
-    # plt.legend()
-
-    # plt.show()
-
     # Compare methods
     # dc
     np.testing.assert_equal(idc1, idc2)
@@ -300,13 +226,13 @@ def test_adding_more_harmonics():
     np.testing.assert_equal(i3[3,:], i4[3,:])
 
 
-def test_exciting_different_harmonics():
-    """ Test different ways of defining the same simulation."""
+def test_setting_up_simulation_using_different_harmonic():
+    """ Try setting up the simulation using a different harmonic. Then, 
+    compare the results. """
 
-    num_b = 50
+    num_b = 15
     num_f = 1
 
-    # the signal:
     vph = 0.3
     alpha = 0.8 
 
@@ -336,78 +262,18 @@ def test_exciting_different_harmonics():
     i2_dc = i2[0].real
     i2_ac = i2[-1]
 
-    # Using a fundamental tone that is a third of the original frequency -----
-
-    num_p = 3
-    cct = qmix.circuit.EmbeddingCircuit(num_f, num_p)
-    cct.vph[1] = vph / 3.
-    vj = cct.initialize_vj()
-    vj[1, 3, :] = vph * alpha
-    vph_list = [0, vph/3., vph*2./3., vph]
-
-    i3 = qmix.qtcurrent.qtcurrent(vj, cct, RESP, vph_list, num_b)
-    i3_dc = i3[0].real
-    i3_ac = i3[-1]
-
-    # Using a fundamental tone that is a third of the original frequency -----
-
-    num_p = 4
-    cct = qmix.circuit.EmbeddingCircuit(num_f, num_p)
-    cct.vph[1] = vph / 4.
-    vj = cct.initialize_vj()
-    vj[1, 4, :] = vph * alpha
-    vph_list = [0, vph/4., vph/2., vph*3./4., vph]
-
-    i4 = qmix.qtcurrent.qtcurrent(vj, cct, RESP, vph_list, num_b)
-    i4_dc = i4[0].real
-    i4_ac = i4[-1]
-
-    # Compare results --------------------------------------------------------
-
-    # # DEBUG
-    # import matplotlib.pyplot as plt 
-    # plt.figure()
-    # plt.plot(cct.vb, i1_dc)
-    # plt.plot(cct.vb, i2_dc)
-    # plt.plot(cct.vb, i3_dc)
-    # plt.plot(cct.vb, i4_dc)
-
-    # plt.figure()
-    # plt.plot(cct.vb, i1_ac.real)
-    # plt.plot(cct.vb, i2_ac.real)
-    # plt.plot(cct.vb, i3_ac.real)
-    # plt.plot(cct.vb, i4_ac.real)
-
-    # plt.figure()
-    # plt.plot(cct.vb, i1_ac.imag)
-    # plt.plot(cct.vb, i2_ac.imag)
-    # plt.plot(cct.vb, i3_ac.imag)
-    # plt.plot(cct.vb, i4_ac.imag)
-    # plt.show()
-
     # Compare methods
     # dc
-    decimal_error = 5
+    decimal_error = 10
     np.testing.assert_almost_equal(i1_dc, i2_dc, decimal=decimal_error)
-    np.testing.assert_almost_equal(i1_dc, i3_dc, decimal=decimal_error)
-    np.testing.assert_almost_equal(i1_dc, i3_dc, decimal=decimal_error)
     # ac at fundamental
     np.testing.assert_almost_equal(i1_ac, i2_ac, decimal=decimal_error)
-    np.testing.assert_almost_equal(i1_ac, i3_ac, decimal=decimal_error)
-    np.testing.assert_almost_equal(i1_ac, i3_ac, decimal=decimal_error)
     # lower order harmonics should all be zero
     np.testing.assert_equal(i2[1], np.zeros_like(i2[1]))
-    np.testing.assert_equal(i3[1], np.zeros_like(i3[1]))
-    np.testing.assert_equal(i3[2], np.zeros_like(i3[2]))
-    np.testing.assert_equal(i4[1], np.zeros_like(i4[1]))
-    np.testing.assert_equal(i4[2], np.zeros_like(i4[1]))
-    np.testing.assert_equal(i4[3], np.zeros_like(i4[1]))
 
 
-def test_the_effect_of_adding_more_tones_on_if():
-    """ 
-    
-    """
+def test_effect_of_adding_more_tones_on_if():
+    """ Try adding more tones. Compare IF results. """
 
     alpha1 = 0.8
     vph1 = 0.3
@@ -446,22 +312,6 @@ def test_the_effect_of_adding_more_tones_on_if():
 
     # Compare results --------------------------------------------------------
 
-    # # DEBUG
-    # import matplotlib.pyplot as plt 
-    # plt.figure()
-    # plt.plot(cct.vb, idc2, label='2')
-    # plt.plot(cct.vb, idc3, label='3', ls='--')
-    # # plt.plot(cct.vb, idc4, label='4')
-    # plt.legend()
-
-    # plt.figure()
-    # plt.plot(cct.vb, np.abs(iif2), label='2')
-    # plt.plot(cct.vb, np.abs(iif3), label='3', ls='--')
-    # # plt.plot(cct.vb, np.real(iif4), label='4 Real')
-    # # plt.plot(cct.vb, np.imag(iif4), label='4 Imag')
-    # plt.legend()
-    # plt.show()
-
     # Compare methods
     dc_decimal_error = 15
     np.testing.assert_almost_equal(idc2, idc3, decimal=dc_decimal_error)
@@ -472,24 +322,17 @@ def test_the_effect_of_adding_more_tones_on_if():
 
 
 def test_excite_different_tones():
-    """ 
-    
-    """
-
-    # 1. Define junction properties ----------------------------------------------
+    """ Try exciting the tones in different orders. Compare results. """
 
     # junction properties
-    v_gap       = 2.8e-3              # gap voltage in [V]
-    r_n         = 14.0                # normal resistance in [ohms]
+    v_gap = 2.8e-3               # gap voltage in [V]
+    r_n   = 14.0                 # normal resistance in [ohms]
     f_gap = sc.e * v_gap / sc.h  # gap frequency in [Hz]
 
-
-    # 2. Define circuit parameters -----------------------------------------------
-
     # input signal properties
-    f_tone1     = 230e9              # frequency in [Hz]
+    f_tone1     = 230e9              
     f_tone2     = 235e9
-    alpha_tone1 = 0.8                # junction drive level (normalized value)
+    alpha_tone1 = 0.8                
     vph1 = f_tone1 / f_gap
     vph2 = f_tone2 / f_gap
     vph_list = [0, vph1, vph2]  
@@ -550,30 +393,15 @@ def test_excite_different_tones():
     results = qmix.qtcurrent.qtcurrent(vj, cct, RESP, [0], num_b)
     idc4 = np.real(results[0, :])
 
-    # # DEBUG
-    # import matplotlib.pyplot as plt 
-    # plt.figure()
-    # plt.plot(cct.vb, np.real(idc1), label='2')
-    # plt.plot(cct.vb, np.real(idc2), label='2')
-    # plt.plot(cct.vb, np.real(idc3), label='3')
-    # plt.plot(cct.vb, np.real(idc4), label='4')
-    # plt.legend()
-    # plt.show()
-
     # Compare methods
     dc_decimal_error = 15
     np.testing.assert_almost_equal(idc1, idc2, decimal=dc_decimal_error)
     np.testing.assert_almost_equal(idc1, idc3, decimal=dc_decimal_error)
     np.testing.assert_almost_equal(idc1, idc4, decimal=dc_decimal_error)
 
-    # ac_decimal_error = 15
-    # np.testing.assert_almost_equal(np.real(iif2), np.real(iif3), decimal=ac_decimal_error)
-    # np.testing.assert_almost_equal(np.real(iif2), np.real(iif4), decimal=ac_decimal_error)
-    # np.testing.assert_almost_equal(np.imag(iif2), np.imag(iif3), decimal=ac_decimal_error)
-    # np.testing.assert_almost_equal(np.imag(iif2), np.imag(iif4), decimal=ac_decimal_error)
-
 
 def test_interpolation_of_respfn():
+    """ Test how the response function is interpolated. """
 
     a, b, c, d = 4, 3, 2, 4
     vidx = 50
@@ -632,7 +460,55 @@ def test_interpolation_of_respfn():
     np.testing.assert_equal(interp_matrix[a, b, c, d, :], RESP.resp(vtest))
 
 
-if __name__ == "__main__":  # pragma: no cover
+# Tucker theory --------------------------------------------------------------
 
-    test_exciting_different_harmonics()
-    
+def _tucker_dc_current(voltage, resp, alpha, v_ph, num_b=20):
+    """ Calculate the DC tunneling current for a single tone/harmonic using
+    Tucker theory. This gives the pumped I-V curve. This is equation 3.3 in 
+    Tucker's 1985 paper.
+
+    Args:
+        voltage: normalized bias voltage
+        resp: response function
+        alpha: junction drive level
+        v_ph: photon voltage
+        num_b: number of Bessel functions to include
+
+    Returns:
+        DC tunneling current
+
+    """
+
+    i_dc = np.zeros(np.alen(voltage), dtype=float)
+
+    for n in range(-num_b, num_b + 1):
+        i_dc += jv(n, alpha)**2 * np.imag(resp.resp(voltage + n * v_ph))
+
+    return i_dc
+
+
+def _tucker_ac_current(voltage, resp, alpha, v_ph, num_b=20):
+    """ Calculate the AC tunneling current for a single tone/harmonic using
+    Tucker theory.
+
+    Args:
+        voltage: normalized bias voltage
+        resp: response function
+        alpha: junction drive level
+        v_ph: photon voltage
+        num_b: truncate the bessel functions at this order
+
+    Returns:
+        AC tunneling current
+
+    """
+
+    i_ac = np.zeros(np.alen(voltage), dtype=complex)
+
+    for n in range(-num_b, num_b + 1):
+        i_ac += (jv(n, alpha) * (jv(n - 1, alpha) + jv(n + 1, alpha)) *
+                 np.imag(resp.resp(voltage + n * v_ph)))
+        i_ac += (1j * jv(n, alpha) * (jv(n - 1, alpha) - jv(n + 1, alpha)) *
+                 np.real(resp.resp(voltage + n * v_ph)))
+
+    return i_ac

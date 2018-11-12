@@ -5,7 +5,7 @@
 import os
 
 
-def print_intro():
+def print_intro():  # pragma: no cover
     """Print a quick intro to the terminal.
 
     """
@@ -31,7 +31,7 @@ def print_intro():
     print(intro)
 
 
-def cprint(text, color='HEADER'):
+def cprint(text, color='HEADER'):  # pragma: no cover
     """Print colored text to the terminal.
 
     Args:
@@ -55,7 +55,7 @@ def cprint(text, color='HEADER'):
 
 # Titles ---------------------------------------------------------------------
 
-def title(title_string, color=None):
+def title(title_string, color=None):  # pragma: no cover
     """Print a nice title to the terminal.
 
     Args:
@@ -79,7 +79,7 @@ def title(title_string, color=None):
     cprint(title_string, color)
 
 
-def header(header_string, color=None):
+def header(header_string, color=None):  # pragma: no cover
     """Print a nice header to the terminal.
 
     Args:
@@ -94,7 +94,7 @@ def header(header_string, color=None):
 
 # Print numbers to the terminal in a nice way --------------------------------
 
-def pvalf(name, val, units='', comment='', color=None):
+def pvalf(name, val, units='', comment='', color=None):  # pragma: no cover
     """Print name, value as float, and units to terminal.
 
     Args:
@@ -124,7 +124,7 @@ def pvalf(name, val, units='', comment='', color=None):
         cprint(str_tmp.format(name, val, units, comment), color)
 
 
-def pvale(name, val, units='', comment='', color=None):
+def pvale(name, val, units='', comment='', color=None):  # pragma: no cover
     """Print name, value in scientific notation and units to terminal.
 
     Prints value in scientific notation.
@@ -181,7 +181,7 @@ _terminal_colors = {
 
 # Print complex --------------------------------------------------------------
 
-def printc(complex_number):
+def printc(complex_number):  # pragma: no cover
 
     if complex_number.imag >= 0:
         sign = '+'
