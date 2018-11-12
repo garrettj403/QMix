@@ -1,8 +1,9 @@
-"""Spectral Domain Simulations of Quasiparticle Tunneling in SIS Mixers
+"""Quantum Mixing Software
 
-QMix is a software package that consists of modules and scripts to simulate
-SIS mixer operation. It is currently under development by John Garrett at the 
-University of Oxford.
+QMix is a software package that can be used to simulate Superconductor/
+Insulator/Superconductor (SIS) mixers. It uses multi-tone spectral domain 
+analysis, which makes QMix ideal for simulating higher-order harmonics, power 
+saturation and wide IF bandwidth devices. 
 
 """
 
@@ -15,14 +16,10 @@ import qmix.exp.exp_data
 import qmix.mathfn.kktrans
 
 from qmix.misc.terminal import print_intro
-# from qmix.circuit import EmbeddingCircuit
-# from qmix.harmonic_balance import harmonic_balance
-# from qmix.qtcurrent import qtcurrent
 
-# Suppress warning from scipy
+# Suppress future warnings from scipy
 import warnings
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
 __author__ = "John Garrett"
-__email__ = "john.garrett@physics.ox.ac.uk"
-__version__ = "0.1.dev"
+__version__ = "1.0"
