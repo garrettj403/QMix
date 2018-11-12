@@ -4,7 +4,7 @@ Getting Started
 Installing QMix
 ---------------
 
-QMix is hosted on `GitHub`_. To clone the repository, open a terminal window, navigate to the directory in which you would like to put QMix, and then run:
+QMix is hosted on `GitHub`_. In order to clone the repository, open a terminal window, navigate to the directory in which you would like to put QMix, and then run:
 
 .. _GitHub: https://github.com/garrettj403/QMix/
 
@@ -12,18 +12,18 @@ QMix is hosted on `GitHub`_. To clone the repository, open a terminal window, na
    
    git clone https://github.com/garrettj403/QMix.git QMix
 
-This will download QMix into a new directory called ``QMix/``. You then need to add the QMix directory to your ``PYTHONPATH`` environment variable. If you are on a macOS system, first navigate into ``QMix/`` directory and then run:
+This will download QMix into a new directory called ``QMix/``. You then need to add the ``QMix/`` directory to your ``PYTHONPATH`` environment variable. If you are on a macOS system, open your bash profile (normally located in ``~/.bash_profile`` or ``~/.profile``) and add the following:
 
 .. code-block:: bash
 
-   source install.sh
+   export PYTHONPATH="${PYTHONPATH}:<path-to-qmix>"
 
-This will apppend the QMix directory to your ``.bash_profile``, which will then tell Python where to find QMix in the future.
+where ``<path-to-qmix>`` is the path to the ``QMix/`` directory on your computer. 
 
 Configuring Python
 ------------------
 
-QMix is written in Python 3. If you don't want to change your Python installation or in case you are missing any packages, I have included a virtual environment with all the packages that are required to run QMix. Assuming that you are using the Anaconda package manager, enter:
+QMix is written in Python version 3.7. If you don't want to change your Python installation or in case you are missing any packages, I have included a virtual environment with all the packages that are required to run QMix. Assuming that you are using the Anaconda package manager, run:
 
 .. code-block:: bash
 
@@ -36,3 +36,16 @@ This may take a few minutes. You can then activate the virtual environment using
    source activate qmix
 
 Once activated, you should be able to run all of the scripts contained in QMix.
+
+Testing Your Installation
+-------------------------
+
+You can test the QMix installation by running:
+
+.. code-block:: python
+
+   pytest --verbose --color=yes tests/
+
+in the ``QMix/`` root directory. All of the tests should pass; although, a few ``FutureWarnings`` may pop up. These are caused by the SciPy package, and they are normally suppressed when QMix is running. If you encounter any other issues, (1) make sure that you are using the virtual environment that I provided with the package, and then (2) let me know through the `issue tracking system`__. You can also test the package by running the workflow examples that are contained in ``workflow-examples/``.
+
+.. __: https://github.com/garrettj403/QMix/issues/

@@ -3,7 +3,7 @@ The QMix Package
 
 QMix allows you to simulate quasiparticle tunnelling in SIS junctions.
 
-Unlike other software packages:
+Unlike other SIS simulation packages:
 
    1. QMix can analyze higher-order harmonics
 
@@ -11,21 +11,21 @@ Unlike other software packages:
 
    2. QMix can handle multiple strong tones
 
-      - QMix doesn't split the simulation into large-signal and small-signal analysis. Instead, all of the tones are treated in the same.
+      - QMix doesn't split the simulation into large-signal and small-signal analysis. Instead, all of the tones are treated in the same manner.
 
    3. QMix is written in Python
 
-      - Python is 
+      - Python is:
 
          - Interpreted: no need to compile
          - Portable: easy to run on a variety of operating systems and machines
-         - High-level: fewer lines of code required than C/C++.
+         - High-level: fewer lines of code required than C/C++
 
       - Python also has an extensive online community with many different packages available for a variety of needs. Notably:
 
-         - NumPy: linear algebra and other numerical tools. Built upon BLAS and LAPACK, which makes it very fast.
-         - MatplotLib: extensive plotting tools.
-         - Scikit-rf: microwave engineering tools including importing touchstone files, plotting Smith charts, and cascading S-matrices.
+         - NumPy: linear algebra and other numerical tools
+         - MatplotLib: extensive plotting tools
+         - Scikit-rf: tools for microwave engineering including importing touchstone files, plotting Smith charts, and cascading S-matrices
 
    4. QMix is open-source
 

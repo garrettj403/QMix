@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>5. Analyzing experimental data &mdash; QMix 1.0.0 documentation</title>
+  <title>5. Analyzing experimental data &mdash; QMix latest documentation</title>
   
 
   
@@ -57,7 +57,7 @@
             
             
               <div class="version">
-                1.0
+                latest
               </div>
             
           
@@ -354,7 +354,7 @@ directory called <code class="docutils literal notranslate"><span class="pre">eg
 <span></span>In [1]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">qmix</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
@@ -379,7 +379,7 @@ data, and calculate the IF noise.</p>
 <span></span>In [2]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
 <span></span><span class="n">dciv</span> <span class="o">=</span> <span class="n">qmix</span><span class="o">.</span><span class="n">exp</span><span class="o">.</span><span class="n">RawData0</span><span class="p">(</span><span class="s1">&#39;eg-230-data/dciv.csv&#39;</span><span class="p">,</span> <span class="s1">&#39;eg-230-data/dcif.csv&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -399,13 +399,13 @@ DC I-V data:</span>
         Q:               27.15
 
         Jc:              13.53  kA/cm^2
-        Ileak:            8.74  uA
+        Ileak:            8.70  uA
 
         Offset:           0.10  mV
-                          9.65  uV
+                          9.68  uV
 
         Vint:             0.45  mV
-        IF noise:         8.70  K
+        IF noise:         8.71  K
 
 </pre></div></div>
 </div>
@@ -414,7 +414,7 @@ DC I-V data:</span>
 <span></span>In [3]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
 <span></span><span class="n">dciv</span><span class="o">.</span><span class="n">plot_dciv</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -431,7 +431,7 @@ DC I-V data:</span>
 <span></span>In [4]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
 <span></span><span class="n">dciv</span><span class="o">.</span><span class="n">plot_offset</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -451,7 +451,7 @@ corrected properly.</p>
 <span></span>In [5]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
 <span></span><span class="n">dciv</span><span class="o">.</span><span class="n">plot_if_noise</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -478,7 +478,7 @@ embedding circuit.</p>
 <span></span>In [6]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
 <span></span><span class="n">pump</span> <span class="o">=</span> <span class="n">qmix</span><span class="o">.</span><span class="n">exp</span><span class="o">.</span><span class="n">RawData</span><span class="p">(</span><span class="s1">&#39;eg-230-data/f230.2_iv.csv&#39;</span><span class="p">,</span>
                         <span class="n">dciv</span><span class="p">,</span>
                         <span class="n">if_hot_file</span><span class="o">=</span><span class="s1">&#39;eg-230-data/f230.2_if-hot.csv&#39;</span><span class="p">,</span>
@@ -517,7 +517,7 @@ embedding circuit.</p>
 <span></span>In [7]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
 <span></span><span class="n">pump</span><span class="o">.</span><span class="n">plot_ivif</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -534,7 +534,7 @@ embedding circuit.</p>
 <span></span>In [8]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
 <span></span><span class="n">pump</span><span class="o">.</span><span class="n">plot_gain_noise_temp</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -553,7 +553,7 @@ embedding circuit.</p>
 <span></span>In [9]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
 <span></span><span class="n">pump</span><span class="o">.</span><span class="n">plot_error_surface</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -570,7 +570,7 @@ embedding circuit.</p>
 <span></span>In [10]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
 <span></span><span class="n">pump</span><span class="o">.</span><span class="n">plot_simulated</span><span class="p">()</span>
 </pre></div>
 </div>

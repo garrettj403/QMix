@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>3. Creating a simple simulation &mdash; QMix 1.0.0 documentation</title>
+  <title>3. Creating a simple simulation &mdash; QMix latest documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                1.0
+                latest
               </div>
             
           
@@ -86,8 +86,8 @@
 <li class="toctree-l1"><a class="reference internal" href="project.html">1. The QMix Package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="setup.html">2. Getting Started</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">3. Creating a simple simulation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#Define-embedding-circuit">3.1. Define embedding circuit</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#Generate-response-function">3.2. Generate response function</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Generate-response-function">3.1. Generate response function</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Define-embedding-circuit">3.2. Define embedding circuit</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#Calculate-desired-tunnelling-currents">3.3. Calculate desired tunnelling currents</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#Plot-the-pumped-I-V-curve">3.4. Plot the pumped I-V curve</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#Plot-AC-tunneling-currents">3.5. Plot AC tunneling currents</a></li>
@@ -345,17 +345,15 @@ div.nboutput div.output_area.stderr {
 <div class="section" id="Creating-a-simple-simulation">
 <h1>3. Creating a simple simulation<a class="headerlink" href="#Creating-a-simple-simulation" title="Permalink to this headline">¶</a></h1>
 <ul class="simple">
-<li>This simulation is very simple:<ul>
+<li>This notebook contains a very simple SIS simulation:<ul>
 <li>The input consists of only one tone</li>
 <li>The embedding circuit is ignored (no harmonic balance)</li>
 <li>The DC I-V curve is generated through a polynomial model</li>
 </ul>
 </li>
-<li>This simulation calculates:<ul>
-<li>the pumped I-V curve</li>
-<li>the AC tunnelling currents</li>
-<li>the AC admittance</li>
-<li>the AC power delivered to the junction</li>
+<li>The simulation calculates:<ul>
+<li>The DC tunneling current (i.e., the pumped I-V curve)</li>
+<li>The AC tunneling current</li>
 </ul>
 </li>
 </ul>
@@ -365,53 +363,17 @@ div.nboutput div.output_area.stderr {
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">qmix</span>
+<span></span><span class="o">%</span><span class="k">matplotlib</span> inline
+
+<span class="kn">import</span> <span class="nn">qmix</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">matplotlib</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
-<span class="o">%</span><span class="k">matplotlib</span> notebook
 </pre></div>
-</div>
-</div>
-<div class="section" id="Define-embedding-circuit">
-<h2>3.1. Define embedding circuit<a class="headerlink" href="#Define-embedding-circuit" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li>Note:<ul>
-<li>All of the circuit properties are normalized:<ul>
-<li>voltages are normalized to the gap voltage (<code class="docutils literal notranslate"><span class="pre">vgap</span></code>),</li>
-<li>resistances to the normal resistance (<code class="docutils literal notranslate"><span class="pre">rn</span></code>),</li>
-<li>currents to the gap current (<code class="docutils literal notranslate"><span class="pre">igap</span> <span class="pre">=</span> <span class="pre">vgap</span> <span class="pre">/</span> <span class="pre">rn</span></code>), and</li>
-<li>frequencies to the gap frequency (<code class="docutils literal notranslate"><span class="pre">fgap</span></code>).</li>
-</ul>
-</li>
-<li>This example doesn’t include the embedding impedance, so you have
-to set the junction voltage (<code class="docutils literal notranslate"><span class="pre">vj</span></code>) manually</li>
-</ul>
-</li>
-</ul>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
-<span></span>In [2]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="c1"># create an instance of the embedding circuit class</span>
-<span class="c1"># this holds all of the data about the embedding circuit (incl. voltage, impedances and frequencies)</span>
-<span class="n">cct</span> <span class="o">=</span> <span class="n">qmix</span><span class="o">.</span><span class="n">circuit</span><span class="o">.</span><span class="n">EmbeddingCircuit</span><span class="p">()</span>
-
-<span class="c1"># set normalised frequency</span>
-<span class="c1"># (equivalent to the photon voltage (vph))</span>
-<span class="n">cct</span><span class="o">.</span><span class="n">vph</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.33</span>
-
-<span class="c1"># set junction voltage (set drive level to alpha=1)</span>
-<span class="n">vj</span> <span class="o">=</span> <span class="n">cct</span><span class="o">.</span><span class="n">initialize_vj</span><span class="p">()</span>
-<span class="n">vj</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">cct</span><span class="o">.</span><span class="n">vph</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="mf">1.</span>
-</pre></div>
-</div>
 </div>
 </div>
 <div class="section" id="Generate-response-function">
-<h2>3.2. Generate response function<a class="headerlink" href="#Generate-response-function" title="Permalink to this headline">¶</a></h2>
+<h2>3.1. Generate response function<a class="headerlink" href="#Generate-response-function" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>Here we will generate the response function using a polynomial model</li>
 <li>This class will automatically generate the Kramers-Kronig transform
@@ -419,7 +381,7 @@ of the DC I-V curve, and then setup the interpolation.</li>
 </ul>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre>
-<span></span>In [3]:
+<span></span>In [2]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -451,8 +413,61 @@ Generating response function:
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="_images/single-tone-simple_5_1.png" src="_images/single-tone-simple_5_1.png" />
+<img alt="_images/single-tone-simple_3_1.png" src="_images/single-tone-simple_3_1.png" />
 </div>
+</div>
+</div>
+<div class="section" id="Define-embedding-circuit">
+<h2>3.2. Define embedding circuit<a class="headerlink" href="#Define-embedding-circuit" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>The <code class="docutils literal notranslate"><span class="pre">EmbeddingCircuit</span></code> class contains all of the information about
+the embedding circuit. This includes the Thevenin voltage, the
+Thevening impedance, and the frequency. In this notebook, the
+embedding impedance is ignored. This means that the AC voltage across
+the junction is equal to the Thevenin voltage of the embedding
+circuit.</li>
+<li>Note:<ul>
+<li>All of the circuit properties are normalized:<ul>
+<li>voltages are normalized to the gap voltage (<code class="docutils literal notranslate"><span class="pre">vgap</span></code>),</li>
+<li>resistances to the normal resistance (<code class="docutils literal notranslate"><span class="pre">rn</span></code>),</li>
+<li>currents to the gap current (<code class="docutils literal notranslate"><span class="pre">igap</span> <span class="pre">=</span> <span class="pre">vgap</span> <span class="pre">/</span> <span class="pre">rn</span></code>), and</li>
+<li>frequencies to the gap frequency (<code class="docutils literal notranslate"><span class="pre">fgap</span></code>).</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
+<span></span>In [3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># create an instance of the embedding circuit class</span>
+<span class="c1"># this holds all of the data about the embedding circuit (incl. voltage, impedances and frequencies)</span>
+<span class="n">cct</span> <span class="o">=</span> <span class="n">qmix</span><span class="o">.</span><span class="n">circuit</span><span class="o">.</span><span class="n">EmbeddingCircuit</span><span class="p">()</span>
+
+<span class="c1"># set normalised frequency</span>
+<span class="c1"># (equivalent to the photon voltage (vph))</span>
+<span class="n">cct</span><span class="o">.</span><span class="n">vph</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.33</span>
+
+<span class="c1"># set Thevenin voltage</span>
+<span class="n">cct</span><span class="o">.</span><span class="n">vt</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.33</span>
+
+<span class="c1"># calculate AC voltage across junction</span>
+<span class="n">vj</span> <span class="o">=</span> <span class="n">qmix</span><span class="o">.</span><span class="n">harmonic_balance</span><span class="o">.</span><span class="n">harmonic_balance</span><span class="p">(</span><span class="n">cct</span><span class="p">,</span> <span class="n">resp</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Running harmonic balance:
+Done.
+
+</pre></div></div>
 </div>
 </div>
 <div class="section" id="Calculate-desired-tunnelling-currents">
@@ -482,7 +497,10 @@ by adding <code class="docutils literal notranslate"><span class="pre">[0]</span
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">idc</span> <span class="o">=</span> <span class="n">qmix</span><span class="o">.</span><span class="n">qtcurrent</span><span class="o">.</span><span class="n">qtcurrent</span><span class="p">(</span><span class="n">vj</span><span class="p">,</span> <span class="n">cct</span><span class="p">,</span> <span class="n">resp</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span></span><span class="c1"># DC tunneling current</span>
+<span class="n">idc</span> <span class="o">=</span> <span class="n">qmix</span><span class="o">.</span><span class="n">qtcurrent</span><span class="o">.</span><span class="n">qtcurrent</span><span class="p">(</span><span class="n">vj</span><span class="p">,</span> <span class="n">cct</span><span class="p">,</span> <span class="n">resp</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+<span class="c1"># AC tunneling current</span>
 <span class="n">iac</span> <span class="o">=</span> <span class="n">qmix</span><span class="o">.</span><span class="n">qtcurrent</span><span class="o">.</span><span class="n">qtcurrent</span><span class="p">(</span><span class="n">vj</span><span class="p">,</span> <span class="n">cct</span><span class="p">,</span> <span class="n">resp</span><span class="p">,</span> <span class="n">cct</span><span class="o">.</span><span class="n">vph</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
 </pre></div>
 </div>
@@ -496,13 +514,13 @@ Calculating tunneling current...
  - 1 tone(s)
  - 1 harmonic(s)
 Done.
-Time: 0.0134 s
+Time: 0.0069 s
 
 Calculating tunneling current...
  - 1 tone(s)
  - 1 harmonic(s)
 Done.
-Time: 0.0064 s
+Time: 0.0040 s
 
 </pre></div></div>
 </div>
@@ -540,7 +558,6 @@ Time: 0.0064 s
 <span class="n">ax</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">xlabel</span><span class="o">=</span><span class="s1">&#39;Bias voltage / Vgap&#39;</span><span class="p">,</span> <span class="n">xlim</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">])</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">ylabel</span><span class="o">=</span><span class="s1">&#39;DC current / Igap&#39;</span><span class="p">,</span> <span class="n">ylim</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">])</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">frameon</span><span class="o">=</span><span class="bp">True</span><span class="p">);</span>
-
 </pre></div>
 </div>
 </div>

@@ -3,10 +3,10 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to QMix's Documentation
-================================
+QMix: Quantum Mixing Software
+=============================
 
-QMix is a software package that can be used to simulate SIS mixers. It uses multi-tone spectral domain analysis, which makes QMix ideal for simulating higher-order harmonics, power saturation and wide IF bandwidth devices.
+QMix is a software package that can be used to simulate Superconductor-Insulator-Superconductor (SIS) mixers. It uses multi-tone spectral domain analysis, which makes QMix ideal for simulating higher-order harmonics, power saturation and wide IF bandwidth devices.
 
 **Author:** John Garrett (john.garrett@physics.ox.ac.uk)
 
