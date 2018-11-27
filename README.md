@@ -13,20 +13,22 @@ QMix is a software package that can be used to simulate Superconductor/Insulator
 Installation
 ------------
 
-Clone the repository and then add QMix to your Python path environment variable. See the [QMix website](https://garrettj403.github.io/QMix/setup.html) for more information.
+Clone the GitHub repository to your machine and then add the new QMix directory to your Python path environment variable. Please see the [QMix website](https://garrettj403.github.io/QMix/setup.html) for more information.
 
 Examples
 --------
 
-Here is an example of a simple SIS mixer simulation. See ``workflow-examples/`` for more!
+Here is an example of a simple SIS mixer simulation. See ``workflow-examples/`` for more.
 
 ![](example.png)
 
 References
 ----------
 
+More information on QMix and multi-tone spectral domain analysis can be found in:
+
 - J. Garrett, ["A 230 GHz Focal Plane Array Using a Wide IF Bandwidth SIS Receiver,"](https://ora.ox.ac.uk/objects/uuid:d47fbf3b-1cf3-4e58-be97-767b9893066e) DPhil thesis, University of Oxford, Oxford, UK, 2018.
 
 - P. Kittara, "The Development of a 700 GHz SIS Mixer with Nb Finline Devices: Nonlinear Mixer Theory, Design Techniques and Experimental Investigation," DPhil thesis, University of Cambridge, Cambridge, UK, 2002.
 
-- P. Kittara, S. Withington, G. Yassin, "Theoretical and numerical analysis of very high harmonic superconducting tunnel junction mixers," *Journal of Applied Physics,* 101, 2, pp. 024508, Jan. 2007.
+- P. Kittara, S. Withington, G. Yassin, "Theoretical and numerical analysis of very high harmonic superconducting tunnel junction mixers," *Journal of Applied Physics,* vol. 101, no. 2, pp. 024508, Jan. 2007.
