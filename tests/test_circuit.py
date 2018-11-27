@@ -1,6 +1,10 @@
-""" Test the embedding circuit class (qmix/circuit.py)
+"""Test the embedding circuit module (qmix.circuit).
 
-These tests are pretty trivial...
+This module has a class (qmix.circuit.EmbeddingCircuit) that is used to
+contain all the information about the embedding circuit (i.e., Thevenin 
+voltages, Thevenin impedances, frequencies, simulation parameters, etc.).
+
+These tests are pretty trivial because this class is mostly just a container.
 
 """
 
@@ -13,16 +17,21 @@ from qmix.circuit import *
 
 
 def test_saving_and_loading_functions():
-    """ Save circuit to file, load circuit from file, and make sure that 
-    they match. """
+    """Build an embedding circuit, save it to file, load it from file and make
+    sure that the two circuits match. """
 
     # Build quick circuit instance
-    cct = EmbeddingCircuit(3, 2)
-    cct.vph[1] = 0.3
-    cct.vph[2] = 0.4
-    cct.vph[3] = 0.5
-    cct.vt[1:, 1:] = np.ones((3, 2)) * 0.5 * (1. - 1j * 0.1)
-    cct.zt[1:, 1:] = np.ones((3, 2)) * (0.3 - 1j * 0.3)
+    cct = EmbeddingCircuit(2, 2)
+    cct.vt[1, 1] = 0.3
+    cct.vt[1, 2] = 0.1
+    cct.vt[2, 1] = 0.01
+    cct.vt[2, 2] = 0.001
+    cct.zt[1, 1] = 1. + 1j * 0.1
+    cct.zt[1, 2] = 2. + 1j * 0.2
+    cct.zt[2, 1] = 3. + 1j * 0.3
+    cct.zt[2, 2] = 4. + 1j * 0.4
+    cct.set_name('LO', 1, 1)
+    cct.set_name('RF', 2, 1)
 
     # Save circuit to file
     _, path = tempfile.mkstemp()
@@ -44,13 +53,19 @@ def test_saving_and_loading_functions():
 
 
 def test_power_settings():
-    """ Set available power, read available power, and make sure that they 
-    match. """
+    """Build an embedding circuit, set the available power, read the available
+    power and make sure the two values match."""
 
     # Build quick circuit instance
     cct = EmbeddingCircuit(2, 2, vgap=3e-3, rn=10, fgap=700e9)
-    cct.vt[1:, 1:] = 0.3
-    cct.zt[1:, 1:] = 1. + 1j * 0.1
+    cct.vt[1, 1] = 0.3
+    cct.vt[1, 2] = 0.1
+    cct.vt[2, 1] = 0.01
+    cct.vt[2, 2] = 0.001
+    cct.zt[1, 1] = 1. + 1j * 0.1
+    cct.zt[1, 2] = 2. + 1j * 0.2
+    cct.zt[2, 1] = 3. + 1j * 0.3
+    cct.zt[2, 2] = 4. + 1j * 0.4
     cct.set_name('LO', 1, 1)
     cct.set_name('RF', 2, 1)
 
@@ -63,17 +78,17 @@ def test_power_settings():
     cct.print_info()
     print(cct)
 
-    # Set power using dBm
+    # Set available power in units dBm
     power_dbm = -50
-    cct.set_available_power(power_dbm, 1, 1, 'dBm')
-    assert power_dbm == cct.available_power(1, 1, 'dBm')
+    cct.set_available_power(power_dbm, 1, 1, units='dBm')
+    assert power_dbm == cct.available_power(1, 1, units='dBm')
 
-    # Set power using Watts
+    # Set available power in units W
     power_watts = 1e-9
-    cct.set_available_power(power_watts, 1, 1, 'W')
-    assert power_watts == cct.available_power(1, 1, 'W')
+    cct.set_available_power(power_watts, 1, 1, units='W')
+    assert power_watts == cct.available_power(1, 1, units='W')
 
-    # Try different units
+    # Try using incorrect units
     with pytest.raises(ValueError):
         cct.set_available_power(power_watts, 1, 1, 'test')
     with pytest.raises(ValueError):

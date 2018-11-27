@@ -1,3 +1,8 @@
+"""Test the module that calculates the quasiparticle tunneling currents (QTCs)
+(qmix.qtcurrent).
+
+"""
+
 import numpy as np
 import scipy.constants as sc
 from scipy.special import jv
@@ -8,29 +13,31 @@ RESP = qmix.respfn.RespFnPolynomial(50)
 VBIAS = np.linspace(0, 2, 101)
 
 def test_compare_qtcurrent_to_tucker_theory():
-    """ This test will compare the DC and AC tunneling currents calculated
-    by qmix.qtcurrent to results from Tucker theory (Tucker1985).
+    """ This test will compare the quasiparticle tunneling currents that are
+    calculated by qmix.qtcurrent to results calculated from Tucker theory 
+    (Tucker1985). Tucker theory uses much simpler equations to calculate the 
+    tunneling currents, so it is easier to be sure that the Tucker functions
+    are working properly. The functions that are used calculate the currents
+    from Tucker theory are found at the bottom of this file.
 
-    The Tucker theory equations only work for a single tone/harmonic. When
-    only one tone/harmonic is present, they should provide identical results.
-
-    """
+    Note: The Tucker theory functions that are included within this file only 
+    work for a single tone/single harmonic simulation."""
 
     # Build embedding circuit for QMix
     cct = qmix.circuit.EmbeddingCircuit(1, 1, vb_min=0, vb_npts=101)
     vph = 0.33
     cct.vph[1] = vph
 
-    # Set voltage across junction
+    # Set voltage across junction to Vph * 0.8
     alpha = 0.8
     vj = cct.initialize_vj()
     vj[1, 1, :] = cct.vph[1] * alpha
 
-    # Method 1: using qtcurrent
+    # Calculate QTC using qtcurrent
     idc_meth1 = qmix.qtcurrent.qtcurrent(vj, cct, RESP, 0.)
     iac_meth1 = qmix.qtcurrent.qtcurrent(vj, cct, RESP, cct.vph[1])
 
-    # Method 2: using the function from the tucker theory module
+    # Calculate QTC using Tucker theory
     idc_meth2 = _tucker_dc_current(VBIAS, RESP, alpha, vph)
     iac_meth2 = _tucker_ac_current(VBIAS, RESP, alpha, vph)
 
@@ -38,22 +45,25 @@ def test_compare_qtcurrent_to_tucker_theory():
     np.testing.assert_almost_equal(idc_meth1, idc_meth2, decimal=15)
     np.testing.assert_almost_equal(iac_meth1, iac_meth2, decimal=15)
 
-    # Note: All arrays in my software use data type 'complex128'. This gives 
+    # Note: All arrays in my software use data type 'complex128'. This gives
     # 64 bits to the floating point real number and 64 bits to the floating 
     # point imaginary number. Each floating point number then gets:
     #    - 1 sign bit
     #    - 11 exponent bits 
     #    - 52 mantissa bits
-    # 52 mantissa bits gives roughly 15-17 significant figure accuracy in decimal 
-    # notation. Therefore, if the average absolute error is on the order of 1e-15 
-    # to 1e-17, the comparison should be considered a success. 
+    # 52 mantissa bits gives roughly 15-17 significant figure accuracy in 
+    # decimal notation. Therefore, if the average absolute error is on the 
+    # order of 1e-15 to 1e-17, the comparison should be considered a success.
 
 
 def test_effect_of_adding_more_tones():
-    """ This function simulates the QTCs for a 1 tone/1 harmonic simulation. 
+    """This function simulates the QTCs using a 1 tone/1 harmonic simulation. 
     Then, more and more tones are added except only the first tone/harmonic is
-    defined. This should result in the same tunnelling currents being 
-    calculated. """
+    ever defined. This should result in the same tunnelling currents being 
+    calculated in each simulation.
+
+    Note: 1, 2, 3 and 4 tone simulations use different calculation techniques,
+    so this test should make sure that they are all equivalent."""
 
     num_b = (9, 2, 2, 2)
 
@@ -141,10 +151,10 @@ def test_effect_of_adding_more_tones():
 
 
 def test_effect_of_adding_more_harmonics():
-    """ This function simulates the QTCs for a 1 tone/1 harmonic simulation. 
+    """This test calculates the QTCs using a 1 tone/1 harmonic simulation. 
     Then, more and more harmonics are added except only the first 
-    tone/harmonic is defined. This should result in the same tunnelling 
-    currents being calculated. """
+    tone/harmonic is ever defined. This should result in the same tunnelling 
+    currents being calculated in each simulation."""
 
     num_b = 9
 
@@ -227,8 +237,12 @@ def test_effect_of_adding_more_harmonics():
 
 
 def test_setting_up_simulation_using_different_harmonic():
-    """ Try setting up the simulation using a different harmonic. Then, 
-    compare the results. """
+    """Simulate the QTCs using a one tone/one harmonic simulation. Then 
+    simulate the same setup using a higher-order harmonic.
+
+    For example, simulate a signal at 200 GHz. Then simulate the 
+    second-harmonic from a 100 GHz fundamental tone. Both simulations should
+    provide the same result."""
 
     num_b = 15
     num_f = 1
@@ -273,7 +287,9 @@ def test_setting_up_simulation_using_different_harmonic():
 
 
 def test_effect_of_adding_more_tones_on_if():
-    """ Try adding more tones. Compare IF results. """
+    """Calculate the IF signal that is generated by a simple 2 tone 
+    simulation. Then, add the IF frequency to the simulation. This should not
+    have any effect on the IF results."""
 
     alpha1 = 0.8
     vph1 = 0.3
@@ -322,20 +338,11 @@ def test_effect_of_adding_more_tones_on_if():
 
 
 def test_excite_different_tones():
-    """ Try exciting the tones in different orders. Compare results. """
-
-    # junction properties
-    v_gap = 2.8e-3               # gap voltage in [V]
-    r_n   = 14.0                 # normal resistance in [ohms]
-    f_gap = sc.e * v_gap / sc.h  # gap frequency in [Hz]
+    """Calculate the QTCs using a 4 tone simulation. Do this 4 times, each 
+    time exciting a different tone. Each simulation should be the same."""
 
     # input signal properties
-    f_tone1     = 230e9              
-    f_tone2     = 235e9
-    alpha_tone1 = 0.8                
-    vph1 = f_tone1 / f_gap
-    vph2 = f_tone2 / f_gap
-    vph_list = [0, vph1, vph2]  
+    vj_set = 0.25        
 
     # 1st tone excited
     num_f = 4
@@ -347,9 +354,8 @@ def test_excite_different_tones():
     cct.vph[3] = 0.5
     cct.vph[4] = 0.6
     vj = cct.initialize_vj()
-    vj[1, 1, :] = 0.3 * alpha_tone1
-    results = qmix.qtcurrent.qtcurrent(vj, cct, RESP, [0], num_b)
-    idc1 = np.real(results[0, :])
+    vj[1, 1, :] = vj_set
+    idc1 = qmix.qtcurrent.qtcurrent(vj, cct, RESP, 0, num_b)
 
     # 2nd tone excited
     num_f = 4
@@ -361,9 +367,8 @@ def test_excite_different_tones():
     cct.vph[3] = 0.5
     cct.vph[4] = 0.6
     vj = cct.initialize_vj()
-    vj[2, 1, :] = 0.3 * alpha_tone1
-    results = qmix.qtcurrent.qtcurrent(vj, cct, RESP, [0], num_b)
-    idc2 = np.real(results[0, :])
+    vj[2, 1, :] = vj_set
+    idc2 = qmix.qtcurrent.qtcurrent(vj, cct, RESP, 0, num_b)
 
     # 3rd tone excited
     num_f = 4
@@ -375,9 +380,8 @@ def test_excite_different_tones():
     cct.vph[3] = 0.3
     cct.vph[4] = 0.6
     vj = cct.initialize_vj()
-    vj[3, 1, :] = 0.3 * alpha_tone1
-    results = qmix.qtcurrent.qtcurrent(vj, cct, RESP, [0], num_b)
-    idc3 = np.real(results[0, :])
+    vj[3, 1, :] = vj_set
+    idc3 = qmix.qtcurrent.qtcurrent(vj, cct, RESP, 0, num_b)
 
     # 4th tone excited
     num_f = 4
@@ -389,19 +393,20 @@ def test_excite_different_tones():
     cct.vph[3] = 0.5
     cct.vph[4] = 0.3
     vj = cct.initialize_vj()
-    vj[4, 1, :] = 0.3 * alpha_tone1
-    results = qmix.qtcurrent.qtcurrent(vj, cct, RESP, [0], num_b)
-    idc4 = np.real(results[0, :])
+    vj[4, 1, :] = vj_set
+    idc4 = qmix.qtcurrent.qtcurrent(vj, cct, RESP, 0, num_b)
 
     # Compare methods
-    dc_decimal_error = 15
-    np.testing.assert_almost_equal(idc1, idc2, decimal=dc_decimal_error)
-    np.testing.assert_almost_equal(idc1, idc3, decimal=dc_decimal_error)
-    np.testing.assert_almost_equal(idc1, idc4, decimal=dc_decimal_error)
+    np.testing.assert_almost_equal(idc1, idc2, decimal=15)
+    np.testing.assert_almost_equal(idc1, idc3, decimal=15)
+    np.testing.assert_almost_equal(idc1, idc4, decimal=15)
 
 
 def test_interpolation_of_respfn():
-    """ Test how the response function is interpolated. """
+    """The qmix.qtcurrent module contains a function that will pre-interpolate
+    the response function. This speeds up the calculations. This test will 
+    ensure that this function is interpolating the response function 
+    correctly."""
 
     a, b, c, d = 4, 3, 2, 4
     vidx = 50
@@ -461,17 +466,21 @@ def test_interpolation_of_respfn():
 
 
 # Tucker theory --------------------------------------------------------------
+# These functions will calculate the QTCs using the equations found in: 
+#    J. R. Tucker and M. J. Feldman, “Quantum detection at millimeter 
+#    wavelengths,” Reviews of Modern Physics, vol. 57, no. 4, pp. 1055–1113, 
+#    Oct. 1985.
 
 def _tucker_dc_current(voltage, resp, alpha, v_ph, num_b=20):
-    """ Calculate the DC tunneling current for a single tone/harmonic using
+    """Calculate the DC tunneling current for a single tone/harmonic using
     Tucker theory. This gives the pumped I-V curve. This is equation 3.3 in 
     Tucker's 1985 paper.
 
     Args:
         voltage: normalized bias voltage
-        resp: response function
+        resp: response function, instance of qmix.respfn.RespFn class
         alpha: junction drive level
-        v_ph: photon voltage
+        v_ph: equivalent photon voltage
         num_b: number of Bessel functions to include
 
     Returns:
@@ -480,7 +489,6 @@ def _tucker_dc_current(voltage, resp, alpha, v_ph, num_b=20):
     """
 
     i_dc = np.zeros(np.alen(voltage), dtype=float)
-
     for n in range(-num_b, num_b + 1):
         i_dc += jv(n, alpha)**2 * np.imag(resp.resp(voltage + n * v_ph))
 
@@ -493,7 +501,7 @@ def _tucker_ac_current(voltage, resp, alpha, v_ph, num_b=20):
 
     Args:
         voltage: normalized bias voltage
-        resp: response function
+        resp: response function, instance of qmix.respfn.RespFn class
         alpha: junction drive level
         v_ph: photon voltage
         num_b: truncate the bessel functions at this order
@@ -504,10 +512,13 @@ def _tucker_ac_current(voltage, resp, alpha, v_ph, num_b=20):
     """
 
     i_ac = np.zeros(np.alen(voltage), dtype=complex)
-
     for n in range(-num_b, num_b + 1):
+
+        # Real component
         i_ac += (jv(n, alpha) * (jv(n - 1, alpha) + jv(n + 1, alpha)) *
                  np.imag(resp.resp(voltage + n * v_ph)))
+
+        # Imaginary component
         i_ac += (1j * jv(n, alpha) * (jv(n - 1, alpha) - jv(n + 1, alpha)) *
                  np.real(resp.resp(voltage + n * v_ph)))
 
