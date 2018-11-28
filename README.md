@@ -1,5 +1,8 @@
 # QMix
 
+[![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+[![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/garrettj403/QMix/issues)
+
 *Quantum Mixing Software*
 
 QMix is a software package that can be used to simulate Superconductor/Insulator/Superconductor (SIS) mixers. It uses multi-tone spectral domain analysis, which makes QMix ideal for simulating higher-order harmonics, power saturation and wide IF bandwidth devices. See reference below for more information. 
