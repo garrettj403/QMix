@@ -46,7 +46,7 @@ VSTEP = VINIT[1] - VINIT[0]
 VINIT.flags.writeable = False
 
 
-# Generate from I-V data -----------------------------------------------------
+# Generate response function -------------------------------------------------
 
 class RespFn(object):
     """ Response function (for pre-processed data)
@@ -190,6 +190,8 @@ class RespFn(object):
     #     return testdc.all()  # & testkk.all()
 
 
+# Generate from I-V data -----------------------------------------------------
+
 class RespFnFromIVData(RespFn):
     """Response function for I-V data.
 
@@ -284,178 +286,49 @@ class RespFnPerfect(RespFn):
 
     """
 
-    def __init__(self, **kwargs):
-        """For the 'perfect' i-v curve (infinitely sharp)."""
+    def __init__(self, **params):
 
-        params = _default_params(kwargs, v_smear=0.01)
+        params = _default_params(params)
 
+        if params['verbose']:
+            print("Generating response function:")
+
+        # Reflect about y-axis
         voltage = np.copy(VINIT)
         current = iv.perfect(voltage)
 
-        RespFn.__init__(self, voltage, current, **params)
+        if params['v_smear'] is None:
 
+            voltage = np.r_[-voltage[::-1][:-1], voltage]
+            current = np.r_[-current[::-1][:-1], current]
 
-# # Generate from measured data -----------------------------------------------
+            # KK transform
+            current_kk = iv.perfect_kk(voltage)
 
-# class RespFnFromExpFile(RespFnFromIVData):
-#     """Response function from experimental I-V curve data.
+            # Place into attributes
+            self.f_idc = iv.perfect
+            self.f_ikk = iv.perfect_kk
+            self.f_didc = None
+            self.f_dikk = None
+            self.voltage = voltage
+            self.current = current
+            self.voltage_kk = voltage
+            self.current_kk = current_kk
 
-#     Class to contain, interpolate and plot the response function.
+        # Smear IV curve (optional)
+        else:
 
-#     Note:
+            tmp = np.zeros_like(voltage)
+            idx = np.abs(voltage - 1.).argmin()
+            tmp[idx] = 1.
 
-#         This class expects data from my system. I need to make this more
-#         general so that it can be used on data from other systems.
+            v_step = voltage[1] - voltage[0]
+            current = gauss_conv(tmp, sigma=params['v_smear']/v_step) + \
+                      iv.perfect(voltage)
+            if params['verbose']:
+                print(" - Voltage smear: {:.4f}".format(params['v_smear']))
 
-#     Args:
-#         filename (string): I-V file to import
-#         v_smear (float): Width of Gaussian used in smearing (None if
-#             no smearing is desired)
-
-#     """
-
-# def __init__(self, filename, v_smear=None, max_npts_dc=81,
-# max_npts_kk=101, check_error=True):
-
-#         print "Loading response function:"
-
-#         print(" - Loading exp data:")
-#         voltage, current, dc = dciv_curve(filename)
-#         vgap = dc.vgap
-#         rn = dc.vgap
-#         print "    - Gap voltage:       {0:.2f} mV".format(vgap * 1e3)
-#         print "    - Normal resistance: {0:.2f} ohms".format(rn)
-
-#         RespFnFromIVData.__init__(self, voltage, current, v_smear,
-#                                   max_npts_dc=max_npts_dc,
-#                                   max_npts_kk=max_npts_kk,
-#                                   check_error=check_error)
-
-
-# Generate from expanded I-V curve model -------------------------------------
-
-# class RespFnFitExpandedModel(RespFn):
-#     """Response function based on the 'expanded' i-v curve model that has been
-#     fit to i-v data.
-
-#     Class to contain, interpolate and plot the response function.
-
-#     Note:
-
-#         This class requires adequately close initial guesses:
-
-#     Args:
-#         voltage_raw (ndarray): Raw voltage (un-normalized, in V)
-#         current_raw (ndarray): Raw current (un-normalized, in A)
-#         vgap (float): Gap voltage (un-normalized, in V)
-#         rn (float): Normal resistance (un-normalized, in ohms)
-#         a0 (float): Origin smearing parameter (zig-zag at origin)
-#         ileak (float): Leakage current (un-normalized, in A)
-#         rsg (float): Sub-gap resistance (un-normalized, in ohms)
-#         agap (float): Gap smearing parameter
-#         vnot (float): Notch voltage (un-normalized, in V)
-#         inot (float): Notch current (un-normalized, in A)
-#         ant (float): Notch smearing parameter
-#         ioff (float): Current offset (un-normalized, proximity effect,
-#            in A)
-
-#     """
-
-#     def __init__(self, voltage_raw, current_raw, vgap=2.71e-3, rn=13.68,
-#                  a0=1.74e4, ileak=3.60e-6, rsg=325, agap=5.46e4,
-#                  vnot=2.88e-3, inot=11.80e-6, ant=1.98e4,
-#                  ioff=15.53e-6, max_npts_dc=201, max_npts_kk=101):
-
-#         print "\nLoading response function..."
-
-#         # Fit model ---------------------------------------------------------
-
-#         print "Fitting iv curve model...",
-
-#         popt = iv.fit_expanded(voltage_raw, current_raw, vgap, rn,
-#                                a0, ileak, rsg, agap, vnot,
-#                                inot, ant, ioff)
-
-#         print "Done.\n"
-
-#         print "Curve fitting results:"
-#         print "\tgap voltage:              {0:.2f} mV".format(popt[0] / MILLI)
-#         print "\tnormal resistance:        {0:.2f} ohms".format(popt[1])
-#         print "\tzig-zag linearity (a):    {0:.2f} ".format(popt[2])
-#         print "\tleakage current:          {0:.2f} uA".format(popt[3] / MICRO)
-#         print "\tsub-gap resistance:       {0:.2f} ohms".format(popt[4])
-#         print "\tgap linearity:            {0:.2f} ".format(popt[5])
-#         print "\tnotch voltage:            {0:.2f} mV".format(popt[6] / MILLI)
-#         print "\tnotch current:            {0:.2f} uA".format(popt[7] / MICRO)
-#         print "\tnotch linearity:          {0:.2f} ".format(popt[8])
-# print "\tabove gap current offset: {0:.2f} uA".format(popt[9] / MICRO)
-
-#         vgap = popt[0]
-#         rn = popt[1]
-
-#         # Check Error -------------------------------------------------------
-
-#         current_check = iv.expanded(voltage_raw, popt[0], popt[1], popt[2],
-#                                     popt[3], popt[4], popt[5], popt[6],
-#                                     popt[7], popt[8], popt[9])
-
-#         print "Error results:"
-#         print "\tmean residual error:      {0:.2f} uA".format(
-#             np.mean(np.abs((current_check - current_raw) / MICRO)))
-#         print "\tmean residual error:      {0:.2f} /1000 norm.".format(
-#             np.mean(np.abs((current_check - current_raw) / vgap * rn)) * 1e3)
-
-#         vgap = popt[0]
-#         rn = popt[1]
-
-#         # Generate voltage/current for interpolation ------------------------
-
-#         voltage = np.copy(VINIT)
-#         current = iv.expanded(voltage * vgap, popt[0], popt[1], popt[2],
-#                               popt[3], popt[4], popt[5], popt[6], popt[7],
-#                               popt[8], popt[9]) / vgap * rn
-
-#         RespFn.__init__(self, voltage, current,
-#                         max_npts_dc=max_npts_dc, max_npts_kk=max_npts_kk)
-
-
-# class RespFnFullModel(RespFn):
-#     """Response function based on the 'full' model.
-#
-#     Originally based on the 'Chalmers' I-V model. Ref:
-#
-#         H. Rashid, et al., "Harmonic and reactive hehavior of the
-#         quasiparticle tunnel current in SIS junctions," AIP Advances,
-#         vol. 6, 2016.
-#
-#     I have changed it substantially to include the knee due to
-#     the proximity effect, and a realistic leakage current curve.
-#
-#     Args:
-#         params (dict): parameters for the full model
-#         max_npts_dc (int): maximum number of points for dc i-v interpolation
-#         max_npts_kk (int): maximum number of points for kk i-v interpolation
-#
-#     """
-#
-#     def __init__(self, params, max_npts_dc=81, max_npts_kk=101):
-#
-#         # Check parameter dictionary
-#         variable_list = ['vgap', 'rn', 'a0', 'ileak', 'rsg', 'agap', 'vnot',
-#                          'inot', 'ant', 'ioff']
-#         for var in variable_list:
-#             assert var in params
-#
-#         print "Loading response function..."
-#
-#         voltage = np.copy(VINIT)
-#         current = iv.expanded(voltage * params['vgap'], params['vgap'],
-#                               params['rn'], params['rsg'], params['agap'],
-#                               params['a0'], params['ileak'], params['vnot'],
-#                               params['inot'], params['ant'], params['ioff']) / params['vgap'] * params['rn']
-#
-#         RespFn.__init__(self, voltage, current,
-#                         max_npts_dc=max_npts_dc, max_npts_kk=max_npts_kk)
+            RespFn.__init__(self, voltage, current, **params)
 
 
 # Helper functions -----------------------------------------------------------

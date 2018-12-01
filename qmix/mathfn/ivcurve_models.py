@@ -27,12 +27,17 @@ def perfect(voltage):
 
     """
 
-    current = np.copy(voltage)
-    current[voltage == 1.] = 0.5
-    current[voltage == -1.] = -0.5
-    current[np.abs(voltage) < 1] = 0
-
-    return current
+    if isinstance(voltage, np.ndarray):
+        current = np.copy(voltage)
+        current[voltage == 1.] = 0.5
+        current[voltage == -1.] = -0.5
+        current[np.abs(voltage) < 1] = 0
+        return current
+    elif isinstance(voltage, float) or isinstance(voltage, int):
+        if np.abs(voltage) < 1: return 0
+        if np.abs(voltage) > 1: return voltage
+        if voltage == 1.: return 0.5
+        if voltage == -1.: return -0.5
 
 
 def perfect_kk(voltage, max_kk=100.):
@@ -46,18 +51,28 @@ def perfect_kk(voltage, max_kk=100.):
 
     """
 
-    kk = np.empty_like(voltage, dtype=float)
+    if isinstance(voltage, np.ndarray):
+    
+        kk = np.empty_like(voltage, dtype=float)
 
-    mask = np.abs(voltage) != 1.
-    kk[mask] = (-1 / np.pi * (2 + voltage[mask] * 
-               (np.log(np.abs((voltage[mask] - 1) / 
-               (voltage[mask] + 1))))))
+        mask = np.abs(voltage) != 1.
+        kk[mask] = (-1 / np.pi * (2 + voltage[mask] * 
+                   (np.log(np.abs((voltage[mask] - 1) / 
+                   (voltage[mask] + 1))))))
 
-    # np.log(v-1) will cause result=Nan at v=-1 and v=1
-    # replace with max value instead
-    kk[np.invert(mask)] = max_kk
+        # np.log(v-1) will cause result=Nan at v=-1 and v=1
+        # replace with max value instead
+        kk[np.invert(mask)] = max_kk
 
-    return kk
+        return kk
+
+    elif isinstance(voltage, float) or isinstance(voltage, int):
+
+        if abs(voltage) == 1.: return max_kk
+        else:
+            return (-1 / np.pi * (2 + voltage * 
+                   (np.log(abs((voltage - 1) / 
+                   (voltage + 1))))))
 
 
 def polynomial(voltage, order=50):
@@ -115,7 +130,7 @@ def exponential(voltage, vgap=2.8e-3, rn=14., rsg=300., agap=4e4, model='fixed')
     igap = vgap / rn
     v_v = voltage * vgap  # voltage in units [V]
 
-    if model.lower() == 'fixed':
+    if model.lower() == 'fixed' or model.lower() == 'corrected':
         np.seterr(over='ignore')
         i_a = (
                # Sub-gap resistance
