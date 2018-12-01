@@ -173,7 +173,7 @@ def remove_doubles_matrix(matrix, col=0, check=True):
     return matrix[mask, :]
 
 
-def clean_matrix(matrix, check=True):
+def clean_matrix(matrix):
     """Clean 2D matrix data.
 
     Remove NaNs, sort by first column, remove double values for first column.

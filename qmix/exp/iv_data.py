@@ -71,7 +71,6 @@ def dciv_curve(filename, **kwargs):
     # Import and do some basic cleaning (V in V, I in A)
     volt_v, curr_a = _load_iv(filename, **kwargs)
     curr_a *= iv_multiplier
-    vraw, iraw = volt_v, curr_a
 
     # # Debug
     # import matplotlib.pyplot as plt
@@ -84,6 +83,9 @@ def dciv_curve(filename, **kwargs):
 
     # Correct I/V offset
     volt_v, curr_a, offset = _correct_offset(volt_v, curr_a, **kwargs)
+
+    # Save uncorrected data
+    vraw, iraw = volt_v.copy(), curr_a.copy()
 
     # Fix errors in DC biasing system
     volt_v, curr_a = _correct_series_resistance(volt_v, curr_a, **kwargs)
@@ -179,7 +181,7 @@ def iv_curve(filename, dc, **kwargs):
 
 # Load i-v data -------------------------------------------------------------
 
-def _load_iv(filename, v_fmt='mV', i_fmt='mA', usecols=(0, 1), delim=',', **kw):
+def _load_iv(filename, v_fmt='mV', i_fmt='mA', usecols=(0,1), delim=',', **kw):
     """Import i-v data from CSV file.
 
     Args:
@@ -189,6 +191,7 @@ def _load_iv(filename, v_fmt='mV', i_fmt='mA', usecols=(0, 1), delim=',', **kw):
         v_fmt: voltage units ('mV', 'V', etc.)
         i_fmt: current units ('uA', 'mA', etc.)
         usecols: list of columns to use (tuple of length 2)
+        kw: keywords (not used)
 
     Returns:
         ndarray: voltage in V
@@ -223,6 +226,7 @@ def _filter_iv_data(volt_v, curr_a, filter_data=True, vgap_guess=2.7e-3,
     Args:
         volt_v (ndarray): voltage, in V
         curr_a (ndarray): current, in A
+        kw: keywords (not used)
 
     Keyword Args:
         filter_data: filter data?
@@ -332,6 +336,7 @@ def _correct_offset(volt_v, curr_a, voffset=None, ioffset=None,
     Args:
         volt_v (ndarray): voltage, in V
         curr_a (ndarray): current, in A
+        kw: keywords (not used)
 
     Keyword Args:
         voffset: voltage offset, in V
@@ -386,6 +391,7 @@ def _find_normal_resistance(volt_v, curr_a, rn_vmin=3.5e-3, rn_vmax=4.5e-3, **kw
     Args:
         volt_v (ndarray): voltage, in V
         curr_a (ndarray): current, in A
+        kw: keywords arguments (not used)
 
     Keyword Args:
         rn_vmin: lower voltage range to determine the normal resistance
@@ -415,6 +421,7 @@ def _find_gap_voltage(volt_v, curr_a, vgap_threshold=None, **kw):
     Args:
         volt_v (ndarray): voltage, in V
         curr_a (ndarray): current, in A
+        kw: keywords arguments (not used)
 
     Keyword Args:
         current_threshold (float): the current at the gap voltage
@@ -446,6 +453,7 @@ def _find_subgap_resistance(volt_v, curr_a, vrsg=2.e-3, **kw):
     Args:
         volt_v (ndarray): voltage, in V
         curr_a (ndarray): current, in A
+        kw: keywords arguments (not used)
 
     Keyword Args:
         vrsg: the voltage to calculate the subgap resistance at
@@ -467,6 +475,7 @@ def _correct_series_resistance(vmeas, imeas, rseries=None, **kw):
     Args:
         vmeas (ndarray): measured voltage, in V
         imeas (ndarray): measured current, in A
+        kw: keywords arguments (not used)
 
     Keyword Args:
         rseries (float): series resistance, in ohms
@@ -486,6 +495,6 @@ def _correct_series_resistance(vmeas, imeas, rseries=None, **kw):
     rj = rstatic - rseries
     v0 = imeas[mask] * rj[mask]
 
-    idc = imeas.copy()[mask]  # * (rstatic + rseries) / rstatic
+    idc = imeas.copy()[mask]
 
     return v0, idc

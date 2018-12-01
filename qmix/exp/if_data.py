@@ -9,6 +9,7 @@ from collections import namedtuple
 import numpy as np
 from scipy import stats
 from scipy.signal import savgol_filter
+import scipy.constants as sc
 
 from qmix.exp.clean_data import remove_doubles_matrix, remove_nans_matrix
 from qmix.mathfn import slope_span_n
@@ -65,6 +66,7 @@ def if_data(hot_filename, cold_filename, dc, **kwargs):
         hot_filename: Hot IF filename
         cold_filename: Cold IF filename
         dc: DC IF data structure
+        freq: Frequency in GHz
         kwargs: Keyword arguments
 
     Returns:
@@ -115,7 +117,7 @@ def if_data(hot_filename, cold_filename, dc, **kwargs):
 
 # Calculate noise temperature ------------------------------------------------
 
-def _find_tn_gain(if_data_hot, if_data_cold, dc, t_hot=295., t_cold=80., verbose=True, vbest=None, **kw):
+def _find_tn_gain(if_data_hot, if_data_cold, dc, freq=None, t_hot=295., t_cold=80., verbose=True, vbest=None, **kw):
     """Find the noise temperature and gain from IF data.
 
     This function will search for the best noise temperature, but it makes an
@@ -127,6 +129,7 @@ def _find_tn_gain(if_data_hot, if_data_cold, dc, t_hot=295., t_cold=80., verbose
     Args:
         if_data_hot: Hot IF data
         if_data_cold: Cold IF data
+        freq: Frequency in GHz
         t_hot (float): hot load temperature
         t_cold (float): cold load temperature
 
@@ -140,6 +143,10 @@ def _find_tn_gain(if_data_hot, if_data_cold, dc, t_hot=295., t_cold=80., verbose
     p_hot = if_data_hot[:, 1]
     p_cold = if_data_cold[:, 1]
 
+    # CW
+    t_hot  = _temp_cw(freq*1e9, t_hot)
+    t_cold = _temp_cw(freq*1e9, t_cold)
+
     assert (vnorm == if_data_cold[:, 0]).all(), \
         "Voltages of hot and cold measurements must match."
 
@@ -148,7 +155,7 @@ def _find_tn_gain(if_data_hot, if_data_cold, dc, t_hot=295., t_cold=80., verbose
     y[y <= 1. + 1e-10] = 1. + 1e-10
 
     # Calculate noise temperature and gain
-    tn = (t_hot - t_cold * y) / (y - 1)
+    tn   = (t_hot - t_cold * y) / (y - 1)
     gain = (p_hot - p_cold) / (t_hot - t_cold)
 
     # Best bias point
@@ -164,6 +171,14 @@ def _find_tn_gain(if_data_hot, if_data_cold, dc, t_hot=295., t_cold=80., verbose
         print("     - gain:              {0:.2f} dB".format(gain_best))
 
     return tn, gain, idx_out
+
+
+def _temp_cw(freq, tphys):
+
+    freq  = float(freq)
+    tphys = float(tphys)
+
+    return sc.h * freq / 2 / sc.k / np.tanh(sc.h * freq / 2 / sc.k / tphys)
 
 
 # Determine if noise ---------------------------------------------------------
@@ -285,6 +300,7 @@ def load_if(filename, dc, **kwargs):
     vmax = kwargs.get('ifdata_vmax',  2.25)
     sigma = kwargs.get('ifdata_sigma', 5)
     npts = kwargs.get('ifdata_npts',  3000)
+    rseries = kwargs.get('rseries', None)
 
     # Import
     if_data = np.genfromtxt(filename, delimiter=delim, usecols=usecols)
@@ -298,6 +314,19 @@ def load_if(filename, dc, **kwargs):
     # Correct for offset
     if_data[:, 0] = if_data[:, 0] - dc.offset[0]
 
+    # Correct for series resistance
+    if rseries is not None:
+        v = if_data[:, 0]
+        i = if_data[:, 0]
+        rstatic = dc.vraw / dc.iraw
+        rstatic[rstatic < 0] = 0.
+        rstatic = np.interp(v, dc.vraw, rstatic)
+        iraw = np.interp(v, dc.vraw, dc.iraw)
+        # mask = np.invert(np.isnan(rstatic))
+        rj = rstatic - rseries
+        v0 = iraw * rj
+        if_data[:, 0] = v0
+        
     # Normalize voltage to gap voltage
     if_data[:, 0] /= dc.vgap
 

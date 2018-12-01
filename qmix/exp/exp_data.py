@@ -688,7 +688,9 @@ class RawData(object):
         v_mv = self.vgap * 1e3
         i_ua = self.vgap / self.rn * 1e6
 
-        imax = np.interp(vmax_plot, v_mv, i_ua)
+        imax = np.interp(vmax_plot, 
+                         self.voltage_dc * v_mv, 
+                         self.current_dc * i_ua)
 
         # Plot I-V + IF data
         fig, ax1 = plt.subplots()
