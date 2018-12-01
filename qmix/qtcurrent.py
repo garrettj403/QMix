@@ -384,7 +384,7 @@ def _convolution_coefficient(vj, vph, num_f, num_p, num_b):
 
 
 @nb.njit("c16[:,:,:](c16[:,:,:,:])")
-def _calculate_coeff(aaa):
+def _calculate_coeff(aaa):  # pragma: no cover
     """Find convolution coefficients (recursively)."""
 
     _, num_p, num_b, _ = aaa.shape
@@ -613,7 +613,7 @@ def _current_coeff_3_tones(a, b, c, ccc, resp_matrix, num_b1, num_b2, num_b3):
 
 
 @nb.njit("Tuple((c16[:], c16[:]))(c16[:,:], c16[:,:], c16[:,:], i4, i4, i4, i4, i4, i4)")
-def _multiply_ccc3both(ccc1, ccc2, ccc3, k, l, m, a, b, c):
+def _multiply_ccc3both(ccc1, ccc2, ccc3, k, l, m, a, b, c):  # pragma: no cover
 
     c0 = ccc1[k] * ccc2[l] * ccc3[m]
     cp = np.conj(ccc1[k + a, :] * \
@@ -627,7 +627,7 @@ def _multiply_ccc3both(ccc1, ccc2, ccc3, k, l, m, a, b, c):
 
 
 @nb.njit("c16[:](c16[:,:], c16[:,:], c16[:,:], i4, i4, i4, i4, i4, i4)")
-def _multiply_ccc3m(ccc1, ccc2, ccc3, k, l, m, a, b, c):
+def _multiply_ccc3m(ccc1, ccc2, ccc3, k, l, m, a, b, c):  # pragma: no cover
 
     c0 = ccc1[k] * ccc2[l] * ccc3[m]
     cm = np.conj(ccc1[k - a, :] * \
@@ -720,7 +720,7 @@ def _current_coeff_4_tones(a, b, c, d, ccc, resp_matrix, num_b1, num_b2, num_b3,
 
 
 @nb.njit("Tuple((c16[:], c16[:]))(c16[:,:], c16[:,:], c16[:,:], c16[:,:], i4, i4, i4, i4, i4, i4, i4, i4)")
-def _multiply_ccc4both(ccc1, ccc2, ccc3, ccc4, k, l, m, n, a, b, c, d):
+def _multiply_ccc4both(ccc1, ccc2, ccc3, ccc4, k, l, m, n, a, b, c, d):  # pragma: no cover
 
     c0 = ccc1[k] * ccc2[l] * ccc3[m] * ccc4[n]
     cp = np.conj(ccc1[k + a] * \
@@ -736,7 +736,7 @@ def _multiply_ccc4both(ccc1, ccc2, ccc3, ccc4, k, l, m, n, a, b, c, d):
 
 
 @nb.njit("c16[:](c16[:,:], c16[:,:], c16[:,:], c16[:,:], i4, i4, i4, i4, i4, i4, i4, i4)")
-def _mult_ccc4m(ccc1, ccc2, ccc3, ccc4, k, l, m, n, a, b, c, d):
+def _mult_ccc4m(ccc1, ccc2, ccc3, ccc4, k, l, m, n, a, b, c, d):  # pragma: no cover
 
     c0 = ccc1[k] * ccc2[l] * ccc3[m] * ccc4[n]
     cm = np.conj(ccc1[k - a] * \

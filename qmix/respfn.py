@@ -103,7 +103,7 @@ class RespFn(object):
         self.voltage_kk = voltage
         self.current_kk = current_kk
 
-    def show_current(self, fig_name=None, ax=None):
+    def show_current(self, fig_name=None, ax=None):  # pragma: no cover
         """Plot the dc I-V and KK current.
 
         Args:
@@ -175,19 +175,19 @@ class RespFn(object):
 
         return self.f_idc(vbias) + 1j * self.f_ikk(vbias)
 
-    def increasing_monotonically(self, vlow=-0.1, vhigh=2, npts=6000):
+    # def increasing_monotonically(self, vlow=-0.1, vhigh=2, npts=6000):
 
-        vtmp = np.linspace(-vlow, vhigh, npts)
-        idctmp = self.f_idc(vtmp)
-        testdc = (idctmp[1:] > idctmp[:-1])
+    #     vtmp = np.linspace(-vlow, vhigh, npts)
+    #     idctmp = self.f_idc(vtmp)
+    #     testdc = (idctmp[1:] > idctmp[:-1])
 
-        if not testdc.all():
-            print(" **DC I-V NOT INCREASING MONOTONICALLY**\n")
-            print(vtmp[1:][np.invert(testdc)])
-        else:
-            print(" - Dc I-V increases monotonically\n")
+    #     if not testdc.all():
+    #         print(" **DC I-V NOT INCREASING MONOTONICALLY**\n")
+    #         print(vtmp[1:][np.invert(testdc)])
+    #     else:
+    #         print(" - Dc I-V increases monotonically\n")
 
-        return testdc.all()  # & testkk.all()
+    #     return testdc.all()  # & testkk.all()
 
 
 class RespFnFromIVData(RespFn):
