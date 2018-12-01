@@ -3,6 +3,7 @@
 """
 
 import numpy as np
+import pytest
 
 import qmix.mathfn.ivcurve_models as iv
 from qmix.mathfn.misc import slope
@@ -37,7 +38,7 @@ def test_perfect_iv_model():
     assert np.abs(y[3]) <  1e-7
 
 
-def test_exponential_model():
+class TestExponentialModel:
     """Test the exponential I-V curve model that is used by the Chalmers goup.
 
     For example, see:
@@ -50,22 +51,53 @@ def test_exponential_model():
 
     """
 
-    # Generate I-V curve
-    x = np.linspace(-3, 3, 201)
-    y = iv.exponential(x, vgap=vgap, rn=rn, rsg=rsg, agap=agap)
-    x *= vgap
-    y *= (vgap / rn)
+    def test_corrected_exponential_model(self):
+        """Test corrected model."""
 
-    # Calculate resistance
-    dxdy = slope(y, x)
+        # Generate I-V curve
+        x = np.linspace(-3, 3, 201)
+        y = iv.exponential(x, vgap=vgap, rn=rn, rsg=rsg, agap=agap)
+        x *= vgap
+        y *= (vgap / rn)
 
-    # Check subgap resistance
-    idx = np.abs(x).argmin()
-    assert round(dxdy[idx], 10) == rsg
+        # Calculate resistance
+        dxdy = slope(y, x)
 
-    # Check normal resistance
-    idx = np.abs(x - 7.5e-3).argmin()
-    assert round(dxdy[idx], 10) == rn
+        # Check subgap resistance
+        idx = np.abs(x).argmin()
+        assert round(dxdy[idx], 10) == rsg
+
+        # Check normal resistance
+        idx = np.abs(x - 7.5e-3).argmin()
+        assert round(dxdy[idx], 10) == rn
+
+    def test_original_exponential_model(self):
+        """Test original model."""
+
+        # Generate I-V curve
+        x = np.linspace(-3, 3, 201)
+        y = iv.exponential(x, vgap=vgap, rn=rn, rsg=rsg, agap=agap, model='original')
+        x *= vgap
+        y *= (vgap / rn)
+
+        # Calculate resistance
+        dxdy = slope(y, x)
+
+        # Check subgap resistance
+        idx = np.abs(x).argmin()
+        assert rsg / 2 - 1 < round(dxdy[idx], 10) < rsg / 2 + 1
+
+        # Check normal resistance
+        idx = np.abs(x - 7.5e-3).argmin()
+        assert rn - 1 < round(dxdy[idx], 10) < rn
+
+    def test_other_models(self):
+        """Try using other model type."""
+
+        # Generate I-V curve
+        x = np.linspace(-3, 3, 201)
+        with pytest.raises(ValueError):
+            y = iv.exponential(x, vgap=vgap, rn=rn, rsg=rsg, agap=agap, model='other')
 
 
 def test_expanded_model():

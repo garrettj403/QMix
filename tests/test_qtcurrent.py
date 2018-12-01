@@ -4,6 +4,7 @@
 """
 
 import numpy as np
+import pytest
 import scipy.constants as sc
 from scipy.special import jv
 
@@ -467,8 +468,8 @@ def test_interpolation_of_respfn():
 
 # Tucker theory --------------------------------------------------------------
 # These functions will calculate the QTCs using the equations found in: 
-#    J. R. Tucker and M. J. Feldman, “Quantum detection at millimeter 
-#    wavelengths,” Reviews of Modern Physics, vol. 57, no. 4, pp. 1055–1113, 
+#    J. R. Tucker and M. J. Feldman, "Quantum detection at millimeter 
+#    wavelengths," Reviews of Modern Physics, vol. 57, no. 4, pp. 1055-1113, 
 #    Oct. 1985.
 
 def _tucker_dc_current(voltage, resp, alpha, v_ph, num_b=20):

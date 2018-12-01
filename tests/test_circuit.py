@@ -13,6 +13,7 @@ import tempfile
 import numpy as np
 import pytest
 
+import qmix
 from qmix.circuit import *
 
 
@@ -93,3 +94,31 @@ def test_power_settings():
         cct.set_available_power(power_watts, 1, 1, 'test')
     with pytest.raises(ValueError):
         cct.available_power(1, 1, 'test')
+
+
+def test_setting_alpha():
+    """Try setting the drive level to alpha=1.
+
+    This function is only an approximation."""
+
+    # Set up simulation
+    resp = qmix.respfn.RespFnPolynomial(50)
+
+    cct = EmbeddingCircuit(1, 1)
+    cct.vph[1] = 0.3
+    cct.zt[1, 1] = 0.3 - 1j * 0.3
+
+    # Set drive level
+    alpha_set = 1.
+    cct.set_alpha(alpha_set, 1, 1, zj=0.6)
+
+    vj = qmix.harmonic_balance.harmonic_balance(cct, resp)
+
+    # Check value
+    idx = np.abs(cct.vb - (1 - 0.15)).argmin()
+    alpha = np.abs(vj[1, 1, idx]) / cct.vph[1]
+    assert 0.9 < alpha < 1.1
+
+if __name__ == "__main__":
+
+    test_setting_alpha()

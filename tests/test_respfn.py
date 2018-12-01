@@ -15,7 +15,7 @@ from qmix.mathfn.ivcurve_models import (expanded, exponential, perfect,
                                         polynomial)
 from qmix.respfn import *
 
-MAX_INTERP_ERROR = 0.01  # 1% allowable error
+MAX_INTERP_ERROR = 0.01  # 1% allowable error when interpolating
 
 
 @pytest.mark.filterwarnings("ignore::FutureWarning")
@@ -80,7 +80,38 @@ def test_exponential_interpolation():
     assert max_diff < MAX_INTERP_ERROR
 
 
-# @pytest.mark.filterwarnings("ignore::FutureWarning")
-# def test_perfect_interpolation():
+def test_perfect_interpolation():
+    """Test perfect response function."""
 
-#     resp = RespFnPerfect(v_smear=0.05)
+    # Generate response function
+    resp = RespFnPerfect()
+
+    # Check individual values
+    assert resp.f_idc(0.99) == 0
+    assert resp.f_idc(1.00) == 0.5
+    assert resp.f_idc(1.01) == 1.01
+    assert resp.f_ikk(1e10) < 1e-7
+    
+    # Check DC I-V curve
+    x = np.array([-2., -1., 0., 1., 2.])
+    y = resp.f_idc(x)
+    np.testing.assert_equal(y, [-2., -0.5, 0., 0.5, 2.])
+
+    # Check KK transform
+    x = np.array([-1e10, -1, 1, 1e10])
+    y = resp.f_ikk(x)
+    assert np.abs(y[0]) <  1e-7
+    assert np.abs(y[1]) ==  100.
+    assert np.abs(y[2]) ==  100.
+    assert np.abs(y[3]) <  1e-7
+
+
+def test_smearing_perfect_respfn():
+    """Try smearing the perfect model."""
+
+    resp = RespFnPerfect(v_smear=0.05)
+
+    assert round(resp.f_idc(0), 5) == 0.
+    assert round(resp.f_idc(0.5), 5) == 0.
+    assert round(resp.f_idc(1.5), 5) == 1.5
+    assert round(resp.f_idc(-1.5), 5) == -1.5

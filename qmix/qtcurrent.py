@@ -116,8 +116,6 @@ def qtcurrent(vj, cct, resp, vph_list, num_b=15, verbose=True, resp_matrix=None)
     elif num_f == 4:
         for i in range(nvph):
             current_out[i] = _current_4_tones(vph_list[i], ccc, vph, resp_matrix, num_p, npts, *nb_list)
-    else:
-        raise ValueError
 
     # Done --------------------------------------------------------------------
 
@@ -250,8 +248,6 @@ def interpolate_respfn(cct, resp, num_b):
         resp_matrix = _find_resp_current_3_tones(resp, cct.vb, cct.vph, *nb_list)
     elif num_f == 4:
         resp_matrix = _find_resp_current_4_tones(resp, cct.vb, cct.vph, *nb_list)
-    else:
-        raise ValueError
 
     resp_matrix.flags.writeable = False
 
