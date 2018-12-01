@@ -6,14 +6,12 @@ and "RawData") are provided to help manage the data.
 
 Notes:
 
-    1. These functions assume that you are importing data that has been
-    stored in a very specific format. Please see the 
-    ``workflows/analyze-experimental-data.ipynb`` notebook for an example.
-
-    2. All currents and voltages are stored as normalized values, but
-    other values are unnormalized!
-
-    3. Make sure to plot all of the data to make sure that it makes sense.
+    - These functions assume that you are importing data that has been
+    stored in a very specific format. Take a look at the data in
+    ``workflow-examples/eg-230-data/`` for an example.
+    
+    - See ``workflows/analyze-experimental-data.ipynb`` for an example of how 
+    to use this module.
 
 """
 
@@ -24,7 +22,6 @@ from copy import deepcopy
 import matplotlib.pyplot as plt
 import numpy as np
 import scipy.constants as sc
-from matplotlib import rcParams
 from scipy import special
 from scipy.interpolate import UnivariateSpline
 
@@ -37,10 +34,11 @@ from qmix.mathfn.filters import gauss_conv
 from qmix.mathfn.misc import slope_span_n
 from qmix.misc.terminal import cprint
 from qmix.qtcurrent import qtcurrent
+from qmix.respfn import RespFnFromIVData
 
 # Colors for plotting
 _pale_blue = '#6ba2f9'
-_pale_green = 'mediumseagreen'
+_pale_green = '#42b173'
 _pale_red = '#f96b6b'
 _red = 'r'
 _blue = '#1f77b4'
@@ -51,13 +49,13 @@ GOOD_ERROR = 7e-7
 STEP = 1e-5
 
 # Parameters for saving figures
-_plot_params = {'dpi': 300, 'bbox_inches': 'tight'}
+_plot_params = {'dpi': 500, 'bbox_inches': 'tight'}
 
-# Note: All plotting functions are excluded from coverage.py 
+# Note: All plotting functions are excluded from coverage tests 
 # by using:  "# pragma: no cover"
 
 
-# CLASSES FOR RAW DATA --------------------------------------------------------
+# CLASSES FOR RAW DATA -------------------------------------------------------
 
 class RawData0(object):
     """Class for DC experimental data (ie., unpumped).
@@ -72,7 +70,7 @@ class RawData0(object):
         filter_data (bool): smooth/filter the I-V data (default is True)
         i_fmt (str): units for current ('uA', 'mA', etc.)
         igap_guess (float): Gap current estimate (used to temporarily normalize the input data during filtering)
-        ioffset (float): curren offset
+        ioffset (float): current offset
         rseries (float): Remove the effect of a series resistance
         v_fmt (str): units for voltage ('mV', 'V', etc.)
         v_smear (float): smear DC I-V by this amount when generating response function
@@ -109,7 +107,7 @@ class RawData0(object):
         self.rn = self.dc.rn
         self.rsg = self.dc.rsg
         self.q = self.rsg / self.rn
-        self.rna = self.rn * area * 1e-12  # ohms * m^2
+        self.rna = self.rn * area * 1e-12
         self.jc = self.vgap / self.rna
         self.offset = self.dc.offset
         self.vint = self.dc.vint
@@ -119,16 +117,14 @@ class RawData0(object):
                                self.current) * self.igap
 
         # Generate response function from DC I-V curve
-        self.resp = qmix.respfn.RespFnFromIVData(self.voltage, self.current,
-                                                 check_error=False,
-                                                 verbose=False,
-                                                 v_smear=None)
+        self.resp = RespFnFromIVData(self.voltage, self.current,
+                                     check_error=False, verbose=False,
+                                     v_smear=None)
 
         # Generate smeared response function from DC I-V curve
-        self.resp_smear = qmix.respfn.RespFnFromIVData(self.voltage, self.current,
-                                                       check_error=False,
-                                                       verbose=False,
-                                                       v_smear=v_smear)
+        self.resp_smear = RespFnFromIVData(self.voltage, self.current,
+                                           check_error=False, verbose=False,
+                                           v_smear=v_smear)
 
         # Import DC IF data (if it exists)
         if dcif_file is not None:
@@ -151,9 +147,11 @@ class RawData0(object):
 
     def __str__(self):  # pragma: no cover
 
+        fgap = self.vgap * sc.e / sc.h / sc.giga
+
         message = "\033[35m\nDC I-V data:\033[0m {0}\n".format(self.comment)
         message += "\tVgap:  \t\t{:6.2f}\tmV\n".format(self.vgap * 1e3)
-        message += "\tfgap:  \t\t{:6.2f}\tGHz\n".format(self.vgap * sc.e / sc.h / sc.giga)
+        message += "\tfgap:  \t\t{:6.2f}\tGHz\n".format(fgap)
         message += "\n"
         message += "\tRn:    \t\t{:6.2f}\tohms\n".format(self.rn)
         message += "\tRsg:   \t\t{:6.2f}\tohms\n".format(self.rsg)
@@ -176,12 +174,18 @@ class RawData0(object):
 
         return self.__str__()
 
-    def plot_dciv(self, fig_name=None, vmax_plot=4.):  # pragma: no cover
+    def print_info(self):  # pragma: no cover
+        """Print information about the DC I-V curve."""
+
+        print(self)
+
+    def plot_dciv(self, fig_name=None, vmax_plot=4., **kw):  # pragma: no cover
         """Plot DC I-V data.
 
         Args:
             fig_name: figure filename
             vmax_plot: max voltage to include in plot (in mV)
+            kw (dict): keyword arguments (not used)
 
         """
 
@@ -194,17 +198,17 @@ class RawData0(object):
         # Other values for plotting
         rn_slope = -self.vint / self.rn * 1e6 + self.voltage * ua
         i_at_gap = np.interp([1.], self.voltage, self.current) * ua
-        i_leak = np.interp(self.vleak / self.vgap, self.voltage, self.current) * ua
+        i_leak = np.interp(self.vleak / self.vgap, self.voltage, self.current)
 
         # Subgap resistance
-        mask = (self.vleak * 1e3 - 0.1 < v_mv) & (v_mv < self.vleak * 1e3 + 0.1)
+        mask = (self.vleak * 999.9 < v_mv) & (v_mv < self.vleak * 1000.1)
         psg = np.polyfit(v_mv[mask], i_ua[mask], 1)
 
         # Strings for legend labels
         lgd_str1 = 'DC I-V'
         lgd_str2 = r'$R_\mathrm{{n}}$ = %.2f $\Omega$' % self.rn
         lgd_str3 = r'$V_\mathrm{{gap}}$ = %.2f mV' % (self.vgap * 1e3)
-        lgd_str4 = r'$I_\mathrm{{leak}}$ = %.2f $\mu$A' % i_leak
+        lgd_str4 = r'$I_\mathrm{{leak}}$ = %.2f $\mu$A' % (i_leak * ua)
         lgd_str5 = r'$R_\mathrm{{sg}}$ = %.1f $\Omega$' % self.rsg
 
         # Plot DC I-V curve
@@ -214,7 +218,7 @@ class RawData0(object):
                  marker='o', ls='None', color='r',
                  mfc='None', markeredgewidth=1,
                  label=lgd_str3)
-        plt.plot(2, i_leak,
+        plt.plot(2, i_leak * ua,
                  marker='o', ls='None', color='g',
                  mfc='None', markeredgewidth=1,
                  label=lgd_str4)
@@ -233,11 +237,12 @@ class RawData0(object):
             fig.savefig(fig_name, **_plot_params)
             plt.close(fig)
 
-    def plot_offset(self, fig_name=None):  # pragma: no cover
+    def plot_offset(self, fig_name=None, **kw):  # pragma: no cover
         """Plot offset in DC I-V data.
 
         Args:
             fig_name: figure filename
+            kw (dict): keyword arguments (not used)
 
         """
 
@@ -262,12 +267,13 @@ class RawData0(object):
             fig.savefig(fig_name, **_plot_params)
             plt.close(fig)
 
-    def plot_rdyn(self, fig_name=None, vmax_plot=4.):  # pragma: no cover
+    def plot_rdyn(self, fig_name=None, vmax_plot=4., **kw):  # pragma: no cover
         """Plot dynamic resistance of DC I-V data.
 
         Args:
             fig_name: figure filename
             vmax_plot: max voltage to include in plot (in mV)
+            kw (dict): keyword arguments (not used)
 
         """
 
@@ -288,12 +294,13 @@ class RawData0(object):
             fig.savefig(fig_name, **_plot_params)
             plt.close(fig)
 
-    def plot_rstat(self, fig_name=None, vmax_plot=4.):  # pragma: no cover
+    def plot_rstat(self, fig_name=None, vmax_plot=4., **kw):  # pragma: no cover
         """Plot static resistance of DC I-V data.
 
         Args:
             fig_name: figure filename
             vmax_plot: max voltage to include in plot (in mV)
+            kw (dict): keyword arguments (not used)
 
         """
 
@@ -316,11 +323,12 @@ class RawData0(object):
             fig.savefig(fig_name, **_plot_params)
             plt.close(fig)
 
-    def plot_if_noise(self, fig_name=None):  # pragma: no cover
+    def plot_if_noise(self, fig_name=None, **kw):  # pragma: no cover
         """Plot IF noise.
 
         Args:
             fig_name: figure filename
+            kw (dict): keyword arguments (not used)
 
         """
 
@@ -347,8 +355,8 @@ class RawData0(object):
         ax1.axvline(self.vint * 1e3, c='k', ls=':',
                     lw=0.5, label=r'$V_\mathrm{{int}}$')
         ax1.set_ylabel(r'Current ($\mu$A)')
-        ax1.set_ylim([0, imax])
-        ax1.set_xlim([0, vmax])
+        ax1.set_ylim(bottom=0)
+        ax1.set_xlim(left=0)
         ax1.legend(loc=4, fontsize=8, frameon=False)
 
         v_mv = self.if_data[:, 0] * mv
@@ -370,20 +378,21 @@ class RawData0(object):
         else:
             fig1.savefig(fig_name, **_plot_params)
 
-    def plot_all(self, fig_folder):  # pragma: no cover
+    def plot_all(self, fig_folder, **kw):  # pragma: no cover
         """Plot all DC data.
 
         This function will save the data in the standard format.
 
         Args:
             fig_folder: directory where the figures go
+            kw (dict): keyword arguments (not used)
 
         """
 
-        self.plot_dciv(fig_folder     + '01_dciv/dciv.png')
-        self.plot_offset(fig_folder   + '01_dciv/dciv-offset.png')
-        self.plot_rdyn(fig_folder     + '01_dciv/dciv-rdyn.png')
-        self.plot_if_noise(fig_folder + '01_dciv/dcif-shot-noise.png')
+        self.plot_dciv(fig_folder     + '01_dciv/dciv.png', **kw)
+        self.plot_offset(fig_folder   + '01_dciv/dciv-offset.png', **kw)
+        self.plot_rdyn(fig_folder     + '01_dciv/dciv-rdyn.png', **kw)
+        self.plot_if_noise(fig_folder + '01_dciv/dcif-shot-noise.png', **kw)
 
 class RawData(object):
     """Class for experimental pumped I-V data.
@@ -433,6 +442,7 @@ class RawData(object):
         self.current_dc = dciv.current
 
         self.freq, self.freq_str = get_freq(freq, iv_file)
+        kwargs['freq'] = self.freq
         self.vph = self.freq / self.fgap * 1e9
 
         # Print to terminal
@@ -464,7 +474,9 @@ class RawData(object):
             self.filename_hot = os.path.basename(if_hot_file)
             self.filename_cold = os.path.basename(if_cold_file)
             # Import and analyze IF data
-            results, self.idx_best, dcif = if_data(if_hot_file, if_cold_file, self.dc, dcif=dciv.dcif, **kwargs)
+            results, self.idx_best, dcif = if_data(if_hot_file, if_cold_file,
+                                                   self.dc, dcif=dciv.dcif,
+                                                   **kwargs)
             # Unpack results
             self.if_hot = results[:, :2]
             self.if_cold = np.vstack((results[:, 0], results[:, 2])).T
@@ -504,9 +516,9 @@ class RawData(object):
     def _recover_zemb(self, **kwargs):
         """Recover the embedded impedance (a.k.a., the Thevenin impedance).
 
-        Note that all currents and voltages are normalized to the gap voltage and
-        to the normal resistance. The technique used here is RF voltage match
-        method described by Skalare (1989) and Withington et al. (1995).
+        Note that all currents and voltages are normalized to the gap voltage 
+        and to the normal resistance. The technique used here is RF voltage 
+        match method described by Skalare (1989) and Withington et al. (1995).
 
         Args:
             kwargs: Keyword arguments
@@ -578,20 +590,20 @@ class RawData(object):
 
         # Print to terminal
         if good_fit:
-            cprint('     - good fit', 'OKGREEN')
+            cprint('\t- good fit', 'OKGREEN')
         else:
-            cprint('     - bad fit', 'WARNING')
-        print("     - embedding circuit:")
-        print("          - voltage:      {:+6.2f}  x Vgap".format(vt_best))
-        print("          - impedance:    {:+12.2f}  x Rn".format(zt_best))
+            cprint('\t- bad fit', 'WARNING')
+        print("\t- embedding circuit:")
+        print("\t\t- voltage:      {:+6.2f}  x Vgap".format(vt_best))
+        print("\t\t- impedance:    {:+12.2f}  x Rn".format(zt_best))
         with np.errstate(divide='ignore', invalid='ignore'):
-            power_avail = np.abs(vt_best * vgap) ** 2 / 8 / np.real(zt_best * rn)
-        print("          - avail. power: {:+6.2f}  nW   ".format(power_avail / 1e-9))
-        print("     - junction:")
-        print("          - alpha:        {:+6.2f}       ".format(alpha[idx_middle]))
-        print("          - impedance:    {:+12.2f}  norm.".format(zw))
+            power_avail = np.abs(vt_best * vgap)**2 / 8 / np.real(zt_best * rn)
+        print("\t\t- avail. power: {:+6.2f}  nW".format(power_avail / 1e-9))
+        print("\t- junction:")
+        print("\t\t- alpha:        {:+6.2f}".format(alpha[idx_middle]))
+        print("\t\t- impedance:    {:+12.2f}  norm.".format(zw))
 
-        # Save values as atributes
+        # Save values as attributes
         self.zt = zt_best
         self.vt = vt_best 
         self.fit_good = good_fit
@@ -613,6 +625,8 @@ class RawData(object):
         vmv = dciv.vgap * 1e3
         iua = dciv.igap * 1e6
 
+        imax = np.interp(vmax_plot, dciv.voltage * vmv, dciv.current * iua)
+
         fig, ax = plt.subplots()
         plt.plot(dciv.voltage * vmv, 
                  dciv.current * iua, label="Unpumped")
@@ -621,8 +635,9 @@ class RawData(object):
         plt.xlabel(r'Bias Voltage (mV)')
         plt.ylabel(r'DC Current (uA)')
         plt.xlim([0, vmax_plot])
-        plt.ylim([0, np.interp(vmax_plot, dciv.voltage * vmv, dciv.current * iua)])
-        plt.legend(loc=2, title='LO: {:.2f} GHz'.format(self.freq), frameon=False)
+        plt.ylim([0, imax])
+        msg = 'LO: {:.1f} GHz'.format(self.freq)
+        plt.legend(loc=2, title=msg, frameon=False)
         plt.minorticks_on()
         if fig_name is None:
             plt.show()
@@ -652,7 +667,8 @@ class RawData(object):
         plt.ylabel('IF Power (K)')
         plt.ylim(bottom=0)
         plt.xlim([0, vmax_plot])
-        plt.legend(loc=1, title='LO: ' + str(self.freq) + ' GHz', frameon=False)
+        msg = 'LO: {:.1f} GHz'.format(self.freq)
+        plt.legend(loc=1, title=msg, frameon=False)
         plt.minorticks_on()
         if fig_name is None:
             plt.show()
@@ -669,25 +685,27 @@ class RawData(object):
 
         """
 
-        v_mv = self.if_hot[:, 0] * self.vgap * 1e3
+        v_mv = self.vgap * 1e3
+        i_ua = self.vgap / self.rn * 1e6
 
-        v_unnorm = self.vgap * 1e3
-        i_unnorm = self.vgap / self.rn * 1e6
+        imax = np.interp(vmax_plot, v_mv, i_ua)
 
         # Plot I-V + IF data
         fig, ax1 = plt.subplots()
-        ax1.plot(self.voltage_dc * v_unnorm, 
-                 self.current_dc * i_unnorm, 
+        ax1.plot(self.voltage_dc * v_mv, 
+                 self.current_dc * i_ua, 
                  '#8c8c8c', label="Unpumped")
-        ax1.plot(self.voltage * v_unnorm, 
-                 self.current * i_unnorm, 
+        ax1.plot(self.voltage * v_mv, 
+                 self.current * i_ua, 
                  'k', label="Pumped")
         ax1.set_xlabel('Bias Voltage (mV)')
         ax1.set_ylabel(r'DC Current ($\mu$A)')
-        ax1.set_ylim([0, 350])
+        ax1.set_ylim([0, imax])
         ax1.legend(loc=2, fontsize=6, frameon=True, framealpha=1.)
         ax1.grid(False)
 
+        v_mv = self.if_hot[:, 0] * self.vgap * 1e3
+        
         ax2 = ax1.twinx()
         ax2.plot(v_mv, self.if_hot[:, 1], '#f96b6b', label='Hot')
         ax2.plot(v_mv, self.if_cold[:, 1], '#6ba2f9', label='Cold')
@@ -715,7 +733,7 @@ class RawData(object):
 
         v_mv = self.if_hot[:, 0] * self.vgap * 1e3
         vtmp = float(self.freq)*1e9*sc.h/sc.e/2/sc.milli
-        mask = (0 < v_mv) & (v_mv < 3.5 * vtmp)
+        mask = (0. < v_mv) & (v_mv < 3.5 * vtmp)
         
         fig, ax = plt.subplots()
         ax.plot(v_mv[mask], self.if_hot[mask, 1], '#f96b6b', label='Hot')
@@ -817,7 +835,7 @@ class RawData(object):
 
         lns = l1 + l2 + l3 + l4
         labs = [l.get_label() for l in lns]
-        ax2.legend(lns, labs, loc=1, fontsize=8, frameon=True, framealpha=1.)
+        ax2.legend(lns, labs, loc=2, fontsize=7, frameon=True, framealpha=1.)
         ax1.grid(False)
         ax2.grid(False)
 
@@ -888,7 +906,7 @@ class RawData(object):
         v_mv = self.if_hot[:, 0] * self.vgap * 1e3
 
         fig, ax1 = plt.subplots()
-        
+
         ax1.plot(v_mv, self.gain, label=r'Gain', color=_dark_blue)
         ax1.plot(v_mv[self.idx_best], self.gain[self.idx_best],
                  marker='o', ls='None', color='k',
@@ -1138,22 +1156,22 @@ class RawData(object):
             fig.savefig(fig_name, **_plot_params)
             plt.close(fig)
 
-    def plot_all(self, fig_folder):  # pragma: no cover
+    def plot_all(self, fig):  # pragma: no cover
         """Plot everything using the standard file hierarchy.
 
         Args:
-            fig_folder: figure destination
+            fig (str): figure destination
 
         """
 
-        fstr = str(self.freq)
+        f = str(self.freq)
 
-        self.plot_iv(fig_folder + '02_iv_curves/f' + fstr + '-iv.png')
-        self.plot_ivif(fig_folder + '03_if_data/f' + fstr + '-ivif.png')
-        self.plot_error_surface(fig_folder + '04_impedance/f' + fstr + '-err-surf.png')
-        self.plot_simulated(fig_folder + '04_impedance/f' + fstr + '-sim.png')
-        self.plot_noise_temp(fig_folder + '06_noise_temp/f' + fstr + '-tn.png')
-        self.plot_gain_noise_temp(fig_folder + '06_noise_temp/f' + fstr + '-tn-gain.png')
+        self.plot_iv(fig + '02_iv_curves/f' + f + '-iv.png')
+        self.plot_ivif(fig + '03_if_data/f' + f + '-ivif.png')
+        self.plot_error_surface(fig + '04_impedance/f' + f + '-err-surf.png')
+        self.plot_simulated(fig + '04_impedance/f' + f + '-sim.png')
+        self.plot_noise_temp(fig + '06_noise_temp/f' + f + '-tn.png')
+        self.plot_gain_noise_temp(fig + '06_noise_temp/f' + f + '-tn-gain.png')
 
 # ANALYZE IF SPECTRUM DATA ----------------------------------------------------
 
@@ -1187,12 +1205,13 @@ def _db_to_lin(db):
     return 10 ** (db / 10.)
 
 
-def plot_if_spectrum(data_folder, fig_folder=None):  # pragma: no cover
+def plot_if_spectrum(data_folder, fig_folder=None, figsize=None):  # pragma: no cover
     """Plot all IF spectra.
 
     Args:
         data_folder: data folder
         fig_folder: figure folder
+        figsize: figure size, in inches
 
     """
 
@@ -1201,8 +1220,8 @@ def plot_if_spectrum(data_folder, fig_folder=None):  # pragma: no cover
 
     if_spectra_files = glob.glob(data_folder + '*comb*.dat')
 
-    fig, ax = plt.subplots()
-    fig1, ax1 = plt.subplots()
+    fig, ax = plt.subplots(figsize=figsize)
+    fig1, ax1 = plt.subplots(figsize=figsize)
 
     for if_file in if_spectra_files:
 
@@ -1212,7 +1231,7 @@ def plot_if_spectrum(data_folder, fig_folder=None):  # pragma: no cover
 
         freq, t_n, p_hot_db, p_cold_db = _if_spectrum(if_file).T
 
-        fig2, ax2 = plt.subplots()
+        fig2, ax2 = plt.subplots(figsize=figsize)
         ax2.plot(freq, t_n)
         ax.plot(freq, t_n, label="{} GHz".format(base))
         ax1.plot(freq, gauss_conv(t_n, sigma=1), label="{} GHz".format(base))
@@ -1222,9 +1241,9 @@ def plot_if_spectrum(data_folder, fig_folder=None):  # pragma: no cover
         ax2.set_xlim([0, 20])
         if fig_folder is not None:
             figname = fig_folder + filename
-            fig2.savefig(figname + '.png', bbox_inches='tight')
+            fig2.savefig(figname + '.png', **_plot_params)
             ax2.set_ylim([0, 2000])
-            fig2.savefig(figname + '2.png', bbox_inches='tight')
+            fig2.savefig(figname + '2.png', **_plot_params)
         else:
             fig2.show()
 
@@ -1233,29 +1252,29 @@ def plot_if_spectrum(data_folder, fig_folder=None):  # pragma: no cover
     ax.set_ylim([0, 500])
     ax.set_xlim([0, 20])
     ax.legend()
-    fig.savefig(fig_folder + 'if_spectra.png', bbox_inches='tight')
+    fig.savefig(fig_folder + 'if_spectra.png', **_plot_params)
     ax.set_ylim([0, 2000])
-    fig.savefig(fig_folder + 'if_spectra2.png', bbox_inches='tight')
+    fig.savefig(fig_folder + 'if_spectra2.png', **_plot_params)
 
     ax1.set_ylabel('Noise Temperature (K)')
     ax1.set_xlabel('Frequency (GHz)')
     ax1.set_ylim([0, 500])
     ax1.set_xlim([0, 20])
     ax1.legend()
-    fig1.savefig(fig_folder + 'if_spectra_smooth.png', bbox_inches='tight')
+    fig1.savefig(fig_folder + 'if_spectra_smooth.png', **_plot_params)
     ax1.set_ylim([0, 2000])
-    fig1.savefig(fig_folder + 'if_spectra_smooth2.png', bbox_inches='tight')
+    fig1.savefig(fig_folder + 'if_spectra_smooth2.png', **_plot_params)
 
     print("")
 
 
 # Plot overall results --------------------------------------------------------
 
-def plot_overall_results(dciv_data, data_list, fig_folder):  # pragma: no cover
+def plot_overall_results(dciv, data_list, fig_folder, vmax_plot=4., figsize=None, tn_max=None, f_range=None):  # pragma: no cover
     """Plot overall results.
 
     Args:
-        dciv_data: DC I-V data (instance of RawData0)
+        dciv: DC I-V data (instance of RawData0)
         data_list: list of pumped data (instances of RawData)
         fig_folder: figure destination
 
@@ -1263,7 +1282,10 @@ def plot_overall_results(dciv_data, data_list, fig_folder):  # pragma: no cover
 
     cprint("\nPlotting results.", 'HEADER')
 
-    rcParams.update({'figure.autolayout': True})
+    plotparam = dict(ls='--', marker='o')
+
+    csv_folder = fig_folder + '09_csv_data/'
+    fig_folder = fig_folder + '08_overall_performance/'
 
     num_data = float(len(data_list))
 
@@ -1291,302 +1313,227 @@ def plot_overall_results(dciv_data, data_list, fig_folder):  # pragma: no cover
     z = np.array(z)
     t_n = np.array(t_n)
     gain = np.array(gain)
+    v = np.array(v)
 
-    # Plot all pumped iv curves ----------------------------------------------
-    plt.figure()
-    plt.plot(dciv_data.voltage, dciv_data.current, 'k')
+    # For normalizing data 
+    mv = dciv.vgap * 1e3
+    ua = dciv.igap * 1e6 
+    imax_plot = np.interp(vmax_plot, dciv.voltage * mv, dciv.current * ua)
+
+    # Plot all pumped iv curves -----------------------------------------------
+
+    fig, ax = plt.subplots(figsize=figsize)
+    ax.plot(dciv.voltage * mv, dciv.current * ua, 'k')
     for i, data in enumerate(data_list):
-        plt.plot(data.voltage, data.current,
-                 color=plt.cm.winter(i / num_data),
-                 label=data.freq)
-    plt.xlabel(r'Voltage / $V_\mathrm{{gap}}$')
-    plt.ylabel(r'Current / $I_\mathrm{{gap}}$')
-    plt.xlim([0, 1.5])
-    plt.ylim([0, 1.5])
-    plt.legend(fontsize=6)
-    plt.savefig(fig_folder + '08_overall_performance/iv_curves.png')
-    plt.close()
+        ax.plot(data.voltage * mv, data.current * ua,
+                color=plt.cm.winter(i / num_data),
+                label=data.freq)
+    if f_range is not None:
+        ax.set_xlim([f_range[0], f_range[1]])
+    ax.set_xlabel(r'Voltage (mV)')
+    ax.set_ylabel(r'Current (uA)')
+    ax.set_xlim([0, vmax_plot])
+    ax.set_ylim([0, imax_plot])
+    ax.legend(fontsize=8, title='LO (GHz)', frameon=False)
+    fig.savefig(fig_folder + 'iv_curves.png')
+    plt.close(fig)
 
-    # Plot dynamic resistance ------------------------------------------------
-    plt.figure()
-    plt.plot(freq, rdyn, marker='o', ls='--')
-    plt.xlabel('Frequency (GHz)')
-    plt.ylabel(r'Dynamic resistance ($\Omega$)')
-    plt.ylim(bottom=0)
-    plt.savefig(fig_folder + '08_overall_performance/rdyn.png')
-    plt.close()
+    # Plot dynamic resistance -------------------------------------------------
 
-    # # Plot noise temperature results ---------------------------------------
-    # plt.figure()
-    # plt.plot(freq, t_n, 'o--', color=PALE_BLUE)
-    # plt.xlabel('Frequency (GHz)')
-    # plt.ylabel('Noise Temperature (K)')
-    # # plt.ylim(bottom=0)
-    # plt.savefig(fig_folder + '08_overall_performance/noise_temperature.png')
-    # plt.close()
+    fig, ax = plt.subplots(figsize=figsize)
+    ax.plot(freq, rdyn, **plotparam)
+    if f_range is not None:
+        ax.set_xlim([f_range[0], f_range[1]])
+    ax.set_xlabel('Frequency (GHz)')
+    ax.set_ylabel(r'Dynamic resistance ($\Omega$)')
+    ax.set_ylim(bottom=0)
+    fig.savefig(fig_folder + 'rdyn.png')
+    plt.close(fig)
 
-    # # Plot noise temperature with spline fit -------------------------------
-    # plt.figure()
-    # freq_t = np.linspace(np.min(freq), np.max(freq), 1001)
-    # sp_1 = UnivariateSpline(freq, t_n)
-    # plt.plot(freq, t_n, 'o', color=PALE_BLUE)
-    # plt.plot(freq_t, sp_1(freq_t), '--', color=PALE_BLUE)
-    # plt.xlabel('Frequency (GHz)')
-    # plt.ylabel('Noise Temperature (K)')
-    # # plt.ylim(bottom=0)
-    # fname = fig_folder + '08_overall_performance/noise_temperature_spline_fit.png'
-    # plt.savefig(fname)
-    # plt.close()
+    # Plot noise temperature results ------------------------------------------
 
-    # Plot noise temperature and gain ----------------------------------------
+    fig, ax = plt.subplots(figsize=figsize)
+    ax.plot(freq, t_n, color=_blue, **plotparam)
+    ax.set_xlabel('Frequency (GHz)')
+    ax.set_ylabel('Noise Temperature (K)')
+    if f_range is not None:
+        ax.set_xlim([f_range[0], f_range[1]])
+    if tn_max is None:
+        ax.set_ylim(bottom=0)
+    else:
+        ax.set_ylim([0, tn_max])
+    ax.grid()
+    fig.savefig(fig_folder + 'noise_temperature.png')
+    plt.close(fig)
 
-    fig, ax1 = plt.subplots()
-    ax1.plot(freq, t_n, c=_pale_red, ls='--', marker='o')
+    # Plot noise temperature with spline fit ----------------------------------
+
+    fig, ax = plt.subplots(figsize=figsize)
+    freq_t = np.linspace(np.min(freq), np.max(freq), 1001)
+    sp_1 = UnivariateSpline(freq, t_n)
+    ax.plot(freq, t_n, 'o', color=_blue)
+    ax.plot(freq_t, sp_1(freq_t), '--', color=_blue)
+    ax.set_xlabel('Frequency (GHz)')
+    ax.set_ylabel('Noise Temperature (K)')
+    if f_range is not None:
+        ax.set_xlim([f_range[0], f_range[1]])
+    if tn_max is None:
+        ax.set_ylim(bottom=0)
+    else:
+        ax.set_ylim([0, tn_max])
+    ax.grid()
+    fname = fig_folder + 'noise_temperature_spline_fit.png'
+    fig.savefig(fname)
+    plt.close(fig)
+
+    # Plot noise temperature and gain -----------------------------------------
+
+    fig, ax1 = plt.subplots(figsize=figsize)
+    ax1.plot(freq, t_n, c=_pale_red, **plotparam)
     ax1.set_xlabel('Frequency (GHz)')
     ax1.set_ylabel('Noise Temperature (K)', color=_pale_red)
-    ax1.set_ylim([0, 120])
-    ax1.grid()
+    if f_range is not None:
+        ax1.set_xlim([f_range[0], f_range[1]])
+    if tn_max is None:
+        ax1.set_ylim(bottom=0)
+    else:
+        ax1.set_ylim([0, tn_max])
     for tl in ax1.get_yticklabels():
         tl.set_color(_pale_red)
     ax2 = ax1.twinx()
-    ax2.plot(freq, gain, c=_blue, ls='--', marker='o')
+    ax2.plot(freq, gain, c=_blue, **plotparam)
     ax2.set_ylabel('Gain (dB)', color=_blue)
     for tl in ax2.get_yticklabels():
         tl.set_color(_blue)
-    ax2.set_ylim([-10, 2])
-    plt.savefig(fig_folder + '08_overall_performance/noise_temperature_and_gain.png')
-    plt.close()
+    fig.savefig(fig_folder + 'noise_temperature_and_gain.png')
+    plt.close(fig)
 
-    # Plot IF noise contribution results -------------------------------------
+    # Plot IF noise contribution results --------------------------------------
 
-    plt.figure()
-    plt.plot(if_noise_f, if_noise, 'o--', color=_pale_red)
-    plt.xlabel('Frequency (GHz)')
-    plt.ylabel(r'IF Noise Contribution (K)')
-    plt.ylim([0, 30])
-    fname = fig_folder + '08_overall_performance/if_noise_contribution.png'
-    plt.savefig(fname)
-    plt.close()
+    fig, ax = plt.subplots(figsize=figsize)
+    ax.plot(if_noise_f, if_noise, 'o--', color=_pale_red)
+    if f_range is not None:
+        ax.set_xlim([f_range[0], f_range[1]])
+    ax.set_xlabel('Frequency (GHz)')
+    ax.set_ylabel(r'IF Noise Contribution (K)')
+    ax.set_ylim(bottom=0)
+    fname = fig_folder + 'if_noise.png'
+    fig.savefig(fname)
+    plt.close(fig)
 
-    # # Breakdown noise temperature ------------------------------------------
-    # freq_t = np.linspace(np.min(freq), np.max(freq), 1001)
-    # f_tn = UnivariateSpline(freq, t_n)
-    # f_gc = UnivariateSpline(freq, 10**(np.array(gain)/10.))
-    # #
-    # rf_contribution = 18*np.ones_like(freq_t)
-    # if_contribution = dciv_data.if_noise / f_gc(freq_t)
-    # mixer_contribution = sc.h * freq_t * 1e9 / sc.k
-    # #
-    # plt.figure()
-    # #
-    # plt.fill_between(freq_t, 0, mixer_contribution + rf_contribution + if_contribution, color=PALE_BLUE, label='IF noise')
-    # plt.fill_between(freq_t, 0, mixer_contribution + rf_contribution, color=PALE_RED, label='RF noise')
-    # plt.fill_between(freq_t, 0, mixer_contribution, color=PALE_GREEN, label='Min. Mixer Noise (hf/k)')
-    # #
-    # plt.plot(freq_t, f_tn(freq_t), 'k--', label=r'Measured $T_\mathrm{sys}$')
-    # #
-    # plt.xlabel('Frequency (GHz)')
-    # plt.ylabel('Noise Temperature (K)')
-    # plt.xlim([freq_t.min(), freq_t.max()])
-    # plt.ylim([0, 100])
-    # plt.legend()
-    # fname = fig_folder + '08_overall_performance/noise_breakdown.png'
-    # plt.savefig(fname)
-    # plt.close()
+    # Plot embedding impedance results ----------------------------------------
 
-    # # Breakdown RF noise contribution --------------------------------------
-    # plt.figure()
-    # #
-    # from rfcomp.dielectric import lossless_slab_at_angle
-    # _, g_bs = lossless_slab_at_angle(1.75, 12e-6, freq_t*1e9, pol='parallel')
-    # t_bs = (1 / g_bs - 1) * 293.
-    # #
-    # from qmix.mathfn.filters import gauss_conv
-    # zotefoam = np.genfromtxt('zotefoam_trans.txt')
-    # g_zote = np.interp(freq_t*1e9, zotefoam[:,0], zotefoam[:,1])
-    # g_zote = gauss_conv(g_zote, 250, ext_x=2)
-    # t_zote = (1 / g_zote - 1) * 293.
-    # t_zote = t_zote / g_bs
-    # #
-    # device = np.genfromtxt('lin_trans_RF-simulations_simple-model.txt')
-    # g_dev = np.interp(freq_t, device[:,0], device[:,1])
-    # # print device[:,1]
-    # # g_dev = gauss_conv(g_dev, 250, ext_x=2)
-    # t_dev = (1 / g_dev - 1) * 4.7
-    # t_dev = t_dev / g_bs / g_zote
-    # #
-    # plt.fill_between(freq_t, 0, t_zote + t_bs + t_dev, color=PALE_BLUE, label='Planar Circuit')
-    # plt.fill_between(freq_t, 0, t_zote + t_bs, color=PALE_RED, label='Vacuum Window')
-    # plt.fill_between(freq_t, 0, t_bs, color=PALE_GREEN, label='12um Beamsplitter')
-    # #
-    # plt.plot(freq_t, rf_contribution, 'k--', label='Measured RF contribution')
-    # #
-    # plt.legend()
-    # # plt.ylim([0, 20])
-    # plt.ylim(bottom=0)
-    # plt.xlim([freq_t.min(), freq_t.max()])
-    # #
-    # plt.savefig(fig_folder + '08_overall_performance/rf_noise_breakdown.png')
-    # plt.close()
+    fig, ax = plt.subplots(figsize=figsize)
+    ax.plot(f_z, z.real, c=_pale_blue, label='Real', **plotparam)
+    ax.plot(f_z, z.imag, c=_pale_red, label='Imaginary', **plotparam)
+    if f_range is not None:
+        ax.set_xlim([f_range[0], f_range[1]])
+    ax.set_xlabel('Frequency (GHz)')
+    ax.set_ylabel(r'Embedding Impedance ($\Omega$)')
+    ax.legend(frameon=False)
+    ax.minorticks_on()
+    fig.savefig(fig_folder + 'embedding_impedance.png')
+    plt.close(fig)
 
-    # Plot embedding impedance results ---------------------------------------
+    # Plot embedding impedance results ----------------------------------------
 
-    plt.figure()
-    plt.plot(f_z, z.real / data.rn, c=_pale_blue,
-             ls='--', marker='o', label='Real')
-    plt.plot(f_z, z.imag / data.rn, c=_pale_red,
-             ls='--', marker='o', label='Imaginary')
-    plt.xlabel('Frequency (GHz)')
-    plt.ylabel(r'Embedding Impedance / $R_n$')
-    plt.legend(frameon=False)
-    plt.minorticks_on()
-    plt.savefig(fig_folder + '08_overall_performance/embedding_impedance.png')
-    plt.close()
+    fig, ax = plt.subplots(figsize=figsize)
+    ax.plot(f_z, v * 1e3, c=_pale_green, ls='--', marker='o')
+    if f_range is not None:
+        ax.set_xlim([f_range[0], f_range[1]])
+    ax.set_xlabel('Frequency (GHz)')
+    ax.set_ylabel(r'Embedding Voltage (mV)')
+    ax.set_ylim(bottom=0)
+    ax.minorticks_on()
+    fig.savefig(fig_folder + 'embedding_voltage.png')
+    plt.close(fig)
 
-    # Plot embedding impedance results ---------------------------------------
+    # Plot embedding impedance results ----------------------------------------
 
-    plt.figure()
-    plt.plot(f_z, v / data.vgap, c=_pale_green, ls='--', marker='o')
-    plt.xlabel('Frequency (GHz)')
-    plt.ylabel(r'Embedding Voltage / $V_{{gap}}$')
-    # plt.legend(frameon=False)
-    plt.ylim([0, 0.7])
-    plt.minorticks_on()
-    plt.savefig(fig_folder + '08_overall_performance/embedding_voltage.png')
-    plt.close()
+    fig, ax = plt.subplots(figsize=figsize)
+    ax.plot(freq, aj, c=_pale_green, **plotparam)
+    if f_range is not None:
+        ax.set_xlim([f_range[0], f_range[1]])
+    ax.set_xlabel('Frequency (GHz)')
+    ax.set_ylabel(r'Drive Level, $\alpha$')
+    ax.set_ylim([0, 1.2])
+    ax.minorticks_on()
+    ax.grid()
+    fig.savefig(fig_folder + 'drive_level.png')
+    plt.close(fig)
 
-    # # Plot embedding impedance results -------------------------------------
-    # fig, ax1 = plt.subplots()
-    # ax2 = ax1.twinx()
-    # #
-    # v = np.array(v)
-    # z = np.array(z)
-    # ax1.plot(f_z, z.real / data.rn, c=PALE_BLUE, ls='--', marker='o', label=r'Re$\{Z_{{emb}}\}$')
-    # ax1.plot(f_z, z.imag / data.rn, c=PALE_RED, ls='--', marker='o', label=r'Im$\{Z_{{emb}}\}$')
-    # #
-    # ax2.plot(f_z, aemb, c=PALE_GREEN, ls='--', marker='o', label=r'$\alpha_{{emb}}$')
-    # #
-    # ax1.set_xlabel('Frequency (GHz)')
-    # ax1.set_ylabel(r'Embedding Impedance / $R_n$')
-    # ax1.set_ylim([-1, 1.5])
-    # ax1.legend(loc=2, fontsize=10)
-    # ax1.set_xlim([210, 260])
-    # #
-    # ax2.set_ylabel(r'Embedding Voltage / $V_{{gap}}$')
-    # ax2.set_ylim([-1, 1.5])
-    # ax2.legend(loc=1, fontsize=10)
-    # #
-    # # ax1.grid()
-    # ax1.minorticks_on()
-    # ax2.minorticks_on()
-    # #
-    # plt.savefig(fig_folder + '08_overall_performance/embedding_circuit.png')
-    # plt.close()
+    # Plot the impedance of the SIS junction ----------------------------------
+    
+    fig, ax1 = plt.subplots(figsize=figsize)
+    zj = np.array(zj) * dciv.rn
+    ax1.plot(freq, zj.real, c=_pale_blue, label=r'Re$\{Z_J\}$', **plotparam)
+    ax1.plot(freq, zj.imag, c=_pale_red, label=r'Im$\{Z_J\}$', **plotparam)
+    if f_range is not None:
+        ax1.set_xlim([f_range[0], f_range[1]])
+    ax1.set_xlabel('Frequency (GHz)')
+    ax1.set_ylabel(r'Junction Impedance ($\Omega$)')
+    ax1.set_ylim()
+    ax1.legend(loc=0)
+    ax1.minorticks_on()
+    plt.savefig(fig_folder + 'junction_impedance.png')
+    plt.close(fig)
 
-    # # Plot embedding impedance results -------------------------------------
-    # plt.figure()
-    # zj = np.array(zj)
-    # plt.plot(freq, zj.real, c=PALE_BLUE, ls='--', marker='o', label='Real')
-    # plt.plot(freq, zj.imag, c=PALE_RED, ls='--', marker='o', label='Imaginary')
-    # plt.xlabel('Frequency (GHz)')
-    # plt.ylabel(r'Junction Impedance / $R_n$')
-    # plt.legend(frameon=False)
-    # plt.minorticks_on()
-    # plt.ylim(bottom=0)
-    # plt.savefig(fig_folder + '08_overall_performance/junction_impedance.png')
-    # plt.close()
-
-    # Plot embedding impedance results ---------------------------------------
-
-    plt.figure()
-    plt.plot(freq, aj, c=_pale_green, ls='--', marker='o')
-    plt.xlabel('Frequency (GHz)')
-    plt.ylabel(r'Drive Level, $\alpha$')
-    # plt.legend(frameon=False)
-    plt.ylim([0, 1.2])
-    plt.minorticks_on()
-    plt.savefig(fig_folder + '08_overall_performance/junction_voltage.png')
-    plt.close()
-
-    # # Plot junction impedance ----------------------------------------------
-    # fig, ax1 = plt.subplots()
-    # ax2 = ax1.twinx()
-    # #
-    # zj = np.array(zj)
-    # ax1.plot(freq, zj.real, c=PALE_BLUE, ls='--', marker='o', label=r'Re$\{Z_\omega\}$')
-    # ax1.plot(freq, zj.imag, c=PALE_RED, ls='--', marker='o', label=r'Im$\{Z_\omega\}$')
-    # #
-    # ax2.plot(freq, aj, c=PALE_GREEN, ls='--', marker='o', label=r'$\alpha$')
-    # #
-    # ax1.set_xlabel('Frequency (GHz)')
-    # ax1.set_ylabel(r'Junction Impedance ($\Omega$)')
-    # ax1.set_ylim([0, 1.5])
-    # ax1.legend(loc=2, fontsize=10)
-    # #
-    # ax2.set_ylabel(r'Junction drive level, $\alpha$')
-    # ax2.set_ylim([0, 1.5])
-    # ax2.legend(loc=1, fontsize=10)
-    # ax1.set_xlim([210, 260])
-    # #
-    # # ax1.grid()
-    # ax1.minorticks_on()
-    # ax2.minorticks_on()
-    # #
-    # plt.savefig(fig_folder + '08_overall_performance/junction_impedance.png')
-    # plt.close()
-
-    # Save txt file to make writing reports quicker --------------------------
-    generate_latex_iv_nt(freq, fig_folder + '09_csv_data/latex.txt')
+    # Save data in text format ------------------------------------------------
 
     # Save DC I-V curve as csv
-    output_text = np.vstack((dciv_data.voltage, dciv_data.current)).T
-    np.savetxt(fig_folder + '09_csv_data/iv_curve.txt', output_text)
+    output_text = np.vstack((dciv.voltage, dciv.current)).T
+    np.savetxt(csv_folder + 'dciv-data.txt', output_text)
 
     # Save impedance as csv
-    with open(fig_folder + '09_csv_data/impedance.txt', 'w') as fout:
+    with open(csv_folder + 'recovered-emb.txt', 'w') as fout:
         for i in range(len(data_list)):
-            pstring = '{0}\t{1}\t{2}\t{3}\n'.format(data_list[i].freq,
-                                                    data_list[i].vt,
-                                                    data_list[i].zt,
+            vt_tmp = data_list[i].vt * dciv.vgap * 1e3
+            zt_tmp = data_list[i].zt * dciv.rn
+            zt_fmt = "{:6.2f} + 1j * ({:6.2f})".format(zt_tmp.real, 
+                                                       zt_tmp.imag)
+            pstring = '{0}\t{1:5.2f}\t{2}\t{3}\n'.format(data_list[i].freq,
+                                                    vt_tmp,
+                                                    zt_fmt,
                                                     data_list[i].fit_good)
             fout.write(pstring)
 
-    # Write all DC iv data to a file
-    with open(fig_folder + '09_csv_data/results_dciv.txt', 'w') as fout:
-        fout.write('Gap voltage [V]         \t' + str(dciv_data.vgap) + '\n')
-        fout.write('Normal resistance [ohms]\t' + str(dciv_data.rn) + '\n')
-        fout.write('Gap frequency [Hz]      \t' + str(dciv_data.fgap) + '\n')
+    # Write all DC I-V data to a file
+    with open(csv_folder + 'dciv-info.txt', 'w') as fout:
+        fout.write('Gap voltage      \t{:6.2f} [mV]\n'.format(dciv.vgap*1e3))
+        fout.write('Normal resistance\t{:6.2f} [ohms]\n'.format(dciv.rn))
+        fout.write('Gap frequency    \t{:6.2f} [GHz]\n'.format(dciv.fgap/1e9))
 
     # Write all pumped data to a file
-    with open(fig_folder + '09_csv_data/results.txt', 'w') as fout:
-        headers = ['Frequency[GHz]',
+    with open(csv_folder + 'results.txt', 'w') as fout:
+        headers = ['Frequency (GHz)',
                    'IV Filename',
                    'IF Filename (Hot)',
                    'IF Filename (Cold)',
-                   'Noise Temperature [K]',
-                   'Gain [dB]',
-                   'Embedding Impedance [Norm]',
-                   'Embedding Voltage [Norm]',
-                   'Impedance Recovery Fit',
-                   'IF Noise [K]',
-                   'IF Slope Fit']
-        fout.write('\t'.join(headers) + '\n')
+                   'Noise Temperature (K)',
+                   'Gain (dB)',
+                   'Drive Level',
+                   'Embedding Impedance (mV)',
+                   'Embedding Voltage (ohms)',
+                   'Embedding Circuit Recovered',
+                   'IF Noise (K)',
+                   'IF Noise Recovered']
+        fout.write(', '.join(headers) + '\n')
         for data in data_list:
             _list = [data.freq,
                      data.iv_file,
                      data.filename_hot,
                      data.filename_cold,
-                     data.tn_best,
-                     data.g_db,
-                     data.zt,
-                     data.vt,
+                     "{:.2f}".format(data.tn_best),
+                     "{:.2f}".format(data.g_db),
+                     "{:.2f}".format(data.alpha),
+                     "{:.4f}".format(data.zt * dciv.rn),
+                     "{:.4f}".format(data.vt * dciv.vgap * 1e3),
                      data.fit_good,
                      data.if_noise,
                      data.good_if_noise_fit]
-            string = '\t'.join([str(item) for item in _list])
+            string = ', '.join([str(item) for item in _list])
             fout.write(string + '\n')
 
-    rcParams.update({'figure.autolayout': False})
     print(" -> Done\n")
 
 # IMPEDANCE RECOVERY HELPER FUNCTIONS (PRIVATE) -------------------------------
@@ -1712,8 +1659,8 @@ def check_iv_if_matching(iv_dat, hot_dat, cold_dat):  # pragma: no cover
         if freq in f_hot and freq in f_cold:
             f_out.append(freq)
 
-    print(" - Complete data for " + str(len(f_out)) + " frequencies.")
-    print(" - Frequencies: " + str(f_out[0]) + " to " + str(f_out[-1]) + " GHz")
+    print(" - Complete data for {} frequencies.".format(len(f_out)))
+    print(" - Frequencies: {} to {} GHz".format(f_out[0], f_out[-1]))
     print("")
 
     return f_out
@@ -1740,24 +1687,6 @@ def generate_filename_from_f(freq):  # pragma: no cover
     return iv_filename, hot_filename, cold_filename
 
 
-def generate_latex_iv_nt(frequencies, file_name):  # pragma: no cover
-    """Generate Latex text for quick plotting.
-
-    Args:
-        frequencies: list of frequencies
-        file_name: name of output file
-
-    """
-
-    with open(file_name, 'w') as f:
-        for freq in frequencies:
-            freq_string = str(int(freq)) + '_' + str(int(freq * 10 % 10))
-            f.write(r" \noindent \includegraphics[height=6.2cm]{fig_iv_" +
-                    freq_string +
-                    r".pdf}\includegraphics[height=6.2cm]{fig_noise_temp_" +
-                    freq_string + ".pdf}\n\n")
-
-
 def get_freq_from_filename(file_path):
     """Get frequency from file name.
 
@@ -1782,6 +1711,16 @@ def get_freq_from_filename(file_path):
 
 
 def get_freq(freq, filepath):
+    """Get frequency.
+    
+    Args:
+        freq: frequency, in units GHz
+        filepath: filename
+
+    Returns:
+        frequency and frequency string
+
+    """
 
     if freq is None:
         freq = float(get_freq_from_filename(filepath))

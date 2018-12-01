@@ -108,7 +108,7 @@ class EmbeddingCircuit(object):
 
         return "Embedding circuit (NF:{}, NP:{}): {}".format(self.num_f, self.num_p, self.name)
 
-    def __repr__(self):
+    def __repr__(self):  # pragma: no cover
 
         return self.__str__()
 
@@ -193,7 +193,7 @@ class EmbeddingCircuit(object):
 
         self.vt[f, p] = volt_v / self.vgap
 
-    def set_alpha(self, alpha, f=1, p=1, zj=2. / 3):
+    def set_alpha(self, alpha, f=1, p=1, zj=0.66):
         """ Set drive level of tone f and harmonic p.
 
         Note: Gap voltage and normal resistance must be set prior!
@@ -211,7 +211,7 @@ class EmbeddingCircuit(object):
 
         assert self.zt[f, p] != 0, 'Embedding impedance not set'
 
-        self.vt[f, p] = alpha * self.vph[f] * (self.zt[f, p] + zj) / zj
+        self.vt[f, p] = alpha * self.vph[f] * (self.zt[f, p] / zj + 1) 
 
     def set_vph(self, freq, f=1):
         """ Set normalized photon voltage of tone f.
