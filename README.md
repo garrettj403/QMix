@@ -23,7 +23,7 @@ QMix can be used to simulate the performance of SIS mixers (example below).
 
 ![](example.png)
 
-Please see the ``QMix/workflow-examples/`` directory or the [QMix website](https://garrettj403.github.io/QMix/single-tone-simple.html) for more examples! 
+Please see the ``QMix/examples/`` directory or the [QMix website](https://garrettj403.github.io/QMix/single-tone-simple.html) for more examples! 
 
 References
 ----------
