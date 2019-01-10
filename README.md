@@ -3,35 +3,39 @@
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/garrettj403/QMix/issues)
 
-*Quantum Mixing Software*
+***Q**uantum* ***Mix**ing software*
 
-QMix is a software package that can be used to simulate Superconductor/Insulator/Superconductor (SIS) mixers. It uses multi-tone spectral domain analysis, which makes QMix ideal for simulating higher-order harmonics, power saturation and wide IF bandwidth devices. See reference below for more information. 
+QMix is a software package for simulating quasiparticle tunneling currents in Superconductor/Insulator/Superconductor (SIS) junctions. These junctions are commonly used for heterodyne mixing at millimeter and submillimeter wavelengths. QMix can be used to simulate their performance, investigate their experimental results and optimize their operation.
 
-**Author:** John Garrett (john.garrett@physics.ox.ac.uk)
-
-**Language:** Python 3.7
+In order to calculate the quasiparticle tunneling currents, QMix uses *multi-tone spectral domain analysis* (see references below for more information). Unlike other software packages that are based on perturbation techniques, QMix is ideal for simulating higher-order harmonics, power saturation, subharmonic pumping and frequency multiplication. 
 
 **Website:** https://garrettj403.github.io/QMix/
 
 Installation
 ------------
 
-Clone the GitHub repository to your machine and then add the new QMix directory to your Python path environment variable. Please see the [QMix website](https://garrettj403.github.io/QMix/setup.html) for more information.
+To install QMix, clone the [GitHub repository](https://github.com/garrettj403/QMix) and then add the ``QMix/`` directory to your Python path environment variable. A virtual environment for running QMix can be created using the ``environment.yml`` file provided in the root directory. Please see the [QMix website](https://garrettj403.github.io/QMix/setup.html) for more information.
 
 Examples
 --------
 
-Here is an example of a simple SIS mixer simulation. See ``workflow-examples/`` for more.
+QMix can be used to simulate the performance of SIS mixers (example below). 
 
 ![](example.png)
+
+Please see the ``QMix/workflow-examples/`` directory or the [QMix website](https://garrettj403.github.io/QMix/single-tone-simple.html) for more examples! 
 
 References
 ----------
 
-More information on QMix and multi-tone spectral domain analysis can be found in:
+For more information on QMix:
 
 - J. Garrett, ["A 230 GHz Focal Plane Array Using a Wide IF Bandwidth SIS Receiver,"](https://ora.ox.ac.uk/objects/uuid:d47fbf3b-1cf3-4e58-be97-767b9893066e) DPhil thesis, University of Oxford, Oxford, UK, 2018.
 
+For more information on multi-tone spectral domain analysis: 
+
 - P. Kittara, "The Development of a 700 GHz SIS Mixer with Nb Finline Devices: Nonlinear Mixer Theory, Design Techniques and Experimental Investigation," DPhil thesis, University of Cambridge, Cambridge, UK, 2002.
 
-- P. Kittara, S. Withington, G. Yassin, "Theoretical and numerical analysis of very high harmonic superconducting tunnel junction mixers," *Journal of Applied Physics,* vol. 101, no. 2, pp. 024508, Jan. 2007.
+- S. Withington, P. Kittara, and G. Yassin, [“Multitone quantum simulations of saturating tunnel junction mixers,”](http://aip.scitation.org/doi/10.1063/1.1576515) *Journal Applied Physics*, vol. 93, no. 12, pp. 9812–9822, Jun. 2003.
+
+- P. Kittara, S. Withington, and G. Yassin, ["Theoretical and numerical analysis of very high harmonic superconducting tunnel junction mixers,"](https://aip.scitation.org/doi/10.1063/1.2424407) *Journal of Applied Physics,* vol. 101, no. 2, pp. 024508, Jan. 2007.

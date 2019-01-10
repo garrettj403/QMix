@@ -1,14 +1,13 @@
-Tests for QMix
-==============
+Testing QMix
+============
 
-This directory contains tests for all of the modules within the ``QMix`` package.
+This directory contains tests for all of the modules within the ``QMix`` package. The 4 most important modules are:
+   - ``qmix.circuit``: for building the embedding circuit
+   - ``qmix.respfn``: for generating the response function
+   - ``qmix.harmonic_balance``: for performing harmonic balance
+   - ``qmix.qtcurrent``: for calculating the quasiparticle tunneling currents
 
-Note that ``QMix`` contains 4 main modules:
-   - ``qmix.circuit``: to describe the embedding circuit
-   - ``qmix.respfn``: to generate the response function
-   - ``qmix.harmonic_balance``: to perform harmonic balance
-   - ``qmix.qtcurrent``: to calculate the quasiparticle tunneling currents
-Tests for these packages are the most important.
+The tests for these packages are the most important.
 
 Testing the Entire QMix Package
 -------------------------------
@@ -29,12 +28,12 @@ To generate a coverage report, run:
 ```bash
 pytest --verbose --color=yes --cov=qmix/ --cov-report=html tests/
 ```
-Then open the report that is generated in ``htmlcov/index.html``.
+then open the report that is generated in ``htmlcov/index.html``.
 
 Testing Individual Modules
 --------------------------
 
-For example, to test the harmonic balance module, you can run:
+For example, to test the harmonic balance module, from the ``QMix/tests/`` directory you can run:
 
 ```bash
 pytest test_harmonic_balance.py
