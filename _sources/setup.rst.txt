@@ -44,6 +44,6 @@ From the ``QMix/`` root directory, you can test your QMix installation by runnin
 
    pytest --verbose --color=yes tests/
 
-All of the tests should pass; although, a few ``FutureWarnings`` may pop up. These are caused by the SciPy package, and they are normally suppressed when QMix is running. If you encounter any other issues, (1) make sure that you are using the virtual environment that I provided with the package, and then (2) let me know through the `issue tracking system`__ on GitHub. You can also test the package by running the workflow examples that are contained in the ``QMix/workflow-examples/`` directory.
+All of the tests should pass; although, a few ``FutureWarnings`` may pop up. These are caused by the SciPy package, and they are normally suppressed when QMix is running. If you encounter any other issues, (1) make sure that you are using the virtual environment that I provided with the package, and then (2) let me know through the `issue tracking system`__ on GitHub. You can also test the package by running the workflow examples that are contained in the ``QMix/examples/`` directory.
 
 .. __: https://github.com/garrettj403/QMix/issues/
