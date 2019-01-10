@@ -56,16 +56,16 @@ dependencies:
   - markupsafe=1.0=py37h1de35cc_1
   - matplotlib=3.0.0=py37h54f8f79_0
   - mistune=0.8.4=py37h1de35cc_0
-  - mkl=2019.0=118
-  - mkl_fft=1.0.6=py37hb8a8100_0
-  - mkl_random=1.0.1=py37h5d10147_1
+  - mkl=2019.1=144
+  - mkl_fft=1.0.6=py37h27c97d8_0
+  - mkl_random=1.0.2=py37h27c97d8_0
   - nbconvert=5.3.1=py37_0
   - nbformat=4.4.0=py37_0
   - ncurses=6.1=h0a44026_0
   - notebook=5.7.0=py37_0
   - numba=0.40.0=py37h6440ff4_0
-  - numpy=1.15.2=py37h6a91979_1
-  - numpy-base=1.15.2=py37h8a80b8c_1
+  - numpy=1.15.4=py37hacdab7b_0
+  - numpy-base=1.15.4=py37h6575580_0
   - openssl=1.0.2p=h1de35cc_0
   - packaging=18.0=py37_0
   - pandoc=2.2.3.2=0
@@ -94,7 +94,7 @@ dependencies:
   - readline=7.0=h1de35cc_5
   - requests=2.19.1=py37_0
   - ruamel_yaml=0.15.46=py37h1de35cc_0
-  - scipy=1.1.0=py37h28f7352_1
+  - scipy=1.1.0=py37h1410ff5_2
   - send2trash=1.5.0=py37_0
   - setuptools=40.4.3=py37_0
   - simplegeneric=0.8.1=py37_2
