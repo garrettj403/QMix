@@ -185,14 +185,14 @@
 </pre></div>
 </div>
 <p>This will download QMix into a new directory called <code class="docutils literal notranslate"><span class="pre">QMix/</span></code>. You then need to add the <code class="docutils literal notranslate"><span class="pre">QMix/</span></code> directory to your <code class="docutils literal notranslate"><span class="pre">PYTHONPATH</span></code> environment variable. If you are on a macOS system, open your bash profile (normally located in <code class="docutils literal notranslate"><span class="pre">~/.bash_profile</span></code> or <code class="docutils literal notranslate"><span class="pre">~/.profile</span></code>) and add the following:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">PYTHONPATH</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">PYTHONPATH</span><span class="si">}</span><span class="s2">:&lt;path-to-qmix&gt;&quot;</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">PYTHONPATH</span><span class="o">=</span><span class="s2">&quot;&lt;path-to-qmix&gt;:</span><span class="nv">$PYTHONPATH</span><span class="s2">&quot;</span>
 </pre></div>
 </div>
 <p>where <code class="docutils literal notranslate"><span class="pre">&lt;path-to-qmix&gt;</span></code> is the path to the <code class="docutils literal notranslate"><span class="pre">QMix/</span></code> directory on your computer.</p>
 </div>
 <div class="section" id="configuring-python">
 <h2>2.2. Configuring Python<a class="headerlink" href="#configuring-python" title="Permalink to this headline">¶</a></h2>
-<p>QMix is written in Python version 3.7. If you don’t want to change your Python installation or in case you are missing any packages, I have included a virtual environment with all the packages that are required to run QMix. Assuming that you are using the Anaconda package manager, run:</p>
+<p>QMix is written in Python version 3.7. If you don’t want to change your Python installation or in case you are missing any packages, I have included a virtual environment file that contains all of the neccesary packages. If you are using the Anaconda package manager, you can run:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda env create -f environment.yml
 </pre></div>
 </div>
@@ -200,15 +200,14 @@
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">source</span> activate qmix
 </pre></div>
 </div>
-<p>Once activated, you should be able to run all of the scripts contained in QMix.</p>
 </div>
 <div class="section" id="testing-your-installation">
 <h2>2.3. Testing Your Installation<a class="headerlink" href="#testing-your-installation" title="Permalink to this headline">¶</a></h2>
-<p>You can test the QMix installation by running:</p>
+<p>From the <code class="docutils literal notranslate"><span class="pre">QMix/</span></code> root directory, you can test your QMix installation by running:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">pytest</span> <span class="o">--</span><span class="n">verbose</span> <span class="o">--</span><span class="n">color</span><span class="o">=</span><span class="n">yes</span> <span class="n">tests</span><span class="o">/</span>
 </pre></div>
 </div>
-<p>in the <code class="docutils literal notranslate"><span class="pre">QMix/</span></code> root directory. All of the tests should pass; although, a few <code class="docutils literal notranslate"><span class="pre">FutureWarnings</span></code> may pop up. These are caused by the SciPy package, and they are normally suppressed when QMix is running. If you encounter any other issues, (1) make sure that you are using the virtual environment that I provided with the package, and then (2) let me know through the <a class="reference external" href="https://github.com/garrettj403/QMix/issues/">issue tracking system</a>. You can also test the package by running the workflow examples that are contained in <code class="docutils literal notranslate"><span class="pre">workflow-examples/</span></code>.</p>
+<p>All of the tests should pass; although, a few <code class="docutils literal notranslate"><span class="pre">FutureWarnings</span></code> may pop up. These are caused by the SciPy package, and they are normally suppressed when QMix is running. If you encounter any other issues, (1) make sure that you are using the virtual environment that I provided with the package, and then (2) let me know through the <a class="reference external" href="https://github.com/garrettj403/QMix/issues/">issue tracking system</a> on GitHub. You can also test the package by running the workflow examples that are contained in the <code class="docutils literal notranslate"><span class="pre">QMix/workflow-examples/</span></code> directory.</p>
 </div>
 </div>
 

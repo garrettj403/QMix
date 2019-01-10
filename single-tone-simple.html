@@ -86,7 +86,7 @@
 <li class="toctree-l1"><a class="reference internal" href="project.html">1. The QMix Package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="setup.html">2. Getting Started</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">3. Creating a simple simulation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#Generate-response-function">3.1. Generate response function</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Generate-the-response-function">3.1. Generate the response function</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#Define-embedding-circuit">3.2. Define embedding circuit</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#Calculate-desired-tunnelling-currents">3.3. Calculate desired tunnelling currents</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#Plot-the-pumped-I-V-curve">3.4. Plot the pumped I-V curve</a></li>
@@ -346,12 +346,14 @@ div.nboutput div.output_area.stderr {
 <h1>3. Creating a simple simulation<a class="headerlink" href="#Creating-a-simple-simulation" title="Permalink to this headline">¶</a></h1>
 <ul class="simple">
 <li>This notebook contains a very simple SIS simulation:<ul>
-<li>The input consists of only one tone</li>
-<li>The embedding circuit is ignored (no harmonic balance)</li>
-<li>The DC I-V curve is generated through a polynomial model</li>
+<li>The input consists of only one tone and one harmonic</li>
+<li>The embedding circuit is ignored (i.e., no harmonic balance is
+required)</li>
+<li>The DC current-voltage relationship is generated through a
+polynomial model</li>
 </ul>
 </li>
-<li>The simulation calculates:<ul>
+<li>The simulation then calculates:<ul>
 <li>The DC tunneling current (i.e., the pumped I-V curve)</li>
 <li>The AC tunneling current</li>
 </ul>
@@ -362,18 +364,17 @@ div.nboutput div.output_area.stderr {
 <span></span>In [1]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
 <span></span><span class="o">%</span><span class="k">matplotlib</span> inline
 
 <span class="kn">import</span> <span class="nn">qmix</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">matplotlib</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
 </pre></div>
 </div>
 </div>
-<div class="section" id="Generate-response-function">
-<h2>3.1. Generate response function<a class="headerlink" href="#Generate-response-function" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="Generate-the-response-function">
+<h2>3.1. Generate the response function<a class="headerlink" href="#Generate-the-response-function" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>Here we will generate the response function using a polynomial model</li>
 <li>This class will automatically generate the Kramers-Kronig transform
@@ -384,7 +385,7 @@ of the DC I-V curve, and then setup the interpolation.</li>
 <span></span>In [2]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
 <span></span><span class="n">resp</span> <span class="o">=</span> <span class="n">qmix</span><span class="o">.</span><span class="n">respfn</span><span class="o">.</span><span class="n">RespFnPolynomial</span><span class="p">(</span><span class="n">p_order</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
 
 <span class="n">resp</span><span class="o">.</span><span class="n">show_current</span><span class="p">();</span>
@@ -442,7 +443,7 @@ circuit.</li>
 <span></span>In [3]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
 <span></span><span class="c1"># create an instance of the embedding circuit class</span>
 <span class="c1"># this holds all of the data about the embedding circuit (incl. voltage, impedances and frequencies)</span>
 <span class="n">cct</span> <span class="o">=</span> <span class="n">qmix</span><span class="o">.</span><span class="n">circuit</span><span class="o">.</span><span class="n">EmbeddingCircuit</span><span class="p">()</span>
@@ -485,9 +486,6 @@ the junction below. For example,<ul>
 current of the first tone and first harmonic</li>
 </ul>
 </li>
-<li>Normally, this is done by passing a list of frequencies that we
-want to solve for. Here, we select the first current in the list
-by adding <code class="docutils literal notranslate"><span class="pre">[0]</span></code> to the end of the function call</li>
 </ul>
 </li>
 </ul>
@@ -496,7 +494,7 @@ by adding <code class="docutils literal notranslate"><span class="pre">[0]</span
 <span></span>In [4]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
 <span></span><span class="c1"># DC tunneling current</span>
 <span class="n">idc</span> <span class="o">=</span> <span class="n">qmix</span><span class="o">.</span><span class="n">qtcurrent</span><span class="o">.</span><span class="n">qtcurrent</span><span class="p">(</span><span class="n">vj</span><span class="p">,</span> <span class="n">cct</span><span class="p">,</span> <span class="n">resp</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
 
@@ -514,13 +512,13 @@ Calculating tunneling current...
  - 1 tone(s)
  - 1 harmonic(s)
 Done.
-Time: 0.0069 s
+Time: 0.0095 s
 
 Calculating tunneling current...
  - 1 tone(s)
  - 1 harmonic(s)
 Done.
-Time: 0.0040 s
+Time: 0.0050 s
 
 </pre></div></div>
 </div>
@@ -532,7 +530,7 @@ Time: 0.0040 s
 <span></span>In [5]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
 <span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
 
 <span class="c1"># vertical lines for photon steps</span>
@@ -576,7 +574,7 @@ Time: 0.0040 s
 <span></span>In [6]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
 <span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
 
 <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">cct</span><span class="o">.</span><span class="n">vb</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">iac</span><span class="p">),</span> <span class="s1">&#39;k--&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;Absolute&#39;</span><span class="p">)</span>

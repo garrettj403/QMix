@@ -172,10 +172,9 @@
 </style>
 <div class="section" id="qmix-quantum-mixing-software">
 <h1>QMix: Quantum Mixing Software<a class="headerlink" href="#qmix-quantum-mixing-software" title="Permalink to this headline">¶</a></h1>
-<p>QMix is a software package that can be used to simulate Superconductor-Insulator-Superconductor (SIS) mixers. It uses multi-tone spectral domain analysis, which makes QMix ideal for simulating higher-order harmonics, power saturation and wide IF bandwidth devices.</p>
-<p><strong>Author:</strong> John Garrett (<a class="reference external" href="mailto:john&#46;garrett&#37;&#52;&#48;physics&#46;ox&#46;ac&#46;uk">john<span>&#46;</span>garrett<span>&#64;</span>physics<span>&#46;</span>ox<span>&#46;</span>ac<span>&#46;</span>uk</a>)</p>
-<p><strong>Language:</strong> Python 3.7</p>
-<p><strong>GitHub:</strong> <a class="reference external" href="https://github.com/garrettj403/QMix/">https://github.com/garrettj403/QMix/</a></p>
+<p>QMix is a software package for simulating quasiparticle tunneling currents in Superconductor/Insulator/Superconductor (SIS) junctions. These junctions are commonly used for heterodyne mixing at millimeter and submillimeter wavelengths. QMix can be used to simulate their performance, investigate their experimental results and optimize their operation.</p>
+<p>In order to calculate the quasiparticle tunneling currents, QMix uses <em>multi-tone spectral domain analysis</em> (see references below for more information). Unlike other software packages that are based on perturbation techniques, QMix is ideal for simulating higher-order harmonics, power saturation, subharmonic pumping and frequency multiplication.</p>
+<p><strong>Repository:</strong> <a class="reference external" href="https://github.com/garrettj403/QMix/">https://github.com/garrettj403/QMix/</a></p>
 </div>
 <div class="section" id="contents">
 <h1>Contents<a class="headerlink" href="#contents" title="Permalink to this headline">¶</a></h1>
@@ -189,7 +188,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="single-tone-simple.html">3. Creating a simple simulation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="single-tone-simple.html#Generate-response-function">3.1. Generate response function</a></li>
+<li class="toctree-l2"><a class="reference internal" href="single-tone-simple.html#Generate-the-response-function">3.1. Generate the response function</a></li>
 <li class="toctree-l2"><a class="reference internal" href="single-tone-simple.html#Define-embedding-circuit">3.2. Define embedding circuit</a></li>
 <li class="toctree-l2"><a class="reference internal" href="single-tone-simple.html#Calculate-desired-tunnelling-currents">3.3. Calculate desired tunnelling currents</a></li>
 <li class="toctree-l2"><a class="reference internal" href="single-tone-simple.html#Plot-the-pumped-I-V-curve">3.4. Plot the pumped I-V curve</a></li>
@@ -215,22 +214,25 @@
 </div>
 <div class="section" id="references">
 <h1>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h1>
-<ul>
-<li><ol class="first upperalpha simple" start="10">
-<li>Garrett, “A 230 GHz Focal Plane Array Using a Wide IF Bandwidth SIS Receiver,” DPhil thesis, University of Oxford, Oxford, UK, 2018.</li>
+<p>For more information on QMix:</p>
+<ul class="simple">
+<li><ol class="first upperalpha" start="10">
+<li>Garrett, <a class="reference external" href="https://ora.ox.ac.uk/objects/uuid:d47fbf3b-1cf3-4e58-be97-767b9893066e">“A 230 GHz Focal Plane Array Using a Wide IF Bandwidth SIS Receiver,”</a> DPhil thesis, University of Oxford, Oxford, UK, 2018.</li>
 </ol>
-<blockquote>
-<div><ul class="simple">
-<li><a class="reference external" href="https://ora.ox.ac.uk/objects/uuid:d47fbf3b-1cf3-4e58-be97-767b9893066e">https://ora.ox.ac.uk/objects/uuid:d47fbf3b-1cf3-4e58-be97-767b9893066e</a></li>
-</ul>
-</div></blockquote>
 </li>
-<li><ol class="first upperalpha simple" start="16">
+</ul>
+<p>For more information on multi-tone spectral domain analysis:</p>
+<ul class="simple">
+<li><ol class="first upperalpha" start="16">
 <li>Kittara, “The Development of a 700 GHz SIS Mixer with Nb Finline Devices: Nonlinear Mixer Theory, Design Techniques and Experimental Investigation,” DPhil thesis, University of Cambridge, Cambridge, UK, 2002.</li>
 </ol>
 </li>
-<li><ol class="first upperalpha simple" start="16">
-<li>Kittara, S. Withington, G. Yassin, “Theoretical and numerical analysis of very high harmonic superconducting tunnel junction mixers,” <em>Journal of Applied Physics,</em> 101, 2, pp. 024508, Jan. 2007.</li>
+<li><ol class="first upperalpha" start="19">
+<li>Withington, P. Kittara, and G. Yassin, <a class="reference external" href="http://aip.scitation.org/doi/10.1063/1.1576515">“Multitone quantum simulations of saturating tunnel junction mixers,”</a> <em>Journal Applied Physics</em>, vol. 93, no. 12, pp. 9812–9822, Jun. 2003.</li>
+</ol>
+</li>
+<li><ol class="first upperalpha" start="16">
+<li>Kittara, S. Withington, and G. Yassin, <a class="reference external" href="https://aip.scitation.org/doi/10.1063/1.2424407">“Theoretical and numerical analysis of very high harmonic superconducting tunnel junction mixers,”</a> <em>Journal of Applied Physics,</em> vol. 101, no. 2, pp. 024508, Jan. 2007.</li>
 </ol>
 </li>
 </ul>
