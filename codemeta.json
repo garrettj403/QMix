@@ -1,0 +1,28 @@
+{
+  "@context": "https://raw.githubusercontent.com/codemeta/codemeta/master/codemeta.jsonld",
+  "@type": "Code",
+  "author": [
+    {
+      "@id": "0000-0002-5509-5006",
+      "@type": "Person",
+      "email": "garrettj403@gmail.com",
+      "name": "John D. Garrett",
+      "affiliation": "University of Oxford"
+    },
+    {
+      "@type": "Person",
+      "name": "Ghassan Yassin",
+      "affiliation": "University of Oxford"
+    }
+  ],
+  "identifier": "https://doi.org/10.5281/zenodo.2538163",
+  "codeRepository": "https://github.com/garrettj403/QMix",
+  "datePublished": "2019-01-11",
+  "dateModified": "2019-01-11",
+  "dateCreated": "2019-01-11",
+  "description": "QMix is a software package for simulating quasiparticle tunneling currents in Superconductor/Insulator/Superconductor (SIS) junctions. These junctions are commonly used for heterodyne mixing at millimeter and submillimeter wavelengths. QMix can be used to simulate their performance, investigate their experimental results and optimize their operation.",
+  "keywords": "SIS mixers, radio astronomy, superconducting detectors, terahertz instrumentation, Python",
+  "license": "GPL v3.0",
+  "title": "QMix",
+  "version": "v1.0.0"
+}
