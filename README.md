@@ -2,6 +2,7 @@
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/garrettj403/QMix/issues)
+[![Zenodo](https://zenodo.org/badge/DOI/10.5281/zenodo.2538163.svg)](https://doi.org/10.5281/zenodo.2538163)
 
 ***Q**uantum* ***Mix**ing software*
 
@@ -24,6 +25,21 @@ QMix can be used to simulate the performance of SIS mixers (example below).
 ![](example.png)
 
 Please see the ``QMix/examples/`` directory or the [QMix website](https://garrettj403.github.io/QMix/single-tone-simple.html) for more examples! 
+
+Citing QMix
+-----------
+
+If you use QMix, please cite the Zenodo archive:
+
+    @article{Garrett2019,
+      author       = {J. D. Garrett and G. Yassin},
+      title        = {{garrettj403/QMix  (Version v1.0.0)}},
+      month        = jan,
+      year         = 2019,
+      publisher    = {Zenodo},
+      doi          = {10.5281/zenodo.2538163},
+      url          = {https://doi.org/10.5281/zenodo.2538163}
+    }
 
 References
 ----------
