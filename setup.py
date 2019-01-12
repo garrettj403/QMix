@@ -21,7 +21,7 @@ setup(
         'numpy',
         'scipy'
     ],
-    long_description=read('README.md'),
+    long_description="QMix is a software package for simulating quasiparticle tunneling currents in Superconductor/Insulator/Superconductor (SIS) junctions. These junctions are commonly used for heterodyne mixing at millimeter and submillimeter wavelengths. QMix can be used to simulate their performance, investigate their experimental results and optimize their operation.",
     classifiers=[
         "Development Status :: 5 - Production/Stable",
         "Intended Audience :: Science/Research",
