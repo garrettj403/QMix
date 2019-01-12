@@ -111,7 +111,7 @@ def test_smearing_perfect_respfn():
 
     resp = RespFnPerfect(v_smear=0.05)
 
-    assert round(resp.f_idc(0), 5) == 0.
-    assert round(resp.f_idc(0.5), 5) == 0.
-    assert round(resp.f_idc(1.5), 5) == 1.5
-    assert round(resp.f_idc(-1.5), 5) == -1.5
+    # Check DC I-V curve
+    x = np.array([0., 0.5, 1.5, -1.5])
+    y = resp.f_idc(x)
+    np.testing.assert_almost_equal(y, [0., 0., 1.5, -1.5], 5)
