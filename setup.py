@@ -1,5 +1,5 @@
 import os
-from setuptools import setup
+from setuptools import setup, find_packages
 
 def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
@@ -13,7 +13,7 @@ setup(
     license = "GPL v3",
     keywords = "SIS mixers, radio astronomy, superconducting detectors, terahertz instrumentation, Python",
     url = "https://github.com/garrettj403/QMix",
-    packages=['qmix'],
+    packages=find_packages(),
     long_description=read('README.md'),
     classifiers=[
         "Development Status :: 5 - Production/Stable",
