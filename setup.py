@@ -12,8 +12,15 @@ setup(
     description = ("Simulate SIS mixer operation"),
     license = "GPL v3",
     keywords = "SIS mixers, radio astronomy, superconducting detectors, terahertz instrumentation, Python",
-    url = "https://github.com/garrettj403/QMix",
+    url = "https://github.com/garrettj403/QMix/archive/v1.0.0.tar.gz",
     packages=find_packages(),
+    install_requires=[
+        'cycler',
+        'matplotlib',
+        'numba',
+        'numpy',
+        'scipy'
+    ],
     long_description=read('README.md'),
     classifiers=[
         "Development Status :: 5 - Production/Stable",

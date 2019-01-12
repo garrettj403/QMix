@@ -22,7 +22,9 @@ my-projects/
 old/
 validation/
 
+dist/
 htmlcov/
+QMix.egg-info/
 
 docs/source/analyze-experimental-data.ipynb
 docs/source/multi-tone.ipynb

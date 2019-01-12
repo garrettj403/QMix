@@ -1,5 +1,4 @@
 cycler==0.10.0
-Cython
 matplotlib==3.0.0
 numba==0.40.0
 numpy==1.15.4
