@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>5. Analyzing experimental data &mdash; QMix latest documentation</title>
+  <title>4. Analyzing experimental data &mdash; QMix latest documentation</title>
   
 
   
@@ -28,7 +28,7 @@
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="prev" title="4. Simulating an SIS mixer" href="multi-tone.html" /> 
+    <link rel="prev" title="3. Simulating an SIS mixer" href="multi-tone.html" /> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -82,14 +82,13 @@
             
             
               <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="project.html">1. The QMix Package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="setup.html">2. Getting Started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="single-tone-simple.html">3. Creating a simple simulation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="multi-tone.html">4. Simulating an SIS mixer</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">5. Analyzing experimental data</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#Import-DC-I-V-data">5.1. Import DC I-V data</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#Import-Data-at-230-GHz">5.2. Import Data at 230 GHz</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#Plot-embedding-impedance">5.2.1. Plot embedding impedance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="setup.html">1. Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="single-tone-simple.html">2. Creating a simple simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multi-tone.html">3. Simulating an SIS mixer</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">4. Analyzing experimental data</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#Import-DC-I-V-data">4.1. Import DC I-V data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Import-Data-at-230-GHz">4.2. Import Data at 230 GHz</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Plot-embedding-impedance">4.2.1. Plot embedding impedance</a></li>
 </ul>
 </li>
 </ul>
@@ -139,7 +138,7 @@
     
       <li><a href="index.html">Docs</a> &raquo;</li>
         
-      <li>5. Analyzing experimental data</li>
+      <li>4. Analyzing experimental data</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -342,7 +341,7 @@ div.nboutput div.output_area.stderr {
 }
 </style>
 <div class="section" id="Analyzing-experimental-data">
-<h1>5. Analyzing experimental data<a class="headerlink" href="#Analyzing-experimental-data" title="Permalink to this headline">¶</a></h1>
+<h1>4. Analyzing experimental data<a class="headerlink" href="#Analyzing-experimental-data" title="Permalink to this headline">¶</a></h1>
 <p>This notebook will show a brief example of how QMix can be used to
 analyze experimental data. Note that a wide range of parameters can be
 passed to these functions in order to import data that has been stored
@@ -366,7 +365,7 @@ directory called <code class="docutils literal notranslate"><span class="pre">eg
 data: - <code class="docutils literal notranslate"><span class="pre">qmix.exp.RawData0</span></code> which is used for DC data (no LO pumping),
 and - <code class="docutils literal notranslate"><span class="pre">qmix.exp.RawData</span></code> which is used to analyze pumped data.</p>
 <div class="section" id="Import-DC-I-V-data">
-<h2>5.1. Import DC I-V data<a class="headerlink" href="#Import-DC-I-V-data" title="Permalink to this headline">¶</a></h2>
+<h2>4.1. Import DC I-V data<a class="headerlink" href="#Import-DC-I-V-data" title="Permalink to this headline">¶</a></h2>
 <p>This class will automatically load, filter, and analyze the DC I-V data.
 It will also automatically correct any offsets in the current or voltage
 data, and calculate the IF noise.</p>
@@ -465,7 +464,7 @@ corrected properly.</p>
 </div>
 </div>
 <div class="section" id="Import-Data-at-230-GHz">
-<h2>5.2. Import Data at 230 GHz<a class="headerlink" href="#Import-Data-at-230-GHz" title="Permalink to this headline">¶</a></h2>
+<h2>4.2. Import Data at 230 GHz<a class="headerlink" href="#Import-Data-at-230-GHz" title="Permalink to this headline">¶</a></h2>
 <p>This class will load data collected at a given frequency. -
 <code class="docutils literal notranslate"><span class="pre">f230.2_iv.csv</span></code> is the pumped I-V curve - <code class="docutils literal notranslate"><span class="pre">f230.2_if-hot.csv</span></code> is the
 IF power measured with the hot load - <code class="docutils literal notranslate"><span class="pre">f230.2_if-cold.csv</span></code> is the IF
@@ -547,7 +546,7 @@ embedding circuit.</p>
 </div>
 </div>
 <div class="section" id="Plot-embedding-impedance">
-<h3>5.2.1. Plot embedding impedance<a class="headerlink" href="#Plot-embedding-impedance" title="Permalink to this headline">¶</a></h3>
+<h3>4.2.1. Plot embedding impedance<a class="headerlink" href="#Plot-embedding-impedance" title="Permalink to this headline">¶</a></h3>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre>
 <span></span>In [9]:
@@ -595,7 +594,7 @@ embedding circuit.</p>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
       
-        <a href="multi-tone.html" class="btn btn-neutral" title="4. Simulating an SIS mixer" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="multi-tone.html" class="btn btn-neutral" title="3. Simulating an SIS mixer" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

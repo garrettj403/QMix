@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>4. Simulating an SIS mixer &mdash; QMix latest documentation</title>
+  <title>3. Simulating an SIS mixer &mdash; QMix latest documentation</title>
   
 
   
@@ -28,8 +28,8 @@
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="5. Analyzing experimental data" href="analyze-experimental-data.html" />
-    <link rel="prev" title="3. Creating a simple simulation" href="single-tone-simple.html" /> 
+    <link rel="next" title="4. Analyzing experimental data" href="analyze-experimental-data.html" />
+    <link rel="prev" title="2. Creating a simple simulation" href="single-tone-simple.html" /> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -83,22 +83,21 @@
             
             
               <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="project.html">1. The QMix Package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="setup.html">2. Getting Started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="single-tone-simple.html">3. Creating a simple simulation</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">4. Simulating an SIS mixer</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#Define-junction-properties">4.1. Define junction properties</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#Define-embedding-circuit">4.2. Define embedding circuit</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#Generate-response-function">4.3. Generate response function</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#Perform-harmonic-balance">4.4. Perform harmonic balance</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#Calculate-tunnelling-currents">4.5. Calculate tunnelling currents</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#Plot-the-pumped-I-V-curve">4.6. Plot the pumped I-V curve</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#Plot-gain">4.6.1. Plot gain</a></li>
+<li class="toctree-l1"><a class="reference internal" href="setup.html">1. Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="single-tone-simple.html">2. Creating a simple simulation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">3. Simulating an SIS mixer</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#Define-junction-properties">3.1. Define junction properties</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Define-embedding-circuit">3.2. Define embedding circuit</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Generate-response-function">3.3. Generate response function</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Perform-harmonic-balance">3.4. Perform harmonic balance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Calculate-tunnelling-currents">3.5. Calculate tunnelling currents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Plot-the-pumped-I-V-curve">3.6. Plot the pumped I-V curve</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Plot-gain">3.6.1. Plot gain</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="analyze-experimental-data.html">5. Analyzing experimental data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analyze-experimental-data.html">4. Analyzing experimental data</a></li>
 </ul>
 
             
@@ -144,7 +143,7 @@
     
       <li><a href="index.html">Docs</a> &raquo;</li>
         
-      <li>4. Simulating an SIS mixer</li>
+      <li>3. Simulating an SIS mixer</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -347,7 +346,7 @@ div.nboutput div.output_area.stderr {
 }
 </style>
 <div class="section" id="Simulating-an-SIS-mixer">
-<h1>4. Simulating an SIS mixer<a class="headerlink" href="#Simulating-an-SIS-mixer" title="Permalink to this headline">¶</a></h1>
+<h1>3. Simulating an SIS mixer<a class="headerlink" href="#Simulating-an-SIS-mixer" title="Permalink to this headline">¶</a></h1>
 <ul class="simple">
 <li>This is a multi-tone simultion (i.e., heterodyne mixing)<ul>
 <li>The input consists of 3 signals<ul>
@@ -386,7 +385,7 @@ div.nboutput div.output_area.stderr {
 </div>
 </div>
 <div class="section" id="Define-junction-properties">
-<h2>4.1. Define junction properties<a class="headerlink" href="#Define-junction-properties" title="Permalink to this headline">¶</a></h2>
+<h2>3.1. Define junction properties<a class="headerlink" href="#Define-junction-properties" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>These are common parameters that describe the electrical properties
 of SIS junctions</li>
@@ -406,7 +405,7 @@ of SIS junctions</li>
 </div>
 </div>
 <div class="section" id="Define-embedding-circuit">
-<h2>4.2. Define embedding circuit<a class="headerlink" href="#Define-embedding-circuit" title="Permalink to this headline">¶</a></h2>
+<h2>3.2. Define embedding circuit<a class="headerlink" href="#Define-embedding-circuit" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>The <code class="docutils literal notranslate"><span class="pre">EmbeddingCircuit</span></code> class contains all of the information about
 the embedding circuit. This includes the Thevenin voltage, the
@@ -502,7 +501,7 @@ Embedding circuit (NF:3, NP:1):
 </div>
 </div>
 <div class="section" id="Generate-response-function">
-<h2>4.3. Generate response function<a class="headerlink" href="#Generate-response-function" title="Permalink to this headline">¶</a></h2>
+<h2>3.3. Generate response function<a class="headerlink" href="#Generate-response-function" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>Here, the response function is generated from experimental data</li>
 </ul>
@@ -556,7 +555,7 @@ DC I-V data:</span>
 </div>
 </div>
 <div class="section" id="Perform-harmonic-balance">
-<h2>4.4. Perform harmonic balance<a class="headerlink" href="#Perform-harmonic-balance" title="Permalink to this headline">¶</a></h2>
+<h2>3.4. Perform harmonic balance<a class="headerlink" href="#Perform-harmonic-balance" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>Calculate the voltage drop across the junction for each
 tone/harmonic/bias voltage using harmonic balance.</li>
@@ -619,7 +618,7 @@ Done: Minimum error target was achieved.
 </div>
 </div>
 <div class="section" id="Calculate-tunnelling-currents">
-<h2>4.5. Calculate tunnelling currents<a class="headerlink" href="#Calculate-tunnelling-currents" title="Permalink to this headline">¶</a></h2>
+<h2>3.5. Calculate tunnelling currents<a class="headerlink" href="#Calculate-tunnelling-currents" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><code class="docutils literal notranslate"><span class="pre">idc</span></code> is the DC tunneling current</li>
 <li><code class="docutils literal notranslate"><span class="pre">ilo</span></code> is the AC tunneling current at the LO frequency</li>
@@ -637,7 +636,7 @@ Done: Minimum error target was achieved.
 </div>
 </div>
 <div class="section" id="Plot-the-pumped-I-V-curve">
-<h2>4.6. Plot the pumped I-V curve<a class="headerlink" href="#Plot-the-pumped-I-V-curve" title="Permalink to this headline">¶</a></h2>
+<h2>3.6. Plot the pumped I-V curve<a class="headerlink" href="#Plot-the-pumped-I-V-curve" title="Permalink to this headline">¶</a></h2>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre>
 <span></span>In [7]:
@@ -676,7 +675,7 @@ Done: Minimum error target was achieved.
 </div>
 </div>
 <div class="section" id="Plot-gain">
-<h3>4.6.1. Plot gain<a class="headerlink" href="#Plot-gain" title="Permalink to this headline">¶</a></h3>
+<h3>3.6.1. Plot gain<a class="headerlink" href="#Plot-gain" title="Permalink to this headline">¶</a></h3>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre>
 <span></span>In [9]:
@@ -729,10 +728,10 @@ Done: Minimum error target was achieved.
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="analyze-experimental-data.html" class="btn btn-neutral float-right" title="5. Analyzing experimental data" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="analyze-experimental-data.html" class="btn btn-neutral float-right" title="4. Analyzing experimental data" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="single-tone-simple.html" class="btn btn-neutral" title="3. Creating a simple simulation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="single-tone-simple.html" class="btn btn-neutral" title="2. Creating a simple simulation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
