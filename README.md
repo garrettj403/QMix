@@ -1,5 +1,6 @@
 # QMix
 
+[![GitHub version](https://badge.fury.io/gh/garrettj403%2FQMix.svg)](https://badge.fury.io/gh/garrettj403%2FQMix)
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![Build Status](https://travis-ci.org/garrettj403/QMix.svg?branch=master)](https://travis-ci.org/garrettj403/QMix)
 [![Zenodo](https://zenodo.org/badge/DOI/10.5281/zenodo.2538163.svg)](https://doi.org/10.5281/zenodo.2538163)
@@ -16,7 +17,11 @@ In order to calculate the quasiparticle tunneling currents, QMix uses *multi-ton
 Installation
 ------------
 
-To install QMix, clone the [GitHub repository](https://github.com/garrettj403/QMix) and then add the ``QMix/`` directory to your Python path environment variable. A virtual environment for running QMix can be created using the ``environment.yml`` file provided in the root directory. Please see the [QMix website](https://garrettj403.github.io/QMix/setup.html) for more information.
+QMix can be installed using ``pip``:
+
+    pip install QMix
+
+Please see the [QMix website](https://garrettj403.github.io/QMix/setup.html) for more information.
 
 Examples
 --------

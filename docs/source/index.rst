@@ -20,7 +20,6 @@ Contents
    :maxdepth: 2
    :numbered:
    
-   project
    setup
    single-tone-simple
    multi-tone
