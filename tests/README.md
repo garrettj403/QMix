@@ -9,8 +9,15 @@ This directory contains tests for all of the modules within the ``QMix`` package
 
 The tests for these packages are the most important.
 
-Testing the Entire QMix Package
--------------------------------
+Automatic Testing
+-----------------
+
+[![Build Status](https://travis-ci.org/garrettj403/QMix.svg?branch=master)](https://travis-ci.org/garrettj403/QMix)
+
+Everytime there is a new commit, ``QMix`` is automatically tested using [Travis CI](https://travis-ci.org/garrettj403/QMix). Note: If you make some changes that do not affect the code, you can prevent Travis CI from running by including ``[ci skip]`` in your commit message.
+
+Testing QMix on Your Machine
+----------------------------
 
 From the ``QMix/`` directory, run:
 
@@ -33,8 +40,10 @@ then open the report that is generated in ``htmlcov/index.html``.
 Testing Individual Modules
 --------------------------
 
-For example, to test the harmonic balance module, from the ``QMix/tests/`` directory you can run:
+As an example, from the ``QMix/tests/`` directory you can run:
 
 ```bash
 pytest test_harmonic_balance.py
 ```
+
+to test the harmonic balance module

@@ -1,3 +1,6 @@
-Sybolically link all of the workflow examples into this directory. Example:
+Setup Source Files
+==================
 
-   ln -s ../../workflow-examples/single-tone-simple.ipynb .
+Sybolically link all of the workflow examples into this directory:
+
+    ln -s ../../examples/*.ipynb .
