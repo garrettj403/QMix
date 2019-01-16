@@ -11,7 +11,7 @@ QMix is a software package for simulating quasiparticle tunneling currents in Su
 
 In order to calculate the quasiparticle tunneling currents, QMix uses *multi-tone spectral domain analysis* (see references below for more information). Unlike other software packages that are based on perturbation techniques, QMix is ideal for simulating higher-order harmonics, power saturation, subharmonic pumping and frequency multiplication. 
 
-**Repository:** https://github.com/garrettj403/QMix/
+**Repository address:** https://github.com/garrettj403/QMix/
 
 Contents
 ========
