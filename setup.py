@@ -1,12 +1,8 @@
-import os
 from setuptools import setup, find_packages
-
-def read(fname):
-    return open(os.path.join(os.path.dirname(__file__), fname)).read()
 
 setup(
     name = "QMix",
-    version = "1.0.0",
+    version = "1.0.1",
     author = "John Garrett",
     author_email = "garrettj403@gmail.com",
     description = ("Simulate SIS mixer operation"),
@@ -15,7 +11,6 @@ setup(
     url = "https://github.com/garrettj403/QMix/archive/v1.0.0.tar.gz",
     packages=find_packages(),
     install_requires=[
-        'cycler',
         'matplotlib',
         'numba',
         'numpy',
