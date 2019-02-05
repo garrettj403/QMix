@@ -1,0 +1,21 @@
+name: qmix
+channels:
+  - defaults
+  - conda-forge
+dependencies:
+  - python=3.7.*
+  # QMix dependencies (same as requirements.txt)
+  - matplotlib
+  - numba
+  - numpy
+  - scipy
+  # for generating documentation
+  - ipython
+  - jupyter
+  - nbconvert
+  - nbsphinx
+  - pandoc
+  - sphinx
+  - sphinx_rtd_theme
+  # for testing
+  - pytest
