@@ -1,0 +1,1368 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>2.1.1. qmix.exp package &mdash; QMix latest documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="2.1.2. qmix.mathfn package" href="qmix.mathfn.html" />
+    <link rel="prev" title="2. QMix Package" href="qmix.html" /> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> QMix
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                latest
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="setup.html">1. Getting Started</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="qmix.html">2. QMix Package</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="qmix.html#subpackages">2.1. Subpackages</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">2.1.1. qmix.exp package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#submodules">2.1.1.1. Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-qmix.exp.clean_data">2.1.1.2. qmix.exp.clean_data module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-qmix.exp.exp_data">2.1.1.3. qmix.exp.exp_data module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-qmix.exp.if_data">2.1.1.4. qmix.exp.if_data module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-qmix.exp.iv_data">2.1.1.5. qmix.exp.iv_data module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-qmix.exp.parameters">2.1.1.6. qmix.exp.parameters module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-qmix.exp">2.1.1.7. Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qmix.mathfn.html">2.1.2. qmix.mathfn package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qmix.misc.html">2.1.3. qmix.misc package</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="qmix.html#submodules">2.2. Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="qmix.html#module-qmix.circuit">2.3. qmix.circuit module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="qmix.html#module-qmix.harmonic_balance">2.4. qmix.harmonic_balance module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="qmix.html#module-qmix.qtcurrent">2.5. qmix.qtcurrent module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="qmix.html#module-qmix.respfn">2.6. qmix.respfn module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="qmix.html#module-qmix">2.7. Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="single-tone-simple.html">3. Example #1: Creating a simple 1 tone simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multi-tone.html">4. Example #2: Simulating an SIS mixer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="references.html">5. References</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">QMix</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="qmix.html">2. QMix Package</a> &raquo;</li>
+        
+      <li>2.1.1. qmix.exp package</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/qmix.exp.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast,
+.nboutput.nblast {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast + .nbinput {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<div class="section" id="qmix-exp-package">
+<h1>2.1.1. qmix.exp package<a class="headerlink" href="#qmix-exp-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>2.1.1.1. Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-qmix.exp.clean_data">
+<span id="qmix-exp-clean-data-module"></span><h2>2.1.1.2. qmix.exp.clean_data module<a class="headerlink" href="#module-qmix.exp.clean_data" title="Permalink to this headline">¶</a></h2>
+<p>This module contains functions for cleaning experimental data.</p>
+<p>This includes removing NaN values, removing repeated values, and sorting.</p>
+<p>The data can either be in x/y format (i.e., two arrays of equal length) or in
+matrix form (i.e., a matrix with two columns).</p>
+<dl class="function">
+<dt id="qmix.exp.clean_data.clean_matrix">
+<code class="descclassname">qmix.exp.clean_data.</code><code class="descname">clean_matrix</code><span class="sig-paren">(</span><em>matrix</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.exp.clean_data.clean_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Clean 2D matrix data.</p>
+<p>Remove NaNs, sort by first column, remove double values for first column.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>matrix</strong> (<em>ndarray</em>) – 2-column matrix</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Cleaned 2-column matrix</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="qmix.exp.clean_data.clean_xy">
+<code class="descclassname">qmix.exp.clean_data.</code><code class="descname">clean_xy</code><span class="sig-paren">(</span><em>x</em>, <em>y</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.exp.clean_data.clean_xy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Clean x/y data.</p>
+<p>Remove NaNs, sort by x, remove double values for x.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>x</strong> (<em>ndarray</em>) – x data</li>
+<li><strong>y</strong> (<em>ndarray</em>) – y data</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">Cleaned x/y data</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="qmix.exp.clean_data.matrix_to_xy">
+<code class="descclassname">qmix.exp.clean_data.</code><code class="descname">matrix_to_xy</code><span class="sig-paren">(</span><em>matrix</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.exp.clean_data.matrix_to_xy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert matrix into x/y data.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>matrix</strong> (<em>ndarray</em>) – 2-column matrix</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">x/y data</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="qmix.exp.clean_data.remove_doubles_matrix">
+<code class="descclassname">qmix.exp.clean_data.</code><code class="descname">remove_doubles_matrix</code><span class="sig-paren">(</span><em>matrix</em>, <em>col=0</em>, <em>check=True</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.exp.clean_data.remove_doubles_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove double values from 2-column matrix.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>matrix</strong> – 2-column matrix</li>
+<li><strong>col</strong> – column to remove doubles from (default 0)</li>
+<li><strong>check</strong> (<em>bool</em>) – check that x data is sorted</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">2-column matrix with double values of given column removed</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="qmix.exp.clean_data.remove_doubles_xy">
+<code class="descclassname">qmix.exp.clean_data.</code><code class="descname">remove_doubles_xy</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>check=True</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.exp.clean_data.remove_doubles_xy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given x/y data, remove double values of x.</p>
+<p>This function assumes that the data is already sorted by x!</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>x</strong> (<em>ndarray</em>) – x array</li>
+<li><strong>y</strong> (<em>ndarray</em>) – y array</li>
+<li><strong>check</strong> (<em>bool</em>) – check that x is sorted</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">x/y data with doubles values of x removed</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="qmix.exp.clean_data.remove_nans_matrix">
+<code class="descclassname">qmix.exp.clean_data.</code><code class="descname">remove_nans_matrix</code><span class="sig-paren">(</span><em>matrix</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.exp.clean_data.remove_nans_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove all NaN values data from a matrix</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>matrix</strong> (<em>ndarray</em>) – 2-column matrix</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">2-column matrix with NaNs removed</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="qmix.exp.clean_data.remove_nans_xy">
+<code class="descclassname">qmix.exp.clean_data.</code><code class="descname">remove_nans_xy</code><span class="sig-paren">(</span><em>x</em>, <em>y</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.exp.clean_data.remove_nans_xy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove NaNs from x/y data.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>x</strong> (<em>ndarray</em>) – x array</li>
+<li><strong>y</strong> (<em>ndarray</em>) – y array</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">x/y data with NaNs removed</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="qmix.exp.clean_data.sort_matrix">
+<code class="descclassname">qmix.exp.clean_data.</code><code class="descname">sort_matrix</code><span class="sig-paren">(</span><em>matrix</em>, <em>col=0</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.exp.clean_data.sort_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sort a 2D matrix by a specific column.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>matrix</strong> (<em>ndarray</em>) – 2-column matrix</li>
+<li><strong>col</strong> (<em>int</em>) – column to sort by</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">2-column matrix sorted by the given column</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="qmix.exp.clean_data.sort_xy">
+<code class="descclassname">qmix.exp.clean_data.</code><code class="descname">sort_xy</code><span class="sig-paren">(</span><em>x</em>, <em>y</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.exp.clean_data.sort_xy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sort x/y data by the x values.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>x</strong> (<em>ndarray</em>) – x array</li>
+<li><strong>y</strong> (<em>ndarray</em>) – y array</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">x/y data sorted by x</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="qmix.exp.clean_data.xy_to_matrix">
+<code class="descclassname">qmix.exp.clean_data.</code><code class="descname">xy_to_matrix</code><span class="sig-paren">(</span><em>x</em>, <em>y</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.exp.clean_data.xy_to_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Take x/y data in separate arrays and combine into a matrix.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>x</strong> (<em>ndarray</em>) – x data</li>
+<li><strong>y</strong> (<em>ndarray</em>) – y data</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">Matrix of x/y data</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-qmix.exp.exp_data">
+<span id="qmix-exp-exp-data-module"></span><h2>2.1.1.3. qmix.exp.exp_data module<a class="headerlink" href="#module-qmix.exp.exp_data" title="Permalink to this headline">¶</a></h2>
+<p>This module contains functions and classes for analyzing experimental data
+from an SIS device.</p>
+<p>This module contains functions related to importing, cleaning and analyzing raw
+I-V and IF data obtained from SIS mixer experiments. Two classes (<code class="docutils literal notranslate"><span class="pre">RawData0</span></code>
+and <code class="docutils literal notranslate"><span class="pre">RawData</span></code>) are provided to help manage the data. <code class="docutils literal notranslate"><span class="pre">RawData0</span></code> is
+intended for data that was collected with no LO present (i.e., unpumped data),
+and <code class="docutils literal notranslate"><span class="pre">RawData</span></code> is intended for data that was collected with LO pumping (i.e.,
+pumped data).</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<ul class="last simple">
+<li>These functions assume that you are importing data that has been
+stored in a very specific format. Take a look at the data in
+<code class="docutils literal notranslate"><span class="pre">QMix/examples/eg-230-data/</span></code> for an example.</li>
+<li>See <code class="docutils literal notranslate"><span class="pre">QMix/examples/analyze-experimental-data.ipynb</span></code> for an example of
+how to use this module.</li>
+</ul>
+</div>
+<dl class="class">
+<dt id="qmix.exp.exp_data.RawData">
+<em class="property">class </em><code class="descclassname">qmix.exp.exp_data.</code><code class="descname">RawData</code><span class="sig-paren">(</span><em>iv_file</em>, <em>dciv</em>, <em>if_hot_file=None</em>, <em>if_cold_file=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.exp.exp_data.RawData" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Class for experimental pumped data (i.e., LO present).</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">See <code class="docutils literal notranslate"><span class="pre">qmix.exp.parameters.params</span></code> for all possible keyword arguments.</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>iv_file</strong> (<em>str</em>) – file path to pumped I-V data</li>
+<li><strong>dciv</strong> (<a class="reference internal" href="#qmix.exp.iv_data.DCIVData" title="qmix.exp.iv_data.DCIVData"><em>qmix.exp.iv_data.DCIVData</em></a>) – DC I-V metadata</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body"><ul class="first last simple">
+<li><strong>if_hot_file</strong> (<em>str</em>) – file path to hot IF data</li>
+<li><strong>if_cold_file</strong> (<em>str</em>) – file path to cold IF data</li>
+<li><strong>comment</strong> (<em>str</em>) – description of this data (optional)</li>
+<li><strong>freq</strong> (<em>float</em>) – frequency of LO, in units [GHz]</li>
+<li><strong>analyze</strong> (<em>bool</em>) – analyze data?</li>
+<li><strong>analyze_if</strong> (<em>bool</em>) – analyze IF data?</li>
+<li><strong>analyze_iv</strong> (<em>bool</em>) – analyze I-V data?</li>
+<li><strong>verbose</strong> (<em>bool</em>) – print to terminal?</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="qmix.exp.exp_data.RawData.plot_all">
+<code class="descname">plot_all</code><span class="sig-paren">(</span><em>fig</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.exp.exp_data.RawData.plot_all" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot everything using the standard file hierarchy.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>fig</strong> (<em>str</em>) – figure destination</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="qmix.exp.exp_data.RawData.plot_error_surface">
+<code class="descname">plot_error_surface</code><span class="sig-paren">(</span><em>fig_name=None</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.exp.exp_data.RawData.plot_error_surface" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot error surface (impedance recovery).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>fig_name</strong> – figure filename</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="qmix.exp.exp_data.RawData.plot_gain">
+<code class="descname">plot_gain</code><span class="sig-paren">(</span><em>fig_name=None</em>, <em>vmax_plot=4.0</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.exp.exp_data.RawData.plot_gain" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot gain.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>fig_name</strong> – figure filename</li>
+<li><strong>vmax_plot</strong> – max voltage to include in plot (in mV)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="qmix.exp.exp_data.RawData.plot_gain_noise_temp">
+<code class="descname">plot_gain_noise_temp</code><span class="sig-paren">(</span><em>fig_name=None</em>, <em>vmax_plot=4.0</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.exp.exp_data.RawData.plot_gain_noise_temp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot gain and noise temperature.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>fig_name</strong> – figure filename</li>
+<li><strong>vmax_plot</strong> – max voltage to include in plot (in mV)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="qmix.exp.exp_data.RawData.plot_if">
+<code class="descname">plot_if</code><span class="sig-paren">(</span><em>fig_name=None</em>, <em>vmax_plot=4.0</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.exp.exp_data.RawData.plot_if" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot IF data.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>fig_name</strong> – figure filename</li>
+<li><strong>vmax_plot</strong> – max voltage to include in plot (in mV)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="qmix.exp.exp_data.RawData.plot_if_noise">
+<code class="descname">plot_if_noise</code><span class="sig-paren">(</span><em>fig_name=None</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.exp.exp_data.RawData.plot_if_noise" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot IF noise.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>fig_name</strong> – figure filename</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="qmix.exp.exp_data.RawData.plot_iv">
+<code class="descname">plot_iv</code><span class="sig-paren">(</span><em>fig_name=None</em>, <em>vmax_plot=4.0</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.exp.exp_data.RawData.plot_iv" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot pumped I-V curve.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>fig_name</strong> – figure filename</li>
+<li><strong>vmax_plot</strong> – max voltage to include in plot (in mV)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="qmix.exp.exp_data.RawData.plot_ivif">
+<code class="descname">plot_ivif</code><span class="sig-paren">(</span><em>fig_name=None</em>, <em>vmax_plot=4.0</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.exp.exp_data.RawData.plot_ivif" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot IV and IF data on same plot.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>fig_name</strong> – figure filename</li>
+<li><strong>vmax_plot</strong> – max voltage to include in plot (in mV)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="qmix.exp.exp_data.RawData.plot_noise_temp">
+<code class="descname">plot_noise_temp</code><span class="sig-paren">(</span><em>fig_name=None</em>, <em>vmax_plot=4.0</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.exp.exp_data.RawData.plot_noise_temp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot noise temperature.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>fig_name</strong> – figure filename</li>
+<li><strong>vmax_plot</strong> – max voltage to include in plot (in mV)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="qmix.exp.exp_data.RawData.plot_rdyn">
+<code class="descname">plot_rdyn</code><span class="sig-paren">(</span><em>fig_name=None</em>, <em>vmax_plot=4.0</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.exp.exp_data.RawData.plot_rdyn" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot dynamic resistance.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>fig_name</strong> – figure filename</li>
+<li><strong>vmax_plot</strong> – max voltage to include in plot (in mV)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="qmix.exp.exp_data.RawData.plot_shapiro">
+<code class="descname">plot_shapiro</code><span class="sig-paren">(</span><em>fig_name=None</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.exp.exp_data.RawData.plot_shapiro" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot shapiro steps.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>fig_name</strong> – figure filename</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="qmix.exp.exp_data.RawData.plot_simulated">
+<code class="descname">plot_simulated</code><span class="sig-paren">(</span><em>fig_name=None</em>, <em>vmax_plot=4.0</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.exp.exp_data.RawData.plot_simulated" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot simulated I-V curve (based on impedance recovery).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>fig_name</strong> – figure filename</li>
+<li><strong>vmax_plot</strong> – max voltage to include in plot (in mV)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="qmix.exp.exp_data.RawData.plot_yfac_noise_temp">
+<code class="descname">plot_yfac_noise_temp</code><span class="sig-paren">(</span><em>fig_name=None</em>, <em>vmax_plot=4.0</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.exp.exp_data.RawData.plot_yfac_noise_temp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot Y-factor and noise temperature.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>fig_name</strong> – figure filename</li>
+<li><strong>vmax_plot</strong> – max voltage to include in plot (in mV)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="qmix.exp.exp_data.RawData0">
+<em class="property">class </em><code class="descclassname">qmix.exp.exp_data.</code><code class="descname">RawData0</code><span class="sig-paren">(</span><em>dciv_file</em>, <em>dcif_file=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.exp.exp_data.RawData0" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Class for experimental DC data (i.e., no LO present).</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">See <code class="docutils literal notranslate"><span class="pre">qmix.exp.parameters.params</span></code> for all possible keyword arguments.</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>dciv_file</strong> – file path for unpumped I-V data</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body"><ul class="first last simple">
+<li><strong>dcif_file</strong> (<em>str</em>) – file path for unpumped IF data</li>
+<li><strong>area</strong> (<em>float</em>) – area of the junction in um^2 (default is 1.5)</li>
+<li><strong>comment</strong> (<em>str</em>) – add comment to this instance (default is ‘’)</li>
+<li><strong>filter_data</strong> (<em>bool</em>) – smooth/filter the I-V data (default is True)</li>
+<li><strong>i_fmt</strong> (<em>str</em>) – units for current (‘uA’, ‘mA’, etc.)</li>
+<li><strong>igap_guess</strong> (<em>float</em>) – Gap current estimate (used to temporarily normalize the input data during filtering)</li>
+<li><strong>ioffset</strong> (<em>float</em>) – current offset</li>
+<li><strong>rseries</strong> (<em>float</em>) – Remove the effect of a series resistance</li>
+<li><strong>v_fmt</strong> (<em>str</em>) – units for voltage (‘mV’, ‘V’, etc.)</li>
+<li><strong>v_smear</strong> (<em>float</em>) – smear DC I-V by this amount when generating response function</li>
+<li><strong>vgap_guess</strong> (<em>float</em>) – Gap voltage estimate (used to temporarily normalize the input data during filtering)</li>
+<li><strong>voffset</strong> (<em>float</em>) – voltage offset</li>
+<li><strong>vmax</strong> (<em>float</em>) – maximum voltage value to import (in case the I-V curve saturates at some point)</li>
+<li><strong>vrsg</strong> (<em>float</em>) – The voltage to calculate the subgap resistance at</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="qmix.exp.exp_data.RawData0.plot_all">
+<code class="descname">plot_all</code><span class="sig-paren">(</span><em>fig_folder</em>, <em>**kw</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.exp.exp_data.RawData0.plot_all" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot all DC data.</p>
+<p>This function will save the data in the standard format.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>fig_folder</strong> – directory where the figures go</li>
+<li><strong>kw</strong> (<em>dict</em>) – keyword arguments (not used)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="qmix.exp.exp_data.RawData0.plot_dciv">
+<code class="descname">plot_dciv</code><span class="sig-paren">(</span><em>fig_name=None</em>, <em>vmax_plot=4.0</em>, <em>**kw</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.exp.exp_data.RawData0.plot_dciv" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot DC I-V data.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>fig_name</strong> – figure filename</li>
+<li><strong>vmax_plot</strong> – max voltage to include in plot (in mV)</li>
+<li><strong>kw</strong> (<em>dict</em>) – keyword arguments (not used)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="qmix.exp.exp_data.RawData0.plot_if_noise">
+<code class="descname">plot_if_noise</code><span class="sig-paren">(</span><em>fig_name=None</em>, <em>**kw</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.exp.exp_data.RawData0.plot_if_noise" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot IF noise.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>fig_name</strong> – figure filename</li>
+<li><strong>kw</strong> (<em>dict</em>) – keyword arguments (not used)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="qmix.exp.exp_data.RawData0.plot_offset">
+<code class="descname">plot_offset</code><span class="sig-paren">(</span><em>fig_name=None</em>, <em>**kw</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.exp.exp_data.RawData0.plot_offset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot offset in DC I-V data.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>fig_name</strong> – figure filename</li>
+<li><strong>kw</strong> (<em>dict</em>) – keyword arguments (not used)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="qmix.exp.exp_data.RawData0.plot_rdyn">
+<code class="descname">plot_rdyn</code><span class="sig-paren">(</span><em>fig_name=None</em>, <em>vmax_plot=4.0</em>, <em>**kw</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.exp.exp_data.RawData0.plot_rdyn" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot dynamic resistance of DC I-V data.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>fig_name</strong> – figure filename</li>
+<li><strong>vmax_plot</strong> – max voltage to include in plot (in mV)</li>
+<li><strong>kw</strong> (<em>dict</em>) – keyword arguments (not used)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="qmix.exp.exp_data.RawData0.plot_rstat">
+<code class="descname">plot_rstat</code><span class="sig-paren">(</span><em>fig_name=None</em>, <em>vmax_plot=4.0</em>, <em>**kw</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.exp.exp_data.RawData0.plot_rstat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot static resistance of DC I-V data.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>fig_name</strong> – figure filename</li>
+<li><strong>vmax_plot</strong> – max voltage to include in plot (in mV)</li>
+<li><strong>kw</strong> (<em>dict</em>) – keyword arguments (not used)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="qmix.exp.exp_data.RawData0.print_info">
+<code class="descname">print_info</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qmix.exp.exp_data.RawData0.print_info" title="Permalink to this definition">¶</a></dt>
+<dd><p>Print information about the DC I-V curve.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="qmix.exp.exp_data.check_iv_if_matching">
+<code class="descclassname">qmix.exp.exp_data.</code><code class="descname">check_iv_if_matching</code><span class="sig-paren">(</span><em>iv_dat</em>, <em>hot_dat</em>, <em>cold_dat</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.exp.exp_data.check_iv_if_matching" title="Permalink to this definition">¶</a></dt>
+<dd><p>Based on file names, make sure that frequencies line up.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>iv_dat</strong> – pumped iv data files</li>
+<li><strong>hot_dat</strong> – hot if data files</li>
+<li><strong>cold_dat</strong> – cold if data files</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Returns: list of good frequencies</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="qmix.exp.exp_data.generate_filename_from_f">
+<code class="descclassname">qmix.exp.exp_data.</code><code class="descname">generate_filename_from_f</code><span class="sig-paren">(</span><em>freq</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.exp.exp_data.generate_filename_from_f" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate file name from frequency.</p>
+<p>Using my naming scheme.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>freq</strong> – frequency in ghz</td>
+</tr>
+</tbody>
+</table>
+<p>Returns: iv, hot if, and cold if file names</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="qmix.exp.exp_data.get_freq">
+<code class="descclassname">qmix.exp.exp_data.</code><code class="descname">get_freq</code><span class="sig-paren">(</span><em>freq</em>, <em>filepath</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.exp.exp_data.get_freq" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get frequency.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>freq</strong> – frequency, in units GHz</li>
+<li><strong>filepath</strong> – filename</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">frequency and frequency string</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="qmix.exp.exp_data.get_freq_from_filename">
+<code class="descclassname">qmix.exp.exp_data.</code><code class="descname">get_freq_from_filename</code><span class="sig-paren">(</span><em>file_path</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.exp.exp_data.get_freq_from_filename" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get frequency from file name.</p>
+<p>Assumes that you are using my naming scheme.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>file_path</strong> – file path</td>
+</tr>
+</tbody>
+</table>
+<p>Returns: frequency (ghz)</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="qmix.exp.exp_data.initialize_dir">
+<code class="descclassname">qmix.exp.exp_data.</code><code class="descname">initialize_dir</code><span class="sig-paren">(</span><em>fig_folder</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.exp.exp_data.initialize_dir" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize directory for results.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>fig_folder</strong> – desired location</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="qmix.exp.exp_data.plot_if_spectrum">
+<code class="descclassname">qmix.exp.exp_data.</code><code class="descname">plot_if_spectrum</code><span class="sig-paren">(</span><em>data_folder</em>, <em>fig_folder=None</em>, <em>figsize=None</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.exp.exp_data.plot_if_spectrum" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot all IF spectra within data_folder.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>data_folder</strong> – data folder</li>
+<li><strong>fig_folder</strong> – figure folder</li>
+<li><strong>figsize</strong> – figure size, in inches</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="qmix.exp.exp_data.plot_overall_results">
+<code class="descclassname">qmix.exp.exp_data.</code><code class="descname">plot_overall_results</code><span class="sig-paren">(</span><em>dciv</em>, <em>data_list</em>, <em>fig_folder</em>, <em>vmax_plot=4.0</em>, <em>figsize=None</em>, <em>tn_max=None</em>, <em>f_range=None</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.exp.exp_data.plot_overall_results" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot overall results.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>dciv</strong> – DC I-V data (instance of RawData0)</li>
+<li><strong>data_list</strong> – list of pumped data (instances of RawData)</li>
+<li><strong>fig_folder</strong> – figure destination</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-qmix.exp.if_data">
+<span id="qmix-exp-if-data-module"></span><h2>2.1.1.4. qmix.exp.if_data module<a class="headerlink" href="#module-qmix.exp.if_data" title="Permalink to this headline">¶</a></h2>
+<p>This sub-module contains functions for importing and analyzing
+experimental IF power measurements.</p>
+<p>The “IF data” is the IF output power from the SIS device versus bias voltage.</p>
+<dl class="class">
+<dt id="qmix.exp.if_data.DCIFData">
+<em class="property">class </em><code class="descclassname">qmix.exp.if_data.</code><code class="descname">DCIFData</code><span class="sig-paren">(</span><em>if_noise</em>, <em>corr</em>, <em>if_fit</em>, <em>shot_slope</em>, <em>vmax</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.exp.if_data.DCIFData" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></p>
+<p>Struct for DC IF metadata.</p>
+<dl class="attribute">
+<dt id="qmix.exp.if_data.DCIFData.corr">
+<code class="descname">corr</code><a class="headerlink" href="#qmix.exp.if_data.DCIFData.corr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 1</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="qmix.exp.if_data.DCIFData.if_fit">
+<code class="descname">if_fit</code><a class="headerlink" href="#qmix.exp.if_data.DCIFData.if_fit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 2</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="qmix.exp.if_data.DCIFData.if_noise">
+<code class="descname">if_noise</code><a class="headerlink" href="#qmix.exp.if_data.DCIFData.if_noise" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 0</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="qmix.exp.if_data.DCIFData.shot_slope">
+<code class="descname">shot_slope</code><a class="headerlink" href="#qmix.exp.if_data.DCIFData.shot_slope" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 3</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="qmix.exp.if_data.DCIFData.vmax">
+<code class="descname">vmax</code><a class="headerlink" href="#qmix.exp.if_data.DCIFData.vmax" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 4</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="qmix.exp.if_data.dcif_data">
+<code class="descclassname">qmix.exp.if_data.</code><code class="descname">dcif_data</code><span class="sig-paren">(</span><em>dcif_file</em>, <em>dc</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.exp.if_data.dcif_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Analyze DC IF measurements.</p>
+<p>This is the IF data that is measured with no LO present. This data is
+used to analyze the shot noise, which can then be used to convert the IF
+data into units ‘K’ and estimate the IF noise component.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>dcif_file</strong> (<em>str</em>) – DC IF filename (no LO present)</li>
+<li><strong>dc</strong> (<a class="reference internal" href="#qmix.exp.iv_data.DCIVData" title="qmix.exp.iv_data.DCIVData"><em>qmix.exp.iv_data.DCIVData</em></a>) – DC I-V data structure</li>
+<li><strong>**kwargs</strong> – keyword arguments</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body"><ul class="first simple">
+<li><strong>v_fmt</strong> (<em>str</em>) – voltage units (‘mV’, ‘V’, etc.)</li>
+<li><strong>vmax</strong> (<em>str</em>) – maximum voltage (in case the data is saturated above some
+value)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">DC IF data, IF noise contribution, A.U. to K correction factor,
+shot noise slope data, good fit to IF noise?</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="qmix.exp.if_data.if_data">
+<code class="descclassname">qmix.exp.if_data.</code><code class="descname">if_data</code><span class="sig-paren">(</span><em>hot_filename</em>, <em>cold_filename</em>, <em>dc</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.exp.if_data.if_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Analyze IF measurements from a hot/cold load experiment.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>hot_filename</strong> (<em>str</em>) – Hot load IF measurement filename</li>
+<li><strong>cold_filename</strong> (<em>str</em>) – Cold load IF measurement filename</li>
+<li><strong>dc</strong> (<a class="reference internal" href="#qmix.exp.iv_data.DCIVData" title="qmix.exp.iv_data.DCIVData"><em>qmix.exp.iv_data.DCIVData</em></a>) – DC I-V data structure</li>
+<li><strong>**kwargs</strong> – Keyword arguments</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body"><ul class="first simple">
+<li><strong>freq</strong> – Frequency in units GHz</li>
+<li><strong>dcif</strong> (<a class="reference internal" href="#qmix.exp.if_data.DCIFData" title="qmix.exp.if_data.DCIFData"><em>qmix.exp.if_data.DCIFData</em></a>) – DC IF data structure</li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Hot IF data, Cold IF data, Noise temperature, Gain, Index of
+best noise temperature, IF noise contribution, Good fit to IF noise?,
+Shot noise slope</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="qmix.exp.if_data.load_if">
+<code class="descclassname">qmix.exp.if_data.</code><code class="descname">load_if</code><span class="sig-paren">(</span><em>filename</em>, <em>dc</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.exp.if_data.load_if" title="Permalink to this definition">¶</a></dt>
+<dd><p>Import IF measurement data.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>filename</strong> (<em>str</em>) – filename</li>
+<li><strong>dc</strong> (<a class="reference internal" href="#qmix.exp.iv_data.DCIVData" title="qmix.exp.iv_data.DCIVData"><em>qmix.exp.iv_data.DCIVData</em></a>) – DC data structure</li>
+<li><strong>**kwargs</strong> – Keyword arguments</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body"><ul class="first last simple">
+<li><strong>delim</strong> (<em>str</em>) – delimiter used in data files</li>
+<li><strong>v_fmt</strong> (<em>str</em>) – units for voltage (‘V’, ‘mV’, ‘uV’)</li>
+<li><strong>usecols</strong> (<em>tuple</em>) – columns for voltage and current (e.g., <code class="docutils literal notranslate"><span class="pre">(0,1)</span></code>)</li>
+<li><strong>sigma</strong> (<em>float</em>) – convolve IF data by Gaussian with this std dev</li>
+<li><strong>npts</strong> (<em>float</em>) – evenly interpolate data to have this many data points</li>
+<li><strong>rseries</strong> (<em>float</em>) – series resistance of measurement system</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Returns: IF data (matrix form)</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-qmix.exp.iv_data">
+<span id="qmix-exp-iv-data-module"></span><h2>2.1.1.5. qmix.exp.iv_data module<a class="headerlink" href="#module-qmix.exp.iv_data" title="Permalink to this headline">¶</a></h2>
+<p>This sub-module contains functions for importing and analyzing
+experimental I-V data measurements.</p>
+<p>“I-V data” is the DC tunneling current versus DC bias voltage that is measured
+from the SIS device. In general, I use the term “DC I-V data” for I-V data
+that is collected with no LO present, and “I-V data” for I-V data that is
+collected with the LO present (also known as the “pumped I-V curve”).</p>
+<dl class="class">
+<dt id="qmix.exp.iv_data.DCIVData">
+<em class="property">class </em><code class="descclassname">qmix.exp.iv_data.</code><code class="descname">DCIVData</code><span class="sig-paren">(</span><em>vraw</em>, <em>iraw</em>, <em>vnorm</em>, <em>inorm</em>, <em>vgap</em>, <em>igap</em>, <em>fgap</em>, <em>rn</em>, <em>rsg</em>, <em>offset</em>, <em>vint</em>, <em>rseries</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.exp.iv_data.DCIVData" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></p>
+<p>Struct for DC I-V curve metadata.</p>
+<dl class="attribute">
+<dt id="qmix.exp.iv_data.DCIVData.fgap">
+<code class="descname">fgap</code><a class="headerlink" href="#qmix.exp.iv_data.DCIVData.fgap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 6</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="qmix.exp.iv_data.DCIVData.igap">
+<code class="descname">igap</code><a class="headerlink" href="#qmix.exp.iv_data.DCIVData.igap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 5</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="qmix.exp.iv_data.DCIVData.inorm">
+<code class="descname">inorm</code><a class="headerlink" href="#qmix.exp.iv_data.DCIVData.inorm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 3</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="qmix.exp.iv_data.DCIVData.iraw">
+<code class="descname">iraw</code><a class="headerlink" href="#qmix.exp.iv_data.DCIVData.iraw" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 1</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="qmix.exp.iv_data.DCIVData.offset">
+<code class="descname">offset</code><a class="headerlink" href="#qmix.exp.iv_data.DCIVData.offset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 9</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="qmix.exp.iv_data.DCIVData.rn">
+<code class="descname">rn</code><a class="headerlink" href="#qmix.exp.iv_data.DCIVData.rn" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 7</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="qmix.exp.iv_data.DCIVData.rseries">
+<code class="descname">rseries</code><a class="headerlink" href="#qmix.exp.iv_data.DCIVData.rseries" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 11</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="qmix.exp.iv_data.DCIVData.rsg">
+<code class="descname">rsg</code><a class="headerlink" href="#qmix.exp.iv_data.DCIVData.rsg" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 8</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="qmix.exp.iv_data.DCIVData.vgap">
+<code class="descname">vgap</code><a class="headerlink" href="#qmix.exp.iv_data.DCIVData.vgap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 4</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="qmix.exp.iv_data.DCIVData.vint">
+<code class="descname">vint</code><a class="headerlink" href="#qmix.exp.iv_data.DCIVData.vint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 10</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="qmix.exp.iv_data.DCIVData.vnorm">
+<code class="descname">vnorm</code><a class="headerlink" href="#qmix.exp.iv_data.DCIVData.vnorm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 2</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="qmix.exp.iv_data.DCIVData.vraw">
+<code class="descname">vraw</code><a class="headerlink" href="#qmix.exp.iv_data.DCIVData.vraw" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 0</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="qmix.exp.iv_data.dciv_curve">
+<code class="descclassname">qmix.exp.iv_data.</code><code class="descname">dciv_curve</code><span class="sig-paren">(</span><em>filename</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.exp.iv_data.dciv_curve" title="Permalink to this definition">¶</a></dt>
+<dd><p>Import and analyze DC I-V data (i.e., the unpumped I-V curve).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>filename</strong> (<em>str</em>) – DC I-V curve filename</li>
+<li><strong>**kwargs</strong> – keyword arguments</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body"><ul class="first simple">
+<li><strong>v_fmt</strong> (<em>str</em>) – units for voltage (‘uV’, ‘mV’, ‘V’)</li>
+<li><strong>i_fmt</strong> (<em>str</em>) – units for current (‘uA’, ‘mA’, ‘A’)</li>
+<li><strong>usecols</strong> (<em>tuple</em>) – list of columns to import (tuple of length 2)</li>
+<li><strong>filter_data</strong> (<em>bool</em>) – filter data?</li>
+<li><strong>vgap_guess</strong> (<em>float</em>) – guess of gap voltage</li>
+<li><strong>igap_guess</strong> (<em>float</em>) – guess of gap current</li>
+<li><strong>filter_nwind</strong> (<em>int</em>) – SG filter window size</li>
+<li><strong>filter_npoly</strong> (<em>int</em>) – SG filter order</li>
+<li><strong>filter_theta</strong> (<em>float</em>) – angle to rotate data by during filtering</li>
+<li><strong>npts</strong> (<em>int</em>) – number of points to output</li>
+<li><strong>voffset</strong> (<em>float</em>) – voltage offset, in V</li>
+<li><strong>ioffset</strong> (<em>float</em>) – current offset, in A</li>
+<li><strong>voffset_range</strong> (<em>float</em>) – voltage range to search for offset, in V</li>
+<li><strong>voffset_sigma</strong> (<em>float</em>) – std dev of Gaussian filter when searching for offset</li>
+<li><strong>rn_vmin</strong> (<em>float</em>) – lower voltage range to determine the normal resistance</li>
+<li><strong>rn_vmax</strong> (<em>float</em>) – upper voltage range to determine the normal resistance</li>
+<li><strong>current_threshold</strong> (<em>float</em>) – the current at the gap voltage</li>
+<li><strong>vrsg</strong> (<em>float</em>) – the voltage to calculate the subgap resistance at</li>
+<li><strong>rseries</strong> (<em>float</em>) – series resistance, in ohms</li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">normalized voltage, normalized current, DC I-V metadata</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="qmix.exp.iv_data.iv_curve">
+<code class="descclassname">qmix.exp.iv_data.</code><code class="descname">iv_curve</code><span class="sig-paren">(</span><em>filename</em>, <em>dc</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.exp.iv_data.iv_curve" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load and analyze pumped I-V curve data.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>filename</strong> (<em>str</em>) – I-V filename</li>
+<li><strong>dc</strong> (<a class="reference internal" href="#qmix.exp.iv_data.DCIVData" title="qmix.exp.iv_data.DCIVData"><em>qmix.exp.iv_data.DCIVData</em></a>) – DC data structure</li>
+<li><strong>**kwargs</strong> – keyword arguments</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body"><ul class="first simple">
+<li><strong>v_fmt</strong> (<em>str</em>) – units for voltage (‘uV’, ‘mV’, ‘V’)</li>
+<li><strong>i_fmt</strong> (<em>str</em>) – units for current (‘uA’, ‘mA’, ‘A’)</li>
+<li><strong>usecols</strong> (<em>tuple</em>) – list of columns to import (tuple of length 2)</li>
+<li><strong>filter_data</strong> (<em>bool</em>) – filter data?</li>
+<li><strong>filter_nwind</strong> (<em>int</em>) – SG filter window size</li>
+<li><strong>filter_npoly</strong> (<em>int</em>) – SG filter order</li>
+<li><strong>filter_theta</strong> (<em>float</em>) – angle to rotate data by during filtering</li>
+<li><strong>npts</strong> (<em>int</em>) – number of points to output</li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">normalized voltage, normalized current</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-qmix.exp.parameters">
+<span id="qmix-exp-parameters-module"></span><h2>2.1.1.6. qmix.exp.parameters module<a class="headerlink" href="#module-qmix.exp.parameters" title="Permalink to this headline">¶</a></h2>
+<p>Default parameters for importing experimental data.</p>
+<dl class="data">
+<dt id="qmix.exp.parameters.params">
+<code class="descclassname">qmix.exp.parameters.</code><code class="descname">params</code><em class="property"> = {'alpha_max': 1.5, 'analyze': None, 'analyze_if': True, 'analyze_iv': True, 'area': 1.5, 'comment': '', 'cut_high': 0.2, 'cut_low': 0.25, 'delimiter': ',', 'filter_data': True, 'filter_npoly': 3, 'filter_nwind': 21, 'filter_theta': 0.785, 'freq': None, 'i_fmt': 'mA', 'ifdata_npts': 3000, 'ifdata_sigma': 5, 'ifdata_vmax': 2.25, 'igap_guess': 0.0002, 'ioffset': None, 'iv_multiplier': 1.0, 'npts': 6001, 'num_b': 20, 'remb_range': (0, 1), 'rn_vmax': 0.0045, 'rn_vmin': 0.0035, 'rseries': None, 't_cold': 80.0, 't_hot': 293.0, 'usecols': (0, 1), 'v_fmt': 'mV', 'v_smear': 0.02, 'vbest': None, 'verbose': True, 'vgap_guess': 0.0027, 'vgap_threshold': 0.000105, 'vleak': 0.002, 'vmax': 0.006, 'vmax_plot': 4.0, 'voffset': None, 'voffset_range': 0.0003, 'voffset_sigma': 1e-05, 'vrsg': 0.002, 'vshot': None, 'xemb_range': (-1, 1)}</em><a class="headerlink" href="#qmix.exp.parameters.params" title="Permalink to this definition">¶</a></dt>
+<dd><p>Default file hierarchy to use when plotting experimental data.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-qmix.exp">
+<span id="module-contents"></span><h2>2.1.1.7. Module contents<a class="headerlink" href="#module-qmix.exp" title="Permalink to this headline">¶</a></h2>
+<p>This sub-package contains functions for importing and analyzing
+experimental data.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="qmix.mathfn.html" class="btn btn-neutral float-right" title="2.1.2. qmix.mathfn package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="qmix.html" class="btn btn-neutral" title="2. QMix Package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, John Garrett
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+    
+
+  
+
+  <script type="text/javascript" src="_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

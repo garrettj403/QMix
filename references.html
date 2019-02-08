@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>1. The QMix Package &mdash; QMix latest documentation</title>
+  <title>5. References &mdash; QMix latest documentation</title>
   
 
   
@@ -28,8 +28,7 @@
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="2. Getting Started" href="setup.html" />
-    <link rel="prev" title="QMix: Quantum Mixing Software" href="index.html" /> 
+    <link rel="prev" title="4. Example #2: Simulating an SIS mixer" href="multi-tone.html" /> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -83,8 +82,11 @@
             
             
               <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">1. The QMix Package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="setup.html">2. Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="setup.html">1. Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="qmix.html">2. QMix Package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="single-tone-simple.html">3. Example #1: Creating a simple 1 tone simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multi-tone.html">4. Example #2: Simulating an SIS mixer</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">5. References</a></li>
 </ul>
 
             
@@ -130,13 +132,13 @@
     
       <li><a href="index.html">Docs</a> &raquo;</li>
         
-      <li>1. The QMix Package</li>
+      <li>5. References</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="_sources/project.rst.txt" rel="nofollow"> View page source</a>
+            <a href="_sources/references.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -167,52 +169,30 @@
 .admonition > p:before {
     margin-right: 4px;  /* make room for the exclamation icon */
 }
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
 </style>
-<div class="section" id="the-qmix-package">
-<h1>1. The QMix Package<a class="headerlink" href="#the-qmix-package" title="Permalink to this headline">¶</a></h1>
-<p>QMix allows you to simulate the quasiparticle tunneling currents in SIS junctions.</p>
-<p>Unlike other SIS simulation packages:</p>
-<blockquote>
-<div><ol class="arabic">
-<li><p class="first">QMix can analyze higher-order harmonics</p>
-<ul class="simple">
-<li>QMix uses multi-tone spectral domain analysis (MTSDA) to calculate the tunnelling currents for each tone/harmonic. The junction’s operation is never linearized, which allows higher-order harmonics to be calculated accurately.</li>
-</ul>
-</li>
-<li><p class="first">QMix can handle multiple strong tones</p>
-<ul class="simple">
-<li>QMix doesn’t split the simulation into large-signal and small-signal analysis. Instead, all of the tones are treated in the same manner.</li>
-</ul>
-</li>
-<li><p class="first">QMix is written in Python</p>
-<ul>
-<li><p class="first">Python is:</p>
-<blockquote>
-<div><ul class="simple">
-<li>Interpreted: no need to compile</li>
-<li>Portable: easy to run on a variety of operating systems and machines</li>
-<li>High-level: fewer lines of code required than C or C++</li>
-</ul>
-</div></blockquote>
-</li>
-<li><p class="first">Python also has an extensive online community with many different packages available for a variety of needs. Notably:</p>
-<blockquote>
-<div><ul class="simple">
-<li>NumPy for linear algebra and numerical tools</li>
-<li>MatplotLib for plotting</li>
-<li>SciPy for scientific functions and constants</li>
-</ul>
-</div></blockquote>
-</li>
-</ul>
-</li>
-<li><p class="first">QMix is open-source</p>
-<ul class="simple">
-<li>QMix is hosted on GitHub. Having it open source will allow QMix to grow and develop new features as they are needed.</li>
-</ul>
-</li>
-</ol>
-</div></blockquote>
+<div class="section" id="references">
+<h1>5. References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h1>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">For more information on QMix, see Garrett (2018).</p>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">For more information on multi-tone spectral domain analysis (MTSDA), see Kittara (2002); Kittara, Winthington &amp; Yassin (2007); or Withington, Kittara &amp; Yassin (2003).</p>
+</div>
+<p>Garrett, J. D. (2018). <a class="reference external" href="https://ora.ox.ac.uk/objects/uuid:d47fbf3b-1cf3-4e58-be97-767b9893066e">A 230 GHz Focal Plane Array Using a Wide IF Bandwidth SIS Receiver</a> (DPhil). University of Oxford.</p>
+<p>Kennedy, P. R. (1999) <em>Superconducting Devices for Millimeter Wavelength Astronomy</em> (DPhil). University of Cambridge.</p>
+<p>Kittara, P. (2002). <em>The Development of a 700 GHz SIS Mixer with Nb Finline Devices: Nonlinear Mixer Theory, Design Techniques and Experimental Investigation</em> (DPhil). University of Cambridge.</p>
+<p>Kittara, P., Withington, S., &amp; Yassin, G. (2007). <a class="reference external" href="https://aip.scitation.org/doi/10.1063/1.2424407">Theoretical and numerical analysis of very high harmonic superconducting tunnel junction mixers.</a> Journal of Applied Physics, 101(2), 024508.</p>
+<p>Rashid, H., Krause, S., Meledin, D., Desmaris, V., Pavolotsky, A., and Belitsky, V. (2016). <em>Frequency Multiplier Based on Distributed Superconducting Tunnel Junctions: Theory, Design, and Characterization.</em> IEEE Trans. Terahertz Sci. Technol., 1-13.</p>
+<p>Withington, S., Kittara, P., &amp; Yassin, G. (2003). <a class="reference external" href="http://aip.scitation.org/doi/10.1063/1.1576515">Multitone quantum simulations of saturating tunnel junction mixers.</a> Journal of Applied Physics, 93(12), 9812–9822.</p>
+<p>Withington 1995</p>
+<p>Skalare 1989</p>
 </div>
 
 
@@ -223,10 +203,8 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="setup.html" class="btn btn-neutral float-right" title="2. Getting Started" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
-      
-        <a href="index.html" class="btn btn-neutral" title="QMix: Quantum Mixing Software" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="multi-tone.html" class="btn btn-neutral" title="4. Example #2: Simulating an SIS mixer" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -260,7 +238,6 @@
         <script type="text/javascript" src="_static/jquery.js"></script>
         <script type="text/javascript" src="_static/underscore.js"></script>
         <script type="text/javascript" src="_static/doctools.js"></script>
-        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
 
   

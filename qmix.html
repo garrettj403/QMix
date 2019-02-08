@@ -1,0 +1,1024 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>2. QMix Package &mdash; QMix latest documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="2.1.1. qmix.exp package" href="qmix.exp.html" />
+    <link rel="prev" title="1. Getting Started" href="setup.html" /> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> QMix
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                latest
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="setup.html">1. Getting Started</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">2. QMix Package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#subpackages">2.1. Subpackages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="qmix.exp.html">2.1.1. qmix.exp package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qmix.mathfn.html">2.1.2. qmix.mathfn package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qmix.misc.html">2.1.3. qmix.misc package</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#submodules">2.2. Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-qmix.circuit">2.3. qmix.circuit module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-qmix.harmonic_balance">2.4. qmix.harmonic_balance module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-qmix.qtcurrent">2.5. qmix.qtcurrent module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-qmix.respfn">2.6. qmix.respfn module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-qmix">2.7. Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="single-tone-simple.html">3. Example #1: Creating a simple 1 tone simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multi-tone.html">4. Example #2: Simulating an SIS mixer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="references.html">5. References</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">QMix</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>2. QMix Package</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/qmix.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast,
+.nboutput.nblast {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast + .nbinput {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<div class="section" id="qmix-package">
+<h1>2. QMix Package<a class="headerlink" href="#qmix-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="subpackages">
+<h2>2.1. Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="qmix.exp.html">2.1.1. qmix.exp package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="qmix.exp.html#submodules">2.1.1.1. Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="qmix.exp.html#module-qmix.exp.clean_data">2.1.1.2. qmix.exp.clean_data module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="qmix.exp.html#module-qmix.exp.exp_data">2.1.1.3. qmix.exp.exp_data module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="qmix.exp.html#module-qmix.exp.if_data">2.1.1.4. qmix.exp.if_data module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="qmix.exp.html#module-qmix.exp.iv_data">2.1.1.5. qmix.exp.iv_data module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="qmix.exp.html#module-qmix.exp.parameters">2.1.1.6. qmix.exp.parameters module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="qmix.exp.html#module-qmix.exp">2.1.1.7. Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="qmix.mathfn.html">2.1.2. qmix.mathfn package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="qmix.mathfn.html#submodules">2.1.2.1. Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="qmix.mathfn.html#module-qmix.mathfn.filters">2.1.2.2. qmix.mathfn.filters module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="qmix.mathfn.html#module-qmix.mathfn.ivcurve_models">2.1.2.3. qmix.mathfn.ivcurve_models module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="qmix.mathfn.html#module-qmix.mathfn.kktrans">2.1.2.4. qmix.mathfn.kktrans module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="qmix.mathfn.html#module-qmix.mathfn.misc">2.1.2.5. qmix.mathfn.misc module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="qmix.mathfn.html#module-qmix.mathfn">2.1.2.6. Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="qmix.misc.html">2.1.3. qmix.misc package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="qmix.misc.html#submodules">2.1.3.1. Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="qmix.misc.html#module-qmix.misc.progbar">2.1.3.2. qmix.misc.progbar module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="qmix.misc.html#module-qmix.misc.terminal">2.1.3.3. qmix.misc.terminal module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="qmix.misc.html#module-qmix.misc">2.1.3.4. Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="submodules">
+<h2>2.2. Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-qmix.circuit">
+<span id="qmix-circuit-module"></span><h2>2.3. qmix.circuit module<a class="headerlink" href="#module-qmix.circuit" title="Permalink to this headline">¶</a></h2>
+<p>This module contains classes and functions to describe the embedding
+circuit.</p>
+<p><strong>Description</strong></p>
+<blockquote>
+<div><p>In experimental systems, SIS junctions are embedded within complex RF
+networks. These networks are referred to as the embedding circuit. Since
+all of the components in these embedding circuits are <strong>linear</strong>, the
+embedding circuit can be reduced to a Thevenin equivalent circuit for
+<strong>each tone and harmonic.</strong></p>
+<p>Therefore, to fully describe the embedding circuit, 3 things are needed
+for each signal that is applied to the junction:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li>the embedding voltage (i.e., Thevenin voltage)</li>
+<li>the embedding impedance (i.e., Thevenin impedance)</li>
+<li>the frequency of the signal</li>
+</ol>
+</div></blockquote>
+</div></blockquote>
+<dl class="class">
+<dt id="qmix.circuit.EmbeddingCircuit">
+<em class="property">class </em><code class="descclassname">qmix.circuit.</code><code class="descname">EmbeddingCircuit</code><span class="sig-paren">(</span><em>num_f=1</em>, <em>num_p=1</em>, <em>vb_min=0</em>, <em>vb_max=2</em>, <em>vb_npts=201</em>, <em>fgap=None</em>, <em>vgap=None</em>, <em>rn=None</em>, <em>name=''</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.circuit.EmbeddingCircuit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Class for describing the embedding circuit.</p>
+<p>This includes the voltages, impedances and frequencies of all signals
+applied to the junction.</p>
+<p>Creating an instance of this class will set the sizes and data types
+of all of the class attributes, but the actual values will need to be set
+manually. In this way, this class is sort of like a struct. The
+class attributes that have to be set manually are:</p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">vph</span></code>:  photon voltage (freq / gap freq)</li>
+<li><code class="docutils literal notranslate"><span class="pre">vt</span></code>:  Thevenin voltage (normalized to the gap voltage)</li>
+<li><code class="docutils literal notranslate"><span class="pre">zt</span></code>:  Thevenin impedance (normalized to the normal resistance)</li>
+</ul>
+</div></blockquote>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>1. Unless specified otherwise, <strong>all input values are normalized</strong>.
+The voltages are normalized to the gap voltage (Vgap), the
+resistances are normalized to the normal-state resistance (Rn), the
+currents are normalized to Igap=Vgap/Rn, and the frequencies are
+normalized to the gap frequency fgap=e*Vgap/h.</p>
+<p class="last">2. The photon voltage is defined as hf/e. Therefore, the normalized
+photon voltage is equal to the frequency of the input signal divided
+by the the gap frequency. <strong>Normalized photon voltage is equal to the
+normalized frequency.</strong></p>
+</div>
+<p class="rubric">Example</p>
+<p>To create an instance of the embedding circuit class with 2 tones and
+3 harmonices, you would set:</p>
+<blockquote>
+<div><code class="docutils literal notranslate"><span class="pre">cct</span> <span class="pre">=</span> <span class="pre">EmbeddingCircuit(2,</span> <span class="pre">3)</span></code></div></blockquote>
+<p>Then, to set the Thevenin voltage of the 3rd harmonic of the 2nd tone
+to 0.3, you would set:</p>
+<blockquote>
+<div><code class="docutils literal notranslate"><span class="pre">cct.vt[2,3]</span> <span class="pre">=</span> <span class="pre">0.3</span></code></div></blockquote>
+<p>For each signal, you then have to repeat this to set each voltage,
+impedance and photon voltage.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
+<tr class="field-odd field"><td>&#160;</td><td class="field-body"><ul class="first last simple">
+<li><strong>num_f</strong> (<em>int</em>) – Number of fundamental tones/frequencies</li>
+<li><strong>num_p</strong> (<em>int</em>) – Number of harmonics</li>
+<li><strong>vb_min</strong> (<em>float</em>) – Minimum bias voltage</li>
+<li><strong>vb_max</strong> (<em>float</em>) – Maximum bias voltage</li>
+<li><strong>vb_npts</strong> (<em>int</em>) – Number of bias voltage points</li>
+<li><strong>fgap</strong> (<em>float</em>) – Gap frequency, in units [Hz]</li>
+<li><strong>vgap</strong> (<em>float</em>) – Gap voltage, in units [V]</li>
+<li><strong>rn</strong> (<em>float</em>) – Normal-state resistance, in units [ohms]</li>
+<li><strong>name</strong> (<em>str</em>) – Name of this instance (optional)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="qmix.circuit.EmbeddingCircuit.available_power">
+<code class="descname">available_power</code><span class="sig-paren">(</span><em>f=1</em>, <em>p=1</em>, <em>units='W'</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.circuit.EmbeddingCircuit.available_power" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return available power of tone f and harmonic p.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Gap voltage and normal resistance must be set prior to using this
+method. If they are not, an error will be raised.</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
+<tr class="field-odd field"><td>&#160;</td><td class="field-body"><ul class="first simple">
+<li><strong>f</strong> (<em>int</em>) – tone</li>
+<li><strong>p</strong> (<em>int</em>) – harmonic</li>
+<li><strong>units</strong> (<em>str</em>) – units for power, either ‘W’ or ‘dBm’</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">available power in specified units</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">float</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="qmix.circuit.EmbeddingCircuit.initialize_vj">
+<code class="descname">initialize_vj</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qmix.circuit.EmbeddingCircuit.initialize_vj" title="Permalink to this definition">¶</a></dt>
+<dd><p>DEPRECATED</p>
+<p>Initialize junction voltage array.</p>
+<p>Return an empty matrix that is the shape that <code class="docutils literal notranslate"><span class="pre">vj</span></code> should be (the
+voltage across the junction).</p>
+<p>Strictly speaking, <code class="docutils literal notranslate"><span class="pre">vj</span></code> shouldn’t be saved within this class, but
+it is okay for this class to initialize <code class="docutils literal notranslate"><span class="pre">vj</span></code> since it has all the
+data about matrix sizes.</p>
+<p>This function is useful when the embedding impedance aren’t included,
+and you want to set the voltage across the junction manually.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Empty matrix to initializing vj</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">ndarray</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="qmix.circuit.EmbeddingCircuit.lock">
+<code class="descname">lock</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qmix.circuit.EmbeddingCircuit.lock" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make all Numpy arrays contained within this class unwriteable.</p>
+<p>This can be useful for debugging.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="qmix.circuit.EmbeddingCircuit.print_info">
+<code class="descname">print_info</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qmix.circuit.EmbeddingCircuit.print_info" title="Permalink to this definition">¶</a></dt>
+<dd><p>Print information about the embedding circuit to the terminal.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="qmix.circuit.EmbeddingCircuit.save_info">
+<code class="descname">save_info</code><span class="sig-paren">(</span><em>filename='embedding-circuit.txt'</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.circuit.EmbeddingCircuit.save_info" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save this embedding circuit to a text file.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
+<tr class="field-odd field"><td>&#160;</td><td class="field-body"><strong>filename</strong> (<em>string</em>) – Filename</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="qmix.circuit.EmbeddingCircuit.set_alpha">
+<code class="descname">set_alpha</code><span class="sig-paren">(</span><em>alpha</em>, <em>f=1</em>, <em>p=1</em>, <em>zj=0.66</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.circuit.EmbeddingCircuit.set_alpha" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set (approximately) the drive level of tone f and harmonic p.</p>
+<p>This method guesses what the source voltage should be in order to get
+the desired drive level.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Gap voltage and normal resistance must be set prior to using this
+method. Otherwise, an assertion error will be raised.</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>alpha</strong> (<em>float</em>) – drive level, alpha = voltage / vph</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body"><ul class="first last simple">
+<li><strong>f</strong> (<em>int</em>) – tone</li>
+<li><strong>p</strong> (<em>int</em>) – harmonic</li>
+<li><strong>zj</strong> (<em>float</em>) – junction impedance to assume</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="qmix.circuit.EmbeddingCircuit.set_available_power">
+<code class="descname">set_available_power</code><span class="sig-paren">(</span><em>power</em>, <em>f=1</em>, <em>p=1</em>, <em>units='W'</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.circuit.EmbeddingCircuit.set_available_power" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set available power of tone f and harmonic p.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The gap voltage, normal resistance and Thevenin impedance must be
+set prior to using this method. Otherwise, an assertion error will
+be raised.</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>power</strong> (<em>float</em>) – power, in given units</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body"><ul class="first last simple">
+<li><strong>f</strong> (<em>int</em>) – tone</li>
+<li><strong>p</strong> (<em>int</em>) – harmonic</li>
+<li><strong>units</strong> (<em>str</em>) – units for power, either ‘W’ or ‘dBm’</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="qmix.circuit.EmbeddingCircuit.set_name">
+<code class="descname">set_name</code><span class="sig-paren">(</span><em>name</em>, <em>f=1</em>, <em>p=1</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.circuit.EmbeddingCircuit.set_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set a name for a given tone + harmonic.</p>
+<p>This has no effect on the simulation. It’s just nice for keeping track
+of the different signals.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>name</strong> (<em>str</em>) – name of tone/harmonic</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body"><ul class="first last simple">
+<li><strong>f</strong> (<em>int</em>) – frequency number to set</li>
+<li><strong>p</strong> (<em>int</em>) – harmonic number to set</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="qmix.circuit.EmbeddingCircuit.set_vph">
+<code class="descname">set_vph</code><span class="sig-paren">(</span><em>value</em>, <em>f=1</em>, <em>units='Hz'</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.circuit.EmbeddingCircuit.set_vph" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set photon voltage of tone f.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>value</strong> (<em>float</em>) – value to set using given units</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body"><ul class="first last simple">
+<li><strong>f</strong> (<em>int</em>) – tone</li>
+<li><strong>units</strong> (<em>str</em>) – units for input value, ‘Hz’ for frequency in units
+Hz, ‘V’ for photon voltage in units V, and ‘norm’ for either
+normalized photon voltage or normalized frequency</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="qmix.circuit.EmbeddingCircuit.unlock">
+<code class="descname">unlock</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qmix.circuit.EmbeddingCircuit.unlock" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make all Numpy arrays contained within this class writeable.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="qmix.circuit.read_circuit">
+<code class="descclassname">qmix.circuit.</code><code class="descname">read_circuit</code><span class="sig-paren">(</span><em>filename</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.circuit.read_circuit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Build embedding circuit based on information file.</p>
+<p>This function will build an instance of the EmbeddingCircuit class
+based on a file built previously by <cite>EmbeddingCircuit.save_info(filename)</cite>
+method.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>filename</strong> – filename</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">instance of EmbeddingCircuit</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-qmix.harmonic_balance">
+<span id="qmix-harmonic-balance-module"></span><h2>2.4. qmix.harmonic_balance module<a class="headerlink" href="#module-qmix.harmonic_balance" title="Permalink to this headline">¶</a></h2>
+<p>This module contains functions to perform harmonic balance of non-linear
+SIS mixer circuits.</p>
+<p><strong>Description</strong></p>
+<blockquote>
+<div><p>Each signal that is applied to an SIS junction can be represented by a
+Thevenin equivalent circuit (see qmix.circuit). This circuit will then
+induce a voltage across the SIS junction. The exact voltage that is
+induced depends on the impedance of the SIS junction. However, this
+impedance changes depending on the other signals that are applied to
+the junction.</p>
+<p>Harmonic balance is a procedure to solve for the voltage across the SIS
+junction for each signal that is applied to the junction. This techniques
+uses Newton’s method to find the solution numerically.</p>
+</div></blockquote>
+<dl class="function">
+<dt id="qmix.harmonic_balance.check_hb_error">
+<code class="descclassname">qmix.harmonic_balance.</code><code class="descname">check_hb_error</code><span class="sig-paren">(</span><em>vj_check</em>, <em>cct</em>, <em>resp</em>, <em>num_b=15</em>, <em>stop_rerror=0.001</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.harmonic_balance.check_hb_error" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check the results from the <cite>harmonic_balance</cite> function.</p>
+<p>Just to double check. Mostly for debugging purposes.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>vj_check</strong> (<em>ndarray</em>) – The voltage across junction to check</li>
+<li><strong>cct</strong> (<a class="reference internal" href="#qmix.circuit.EmbeddingCircuit" title="qmix.circuit.EmbeddingCircuit"><em>qmix.circuit.EmbeddingCircuit</em></a>) – Embedding circuit</li>
+<li><strong>resp</strong> (<a class="reference internal" href="#qmix.respfn.RespFn" title="qmix.respfn.RespFn"><em>qmix.respfn.RespFn</em></a>) – Response function</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body"><ul class="first simple">
+<li><strong>num_b</strong> – Number of Bessel functions to include</li>
+<li><strong>stop_rerror</strong> (<em>float</em>) – Maximum acceptable relative error</li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last"><code class="xref py py-exc docutils literal notranslate"><span class="pre">AssertionError</span></code> – If the stop error is not met</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="qmix.harmonic_balance.harmonic_balance">
+<code class="descclassname">qmix.harmonic_balance.</code><code class="descname">harmonic_balance</code><span class="sig-paren">(</span><em>cct</em>, <em>resp</em>, <em>num_b=15</em>, <em>max_it=10</em>, <em>stop_rerror=0.001</em>, <em>vj_initial=None</em>, <em>damp_coeff=1.0</em>, <em>mode='o'</em>, <em>verbose=True</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.harmonic_balance.harmonic_balance" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perform harmonic balance.</p>
+<p>Determine the harmonic balance of the junction + embedding circuit system.
+Uses Newton’s method to find the solution. For more information, see
+Garrett (2018); Kittara (2002); Kittara, Winthington &amp; Yassin (2007); or
+Withington, Kittara &amp; Yassin (2003). [Full references in online docs.]</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>cct</strong> (<a class="reference internal" href="#qmix.circuit.EmbeddingCircuit" title="qmix.circuit.EmbeddingCircuit"><em>qmix.circuit.EmbeddingCircuit</em></a>) – Embedding circuit</li>
+<li><strong>resp</strong> (<a class="reference internal" href="#qmix.respfn.RespFn" title="qmix.respfn.RespFn"><em>qmix.respfn.RespFn</em></a>) – Response function</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body"><ul class="first simple">
+<li><strong>num_b</strong> (<em>int_or_tuple</em>) – Number of Bessel functions to include</li>
+<li><strong>max_it</strong> (<em>int</em>) – Maximum number of iterations</li>
+<li><strong>stop_rerror</strong> (<em>float</em>) – Maximum acceptable relative error</li>
+<li><strong>vj_initial</strong> (<em>ndarray</em>) – Initial guess of junction voltage (vj)</li>
+<li><strong>damp_coeff</strong> (<em>float</em>) – Dampening coefficient for correction factor (0-1)</li>
+<li><strong>mode</strong> (<em>string</em>) – output vj (‘o’), print (‘p’), output extra data (‘x’)</li>
+<li><strong>verbose</strong> (<em>bool</em>) – print info to terminal if true</li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">junction voltage that satisfies the circuit</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">ndarray</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-qmix.qtcurrent">
+<span id="qmix-qtcurrent-module"></span><h2>2.5. qmix.qtcurrent module<a class="headerlink" href="#module-qmix.qtcurrent" title="Permalink to this headline">¶</a></h2>
+<p>This module contains functions to calculate the quasiparticle tunneling
+currents passing through an SIS junction.</p>
+<p><strong>Description</strong></p>
+<blockquote>
+<div>Given the voltages applied across an SIS junction, the quasiparticle
+tunneling currents can be calculated using multi-tone spectral domain
+analysis (MTSDA; see references in online docs).</div></blockquote>
+<dl class="function">
+<dt id="qmix.qtcurrent.interpolate_respfn">
+<code class="descclassname">qmix.qtcurrent.</code><code class="descname">interpolate_respfn</code><span class="sig-paren">(</span><em>cct</em>, <em>resp</em>, <em>num_b</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.qtcurrent.interpolate_respfn" title="Permalink to this definition">¶</a></dt>
+<dd><p>Interpolate the response function at all necessary voltages.</p>
+<p>I have included this as a stand-alone function because if you are going
+to be running <code class="docutils literal notranslate"><span class="pre">qtcurrent</span></code> over and over again with the same input
+signal frequencies, it can save time by pre-interpolating the response
+function.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>cct</strong> (<a class="reference internal" href="#qmix.circuit.EmbeddingCircuit" title="qmix.circuit.EmbeddingCircuit"><em>qmix.circuit.EmbeddingCircuit</em></a>) – Embedding circuit</li>
+<li><strong>resp</strong> (<a class="reference internal" href="#qmix.respfn.RespFn" title="qmix.respfn.RespFn"><em>qmix.respfn.RespFn</em></a>) – Response function</li>
+<li><strong>num_b</strong> (<em>int/tuple</em>) – Number of Bessel functions to include.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The interpolated response function as a matrix.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">ndarray</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="qmix.qtcurrent.qtcurrent">
+<code class="descclassname">qmix.qtcurrent.</code><code class="descname">qtcurrent</code><span class="sig-paren">(</span><em>vj</em>, <em>cct</em>, <em>resp</em>, <em>vph_list</em>, <em>num_b=15</em>, <em>verbose=True</em>, <em>resp_matrix=None</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.qtcurrent.qtcurrent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the quasiparticle tunneling current.</p>
+<p>This function uses multi-tone spectral domain analysis (MTSDA; see
+references in online docs). The current is calculated based on the
+voltage applied across the junction.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>This function will return the tunneling current for all of the
+normalized photon voltages listed in vph_list. E.g., to solve for the
+dc tunneling current and the ac tunneling current at 230 GHz, the
+<code class="docutils literal notranslate"><span class="pre">vph_list</span></code> would  be <code class="docutils literal notranslate"><span class="pre">[0,</span> <span class="pre">230e9</span> <span class="pre">/</span> <span class="pre">fgap]</span></code> where <code class="docutils literal notranslate"><span class="pre">fgap</span></code> is the gap
+frequency.</p>
+<p class="last">Maximum of 4 fundamental tones.</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>vj</strong> (<em>ndarray</em>) – Voltage across the SIS junction</li>
+<li><strong>cct</strong> (<a class="reference internal" href="#qmix.circuit.EmbeddingCircuit" title="qmix.circuit.EmbeddingCircuit"><em>qmix.circuit.EmbeddingCircuit</em></a>) – Embedding circuit</li>
+<li><strong>resp</strong> (<a class="reference internal" href="#qmix.respfn.RespFn" title="qmix.respfn.RespFn"><em>qmix.respfn.RespFn</em></a>) – Response function</li>
+<li><strong>vph_list</strong> – Calculate the tunneling currents for these photon voltages
+(i.e., frequencies)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body"><ul class="first simple">
+<li><strong>num_b</strong> (<em>float_or_tuple</em>) – Number of Bessel functions to include</li>
+<li><strong>verbose</strong> (<em>bool</em>) – Print to the terminal if true</li>
+<li><strong>resp_matrix</strong> (<em>ndarray</em>) – The interpolated response function matrix</li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Tunneling current</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">ndarray</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="qmix.qtcurrent.qtcurrent_all_freq">
+<code class="descclassname">qmix.qtcurrent.</code><code class="descname">qtcurrent_all_freq</code><span class="sig-paren">(</span><em>vj</em>, <em>cct</em>, <em>resp</em>, <em>num_b=15</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.qtcurrent.qtcurrent_all_freq" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the AC tunneling current for all tones and all harmonics.</p>
+<p>This function will return the tunneling current in a 3-D array:
+(num_f+1) x (num_p+1) x (npts).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>vj</strong> (<em>ndarray</em>) – Voltage across the junction</li>
+<li><strong>cct</strong> (<a class="reference internal" href="#qmix.circuit.EmbeddingCircuit" title="qmix.circuit.EmbeddingCircuit"><em>qmix.circuit.EmbeddingCircuit</em></a>) – Embedding circuit class</li>
+<li><strong>resp</strong> (<a class="reference internal" href="#qmix.respfn.RespFn" title="qmix.respfn.RespFn"><em>qmix.respfn.RespFn</em></a>) – Response function</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body"><p class="first"><strong>num_b</strong> (<em>int_or_tuple</em>) – Number of Bessel functions to include</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Tunneling current</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">ndarray</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="qmix.qtcurrent.qtcurrent_std">
+<code class="descclassname">qmix.qtcurrent.</code><code class="descname">qtcurrent_std</code><span class="sig-paren">(</span><em>vj</em>, <em>cct</em>, <em>resp</em>, <em>num_b=15</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.qtcurrent.qtcurrent_std" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the ‘standard’ tunneling currents: DC, LO and IF.</p>
+<p>Assumes that <code class="docutils literal notranslate"><span class="pre">cct.vph[1]</span></code> is the LO signal,
+<code class="docutils literal notranslate"><span class="pre">cct.vph[2]</span></code> is the RF signal, and that
+<code class="docutils literal notranslate"><span class="pre">cct.vph[2]</span> <span class="pre">-</span> <span class="pre">cct.vph[1]</span></code> is the frequency of the IF signal.</p>
+<p>The simulation can have 2, 3, or 4 tones.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>vj</strong> (<em>ndarray</em>) – Voltage across the junction</li>
+<li><strong>cct</strong> (<a class="reference internal" href="#qmix.circuit.EmbeddingCircuit" title="qmix.circuit.EmbeddingCircuit"><em>qmix.circuit.EmbeddingCircuit</em></a>) – Embedding circuit</li>
+<li><strong>resp</strong> (<a class="reference internal" href="#qmix.respfn.RespFn" title="qmix.respfn.RespFn"><em>qmix.respfn.RespFn</em></a>) – Response function</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body"><p class="first"><strong>num_b</strong> (<em>int_or_tuple</em>) – Number of Bessel functions to include</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">DC tunneling current
+ndarray: AC tunneling current at f = LO
+ndarray: AC tunneling current at f = IF</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">ndarray</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-qmix.respfn">
+<span id="qmix-respfn-module"></span><h2>2.6. qmix.respfn module<a class="headerlink" href="#module-qmix.respfn" title="Permalink to this headline">¶</a></h2>
+<p>This module contains classes to represent the response function of the
+SIS junction.</p>
+<p>Upon initialization, these classes will:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li>Load or calculate the DC I-V curve (imagainary part of resp. func.)<ul>
+<li>The I-V curve can either be loaded from a csv file or generated from
+an I-V curve model (e.g., polynomial model, exponential model, etc.),</li>
+</ul>
+</li>
+<li>Calculate the Kramers-Kronig transform of the DC I-V curve</li>
+<li>Setup the density of data points to optimize interpolation<ul>
+<li>The I-V curve needs to be interpolated and the number of points has a
+large affect on the speed of this, but at the same time there needs to
+be enough points to accurately represent the original I-V curve.</li>
+</ul>
+</li>
+<li>Calculate cubic spline fits for the I-V curve and the KK transform<ul>
+<li>Doing this once at the start allows the data to be interpolated very
+quickly later on.</li>
+</ul>
+</li>
+<li>Determine the derivative of the I-V curve and the KK transform based on
+the spline fits</li>
+</ol>
+</div></blockquote>
+<p>Then when needed, the classes allow the user to interpolated the DC I-V curve,
+the KK transform, the derivative of the I-V curve, the derivative of the KK
+transform, or the response function (a complex value). This is set up to run
+very quickly.</p>
+<dl class="class">
+<dt id="qmix.respfn.RespFn">
+<em class="property">class </em><code class="descclassname">qmix.respfn.</code><code class="descname">RespFn</code><span class="sig-paren">(</span><em>voltage</em>, <em>current</em>, <em>**params</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.respfn.RespFn" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Generate the response function from pre-processed I-V data.</p>
+<p>This is a class to contain, interpolate and plot the response function.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The I-V data must not be too large or else the interpolation will be
+extremely slow. It’s better to have more points around curvier regions
+and fewer points along linear regions. This is why this class is only
+for “pre-processed” I-V data.</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>voltage</strong> (<em>ndarray</em>) – normalized voltage</li>
+<li><strong>current</strong> (<em>ndarray</em>) – normalized current</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body"><p class="first last"><strong>verbose</strong> – set to True to print to terminal</p>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="qmix.respfn.RespFn.resp">
+<code class="descname">resp</code><span class="sig-paren">(</span><em>vbias</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.respfn.RespFn.resp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Interpolate the response function current</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>vbias</strong> (<em>ndarray</em>) – Bias voltage (normalized)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Response function current (complex value)</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">ndarray</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="qmix.respfn.RespFn.resp_conj">
+<code class="descname">resp_conj</code><span class="sig-paren">(</span><em>vbias</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.respfn.RespFn.resp_conj" title="Permalink to this definition">¶</a></dt>
+<dd><p>Interpolate the complex conjugate of the response function current</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>vbias</strong> (<em>ndarray</em>) – Bias voltage (normalized)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Conjugate of the response function current</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">ndarray</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="qmix.respfn.RespFn.resp_swap">
+<code class="descname">resp_swap</code><span class="sig-paren">(</span><em>vbias</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.respfn.RespFn.resp_swap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Interpolate the response function current with the real and
+imaginary components swapped.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>vbias</strong> (<em>ndarray</em>) – Bias voltage (normalized)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Response function current with real and imaginary swapped</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">ndarray</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="qmix.respfn.RespFn.show_current">
+<code class="descname">show_current</code><span class="sig-paren">(</span><em>fig_name=None</em>, <em>ax=None</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.respfn.RespFn.show_current" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot the DC I-V and KK current.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>fig_name</strong> (<em>string</em>) – figure name if saved</li>
+<li><strong>ax</strong> – figure axis</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="qmix.respfn.RespFnFromIVData">
+<em class="property">class </em><code class="descclassname">qmix.respfn.</code><code class="descname">RespFnFromIVData</code><span class="sig-paren">(</span><em>voltage</em>, <em>current</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.respfn.RespFnFromIVData" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#qmix.respfn.RespFn" title="qmix.respfn.RespFn"><code class="xref py py-class docutils literal notranslate"><span class="pre">qmix.respfn.RespFn</span></code></a></p>
+<p>Response function for I-V data.</p>
+<p>Class to contain, interpolate and plot the response function.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This class expects normalized I-V data that extends at least from bias
+voltage = 0 to “vlimit”.</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>voltage</strong> (<em>ndarray</em>) – normalized voltage</li>
+<li><strong>current</strong> (<em>ndarray</em>) – normalized current</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="class">
+<dt id="qmix.respfn.RespFnPerfect">
+<em class="property">class </em><code class="descclassname">qmix.respfn.</code><code class="descname">RespFnPerfect</code><span class="sig-paren">(</span><em>**params</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.respfn.RespFnPerfect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#qmix.respfn.RespFn" title="qmix.respfn.RespFn"><code class="xref py py-class docutils literal notranslate"><span class="pre">qmix.respfn.RespFn</span></code></a></p>
+<p>Response function based on the perfect I-V curve model.</p>
+<p>Class to contain, interpolate and plot the response function.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="qmix.respfn.RespFnPolynomial">
+<em class="property">class </em><code class="descclassname">qmix.respfn.</code><code class="descname">RespFnPolynomial</code><span class="sig-paren">(</span><em>p_order=50</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.respfn.RespFnPolynomial" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#qmix.respfn.RespFn" title="qmix.respfn.RespFn"><code class="xref py py-class docutils literal notranslate"><span class="pre">qmix.respfn.RespFn</span></code></a></p>
+<p>Response function based on the polynomial I-V curve model.</p>
+<p>Class to contain, interpolate and plot the response function.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>p_order</strong> (<em>int</em>) – Order of the polynomial</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-qmix">
+<span id="module-contents"></span><h2>2.7. Module contents<a class="headerlink" href="#module-qmix" title="Permalink to this headline">¶</a></h2>
+<p>Quantum Mixing Software</p>
+<p>QMix is a software package that can be used to simulate Superconductor/
+Insulator/Superconductor (SIS) mixers. It uses multi-tone spectral domain
+analysis, which makes QMix ideal for simulating higher-order harmonics, power
+saturation and wide IF bandwidth devices.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="qmix.exp.html" class="btn btn-neutral float-right" title="2.1.1. qmix.exp package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="setup.html" class="btn btn-neutral" title="1. Getting Started" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, John Garrett
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+    
+
+  
+
+  <script type="text/javascript" src="_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -28,7 +28,7 @@
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="2. Creating a simple simulation" href="single-tone-simple.html" />
+    <link rel="next" title="2. QMix Package" href="qmix.html" />
     <link rel="prev" title="QMix: Quantum Mixing Software" href="index.html" /> 
 
   
@@ -90,9 +90,10 @@
 <li class="toctree-l2"><a class="reference internal" href="#testing-your-installation">1.4. Testing Your Installation</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="single-tone-simple.html">2. Creating a simple simulation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="multi-tone.html">3. Simulating an SIS mixer</a></li>
-<li class="toctree-l1"><a class="reference internal" href="analyze-experimental-data.html">4. Analyzing experimental data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="qmix.html">2. QMix Package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="single-tone-simple.html">3. Example #1: Creating a simple 1 tone simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multi-tone.html">4. Example #2: Simulating an SIS mixer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="references.html">5. References</a></li>
 </ul>
 
             
@@ -175,6 +176,11 @@
 .admonition > p:before {
     margin-right: 4px;  /* make room for the exclamation icon */
 }
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
 </style>
 <div class="section" id="getting-started">
 <h1>1. Getting Started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h1>
@@ -187,7 +193,12 @@
 </div>
 <div class="section" id="downloading-qmix-from-github">
 <h2>1.2. Downloading QMix from GitHub<a class="headerlink" href="#downloading-qmix-from-github" title="Permalink to this headline">¶</a></h2>
-<p>If you want the latest version, you can download QMix from <a class="reference external" href="https://github.com/garrettj403/QMix/">GitHub</a>. In order to clone the repository, open a terminal window, navigate to the directory in which you would like to put QMix, and then run:</p>
+<p>If you want the latest version, you can download QMix from <a class="reference external" href="https://github.com/garrettj403/QMix/">GitHub</a>.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">The instructions below are for macOS. Some of the commands will be slightly different for Windows or Linux.</p>
+</div>
+<p>In order to clone the repository, open a terminal window, navigate to the directory in which you would like to put QMix, and then run:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git clone https://github.com/garrettj403/QMix.git QMix
 </pre></div>
 </div>
@@ -199,12 +210,12 @@
 </div>
 <div class="section" id="configuring-python">
 <h2>1.3. Configuring Python<a class="headerlink" href="#configuring-python" title="Permalink to this headline">¶</a></h2>
-<p>QMix is written using Python version 3.7. If you don’t want to change your Python installation or in case you are missing any packages, I have included a virtual environment file that contains all of the neccesary packages. If you are using the Anaconda package manager, you can run:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda env create -f environment.yml
+<p>QMix is written using Python version 3.7. If you don’t want to change your Python installation or in case you are missing any packages, I have included a virtual environment file that contains all of the necessary packages. If you are using the Anaconda package manager, you can run:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda env create -f environment-qmix.yaml
 </pre></div>
 </div>
 <p>This may take a few minutes. You can then activate the virtual environment using:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">source</span> activate qmix
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda activate qmix
 </pre></div>
 </div>
 </div>
@@ -226,7 +237,7 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="single-tone-simple.html" class="btn btn-neutral float-right" title="2. Creating a simple simulation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="qmix.html" class="btn btn-neutral float-right" title="2. QMix Package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="index.html" class="btn btn-neutral" title="QMix: Quantum Mixing Software" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
@@ -263,7 +274,6 @@
         <script type="text/javascript" src="_static/jquery.js"></script>
         <script type="text/javascript" src="_static/underscore.js"></script>
         <script type="text/javascript" src="_static/doctools.js"></script>
-        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
 
   

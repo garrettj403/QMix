@@ -83,9 +83,10 @@
             
               <ul>
 <li class="toctree-l1"><a class="reference internal" href="setup.html">1. Getting Started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="single-tone-simple.html">2. Creating a simple simulation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="multi-tone.html">3. Simulating an SIS mixer</a></li>
-<li class="toctree-l1"><a class="reference internal" href="analyze-experimental-data.html">4. Analyzing experimental data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="qmix.html">2. QMix Package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="single-tone-simple.html">3. Example #1: Creating a simple 1 tone simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multi-tone.html">4. Example #2: Simulating an SIS mixer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="references.html">5. References</a></li>
 </ul>
 
             
@@ -168,11 +169,16 @@
 .admonition > p:before {
     margin-right: 4px;  /* make room for the exclamation icon */
 }
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
 </style>
 <div class="section" id="qmix-quantum-mixing-software">
 <h1>QMix: Quantum Mixing Software<a class="headerlink" href="#qmix-quantum-mixing-software" title="Permalink to this headline">¶</a></h1>
-<p>QMix is a software package for simulating quasiparticle tunneling currents in Superconductor/Insulator/Superconductor (SIS) junctions. These junctions are commonly used for heterodyne mixing at millimeter and submillimeter wavelengths. QMix can be used to simulate their performance, investigate their experimental results and optimize their operation.</p>
-<p>In order to calculate the quasiparticle tunneling currents, QMix uses <em>multi-tone spectral domain analysis</em> (see references below for more information). Unlike other software packages that are based on perturbation techniques, QMix is ideal for simulating higher-order harmonics, power saturation, subharmonic pumping and frequency multiplication.</p>
+<p>QMix is a software package for simulating the quasiparticle tunneling currents in Superconductor/Insulator/Superconductor (SIS) junctions. These junctions are commonly used for heterodyne mixing at millimeter and submillimeter wavelengths. QMix can be used to simulate the performance of SIS mixers, investigate their experimental results and optimize their operation.</p>
+<p>In order to calculate the quasiparticle tunneling currents, QMix uses <em>multi-tone spectral domain analysis</em> (see references for more information). This makes QMix ideal for simulating higher-order harmonics, power saturation, subharmonic pumping and frequency multiplication.</p>
 <p><strong>Repository address:</strong> <a class="reference external" href="https://github.com/garrettj403/QMix/">https://github.com/garrettj403/QMix/</a></p>
 </div>
 <div class="section" id="contents">
@@ -186,54 +192,43 @@
 <li class="toctree-l2"><a class="reference internal" href="setup.html#testing-your-installation">1.4. Testing Your Installation</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="single-tone-simple.html">2. Creating a simple simulation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="single-tone-simple.html#Generate-the-response-function">2.1. Generate the response function</a></li>
-<li class="toctree-l2"><a class="reference internal" href="single-tone-simple.html#Define-embedding-circuit">2.2. Define embedding circuit</a></li>
-<li class="toctree-l2"><a class="reference internal" href="single-tone-simple.html#Calculate-desired-tunnelling-currents">2.3. Calculate desired tunnelling currents</a></li>
-<li class="toctree-l2"><a class="reference internal" href="single-tone-simple.html#Plot-the-pumped-I-V-curve">2.4. Plot the pumped I-V curve</a></li>
-<li class="toctree-l2"><a class="reference internal" href="single-tone-simple.html#Plot-AC-tunneling-currents">2.5. Plot AC tunneling currents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="qmix.html">2. QMix Package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="qmix.html#subpackages">2.1. Subpackages</a></li>
+<li class="toctree-l2"><a class="reference internal" href="qmix.html#submodules">2.2. Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="qmix.html#module-qmix.circuit">2.3. qmix.circuit module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="qmix.html#module-qmix.harmonic_balance">2.4. qmix.harmonic_balance module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="qmix.html#module-qmix.qtcurrent">2.5. qmix.qtcurrent module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="qmix.html#module-qmix.respfn">2.6. qmix.respfn module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="qmix.html#module-qmix">2.7. Module contents</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="multi-tone.html">3. Simulating an SIS mixer</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="multi-tone.html#Define-junction-properties">3.1. Define junction properties</a></li>
-<li class="toctree-l2"><a class="reference internal" href="multi-tone.html#Define-embedding-circuit">3.2. Define embedding circuit</a></li>
-<li class="toctree-l2"><a class="reference internal" href="multi-tone.html#Generate-response-function">3.3. Generate response function</a></li>
-<li class="toctree-l2"><a class="reference internal" href="multi-tone.html#Perform-harmonic-balance">3.4. Perform harmonic balance</a></li>
-<li class="toctree-l2"><a class="reference internal" href="multi-tone.html#Calculate-tunnelling-currents">3.5. Calculate tunnelling currents</a></li>
-<li class="toctree-l2"><a class="reference internal" href="multi-tone.html#Plot-the-pumped-I-V-curve">3.6. Plot the pumped I-V curve</a></li>
+<li class="toctree-l1"><a class="reference internal" href="single-tone-simple.html">3. Example #1: Creating a simple 1 tone simulation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="single-tone-simple.html#Generate-the-response-function">3.1. Generate the response function</a></li>
+<li class="toctree-l2"><a class="reference internal" href="single-tone-simple.html#Define-embedding-circuit">3.2. Define embedding circuit</a></li>
+<li class="toctree-l2"><a class="reference internal" href="single-tone-simple.html#Calculate-desired-tunnelling-currents">3.3. Calculate desired tunnelling currents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="single-tone-simple.html#Plot-the-pumped-I-V-curve">3.4. Plot the pumped I-V curve</a></li>
+<li class="toctree-l2"><a class="reference internal" href="single-tone-simple.html#Plot-AC-tunneling-currents">3.5. Plot AC tunneling currents</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="analyze-experimental-data.html">4. Analyzing experimental data</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="analyze-experimental-data.html#Import-DC-I-V-data">4.1. Import DC I-V data</a></li>
-<li class="toctree-l2"><a class="reference internal" href="analyze-experimental-data.html#Import-Data-at-230-GHz">4.2. Import Data at 230 GHz</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multi-tone.html">4. Example #2: Simulating an SIS mixer</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="multi-tone.html#Define-junction-properties">4.1. Define junction properties</a></li>
+<li class="toctree-l2"><a class="reference internal" href="multi-tone.html#Define-embedding-circuit">4.2. Define embedding circuit</a></li>
+<li class="toctree-l2"><a class="reference internal" href="multi-tone.html#Generate-response-function">4.3. Generate response function</a></li>
+<li class="toctree-l2"><a class="reference internal" href="multi-tone.html#Perform-harmonic-balance">4.4. Perform harmonic balance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="multi-tone.html#Calculate-tunnelling-currents">4.5. Calculate tunnelling currents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="multi-tone.html#Plot-the-pumped-I-V-curve">4.6. Plot the pumped I-V curve</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="references.html">5. References</a></li>
 </ul>
 </div>
 </div>
-<div class="section" id="references">
-<h1>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h1>
-<p>For more information on QMix:</p>
+<div class="section" id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
 <ul class="simple">
-<li><ol class="first upperalpha" start="10">
-<li>Garrett, <a class="reference external" href="https://ora.ox.ac.uk/objects/uuid:d47fbf3b-1cf3-4e58-be97-767b9893066e">“A 230 GHz Focal Plane Array Using a Wide IF Bandwidth SIS Receiver,”</a> DPhil thesis, University of Oxford, Oxford, UK, 2018.</li>
-</ol>
-</li>
-</ul>
-<p>For more information on multi-tone spectral domain analysis:</p>
-<ul class="simple">
-<li><ol class="first upperalpha" start="16">
-<li>Kittara, “The Development of a 700 GHz SIS Mixer with Nb Finline Devices: Nonlinear Mixer Theory, Design Techniques and Experimental Investigation,” DPhil thesis, University of Cambridge, Cambridge, UK, 2002.</li>
-</ol>
-</li>
-<li><ol class="first upperalpha" start="19">
-<li>Withington, P. Kittara, and G. Yassin, <a class="reference external" href="http://aip.scitation.org/doi/10.1063/1.1576515">“Multitone quantum simulations of saturating tunnel junction mixers,”</a> <em>Journal Applied Physics</em>, vol. 93, no. 12, pp. 9812–9822, Jun. 2003.</li>
-</ol>
-</li>
-<li><ol class="first upperalpha" start="16">
-<li>Kittara, S. Withington, and G. Yassin, <a class="reference external" href="https://aip.scitation.org/doi/10.1063/1.2424407">“Theoretical and numerical analysis of very high harmonic superconducting tunnel junction mixers,”</a> <em>Journal of Applied Physics,</em> vol. 101, no. 2, pp. 024508, Jan. 2007.</li>
-</ol>
-</li>
+<li><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></li>
+<li><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></li>
+<li><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></li>
 </ul>
 </div>
 
@@ -280,7 +275,6 @@
         <script type="text/javascript" src="_static/jquery.js"></script>
         <script type="text/javascript" src="_static/underscore.js"></script>
         <script type="text/javascript" src="_static/doctools.js"></script>
-        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
 
   

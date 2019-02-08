@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>4. Analyzing experimental data &mdash; QMix latest documentation</title>
+  <title>Example #3: Analyzing experimental data &mdash; QMix latest documentation</title>
   
 
   
@@ -27,8 +27,7 @@
   <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" />
-    <link rel="prev" title="3. Simulating an SIS mixer" href="multi-tone.html" /> 
+    <link rel="search" title="Search" href="search.html" /> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -81,18 +80,12 @@
               
             
             
-              <ul class="current">
+              <ul>
 <li class="toctree-l1"><a class="reference internal" href="setup.html">1. Getting Started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="single-tone-simple.html">2. Creating a simple simulation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="multi-tone.html">3. Simulating an SIS mixer</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">4. Analyzing experimental data</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#Import-DC-I-V-data">4.1. Import DC I-V data</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#Import-Data-at-230-GHz">4.2. Import Data at 230 GHz</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#Plot-embedding-impedance">4.2.1. Plot embedding impedance</a></li>
-</ul>
-</li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="qmix.html">2. QMix Package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="single-tone-simple.html">3. Example #1: Creating a simple 1 tone simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multi-tone.html">4. Example #2: Simulating an SIS mixer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="references.html">5. References</a></li>
 </ul>
 
             
@@ -138,7 +131,7 @@
     
       <li><a href="index.html">Docs</a> &raquo;</li>
         
-      <li>4. Analyzing experimental data</li>
+      <li>Example #3: Analyzing experimental data</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -212,18 +205,18 @@ div.nblast {
 
 /* input prompt */
 div.nbinput div.prompt pre {
-    color: #303F9F;
+    color: #307FC1;
 }
 
 /* output prompt */
 div.nboutput div.prompt pre {
-    color: #D84315;
+    color: #BF5B3D;
 }
 
 /* all prompts */
 div.nbinput div.prompt,
 div.nboutput div.prompt {
-    min-width: 8ex;
+    min-width: 5ex;
     padding-top: 0.4em;
     padding-right: 0.4em;
     text-align: right;
@@ -263,9 +256,9 @@ div.nboutput div.output_area {
 
 /* input area */
 div.nbinput div.input_area {
-    border: 1px solid #cfcfcf;
+    border: 1px solid #e0e0e0;
     border-radius: 2px;
-    background: #f7f7f7;
+    background: #f5f5f5;
 }
 
 /* override MathJax center alignment in output cells */
@@ -273,7 +266,7 @@ div.nboutput div[class*=MathJax] {
     text-align: left !important;
 }
 
-/* override sphinx.ext.pngmath center alignment in output cells */
+/* override sphinx.ext.imgmath center alignment in output cells */
 div.nboutput div.math p {
     text-align: left;
 }
@@ -323,6 +316,40 @@ div.nboutput div.output_area.stderr {
 .ansi-bold { font-weight: bold; }
 .ansi-underline { text-decoration: underline; }
 
+/* Some additional styling taken form the Jupyter notebook CSS */
+div.rendered_html table {
+  border: none;
+  border-collapse: collapse;
+  border-spacing: 0;
+  color: black;
+  font-size: 12px;
+  table-layout: fixed;
+}
+div.rendered_html thead {
+  border-bottom: 1px solid black;
+  vertical-align: bottom;
+}
+div.rendered_html tr,
+div.rendered_html th,
+div.rendered_html td {
+  text-align: right;
+  vertical-align: middle;
+  padding: 0.5em 0.5em;
+  line-height: normal;
+  white-space: normal;
+  max-width: none;
+  border: none;
+}
+div.rendered_html th {
+  font-weight: bold;
+}
+div.rendered_html tbody tr:nth-child(odd) {
+  background: #f5f5f5;
+}
+div.rendered_html tbody tr:hover {
+  background: rgba(66, 165, 245, 0.2);
+}
+
 /* CSS overrides for sphinx_rtd_theme */
 
 /* 24px margin */
@@ -339,18 +366,18 @@ div.nboutput div.output_area.stderr {
 .admonition > p:before {
     margin-right: 4px;  /* make room for the exclamation icon */
 }
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
 </style>
-<div class="section" id="Analyzing-experimental-data">
-<h1>4. Analyzing experimental data<a class="headerlink" href="#Analyzing-experimental-data" title="Permalink to this headline">¶</a></h1>
-<p>This notebook will show a brief example of how QMix can be used to
-analyze experimental data. Note that a wide range of parameters can be
-passed to these functions in order to import data that has been stored
-in different formats.</p>
-<p>For the purposes of this notebook, example data has been included in a
-directory called <code class="docutils literal notranslate"><span class="pre">eg-230-data/</span></code>.</p>
+<div class="section" id="Example-#3:-Analyzing-experimental-data">
+<h1>Example #3: Analyzing experimental data<a class="headerlink" href="#Example-#3:-Analyzing-experimental-data" title="Permalink to this headline">¶</a></h1>
+<p>This notebook will show a brief example of how QMix can be used to analyze experimental data. Note that a wide range of parameters can be passed to these functions in order to import data that has been stored in different formats.</p>
+<p>For the purposes of this notebook, example data has been included in a directory called <code class="docutils literal notranslate"><span class="pre">eg-230-data/</span></code>.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
-<span></span>In [1]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
@@ -361,21 +388,16 @@ directory called <code class="docutils literal notranslate"><span class="pre">eg
 </pre></div>
 </div>
 </div>
-<p>There are two main classes that can be used to analyze experimental
-data: - <code class="docutils literal notranslate"><span class="pre">qmix.exp.RawData0</span></code> which is used for DC data (no LO pumping),
-and - <code class="docutils literal notranslate"><span class="pre">qmix.exp.RawData</span></code> which is used to analyze pumped data.</p>
+<p>There are two main classes that can be used to analyze experimental data: - <code class="docutils literal notranslate"><span class="pre">qmix.exp.RawData0</span></code> which is used for DC data (no LO pumping), and - <code class="docutils literal notranslate"><span class="pre">qmix.exp.RawData</span></code> which is used to analyze pumped data.</p>
 <div class="section" id="Import-DC-I-V-data">
-<h2>4.1. Import DC I-V data<a class="headerlink" href="#Import-DC-I-V-data" title="Permalink to this headline">¶</a></h2>
-<p>This class will automatically load, filter, and analyze the DC I-V data.
-It will also automatically correct any offsets in the current or voltage
-data, and calculate the IF noise.</p>
+<h2>Import DC I-V data<a class="headerlink" href="#Import-DC-I-V-data" title="Permalink to this headline">¶</a></h2>
+<p>This class will automatically load, filter, and analyze the DC I-V data. It will also automatically correct any offsets in the current or voltage data, and calculate the IF noise.</p>
 <ul class="simple">
 <li><code class="docutils literal notranslate"><span class="pre">dciv.csv</span></code> is the DC current vs.&nbsp;bias voltage (no LO pumping)</li>
 <li><code class="docutils literal notranslate"><span class="pre">dcif.csv</span></code> is the IF power vs.&nbsp;bias voltage (no LO pumping)</li>
 </ul>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
-<span></span>In [2]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
@@ -409,8 +431,7 @@ DC I-V data:</span>
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
-<span></span>In [3]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
@@ -426,8 +447,7 @@ DC I-V data:</span>
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
-<span></span>In [4]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
@@ -442,12 +462,9 @@ DC I-V data:</span>
 <img alt="_images/analyze-experimental-data_6_0.png" src="_images/analyze-experimental-data_6_0.png" />
 </div>
 </div>
-<p>This plot shows the DC tunnelling current at the origin. This plot can
-be used to ensure that the offsets in the x- and y-direction have been
-corrected properly.</p>
+<p>This plot shows the DC tunnelling current at the origin. This plot can be used to ensure that the offsets in the x- and y-direction have been corrected properly.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
-<span></span>In [5]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
@@ -464,17 +481,11 @@ corrected properly.</p>
 </div>
 </div>
 <div class="section" id="Import-Data-at-230-GHz">
-<h2>4.2. Import Data at 230 GHz<a class="headerlink" href="#Import-Data-at-230-GHz" title="Permalink to this headline">¶</a></h2>
-<p>This class will load data collected at a given frequency. -
-<code class="docutils literal notranslate"><span class="pre">f230.2_iv.csv</span></code> is the pumped I-V curve - <code class="docutils literal notranslate"><span class="pre">f230.2_if-hot.csv</span></code> is the
-IF power measured with the hot load - <code class="docutils literal notranslate"><span class="pre">f230.2_if-cold.csv</span></code> is the IF
-power measured with the cold load</p>
-<p>This class will automatically load, filter and analyze the data. This
-includes calculating the noise temperature and the properties of the
-embedding circuit.</p>
+<h2>Import Data at 230 GHz<a class="headerlink" href="#Import-Data-at-230-GHz" title="Permalink to this headline">¶</a></h2>
+<p>This class will load data collected at a given frequency. - <code class="docutils literal notranslate"><span class="pre">f230.2_iv.csv</span></code> is the pumped I-V curve - <code class="docutils literal notranslate"><span class="pre">f230.2_if-hot.csv</span></code> is the IF power measured with the hot load - <code class="docutils literal notranslate"><span class="pre">f230.2_if-cold.csv</span></code> is the IF power measured with the cold load</p>
+<p>This class will automatically load, filter and analyze the data. This includes calculating the noise temperature and the properties of the embedding circuit.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
-<span></span>In [6]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
@@ -512,8 +523,7 @@ embedding circuit.</p>
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
-<span></span>In [7]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
@@ -529,8 +539,7 @@ embedding circuit.</p>
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
-<span></span>In [8]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
@@ -546,10 +555,9 @@ embedding circuit.</p>
 </div>
 </div>
 <div class="section" id="Plot-embedding-impedance">
-<h3>4.2.1. Plot embedding impedance<a class="headerlink" href="#Plot-embedding-impedance" title="Permalink to this headline">¶</a></h3>
+<h3>Plot embedding impedance<a class="headerlink" href="#Plot-embedding-impedance" title="Permalink to this headline">¶</a></h3>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
-<span></span>In [9]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
@@ -565,8 +573,7 @@ embedding circuit.</p>
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
-<span></span>In [10]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
@@ -590,13 +597,6 @@ embedding circuit.</p>
            
           </div>
           <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-      
-        <a href="multi-tone.html" class="btn btn-neutral" title="3. Simulating an SIS mixer" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
-    </div>
   
 
   <hr/>
@@ -628,7 +628,6 @@ embedding circuit.</p>
         <script type="text/javascript" src="_static/jquery.js"></script>
         <script type="text/javascript" src="_static/underscore.js"></script>
         <script type="text/javascript" src="_static/doctools.js"></script>
-        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
 
   
