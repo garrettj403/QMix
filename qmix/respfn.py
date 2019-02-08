@@ -255,33 +255,33 @@ class RespFnPolynomial(RespFn):
         RespFn.__init__(self, voltage, current, **params)
 
 
-# class RespFnExponential(RespFn):
-#     """Response function based on the exponential I-V curve model.
+class RespFnExponential(RespFn):
+    """Response function based on the exponential I-V curve model.
 
-#     Class to contain, interpolate and plot the response function.
+    Class to contain, interpolate and plot the response function.
 
-#     Ref:
+    Ref:
 
-#         H. Rashid, et al., "Harmonic and reactive behavior of the
-#         quasiparticle tunnel current in SIS junctions," AIP Advances,
-#         vol. 6, 2016.
+        H. Rashid, et al., "Harmonic and reactive behavior of the
+        quasiparticle tunnel current in SIS junctions," AIP Advances,
+        vol. 6, 2016.
 
-#     Args:
-#         vgap (float): Gap voltage (un-normalized)
-#         rsg (float): Sub-gap resistance (un-normalized)
-#         rn (float): Normal resistance (un-normalized)
-#         a (float): Gap smearing parameter (4e4 is typical)
+    Args:
+        vgap (float): Gap voltage (un-normalized)
+        rsg (float): Sub-gap resistance (un-normalized)
+        rn (float): Normal resistance (un-normalized)
+        a (float): Gap smearing parameter (4e4 is typical)
 
-#     """
+    """
 
-#     def __init__(self, vgap=2.8e-3, rn=14, rsg=1000, agap=4e4, **kwargs):
+    def __init__(self, vgap=2.8e-3, rn=14, rsg=1000, agap=4e4, **kwargs):
 
-#         params = _default_params(kwargs, 101, 251)
+        params = _default_params(kwargs, 101, 251)
 
-#         voltage = np.copy(VINIT)
-#         current = iv.exponential(voltage, vgap, rn, rsg, agap)
+        voltage = np.copy(VINIT)
+        current = iv.exponential(voltage, vgap, rn, rsg, agap)
 
-#         RespFn.__init__(self, voltage, current, **params)
+        RespFn.__init__(self, voltage, current, **params)
 
 
 class RespFnPerfect(RespFn):
