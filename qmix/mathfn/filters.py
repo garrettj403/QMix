@@ -1,4 +1,4 @@
-"""Filter cleaning experimental data.
+""" This sub-module contains filters for cleaning experimental data.
 
 """
 
@@ -8,11 +8,12 @@ import numpy as np
 # Filters -------------------------------------------------------------------
 
 def gauss_conv(x, sigma=10, ext_x=3):
-    """Filter data using a Gaussian convolution.
+    """Smooth data using a Gaussian convolution.
 
     Args:
         x (ndarray): noisy data
-        sigma (float): standard deviation of Gaussian curve
+        sigma (float): std. dev. of Gaussian curve, given as number of data 
+                       points
         ext_x (float): Gaussian curve will extend from ext_x * sigma in each
                        direction
 

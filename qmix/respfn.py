@@ -1,13 +1,14 @@
-""" Response function
+""" This module contains classes to represent the response function of the 
+SIS junction.
 
 Upon initialization, these classes will:
 
-   1. Load or calculate the dc I-V curve (imagainary part of resp. func.)
+   1. Load or calculate the DC I-V curve (imagainary part of resp. func.)
 
       - The I-V curve can either be loaded from a csv file or generated from
         an I-V curve model (e.g., polynomial model, exponential model, etc.),
 
-   2. Calculate the Kramers-Kronig transform of the dc I-V curve
+   2. Calculate the Kramers-Kronig transform of the DC I-V curve
 
    3. Setup the density of data points to optimize interpolation
 
@@ -23,9 +24,10 @@ Upon initialization, these classes will:
    5. Determine the derivative of the I-V curve and the KK transform based on
       the spline fits
 
-Then when needed, the classes allow the user to interpolated the dc I-V curve,
+Then when needed, the classes allow the user to interpolated the DC I-V curve,
 the KK transform, the derivative of the I-V curve, the derivative of the KK
-transform, or the response function (a complex value).
+transform, or the response function (a complex value). This is set up to run
+very quickly.
 
 """
 
@@ -49,9 +51,9 @@ VINIT.flags.writeable = False
 # Generate response function -------------------------------------------------
 
 class RespFn(object):
-    """ Response function (for pre-processed data)
+    """ Generate the response function from pre-processed I-V data.
 
-    Class to contain, interpolate and plot the response function.
+    This is a class to contain, interpolate and plot the response function.
 
     Note:
 
@@ -63,6 +65,9 @@ class RespFn(object):
     Args:
         voltage (ndarray): normalized voltage
         current (ndarray): normalized current
+
+    Keyword arguments:
+        verbose: set to True to print to terminal
 
     """
 
@@ -104,7 +109,7 @@ class RespFn(object):
         self.current_kk = current_kk
 
     def show_current(self, fig_name=None, ax=None):  # pragma: no cover
-        """Plot the dc I-V and KK current.
+        """Plot the DC I-V and KK current.
 
         Args:
             fig_name (string): figure name if saved
@@ -231,7 +236,7 @@ class RespFnFromIVData(RespFn):
 # Generate from other I-V curve models ---------------------------------------
 
 class RespFnPolynomial(RespFn):
-    """Response function based on the polynomial i-v curve model.
+    """Response function based on the polynomial I-V curve model.
 
     Class to contain, interpolate and plot the response function.
 
@@ -250,37 +255,37 @@ class RespFnPolynomial(RespFn):
         RespFn.__init__(self, voltage, current, **params)
 
 
-class RespFnExponential(RespFn):
-    """Response function based on the exponential i-v curve model.
+# class RespFnExponential(RespFn):
+#     """Response function based on the exponential I-V curve model.
 
-    Class to contain, interpolate and plot the response function.
+#     Class to contain, interpolate and plot the response function.
 
-    Ref:
+#     Ref:
 
-        H. Rashid, et al., "Harmonic and reactive behavior of the
-        quasiparticle tunnel current in SIS junctions," AIP Advances,
-        vol. 6, 2016.
+#         H. Rashid, et al., "Harmonic and reactive behavior of the
+#         quasiparticle tunnel current in SIS junctions," AIP Advances,
+#         vol. 6, 2016.
 
-    Args:
-        vgap (float): Gap voltage (un-normalized)
-        rsg (float): Sub-gap resistance (un-normalized)
-        rn (float): Normal resistance (un-normalized)
-        a (float): Gap smearing parameter (4e4 is typical)
+#     Args:
+#         vgap (float): Gap voltage (un-normalized)
+#         rsg (float): Sub-gap resistance (un-normalized)
+#         rn (float): Normal resistance (un-normalized)
+#         a (float): Gap smearing parameter (4e4 is typical)
 
-    """
+#     """
 
-    def __init__(self, vgap=2.8e-3, rn=14, rsg=1000, agap=4e4, **kwargs):
+#     def __init__(self, vgap=2.8e-3, rn=14, rsg=1000, agap=4e4, **kwargs):
 
-        params = _default_params(kwargs, 101, 251)
+#         params = _default_params(kwargs, 101, 251)
 
-        voltage = np.copy(VINIT)
-        current = iv.exponential(voltage, vgap, rn, rsg, agap)
+#         voltage = np.copy(VINIT)
+#         current = iv.exponential(voltage, vgap, rn, rsg, agap)
 
-        RespFn.__init__(self, voltage, current, **params)
+#         RespFn.__init__(self, voltage, current, **params)
 
 
 class RespFnPerfect(RespFn):
-    """Response function based on the perfect i-v curve model.
+    """Response function based on the perfect I-V curve model.
 
     Class to contain, interpolate and plot the response function.
 

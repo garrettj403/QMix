@@ -1,4 +1,10 @@
-"""Import/analyze IV data.
+""" This sub-module contains functions for importing and analyzing 
+experimental I-V data measurements.
+
+"I-V data" is the DC tunneling current versus DC bias voltage that is measured
+from the SIS device. In general, I use the term "DC I-V data" for I-V data
+that is collected with no LO present, and "I-V data" for I-V data that is
+collected with the LO present (also known as the "pumped I-V curve").
 
 """
 
@@ -15,7 +21,10 @@ from qmix.mathfn.misc import slope
 
 filterwarnings(action="ignore", module="scipy", message="^internal gelsd")
 
+# Voltage units
 _vfmt_dict = {'uV': 1e-6, 'mV': 1e-3, 'V': 1}
+
+# Current units
 _ifmt_dict = {'uA': 1e-6, 'mA': 1e-3, 'A': 1}
 
 
@@ -28,37 +37,35 @@ DCIVData = namedtuple('DCIVData', ['vraw', 'iraw', 'vnorm', 'inorm', 'vgap',
 
 
 def dciv_curve(filename, **kwargs):
-    """Import and analyze dc I-V data (i.e., unpumped I-V curve).
+    """Import and analyze DC I-V data (i.e., the unpumped I-V curve).
 
     Args:
-        filename (str): dc I-V filename (csv, 2 columns, no header)
-        **kwargs: keyword arguments (see below)
+        filename (str): DC I-V curve filename
+        **kwargs: keyword arguments
 
     Keyword Args:
-        v_fmt: voltage units ('mV', 'V', etc.)
-        i_fmt: current units ('uA', 'mA', etc.)
-        usecols: list of columns to use (tuple of length 2)
-        filter_data: filter data?
-        vgap_guess: guess of gap voltage (used to temporarily normalize)
-        igap_guess: guess of gap current (used to temporarily normalize)
-        filter_nwind: SG filter window size
-        filter_npoly: SG filter order
-        filter_theta: angle to rotate data by during filtering
-        npts: number of points to output
-        voffset: voltage offset, in V
-        ioffset: current offset, in A
-        voffset_range: voltage range to search for offset, in V
-        voffset_sigma: std dev of Gaussian filter when searching for offset
-        rn_vmin: lower voltage range to determine the normal resistance
-        rn_vmax: upper voltage range to determine the normal resistance
+        v_fmt (str): units for voltage ('uV', 'mV', 'V')
+        i_fmt (str): units for current ('uA', 'mA', 'A')
+        usecols (tuple): list of columns to import (tuple of length 2)
+        filter_data (bool): filter data?
+        vgap_guess (float): guess of gap voltage
+        igap_guess (float): guess of gap current
+        filter_nwind (int): SG filter window size
+        filter_npoly (int): SG filter order
+        filter_theta (float): angle to rotate data by during filtering
+        npts (int): number of points to output
+        voffset (float): voltage offset, in V
+        ioffset (float): current offset, in A
+        voffset_range (float): voltage range to search for offset, in V
+        voffset_sigma (float): std dev of Gaussian filter when searching for offset
+        rn_vmin (float): lower voltage range to determine the normal resistance
+        rn_vmax (float): upper voltage range to determine the normal resistance
         current_threshold (float): the current at the gap voltage
-        vrsg: the voltage to calculate the subgap resistance at
+        vrsg (float): the voltage to calculate the subgap resistance at
         rseries (float): series resistance, in ohms
 
     Returns:
-        ndarray: normalized voltage
-        ndarray: normalized current
-        class: struct for DC I-V data
+        tuple: normalized voltage, normalized current, DC I-V metadata
 
     """
 
@@ -117,29 +124,25 @@ def dciv_curve(filename, **kwargs):
 
 
 def iv_curve(filename, dc, **kwargs):
-    """Load and analyze a pumped I-V curve.
+    """Load and analyze pumped I-V curve data.
 
     Args:
-        filename: I-V filename (csv, 2 columns, no header)
-        dc: DC data structure
-        **kwargs: keyword arguments (see below)
+        filename (str): I-V filename
+        dc (qmix.exp.iv_data.DCIVData): DC data structure
+        **kwargs: keyword arguments
 
     Keyword Args:
-        v_fmt: voltage units ('mV', 'V', etc.)
-        i_fmt: current units ('uA', 'mA', etc.)
-        usecols: list of columns to use (tuple of length 2)
-        filter_data: filter data?
-        vgap_guess: guess of gap voltage (used to temporarily normalize)
-        igap_guess: guess of gap current (used to temporarily normalize)
-        filter_nwind: SG filter window size
-        filter_npoly: SG filter order
-        filter_theta: angle to rotate data by during filtering
-        npts: number of points to output
+        v_fmt (str): units for voltage ('uV', 'mV', 'V')
+        i_fmt (str): units for current ('uA', 'mA', 'A')
+        usecols (tuple): list of columns to import (tuple of length 2)
+        filter_data (bool): filter data?
+        filter_nwind (int): SG filter window size
+        filter_npoly (int): SG filter order
+        filter_theta (float): angle to rotate data by during filtering
+        npts (int): number of points to output
 
     Returns:
-        ndarray: normalized voltage
-        ndarray: normalized current
-        class: struct for DC I-V data
+        tuple: normalized voltage, normalized current
 
     """
 

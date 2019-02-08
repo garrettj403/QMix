@@ -1,23 +1,11 @@
-"""Calculate quasiparticle tunneling currents using spectral domain analysis.
+""" This module contains functions to calculate the quasiparticle tunneling 
+currents passing through an SIS junction. 
 
-This module is suitable for higher-order harmonics and multiple strong LO 
-tones.
+**Description**
 
-References:
-   - Withington, S., and Erik L. Kollberg. Spectral-domain analysis of harmonic
-     effects in superconducting quasiparticle mixers. IEEE transactions on
-     microwave theory and techniques 37.1 (1989): 231-238.
-   - P. Kittara, The Development of a 700 GHz SIS Mixer with Nb Finline
-     Devices: Nonlinear Mixer Theory, Design Techniques and Experimental
-     Investigation, DPhil thesis, Univ. of Cambridge, 2002.
-
-Note:
-   - This module can handle up to 4 tones.
-   - I used P. Kittara's thesis as a references. I refer to equations in this
-     thesis periodically in my comments.
-   - All values are normalized in this module. I.e., voltages are normalized to
-     the gap voltage, frequencies are normalized to the gap frequency (a.k.a.,
-     photon voltage), etc.
+    Given the voltages applied across an SIS junction, the quasiparticle 
+    tunneling currents can be calculated using multi-tone spectral domain 
+    analysis (MTSDA; see references in online docs). 
 
 """
 
@@ -37,25 +25,43 @@ ROUND_VPH = 4
 
 # Determine the dc/ac tunneling currents -------------------------------------
 
-def qtcurrent(vj, cct, resp, vph_list, num_b=15, verbose=True, resp_matrix=None):
-    """Calculate the quasiparticle tunnelling current.
+# Note: I reference equations from Kittara (2002) in some of my comments.
 
-    This function will return the tunneling current for all of the normalized
-    photon voltages listed in vph_list. E.g., to solve for the dc tunneling
-    current and the ac tunnelling current at 230 GHz, the ``vph_list`` would 
-    be ``[0, 230e9 / fgap]`` where ``fgap`` is the gap frequency.
+# Note: All values in this module are normalized. I.e., voltages are 
+#       normalized to the gap voltage, frequencies are normalized to the gap 
+#       frequency, etc.
+
+def qtcurrent(vj, cct, resp, vph_list, num_b=15, verbose=True, resp_matrix=None):
+    """Calculate the quasiparticle tunneling current.
+
+    This function uses multi-tone spectral domain analysis (MTSDA; see 
+    references in online docs). The current is calculated based on the
+    voltage applied across the junction.
+
+    Note:
+
+        This function will return the tunneling current for all of the 
+        normalized photon voltages listed in vph_list. E.g., to solve for the 
+        dc tunneling current and the ac tunneling current at 230 GHz, the 
+        ``vph_list`` would  be ``[0, 230e9 / fgap]`` where ``fgap`` is the gap
+        frequency.
+
+        Maximum of 4 fundamental tones.
 
     Args:
-        vj (ndarray): Voltage across junction
-        cct (class): Embedding circuit
-        resp (class): Response function
-        vph_list: List of photon voltage to determine the currents for
+        vj (ndarray): Voltage across the SIS junction
+        cct (qmix.circuit.EmbeddingCircuit): Embedding circuit
+        resp (qmix.respfn.RespFn): Response function
+        vph_list: Calculate the tunneling currents for these photon voltages 
+            (i.e., frequencies)
+
+    Keyword arguments:
         num_b (float_or_tuple): Number of Bessel functions to include
         verbose (bool): Print to the terminal if true
         resp_matrix (ndarray): The interpolated response function matrix
 
     Returns:
-        ndarray: Tunnelling current
+        ndarray: Tunneling current
 
     """
 
@@ -141,19 +147,21 @@ def qtcurrent(vj, cct, resp, vph_list, num_b=15, verbose=True, resp_matrix=None)
 # on the needs of other functions/modules).
 
 def qtcurrent_all_freq(vj, cct, resp, num_b=15):
-    """Calculate the ac tunneling currents for all tones and harmonics.
+    """Calculate the AC tunneling current for all tones and all harmonics.
 
-    This function will return the tunneling current in a 3-D array
-    (num_f+1)x(num_p+1)x(npts).
+    This function will return the tunneling current in a 3-D array: 
+    (num_f+1) x (num_p+1) x (npts).
 
     Args:
         vj (ndarray): Voltage across the junction
-        cct (class): Embedding circuit class
-        resp (class): Response function
+        cct (qmix.circuit.EmbeddingCircuit): Embedding circuit class
+        resp (qmix.respfn.RespFn): Response function
+
+    Keyword arguments:
         num_b (int_or_tuple): Number of Bessel functions to include
 
     Returns:
-        ndarray: Tunnelling current in a 3-D array (num_f+1)x(num_p+1)x(npts)
+        ndarray: Tunneling current
 
     """
 
@@ -176,14 +184,18 @@ def qtcurrent_all_freq(vj, cct, resp, num_b=15):
 def qtcurrent_std(vj, cct, resp, num_b=15):
     """Calculate the 'standard' tunneling currents: DC, LO and IF.
 
-    Assumes that cct.vph[1]->LO, cct.vph[2]->RF, and LO-SF->IF.
+    Assumes that ``cct.vph[1]`` is the LO signal, 
+    ``cct.vph[2]`` is the RF signal, and that
+    ``cct.vph[2] - cct.vph[1]`` is the frequency of the IF signal.
 
     The simulation can have 2, 3, or 4 tones.
 
     Args:
         vj (ndarray): Voltage across the junction
-        cct (class): Embedding circuit
-        resp (class): Response function
+        cct (qmix.circuit.EmbeddingCircuit): Embedding circuit
+        resp (qmix.respfn.RespFn): Response function
+
+    Keyword arguments:
         num_b (int_or_tuple): Number of Bessel functions to include
 
     Returns:
@@ -226,9 +238,14 @@ def qtcurrent_std(vj, cct, resp, num_b=15):
 def interpolate_respfn(cct, resp, num_b):
     """Interpolate the response function at all necessary voltages.
 
+    I have included this as a stand-alone function because if you are going
+    to be running ``qtcurrent`` over and over again with the same input 
+    signal frequencies, it can save time by pre-interpolating the response 
+    function.
+
     Args:
-        cct (class): Embedding circuit
-        resp (class): Response function
+        cct (qmix.circuit.EmbeddingCircuit): Embedding circuit
+        resp (qmix.respfn.RespFn): Response function
         num_b (int/tuple): Number of Bessel functions to include.
 
     Returns:

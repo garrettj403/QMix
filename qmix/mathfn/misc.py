@@ -1,16 +1,16 @@
-"""Various math functions that do various things, variously.
+""" This sub-module contains various mathematical functions that do various 
+things, variously.
 
 """
 
 import numpy as np
 
 
-# Simple derivatives ---------------------------------------------------------
-
 def slope(x, y):
-    """Take a simple derivative, dy/dx.
+    """ Take a simple derivative, dy/dx.
 
-    The derivative is centered and it is the same number of points as x/y.
+    The derivative is centered and it has the same number of points as the 
+    original x/y data.
 
     Args:
         x (ndarray): x data
@@ -37,8 +37,11 @@ def slope(x, y):
 def slope_span_n(x, y, n=11, nozeros=True):
     """Simple derivative, except the derivative is over a -N/2 to N/2 span.
 
-    Helps with noisy data. Also deletes zero values since the results of this
-    function are usually used to divide other values.
+    This helps with noisy data. 
+
+    This function also deletes zero values since the results of this
+    function are usually used to divide other values (i.e., to avoid div. 0 
+    errors).
 
     Args:
         x (ndarray): x data

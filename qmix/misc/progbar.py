@@ -1,4 +1,5 @@
-"""Print a progress bar to the console.
+""" This sub-module contains a function for printing a progress bar to the 
+terminal.
 
 Taken from:
 
@@ -11,11 +12,13 @@ import sys
 
 def progress_bar(iteration, total, prefix='Progress:', suffix='Complete',
                  decimals=2, bar_length=20):
-    """Create progress bar.
+    """Generate a progress bar.
 
     Args:
         iteration (int): current iteration
         total (int): total iterations
+
+    Keyword Args:
         prefix (str): prefix string
         suffix (str): suffix string
         decimals (int): number of decimals in percent complete

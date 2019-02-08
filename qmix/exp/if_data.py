@@ -1,6 +1,7 @@
-"""Import and analyze IF data.
+""" This sub-module contains functions for importing and analyzing 
+experimental IF power measurements.
 
-The IF data is the IF output power versus bias voltage.
+The "IF data" is the IF output power from the SIS device versus bias voltage.
 
 """
 
@@ -16,6 +17,7 @@ from qmix.mathfn import slope_span_n
 from qmix.mathfn.filters import gauss_conv
 
 
+# Voltage units
 _vfmt_dict = {'uV': 1e-6, 'mV': 1e-3, 'V': 1}
 
 
@@ -26,24 +28,25 @@ DCIFData = namedtuple('DCIFData', ['if_noise', 'corr', 'if_fit', 'shot_slope', '
 
 
 def dcif_data(dcif_file, dc, **kwargs):
-    """Analyze results from a hot/cold load experiment.
+    """Analyze DC IF measurements.
+
+    This is the IF data that is measured with no LO present. This data is
+    used to analyze the shot noise, which can then be used to convert the IF 
+    data into units 'K' and estimate the IF noise component.
 
     Args:
-        dcif_file: IF filename (no LO)
-        dc: DC data structure
-        **kwargs: keyword arguments (see below)
+        dcif_file (str): DC IF filename (no LO present)
+        dc (qmix.exp.iv_data.DCIVData): DC I-V data structure
+        **kwargs: keyword arguments
 
-    Keyword Args:
+    Keyword arguments:
         v_fmt (str): voltage units ('mV', 'V', etc.)
         vmax (str): maximum voltage (in case the data is saturated above some
             value)
 
     Returns:
-        ndarray: dc IF data
-        float: IF noise contribution
-        float: A.U. to K correction factor
-        ndarray: shot noise slope data
-        bool: good fit to IF noise?
+        tuple: DC IF data, IF noise contribution, A.U. to K correction factor,
+        shot noise slope data, good fit to IF noise?
 
     """
 
@@ -60,24 +63,22 @@ def dcif_data(dcif_file, dc, **kwargs):
 
 
 def if_data(hot_filename, cold_filename, dc, **kwargs):
-    """Analyze results from a hot/cold load experiment.
+    """Analyze IF measurements from a hot/cold load experiment.
 
     Args:
-        hot_filename: Hot IF filename
-        cold_filename: Cold IF filename
-        dc: DC IF data structure
-        freq: Frequency in GHz
-        kwargs: Keyword arguments
+        hot_filename (str): Hot load IF measurement filename
+        cold_filename (str): Cold load IF measurement filename
+        dc (qmix.exp.iv_data.DCIVData): DC I-V data structure
+        **kwargs: Keyword arguments
+
+    Keyword arguments:
+        freq: Frequency in units GHz
+        dcif (qmix.exp.if_data.DCIFData): DC IF data structure
 
     Returns:
-        ndarray: Hot IF data
-        ndarray: Cold IF data
-        ndarray: Noise temperature
-        ndarray: Gain
-        int: Index of best noise temperature
-        float: IF noise contribution
-        bool: Good fit to IF noise?
-        ndarray: Shot noise slope
+        tuple: Hot IF data, Cold IF data, Noise temperature, Gain, Index of 
+        best noise temperature, IF noise contribution, Good fit to IF noise?, 
+        Shot noise slope
 
     """
 
@@ -282,14 +283,22 @@ def _find_if_noise(if_data, dc, vshot=None, **kw):
 # Import IF data -------------------------------------------------------------
 
 def load_if(filename, dc, **kwargs):
-    """Load IF data.
+    """Import IF measurement data.
 
     Args:
-        filename: filename
-        dc: DC data structure 
-        kwargs: Keyword arguments
+        filename (str): filename
+        dc (qmix.exp.iv_data.DCIVData): DC data structure 
+        **kwargs: Keyword arguments
 
-    Returns: IF data matrix
+    Keyword arguments:
+        delim (str): delimiter used in data files
+        v_fmt (str): units for voltage ('V', 'mV', 'uV')
+        usecols (tuple): columns for voltage and current (e.g., ``(0,1)``)
+        sigma (float): convolve IF data by Gaussian with this std dev
+        npts (float): evenly interpolate data to have this many data points
+        rseries (float): series resistance of measurement system
+
+    Returns: IF data (matrix form)
 
     """
 

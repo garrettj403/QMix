@@ -1,14 +1,23 @@
-""" Harmonic balance
+""" This module contains functions to perform harmonic balance of non-linear 
+SIS mixer circuits. 
 
-Functions for determining the harmonic balance of non-linear SIS mixer
-circuits. Uses Newton's method to find the solution numerically.
+**Description**
+
+    Each signal that is applied to an SIS junction can be represented by a 
+    Thevenin equivalent circuit (see qmix.circuit). This circuit will then 
+    induce a voltage across the SIS junction. The exact voltage that is 
+    induced depends on the impedance of the SIS junction. However, this 
+    impedance changes depending on the other signals that are applied to 
+    the junction. 
+
+    Harmonic balance is a procedure to solve for the voltage across the SIS
+    junction for each signal that is applied to the junction. This techniques 
+    uses Newton's method to find the solution numerically.
 
 """
 
 import qmix
 import numpy as np
-# from scipy.special import jv
-# from qmix.misc.terminal import cprint
 from timeit import default_timer as timer
 from qmix.misc.progbar import progress_bar
 from qmix.qtcurrent import qtcurrent_all_freq, interpolate_respfn
@@ -31,16 +40,19 @@ ROUND_VPH = 4
 def harmonic_balance(cct, resp, num_b=15, max_it=10, stop_rerror=0.001, vj_initial=None, damp_coeff=1., mode="o", verbose=True):
     """Perform harmonic balance.
 
-    Determine the harmonic balance of the junction + Thevenin voltages and
-    impedances. Uses Newton's method to find the solution. See Kittara's
-    thesis or Withington and Kollberg 1989.
+    Determine the harmonic balance of the junction + embedding circuit system. 
+    Uses Newton's method to find the solution. For more information, see 
+    Garrett (2018); Kittara (2002); Kittara, Winthington & Yassin (2007); or 
+    Withington, Kittara & Yassin (2003). [Full references in online docs.]
 
     Args:
-        cct (class): Embedding circuit
-        resp (class): Response function
+        cct (qmix.circuit.EmbeddingCircuit): Embedding circuit
+        resp (qmix.respfn.RespFn): Response function
+
+    Keyword arguments:
         num_b (int_or_tuple): Number of Bessel functions to include
         max_it (int): Maximum number of iterations
-        stop_rerror (float): Maximum relative error to simulation to stop
+        stop_rerror (float): Maximum acceptable relative error
         vj_initial (ndarray): Initial guess of junction voltage (vj)
         damp_coeff (float): Dampening coefficient for correction factor (0-1)
         mode (string): output vj ('o'), print ('p'), output extra data ('x')
@@ -217,17 +229,19 @@ def harmonic_balance(cct, resp, num_b=15, max_it=10, stop_rerror=0.001, vj_initi
 # for debugging purposes to ensure that everything was done properly.
 
 
-def check_hb_error(vj_check, cct, resp, num_b, stop_rerror=0.001):
-    """Check the results from harmonic_balance.
+def check_hb_error(vj_check, cct, resp, num_b=15, stop_rerror=0.001):
+    """Check the results from the `harmonic_balance` function.
 
     Just to double check. Mostly for debugging purposes.
 
     Args:
         vj_check (ndarray): The voltage across junction to check
-        cct (class): Embedding circuit
-        resp (class): Response function
-        num_b: Number of Bessel functions
-        stop_rerror (float): Maximum relative error to simulation to stop
+        cct (qmix.circuit.EmbeddingCircuit): Embedding circuit
+        resp (qmix.respfn.RespFn): Response function
+
+    Keyword arguments:
+        num_b: Number of Bessel functions to include
+        stop_rerror (float): Maximum acceptable relative error
 
     Raises:
         AssertionError: If the stop error is not met

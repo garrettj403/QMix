@@ -1,17 +1,21 @@
-"""Analyze experimental SIS data.
+""" This module contains functions and classes for analyzing experimental data
+from an SIS device.
 
 This module contains functions related to importing, cleaning and analyzing raw
-I-V and IF data obtained from SIS mixer experiments. Two classes ("RawData0" 
-and "RawData") are provided to help manage the data.
+I-V and IF data obtained from SIS mixer experiments. Two classes (``RawData0``
+and ``RawData``) are provided to help manage the data. ``RawData0`` is 
+intended for data that was collected with no LO present (i.e., unpumped data),
+and ``RawData`` is intended for data that was collected with LO pumping (i.e.,
+pumped data).
 
-Notes:
+Note:
 
     - These functions assume that you are importing data that has been
-    stored in a very specific format. Take a look at the data in
-    ``workflow-examples/eg-230-data/`` for an example.
+      stored in a very specific format. Take a look at the data in
+      ``QMix/examples/eg-230-data/`` for an example.
     
-    - See ``workflows/analyze-experimental-data.ipynb`` for an example of how 
-    to use this module.
+    - See ``QMix/examples/analyze-experimental-data.ipynb`` for an example of 
+      how to use this module.
 
 """
 
@@ -54,17 +58,23 @@ _plot_params = {'dpi': 500, 'bbox_inches': 'tight'}
 # Note: All plotting functions are excluded from coverage tests 
 # by using:  "# pragma: no cover"
 
+# TODO: Fix docstrings (esp. keyword args)
+
 
 # CLASSES FOR RAW DATA -------------------------------------------------------
 
 class RawData0(object):
-    """Class for DC experimental data (ie., unpumped).
+    """Class for experimental DC data (i.e., no LO present).
+
+    Note:
+
+        See ``qmix.exp.parameters.params`` for all possible keyword arguments.
 
     Args:
         dciv_file: file path for unpumped I-V data
-        dcif_file: file path for unpumped IF data
 
     Keyword arguments:
+        dcif_file (str): file path for unpumped IF data
         area (float): area of the junction in um^2 (default is 1.5)
         comment (str): add comment to this instance (default is '')
         filter_data (bool): smooth/filter the I-V data (default is True)
@@ -395,13 +405,25 @@ class RawData0(object):
         self.plot_if_noise(fig_folder + '01_dciv/dcif-shot-noise.png', **kw)
 
 class RawData(object):
-    """Class for experimental pumped I-V data.
+    """Class for experimental pumped data (i.e., LO present).
+
+    Note:
+
+        See ``qmix.exp.parameters.params`` for all possible keyword arguments.
 
     Args:
-        iv_file: file path to pumped I-V data
-        dciv: DC I-V data class (i.e., result of RawData_dc)
-        if_hot_file: file path to hot IF data
-        if_cold_file: file path to cold IF data
+        iv_file (str): file path to pumped I-V data
+        dciv (qmix.exp.iv_data.DCIVData): DC I-V metadata
+
+    Keyword Args:
+        if_hot_file (str): file path to hot IF data
+        if_cold_file (str): file path to cold IF data
+        comment (str): description of this data (optional)
+        freq (float): frequency of LO, in units [GHz]
+        analyze (bool): analyze data?
+        analyze_if (bool): analyze IF data?
+        analyze_iv (bool): analyze I-V data?
+        verbose (bool): print to terminal?
 
     """
 
@@ -514,11 +536,15 @@ class RawData(object):
             print("")
 
     def _recover_zemb(self, **kwargs):
-        """Recover the embedded impedance (a.k.a., the Thevenin impedance).
+        """Recover the embedding impedance (i.e., the Thevenin impedance).
 
-        Note that all currents and voltages are normalized to the gap voltage 
-        and to the normal resistance. The technique used here is RF voltage 
-        match method described by Skalare (1989) and Withington et al. (1995).
+        Note: 
+
+            All currents and voltages are normalized to the gap voltage and 
+            to the normal resistance, respectively. 
+
+            The technique used here is the RF voltage match method described 
+            by Skalare (1989) and Withington et al. (1995).
 
         Args:
             kwargs: Keyword arguments
@@ -1208,7 +1234,7 @@ def _db_to_lin(db):
 
 
 def plot_if_spectrum(data_folder, fig_folder=None, figsize=None):  # pragma: no cover
-    """Plot all IF spectra.
+    """Plot all IF spectra within data_folder.
 
     Args:
         data_folder: data folder
@@ -1322,164 +1348,6 @@ def plot_overall_results(dciv, data_list, fig_folder, vmax_plot=4., figsize=None
     ua = dciv.igap * 1e6 
     imax_plot = np.interp(vmax_plot, dciv.voltage * mv, dciv.current * ua)
 
-    # Plot all pumped iv curves -----------------------------------------------
-
-    fig, ax = plt.subplots(figsize=figsize)
-    ax.plot(dciv.voltage * mv, dciv.current * ua, 'k')
-    for i, data in enumerate(data_list):
-        ax.plot(data.voltage * mv, data.current * ua,
-                color=plt.cm.winter(i / num_data),
-                label=data.freq)
-    if f_range is not None:
-        ax.set_xlim([f_range[0], f_range[1]])
-    ax.set_xlabel(r'Voltage (mV)')
-    ax.set_ylabel(r'Current (uA)')
-    ax.set_xlim([0, vmax_plot])
-    ax.set_ylim([0, imax_plot])
-    ax.legend(fontsize=8, title='LO (GHz)', frameon=False)
-    fig.savefig(fig_folder + 'iv_curves.png')
-    plt.close(fig)
-
-    # Plot dynamic resistance -------------------------------------------------
-
-    fig, ax = plt.subplots(figsize=figsize)
-    ax.plot(freq, rdyn, **plotparam)
-    if f_range is not None:
-        ax.set_xlim([f_range[0], f_range[1]])
-    ax.set_xlabel('Frequency (GHz)')
-    ax.set_ylabel(r'Dynamic resistance ($\Omega$)')
-    ax.set_ylim(bottom=0)
-    fig.savefig(fig_folder + 'rdyn.png')
-    plt.close(fig)
-
-    # Plot noise temperature results ------------------------------------------
-
-    fig, ax = plt.subplots(figsize=figsize)
-    ax.plot(freq, t_n, color=_blue, **plotparam)
-    ax.set_xlabel('Frequency (GHz)')
-    ax.set_ylabel('Noise Temperature (K)')
-    if f_range is not None:
-        ax.set_xlim([f_range[0], f_range[1]])
-    if tn_max is None:
-        ax.set_ylim(bottom=0)
-    else:
-        ax.set_ylim([0, tn_max])
-    ax.grid()
-    fig.savefig(fig_folder + 'noise_temperature.png')
-    plt.close(fig)
-
-    # Plot noise temperature with spline fit ----------------------------------
-
-    fig, ax = plt.subplots(figsize=figsize)
-    freq_t = np.linspace(np.min(freq), np.max(freq), 1001)
-    sp_1 = UnivariateSpline(freq, t_n)
-    ax.plot(freq, t_n, 'o', color=_blue)
-    ax.plot(freq_t, sp_1(freq_t), '--', color=_blue)
-    ax.set_xlabel('Frequency (GHz)')
-    ax.set_ylabel('Noise Temperature (K)')
-    if f_range is not None:
-        ax.set_xlim([f_range[0], f_range[1]])
-    if tn_max is None:
-        ax.set_ylim(bottom=0)
-    else:
-        ax.set_ylim([0, tn_max])
-    ax.grid()
-    fname = fig_folder + 'noise_temperature_spline_fit.png'
-    fig.savefig(fname)
-    plt.close(fig)
-
-    # Plot noise temperature and gain -----------------------------------------
-
-    fig, ax1 = plt.subplots(figsize=figsize)
-    ax1.plot(freq, t_n, c=_pale_red, **plotparam)
-    ax1.set_xlabel('Frequency (GHz)')
-    ax1.set_ylabel('Noise Temperature (K)', color=_pale_red)
-    if f_range is not None:
-        ax1.set_xlim([f_range[0], f_range[1]])
-    if tn_max is None:
-        ax1.set_ylim(bottom=0)
-    else:
-        ax1.set_ylim([0, tn_max])
-    for tl in ax1.get_yticklabels():
-        tl.set_color(_pale_red)
-    ax2 = ax1.twinx()
-    ax2.plot(freq, gain, c=_blue, **plotparam)
-    ax2.set_ylabel('Gain (dB)', color=_blue)
-    for tl in ax2.get_yticklabels():
-        tl.set_color(_blue)
-    fig.savefig(fig_folder + 'noise_temperature_and_gain.png')
-    plt.close(fig)
-
-    # Plot IF noise contribution results --------------------------------------
-
-    fig, ax = plt.subplots(figsize=figsize)
-    ax.plot(if_noise_f, if_noise, 'o--', color=_pale_red)
-    if f_range is not None:
-        ax.set_xlim([f_range[0], f_range[1]])
-    ax.set_xlabel('Frequency (GHz)')
-    ax.set_ylabel(r'IF Noise Contribution (K)')
-    ax.set_ylim(bottom=0)
-    fname = fig_folder + 'if_noise.png'
-    fig.savefig(fname)
-    plt.close(fig)
-
-    # Plot embedding impedance results ----------------------------------------
-
-    fig, ax = plt.subplots(figsize=figsize)
-    ax.plot(f_z, z.real, c=_pale_blue, label='Real', **plotparam)
-    ax.plot(f_z, z.imag, c=_pale_red, label='Imaginary', **plotparam)
-    if f_range is not None:
-        ax.set_xlim([f_range[0], f_range[1]])
-    ax.set_xlabel('Frequency (GHz)')
-    ax.set_ylabel(r'Embedding Impedance ($\Omega$)')
-    ax.legend(frameon=False)
-    ax.minorticks_on()
-    fig.savefig(fig_folder + 'embedding_impedance.png')
-    plt.close(fig)
-
-    # Plot embedding impedance results ----------------------------------------
-
-    fig, ax = plt.subplots(figsize=figsize)
-    ax.plot(f_z, v * 1e3, c=_pale_green, ls='--', marker='o')
-    if f_range is not None:
-        ax.set_xlim([f_range[0], f_range[1]])
-    ax.set_xlabel('Frequency (GHz)')
-    ax.set_ylabel(r'Embedding Voltage (mV)')
-    ax.set_ylim(bottom=0)
-    ax.minorticks_on()
-    fig.savefig(fig_folder + 'embedding_voltage.png')
-    plt.close(fig)
-
-    # Plot embedding impedance results ----------------------------------------
-
-    fig, ax = plt.subplots(figsize=figsize)
-    ax.plot(freq, aj, c=_pale_green, **plotparam)
-    if f_range is not None:
-        ax.set_xlim([f_range[0], f_range[1]])
-    ax.set_xlabel('Frequency (GHz)')
-    ax.set_ylabel(r'Drive Level, $\alpha$')
-    ax.set_ylim([0, 1.2])
-    ax.minorticks_on()
-    ax.grid()
-    fig.savefig(fig_folder + 'drive_level.png')
-    plt.close(fig)
-
-    # Plot the impedance of the SIS junction ----------------------------------
-    
-    fig, ax1 = plt.subplots(figsize=figsize)
-    zj = np.array(zj) * dciv.rn
-    ax1.plot(freq, zj.real, c=_pale_blue, label=r'Re$\{Z_J\}$', **plotparam)
-    ax1.plot(freq, zj.imag, c=_pale_red, label=r'Im$\{Z_J\}$', **plotparam)
-    if f_range is not None:
-        ax1.set_xlim([f_range[0], f_range[1]])
-    ax1.set_xlabel('Frequency (GHz)')
-    ax1.set_ylabel(r'Junction Impedance ($\Omega$)')
-    ax1.set_ylim()
-    ax1.legend(loc=0)
-    ax1.minorticks_on()
-    plt.savefig(fig_folder + 'junction_impedance.png')
-    plt.close(fig)
-
     # Save data in text format ------------------------------------------------
 
     # Save DC I-V curve as csv
@@ -1535,6 +1403,164 @@ def plot_overall_results(dciv, data_list, fig_folder, vmax_plot=4., figsize=None
                      data.good_if_noise_fit]
             string = ', '.join([str(item) for item in _list])
             fout.write(string + '\n')
+            
+    # Plot all pumped iv curves -----------------------------------------------
+
+    fig, ax = plt.subplots(figsize=figsize)
+    ax.plot(dciv.voltage * mv, dciv.current * ua, 'k')
+    for i, data in enumerate(data_list):
+        ax.plot(data.voltage * mv, data.current * ua,
+                color=plt.cm.winter(i / num_data),
+                label=data.freq)
+    if f_range is not None:
+        ax.set_xlim([f_range[0], f_range[1]])
+    ax.set_xlabel(r'Voltage (mV)')
+    ax.set_ylabel(r'Current (uA)')
+    ax.set_xlim([0, vmax_plot])
+    ax.set_ylim([0, imax_plot])
+    ax.legend(fontsize=8, title='LO (GHz)', frameon=False)
+    fig.savefig(fig_folder + 'iv_curves.png', dpi=500)
+    plt.close(fig)
+
+    # Plot dynamic resistance -------------------------------------------------
+
+    fig, ax = plt.subplots(figsize=figsize)
+    ax.plot(freq, rdyn, **plotparam)
+    if f_range is not None:
+        ax.set_xlim([f_range[0], f_range[1]])
+    ax.set_xlabel('Frequency (GHz)')
+    ax.set_ylabel(r'Dynamic resistance ($\Omega$)')
+    ax.set_ylim(bottom=0)
+    fig.savefig(fig_folder + 'rdyn.png', dpi=500)
+    plt.close(fig)
+
+    # Plot noise temperature results ------------------------------------------
+
+    fig, ax = plt.subplots(figsize=figsize)
+    ax.plot(freq, t_n, color=_blue, **plotparam)
+    ax.set_xlabel('Frequency (GHz)')
+    ax.set_ylabel('Noise Temperature (K)')
+    if f_range is not None:
+        ax.set_xlim([f_range[0], f_range[1]])
+    if tn_max is None:
+        ax.set_ylim(bottom=0)
+    else:
+        ax.set_ylim([0, tn_max])
+    ax.grid()
+    fig.savefig(fig_folder + 'noise_temperature.png', dpi=500)
+    plt.close(fig)
+
+    # Plot noise temperature with spline fit ----------------------------------
+
+    fig, ax = plt.subplots(figsize=figsize)
+    freq_t = np.linspace(np.min(freq), np.max(freq), 1001)
+    sp_1 = UnivariateSpline(freq, t_n)
+    ax.plot(freq, t_n, 'o', color=_blue)
+    ax.plot(freq_t, sp_1(freq_t), '--', color=_blue)
+    ax.set_xlabel('Frequency (GHz)')
+    ax.set_ylabel('Noise Temperature (K)')
+    if f_range is not None:
+        ax.set_xlim([f_range[0], f_range[1]])
+    if tn_max is None:
+        ax.set_ylim(bottom=0)
+    else:
+        ax.set_ylim([0, tn_max])
+    ax.grid()
+    fname = fig_folder + 'noise_temperature_spline_fit.png'
+    fig.savefig(fname, dpi=500)
+    plt.close(fig)
+
+    # Plot noise temperature and gain -----------------------------------------
+
+    fig, ax1 = plt.subplots(figsize=figsize)
+    ax1.plot(freq, t_n, c=_pale_red, **plotparam)
+    ax1.set_xlabel('Frequency (GHz)')
+    ax1.set_ylabel('Noise Temperature (K)', color=_pale_red)
+    if f_range is not None:
+        ax1.set_xlim([f_range[0], f_range[1]])
+    if tn_max is None:
+        ax1.set_ylim(bottom=0)
+    else:
+        ax1.set_ylim([0, tn_max])
+    for tl in ax1.get_yticklabels():
+        tl.set_color(_pale_red)
+    ax2 = ax1.twinx()
+    ax2.plot(freq, gain, c=_blue, **plotparam)
+    ax2.set_ylabel('Gain (dB)', color=_blue)
+    for tl in ax2.get_yticklabels():
+        tl.set_color(_blue)
+    fig.savefig(fig_folder + 'noise_temperature_and_gain.png', dpi=500)
+    plt.close(fig)
+
+    # Plot IF noise contribution results --------------------------------------
+
+    fig, ax = plt.subplots(figsize=figsize)
+    ax.plot(if_noise_f, if_noise, 'o--', color=_pale_red)
+    if f_range is not None:
+        ax.set_xlim([f_range[0], f_range[1]])
+    ax.set_xlabel('Frequency (GHz)')
+    ax.set_ylabel(r'IF Noise Contribution (K)')
+    ax.set_ylim(bottom=0)
+    fname = fig_folder + 'if_noise.png'
+    fig.savefig(fname, dpi=500)
+    plt.close(fig)
+
+    # Plot embedding impedance results ----------------------------------------
+
+    fig, ax = plt.subplots(figsize=figsize)
+    ax.plot(f_z, z.real, c=_pale_blue, label='Real', **plotparam)
+    ax.plot(f_z, z.imag, c=_pale_red, label='Imaginary', **plotparam)
+    if f_range is not None:
+        ax.set_xlim([f_range[0], f_range[1]])
+    ax.set_xlabel('Frequency (GHz)')
+    ax.set_ylabel(r'Embedding Impedance ($\Omega$)')
+    ax.legend(frameon=False)
+    ax.minorticks_on()
+    fig.savefig(fig_folder + 'embedding_impedance.png', dpi=500)
+    plt.close(fig)
+
+    # Plot embedding impedance results ----------------------------------------
+
+    fig, ax = plt.subplots(figsize=figsize)
+    ax.plot(f_z, v * 1e3, c=_pale_green, ls='--', marker='o')
+    if f_range is not None:
+        ax.set_xlim([f_range[0], f_range[1]])
+    ax.set_xlabel('Frequency (GHz)')
+    ax.set_ylabel(r'Embedding Voltage (mV)')
+    ax.set_ylim(bottom=0)
+    ax.minorticks_on()
+    fig.savefig(fig_folder + 'embedding_voltage.png', dpi=500)
+    plt.close(fig)
+
+    # Plot embedding impedance results ----------------------------------------
+
+    fig, ax = plt.subplots(figsize=figsize)
+    ax.plot(freq, aj, c=_pale_green, **plotparam)
+    if f_range is not None:
+        ax.set_xlim([f_range[0], f_range[1]])
+    ax.set_xlabel('Frequency (GHz)')
+    ax.set_ylabel(r'Drive Level, $\alpha$')
+    ax.set_ylim([0, 1.2])
+    ax.minorticks_on()
+    ax.grid()
+    fig.savefig(fig_folder + 'drive_level.png', dpi=500)
+    plt.close(fig)
+
+    # Plot the impedance of the SIS junction ----------------------------------
+    
+    fig, ax1 = plt.subplots(figsize=figsize)
+    zj = np.array(zj) * dciv.rn
+    ax1.plot(freq, zj.real, c=_pale_blue, label=r'Re$\{Z_J\}$', **plotparam)
+    ax1.plot(freq, zj.imag, c=_pale_red, label=r'Im$\{Z_J\}$', **plotparam)
+    if f_range is not None:
+        ax1.set_xlim([f_range[0], f_range[1]])
+    ax1.set_xlabel('Frequency (GHz)')
+    ax1.set_ylabel(r'Junction Impedance ($\Omega$)')
+    ax1.set_ylim()
+    ax1.legend(loc=0)
+    ax1.minorticks_on()
+    plt.savefig(fig_folder + 'junction_impedance.png', dpi=500)
+    plt.close(fig)
 
     print(" -> Done\n")
 

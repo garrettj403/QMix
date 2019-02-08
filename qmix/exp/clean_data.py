@@ -1,7 +1,6 @@
-"""Clean experimental data.
+""" This module contains functions for cleaning experimental data.
 
-These functions can be used to clean experimental data. This includes removing 
-NaN values, removing double values, and sorting.
+This includes removing NaN values, removing repeated values, and sorting.
 
 The data can either be in x/y format (i.e., two arrays of equal length) or in
 matrix form (i.e., a matrix with two columns).

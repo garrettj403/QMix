@@ -1,4 +1,5 @@
-"""Print numbers and text to the terminal.
+""" This sub-module contains functions for printing numbers and text to the 
+terminal.
 
 """
 
@@ -6,7 +7,7 @@ import os
 
 
 def print_intro():  # pragma: no cover
-    """Print a quick intro to the terminal.
+    """ Print a quick intro to the terminal.
 
     """
 
@@ -30,7 +31,7 @@ def print_intro():  # pragma: no cover
 
 
 def cprint(text, color='HEADER'):  # pragma: no cover
-    """Print colored text to the terminal.
+    """ Print colored text to the terminal.
 
     Args:
         text (str): Text to print
@@ -54,7 +55,7 @@ def cprint(text, color='HEADER'):  # pragma: no cover
 # Titles ---------------------------------------------------------------------
 
 def title(title_string, color=None):  # pragma: no cover
-    """Print a nice title to the terminal.
+    """ Print a nice title to the terminal.
 
     Args:
         title_string (str): title to print
@@ -78,7 +79,7 @@ def title(title_string, color=None):  # pragma: no cover
 
 
 def header(header_string, color=None):  # pragma: no cover
-    """Print a nice header to the terminal.
+    """ Print a nice header to the terminal.
 
     Args:
         header_string (str): Header title to print
@@ -93,7 +94,7 @@ def header(header_string, color=None):  # pragma: no cover
 # Print numbers to the terminal in a nice way --------------------------------
 
 def pvalf(name, val, units='', comment='', color=None):  # pragma: no cover
-    """Print name, value as float, and units to terminal.
+    """ Print name, value as float, and units to terminal.
 
     Args:
         name (str): variable name
@@ -123,9 +124,7 @@ def pvalf(name, val, units='', comment='', color=None):  # pragma: no cover
 
 
 def pvale(name, val, units='', comment='', color=None):  # pragma: no cover
-    """Print name, value in scientific notation and units to terminal.
-
-    Prints value in scientific notation.
+    """ Print name, value in scientific notation and units to terminal.
 
     Args:
         name (str): variable name
@@ -180,6 +179,12 @@ _terminal_colors = {
 # Print complex --------------------------------------------------------------
 
 def printc(complex_number):  # pragma: no cover
+    """Print a complex number to the terminal.
+
+    Args:
+        complex_number (complex): number to print
+
+    """
 
     if complex_number.imag >= 0:
         sign = '+'
