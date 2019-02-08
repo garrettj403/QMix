@@ -904,6 +904,33 @@ imaginary components swapped.</p>
 </dd></dl>
 
 <dl class="class">
+<dt id="qmix.respfn.RespFnExponential">
+<em class="property">class </em><code class="descclassname">qmix.respfn.</code><code class="descname">RespFnExponential</code><span class="sig-paren">(</span><em>vgap=0.0028</em>, <em>rn=14</em>, <em>rsg=1000</em>, <em>agap=40000.0</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.respfn.RespFnExponential" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#qmix.respfn.RespFn" title="qmix.respfn.RespFn"><code class="xref py py-class docutils literal notranslate"><span class="pre">qmix.respfn.RespFn</span></code></a></p>
+<p>Response function based on the exponential I-V curve model.</p>
+<p>Class to contain, interpolate and plot the response function.</p>
+<p>Ref:</p>
+<blockquote>
+<div>H. Rashid, et al., “Harmonic and reactive behavior of the
+quasiparticle tunnel current in SIS junctions,” AIP Advances,
+vol. 6, 2016.</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>vgap</strong> (<em>float</em>) – Gap voltage (un-normalized)</li>
+<li><strong>rsg</strong> (<em>float</em>) – Sub-gap resistance (un-normalized)</li>
+<li><strong>rn</strong> (<em>float</em>) – Normal resistance (un-normalized)</li>
+<li><strong>a</strong> (<em>float</em>) – Gap smearing parameter (4e4 is typical)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="class">
 <dt id="qmix.respfn.RespFnFromIVData">
 <em class="property">class </em><code class="descclassname">qmix.respfn.</code><code class="descname">RespFnFromIVData</code><span class="sig-paren">(</span><em>voltage</em>, <em>current</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.respfn.RespFnFromIVData" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#qmix.respfn.RespFn" title="qmix.respfn.RespFn"><code class="xref py py-class docutils literal notranslate"><span class="pre">qmix.respfn.RespFn</span></code></a></p>

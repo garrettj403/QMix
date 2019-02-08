@@ -7,16 +7,16 @@ References
 
 Garrett, J. D. (2018). `A 230 GHz Focal Plane Array Using a Wide IF Bandwidth SIS Receiver <https://ora.ox.ac.uk/objects/uuid:d47fbf3b-1cf3-4e58-be97-767b9893066e>`_ (DPhil). University of Oxford.
 
-Kennedy, P. R. (1999) *Superconducting Devices for Millimeter Wavelength Astronomy* (DPhil). University of Cambridge.
+Kennedy, P. R. (1999). *Superconducting Devices for Millimeter Wavelength Astronomy* (DPhil). University of Cambridge.
 
 Kittara, P. (2002). *The Development of a 700 GHz SIS Mixer with Nb Finline Devices: Nonlinear Mixer Theory, Design Techniques and Experimental Investigation* (DPhil). University of Cambridge.
 
 Kittara, P., Withington, S., & Yassin, G. (2007). `Theoretical and numerical analysis of very high harmonic superconducting tunnel junction mixers. <https://aip.scitation.org/doi/10.1063/1.2424407>`_ Journal of Applied Physics, 101(2), 024508.
 
-Rashid, H., Krause, S., Meledin, D., Desmaris, V., Pavolotsky, A., and Belitsky, V. (2016). *Frequency Multiplier Based on Distributed Superconducting Tunnel Junctions: Theory, Design, and Characterization.* IEEE Trans. Terahertz Sci. Technol., 1-13.
+Rashid, H., Krause, S., Meledin, D., Desmaris, V., Pavolotsky, A., and Belitsky, V. (2016). `Frequency Multiplier Based on Distributed Superconducting Tunnel Junctions: Theory, Design, and Characterization. <http://ieeexplore.ieee.org/document/7511700/>`_ IEEE Trans. Terahertz Sci. Technol., 1-13.
+
+Skalare, A. (1989). `Determining embedding circuit parameters from DC measurements on quasiparticle mixers. <http://link.springer.com/10.1007/BF01010125>`_ Int. J. Infrared Millimeter Waves, 10(11), 1339–1353.
+
+Withington, S., Isaak, K. G., Kovtonyuk, S. A., Panhuyzen, R. A., and Klapwijk, T. M. (1995). `Direct detection at submillimetre wavelengths using superconducting tunnel junctions. <http://linkinghub.elsevier.com/retrieve/pii/1350449595000585>`_ Infrared Phys. Technol., 36(7), 1059–1075.
 
 Withington, S., Kittara, P., & Yassin, G. (2003). `Multitone quantum simulations of saturating tunnel junction mixers. <http://aip.scitation.org/doi/10.1063/1.1576515>`_ Journal of Applied Physics, 93(12), 9812–9822.
-
-Withington 1995
-
-Skalare 1989
