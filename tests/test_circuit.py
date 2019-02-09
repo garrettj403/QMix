@@ -90,13 +90,13 @@ def test_power_settings():
     power_dbm = -50
     cct.set_available_power(power_dbm, 1, 1, units='dBm')
     # Read available power using available_power method
-    assert power_dbm == cct.available_power(1, 1, units='dBm')
+    assert power_dbm == pytest.approx(cct.available_power(1, 1, units='dBm'))
 
     # Set available power (in units W) using set_available_power method
     power_watts = 1e-9
     cct.set_available_power(power_watts, 2, 1, units='W')
     # Read available power using available_power method
-    assert power_watts == cct.available_power(2, 1, units='W')
+    assert power_watts == pytest.approx(cct.available_power(2, 1, units='W'))
 
     # Try using incorrect units with both methods
     with pytest.raises(ValueError):
