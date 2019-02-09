@@ -1,6 +1,9 @@
 """Test the module that calculates the quasiparticle tunneling currents (QTCs)
 (qmix.qtcurrent).
 
+This is the most difficult module to test because there are no "known" values
+to compare against.
+
 """
 
 import numpy as np
@@ -16,15 +19,16 @@ VBIAS = np.linspace(0, 2, 101)
 def test_compare_qtcurrent_to_tucker_theory():
     """ This test will compare the quasiparticle tunneling currents that are
     calculated by qmix.qtcurrent to results calculated from Tucker theory 
-    (Tucker1985). Tucker theory uses much simpler equations to calculate the 
-    tunneling currents, so it is easier to be sure that the Tucker functions
-    are working properly. The functions that are used calculate the currents
-    from Tucker theory are found at the bottom of this file.
+    (Tucker & Feldman, 1985). Tucker theory uses much simpler equations to 
+    calculate the tunneling currents, so it is easier to be sure that the 
+    Tucker functions are working properly. The functions that are used 
+    calculate the currents from Tucker theory are found at the bottom of this 
+    file.
 
     Note: The Tucker theory functions that are included within this file only 
     work for a single tone/single harmonic simulation."""
 
-    # Build embedding circuit for QMix
+    # Build embedding circuit
     cct = qmix.circuit.EmbeddingCircuit(1, 1, vb_min=0, vb_npts=101)
     vph = 0.33
     cct.vph[1] = vph
@@ -34,13 +38,13 @@ def test_compare_qtcurrent_to_tucker_theory():
     vj = cct.initialize_vj()
     vj[1, 1, :] = cct.vph[1] * alpha
 
-    # Calculate QTC using qtcurrent
-    idc_meth1 = qmix.qtcurrent.qtcurrent(vj, cct, RESP, 0.)
-    iac_meth1 = qmix.qtcurrent.qtcurrent(vj, cct, RESP, cct.vph[1])
+    # Calculate QTC using qmix.qtcurrent.qtcurrent
+    idc_meth1 = qmix.qtcurrent.qtcurrent(vj, cct, RESP, 0.)  # DC
+    iac_meth1 = qmix.qtcurrent.qtcurrent(vj, cct, RESP, cct.vph[1])  # AC
 
     # Calculate QTC using Tucker theory
-    idc_meth2 = _tucker_dc_current(VBIAS, RESP, alpha, vph)
-    iac_meth2 = _tucker_ac_current(VBIAS, RESP, alpha, vph)
+    idc_meth2 = _tucker_dc_current(VBIAS, RESP, alpha, vph)  # DC 
+    iac_meth2 = _tucker_ac_current(VBIAS, RESP, alpha, vph)  # AC
 
     # Compare methods
     np.testing.assert_almost_equal(idc_meth1, idc_meth2, decimal=15)

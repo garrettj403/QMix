@@ -10,8 +10,8 @@ import numpy as np
 from qmix.mathfn.misc import slope, slope_span_n
 
 # Test data
-SLOPE = 3
-INTERCEPT = 5
+SLOPE = 3.
+INTERCEPT = 5.
 X = np.linspace(0, 10, 1001)
 Y = X * SLOPE + INTERCEPT
 

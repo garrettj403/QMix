@@ -1,10 +1,10 @@
 """Test the embedding circuit module (qmix.circuit).
 
 This module has a class (qmix.circuit.EmbeddingCircuit) that is used to
-contain all the information about the embedding circuit (i.e., Thevenin 
-voltages, Thevenin impedances, frequencies, simulation parameters, etc.).
-
-These tests are pretty trivial because this class is mostly just a container.
+contain all the information about the embedding circuit (i.e., the Thevenin
+voltages, the Thevenin impedances, the signal frequencies, the simulation 
+parameters, etc.). The tests for this class are pretty trivial because the 
+class is used like a struct.
 
 """
 
@@ -17,20 +17,23 @@ import qmix
 from qmix.circuit import *
 
 
-def test_saving_and_loading_functions():
+def test_saving_and_importing_methods():
     """Build an embedding circuit, save it to file, load it from file and make
-    sure that the two circuits match. """
+    sure that the two circuits match."""
 
-    # Build quick circuit instance
+    # Build a quick circuit
     cct = EmbeddingCircuit(2, 2)
+    # Voltages
     cct.vt[1, 1] = 0.3
     cct.vt[1, 2] = 0.1
     cct.vt[2, 1] = 0.01
     cct.vt[2, 2] = 0.001
+    # Impedances
     cct.zt[1, 1] = 1. + 1j * 0.1
     cct.zt[1, 2] = 2. + 1j * 0.2
     cct.zt[2, 1] = 3. + 1j * 0.3
     cct.zt[2, 2] = 4. + 1j * 0.4
+    # Signal names
     cct.set_name('LO', 1, 1)
     cct.set_name('RF', 2, 1)
 
@@ -59,37 +62,43 @@ def test_power_settings():
 
     # Build quick circuit instance
     cct = EmbeddingCircuit(2, 2, vgap=3e-3, rn=10, fgap=700e9)
+    # Voltages
     cct.vt[1, 1] = 0.3
     cct.vt[1, 2] = 0.1
     cct.vt[2, 1] = 0.01
     cct.vt[2, 2] = 0.001
+    # Impedances
     cct.zt[1, 1] = 1. + 1j * 0.1
     cct.zt[1, 2] = 2. + 1j * 0.2
     cct.zt[2, 1] = 3. + 1j * 0.3
     cct.zt[2, 2] = 4. + 1j * 0.4
+    # Signal names
     cct.set_name('LO', 1, 1)
     cct.set_name('RF', 2, 1)
-
     # Set photon voltage
     cct.set_vph(400e9, 1)
     cct.set_vph(700e9, 2)
+
+    # Test normalized photon voltage (recall fgap=700e9)
     assert cct.vph[2] == 1.
 
     # Try printing
     cct.print_info()
     print(cct)
 
-    # Set available power in units dBm
+    # Set available power (in units dBm) using set_available_power method
     power_dbm = -50
     cct.set_available_power(power_dbm, 1, 1, units='dBm')
+    # Read available power using available_power method
     assert power_dbm == cct.available_power(1, 1, units='dBm')
 
-    # Set available power in units W
+    # Set available power (in units W) using set_available_power method
     power_watts = 1e-9
-    cct.set_available_power(power_watts, 1, 1, units='W')
-    assert power_watts == cct.available_power(1, 1, units='W')
+    cct.set_available_power(power_watts, 2, 1, units='W')
+    # Read available power using available_power method
+    assert power_watts == cct.available_power(2, 1, units='W')
 
-    # Try using incorrect units
+    # Try using incorrect units with both methods
     with pytest.raises(ValueError):
         cct.set_available_power(power_watts, 1, 1, 'test')
     with pytest.raises(ValueError):
@@ -97,27 +106,33 @@ def test_power_settings():
 
 
 def test_setting_alpha():
-    """Try setting the drive level to alpha=1.
+    """The EmbeddingCircuit class includes a method to set the drive level
+    of the SIS junction. Note: This is only an approximation. The method 
+    assumes an impedance for the junction in order to do this.
 
-    This function is only an approximation."""
+    Try setting the drive level to alpha=1, run a simulation to calculate 
+    the junction voltage, and then check the value."""
 
-    # Set up simulation
+    # Use polynomial model for the response function
     resp = qmix.respfn.RespFnPolynomial(50)
 
+    # Build embedding circuit
     cct = EmbeddingCircuit(1, 1)
     cct.vph[1] = 0.3
     cct.zt[1, 1] = 0.3 - 1j * 0.3
 
-    # Set drive level
+    # Set drive level to alpha=1
     alpha_set = 1.
     cct.set_alpha(alpha_set, 1, 1, zj=0.6)
 
+    # Harmonic balance to calculate junction voltage (vj)
     vj = qmix.harmonic_balance.harmonic_balance(cct, resp)
 
-    # Check value
-    idx = np.abs(cct.vb - (1 - 0.15)).argmin()
+    # Check value in middle of first photon step
+    idx = np.abs(cct.vb - (1 - cct.vph[1]/2)).argmin()
     alpha = np.abs(vj[1, 1, idx]) / cct.vph[1]
-    assert 0.9 < alpha < 1.1
+    assert 0.9 < alpha < 1.1  # only has to be approximate
+
 
 if __name__ == "__main__":
 

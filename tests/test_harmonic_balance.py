@@ -1,6 +1,11 @@
 """Test the module that performs harmonic balance 
 (qmix.harmonic_balance.harmonic_balance).
 
+This module is relatively easy to test. Assuming that harmonic balance was
+performed correctly, the circuit should be 'balanced', meaning that the
+voltage drop across the junction should match the Thevenin equivalent circuit.
+See Section 4.3 in Garrett (2018) to understand what this means.
+
 """
 
 import numpy as np
@@ -17,45 +22,46 @@ NPTS = 101
 VBIAS = np.linspace(0, 2, NPTS)
 
 
-def test_relative_error_in_circuit():
+def test_relative_error_in_hb_solution():
     """ The harmonic_balance module can be tested by running the harmonic 
     balance process and then checking that the optimized voltage from the 
     harmonic_balance function does actually lead to a balanced circuit."""
 
     # Input parameters ------------------------------------------------------
 
-    NB = (15, 9)
-    NF = 2
-    NP = 2
-    N = NF * NP
+    NF = 2  # number of tones
+    NP = 2  # number of harmonics
+    N = NF * NP  # total number of signals
+    NB = (15, 9)  # number of Bessel functions to use
 
+    # Generate embedding circuit
     circuit = qmix.circuit.EmbeddingCircuit(NF, NP)
-
+    # Photon voltage
     circuit.vph[1] = 0.30
     circuit.vph[2] = 0.32
-
+    # Embedding voltage
     circuit.vt[1, 1] = circuit.vph[1] * 1.5
     circuit.vt[1, 2] = circuit.vph[1] * 0.1
     circuit.vt[2, 1] = circuit.vph[2] * 0.1
     circuit.vt[2, 2] = circuit.vph[2] * 0.01
-
+    # Embedding impedance
     circuit.zt[1, 1] = 0.3 - 1j*0.3
     circuit.zt[1, 2] = 0.3 - 1j*0.3
     circuit.zt[2, 1] = 0.3 - 1j*0.3
     circuit.zt[2, 2] = 0.3 - 1j*0.3
 
-
     # Run test ---------------------------------------------------------------
 
-    # Perform harmonic balance
-    vj, _, got_solution = harmonic_balance(circuit, RESP, NB, 
-                                                 stop_rerror=0.001, 
-                                                 mode='x')
+    # Perform harmonic balance to calculate voltage across junction (vj)
+    vj, _, solution_found = harmonic_balance(circuit, RESP, NB, 
+                                             stop_rerror=0.001, mode='x')
 
-    assert got_solution, "No solution found. Max iterations was reached!"
+    assert solution_found, "No solution found. Max iterations was reached!"
 
-    # This function will raise an exception if the relative error exceeds 
-    # the 'stop_error' value.
+    # This function will raise an exception if the error function exceeds 
+    # the 'stop_error' value. Here we will set this value to maximum
+    # error of 0.001. This is a relative error: error / vj. This is checked
+    # for every tone, harmonic and bias voltage.
     check_hb_error(vj, circuit, RESP, NB, stop_rerror= 0.001)
 
 
@@ -72,11 +78,11 @@ def test_error_handling():
     NP = 1
     N = NF * NP
 
+    # Embedding circuit
     circuit = qmix.circuit.EmbeddingCircuit(NF, NP)
     circuit.vph[1] = 0.30
     circuit.vt[1, 1] = circuit.vph[1] * 1.5
     circuit.zt[1, 1] = 0.3 - 1j*0.3
-
 
     # Run test ---------------------------------------------------------------
 
@@ -86,74 +92,27 @@ def test_error_handling():
                                            stop_rerror=0.0001, 
                                            mode='x')
 
-    assert not got_solution
+    # Make sure that no solution was found
+    assert not got_solution, "A solution was found with only one iteration."
 
 
 def test_when_zthev_is_zero():
-    """ Set all thevenin impedances to 0. Make sure that the harmonic balance 
-    function just outputs the input voltage."""
+    """ Harmonic balance is not needed when all of the embedding impedances
+    are set to zero. In this test, set all thevenin impedances to zero, and
+    make sure that the harmonic balance function just returns the embedding
+    voltage."""
 
-    # With running harmonic balance
     NB = 15
     NF = 2
     NP = 2
 
+    # Embedding circuit
     circuit = qmix.circuit.EmbeddingCircuit(NF, NP)
-
     circuit.vph[1] = 0.30
     circuit.vph[2] = 0.32
-
     circuit.vt[1, 1] = circuit.vph[1] * 1.5
 
-    v_n = harmonic_balance(circuit, RESP, NB)
+    # Calculate junction voltage (should be equal to Thevenin voltage)
+    vj = harmonic_balance(circuit, RESP, NB)
     for i in range(NPTS):
-        assert (v_n[:,:,i] == circuit.vt).all()
-
-
-# def test_compare_1_tone_to_2_tones():
-#     """In this test, harmonic balance with one tone will be compared to 
-#     harmonic balance with two tones. 
-
-#     Note: I had a suspicion that they weren't matching close enough, but it 
-#     seems to be fine. They shouldn't be exact, but should still be fairly 
-#     close. The second photon step may vary slightly. This is a consequence of
-#     including more harmonics."""
-
-#     v_ph1 = 0.3
-#     v_thev = 0.5
-#     z_thev = 0.3 - 1j*0.2
-
-#     # One tone ---------------------------------------------------------------
-#     NB  = 15
-#     NF = 1
-#     NP = 1
-
-#     circuit = qmix.circuit.EmbeddingCircuit(NF, NP)
-#     circuit.vph[1] = v_ph1
-#     circuit.vt[1, 1] = v_thev
-#     circuit.zt[1, 1] = z_thev
-
-#     v_n = harmonic_balance(circuit, RESP, NB)
-#     i_dc1 = np.real(qtcurrent(v_n, circuit, RESP, [0], NB)[0, :])
-#     i_ac1 = np.abs(qtcurrent(v_n, circuit, RESP, [v_ph1], NB)[0, :])
-
-#     # Two tones --------------------------------------------------------------
-#     NB = 15
-#     NF = 2
-#     NP = 1
-    
-#     circuit = qmix.circuit.EmbeddingCircuit(NF, NP)
-#     circuit.vph[1] = v_ph1
-#     circuit.vph[2] = v_ph1 + 0.01
-#     circuit.vt[1, 1] = v_thev
-#     # circuit.vt[2, 1] = 0  #circuit.vph[2] * 0.1
-#     circuit.zt[1, 1] = z_thev
-#     circuit.zt[2, 1] = z_thev
-
-#     v_n = harmonic_balance(circuit, RESP, NB)
-#     i_dc2 = np.real(qtcurrent(v_n, circuit, RESP, [0], NB)[0, :])
-#     i_ac2 = np.abs(qtcurrent(v_n, circuit, RESP, [v_ph1], NB)[0, :])
-
-#     # Compare ----------------------------------------------------------------
-#     np.testing.assert_almost_equal(i_dc1, i_dc2, decimal=3)
-#     np.testing.assert_almost_equal(i_ac1, i_ac2, decimal=3)
+        assert (vj[:,:,i] == circuit.vt).all()
