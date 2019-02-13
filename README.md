@@ -50,7 +50,7 @@ If you use QMix, please cite the Zenodo archive:
 License
 -------
 
-QMix uses a GPL v3 license. Please see ``QMix/LICENSE`` for more information.
+QMix uses a GPL v3 license. Please see [``QMix/LICENSE``](https://github.com/garrettj403/QMix/blob/master/LICENSE) for more information.
 
 References
 ----------
