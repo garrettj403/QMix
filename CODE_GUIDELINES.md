@@ -5,7 +5,7 @@ Code Guidelines for the QMix Package
 - In addition, all new contributions must include:
     - [docstrings](#docstrings) for each new module, function, class and dictionary,
     - [unit tests](#unit-tests) for each new function and class, and
-    - updated [documentation](#qmix-documentation) for the QMix webpage.
+    - updated [documentation](#qmix-documentation) for the QMix web page.
 - Please also update the docstrings and tests if you change how a function or class operates.
 
 Python Code
