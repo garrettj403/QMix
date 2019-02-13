@@ -25,6 +25,3 @@ latexpdf:
 	make -C $(BUILDDIR)/latex
 	make -C $(BUILDDIR)/latex
 	cp $(BUILDDIR)/latex/QMix.pdf $(PDF)
-
-sphinx:
-	sphinx-apidoc -o source/ ../qmix/

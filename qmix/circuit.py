@@ -9,12 +9,12 @@ circuit.
     embedding circuit can be reduced to a Thevenin equivalent circuit for 
     **each tone and harmonic.**
 
-    Therefore, to fully describe the embedding circuit, 3 things are needed
+    To fully describe the embedding circuit, 3 bits of information are needed
     for each signal that is applied to the junction:
 
-        1. the embedding voltage (i.e., Thevenin voltage)
-        2. the embedding impedance (i.e., Thevenin impedance)
-        3. the frequency of the signal
+        1. the frequency of the applied signal,
+        2. the Thevenin voltage of the embedding circuit at this freq., and
+        3. the Thevenin impedance of the embedding circuit at this freq.
 
 """
 
