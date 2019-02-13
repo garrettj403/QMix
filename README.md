@@ -3,7 +3,7 @@
 ***Q**uantum* ***Mix**ing software*
 
 [![GitHub version](https://badge.fury.io/gh/garrettj403%2FQMix.svg)](https://badge.fury.io/gh/garrettj403%2FQMix)
-[![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+[![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://github.com/garrettj403/QMix/blob/master/LICENSE)
 [![Build Status](https://travis-ci.org/garrettj403/QMix.svg?branch=master)](https://travis-ci.org/garrettj403/QMix)
 [![Zenodo](https://zenodo.org/badge/DOI/10.5281/zenodo.2538163.svg)](https://doi.org/10.5281/zenodo.2538163)
 [![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/garrettj403/QMix/blob/master/CONTRIBUTING.md)
@@ -17,31 +17,19 @@ In order to calculate the quasiparticle tunneling currents, QMix uses *multi-ton
 Installation
 ------------
 
-QMix can be installed using ``pip``:
+The easiest way to install QMix is using ``pip``:
 
     pip install QMix
-
-More information can be found on the [QMix website](https://garrettj403.github.io/QMix/setup.html).
-
-License
--------
-
-QMix uses a GPL v3 license (see [``QMix/LICENSE``](https://github.com/garrettj403/QMix/blob/master/LICENSE)).
-
-Contributing to QMix
---------------------
-
-Information on contributing to the QMix project can be found in [``QMix/CONTRIBUTING.md``](https://github.com/garrettj403/QMix/blob/master/CONTRIBUTING.md). This includes reporting bugs and requesting new features.
 
 Support 
 -------
 
-The [QMix website](https://garrettj403.github.io/QMix/) contains much more information on installing QMix and setting up simulations. 
+The [QMix website](https://garrettj403.github.io/QMix/) contains much more information on the QMix package. If you still have any problems, please create a new issue through the [GitHub issue tracker](https://github.com/garrettj403/QMix/issues) with the ``help wanted`` or ``question`` tag. In your message, please include your operating system, your Python version, and your package versions (QMix, Numpy, SciPy and Matplotlib).
 
-If you have any problems, please create a new issue through the [GitHub issue tracker](https://github.com/garrettj403/QMix/issues) with the ``help wanted`` or ``question`` tag. In your message, please include:
-   - your operating system,
-   - your Python version, and
-   - your package versions (Numpy, SciPy and Matplotlib).
+Contributing to QMix
+--------------------
+
+If you would like to contribute to the QMix project, please see [``QMix/CONTRIBUTING.md``](https://github.com/garrettj403/QMix/blob/master/CONTRIBUTING.md). This document includes information on reporting bugs, requesting new features and creating pull requests.
 
 Examples
 --------
