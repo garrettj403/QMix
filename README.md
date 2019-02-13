@@ -31,7 +31,7 @@ QMix uses a GPL v3 license (see [``QMix/LICENSE``](https://github.com/garrettj40
 Contributing to QMix
 --------------------
 
-Information on contributing to the QMix project can be found in [``QMix/CONTRIBUTING.md``](https://github.com/garrettj403/QMix/blob/master/CONTRIBUTING.md).
+Information on contributing to the QMix project can be found in [``QMix/CONTRIBUTING.md``](https://github.com/garrettj403/QMix/blob/master/CONTRIBUTING.md). This includes reporting bugs and requesting new features.
 
 Support 
 -------

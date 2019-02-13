@@ -29,7 +29,7 @@ If you would like to contribute new code to the QMix project, you can fork the r
 Seeking Support
 ---------------
 
-If you are having any issues installing QMix or setting up your simulation, please create a new issue with the ``help wanted`` or ``question`` tag.  In your message, please include:
+If you are having any problems installing QMix or setting up your simulation, please create a new issue through the [GitHub Issue tracker](https://github.com/garrettj403/QMix/issues) with the ``help wanted`` or ``question`` tag.  In your message, please include:
    - your operating system,
    - your Python version, and
    - your package versions (Numpy, SciPy and Matplotlib).
