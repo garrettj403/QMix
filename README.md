@@ -21,16 +21,34 @@ QMix can be installed using ``pip``:
 
     pip install QMix
 
-Please see the [QMix website](https://garrettj403.github.io/QMix/setup.html) for more information.
+More information can be found on the [QMix website](https://garrettj403.github.io/QMix/setup.html).
+
+License
+-------
+
+QMix uses a GPL v3 license (see [``QMix/LICENSE``](https://github.com/garrettj403/QMix/blob/master/LICENSE)).
+
+Contributing to QMix
+--------------------
+
+Information on contributing to the QMix project can be found in [``QMix/CONTRIBUTING.md``](https://github.com/garrettj403/QMix/blob/master/CONTRIBUTING.md).
+
+Support 
+-------
+
+The [QMix website](https://garrettj403.github.io/QMix/) contains much more information on installing QMix and setting up simulations. 
+
+If you have any problems, please create a new issue through the [GitHub issue tracker](https://github.com/garrettj403/QMix/issues) with the ``help wanted`` or ``question`` tag. In your message, please include:
+   - your operating system,
+   - your Python version, and
+   - your package versions (Numpy, SciPy and Matplotlib).
 
 Examples
 --------
 
-QMix can be used to simulate the performance of SIS mixers (example below). 
+QMix can be used to simulate a wide variety of SIS behavior. A simple example is shown below for an SIS mixer at 230 GHz. Please see ``QMix/examples/`` or the [QMix website](https://garrettj403.github.io/QMix/single-tone-simple.html) for more examples! 
 
 ![](example.png)
-
-Please see ``QMix/examples/`` or the [QMix website](https://garrettj403.github.io/QMix/single-tone-simple.html) for more examples! 
 
 Citing QMix
 -----------
@@ -46,11 +64,6 @@ If you use QMix, please cite the Zenodo archive:
       doi          = {10.5281/zenodo.2538163},
       url          = {https://doi.org/10.5281/zenodo.2538163}
     }
-
-License
--------
-
-QMix uses a GPL v3 license. Please see [``QMix/LICENSE``](https://github.com/garrettj403/QMix/blob/master/LICENSE) for more information.
 
 References
 ----------
