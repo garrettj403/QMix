@@ -26,6 +26,14 @@ Contributing New Code
 
 If you would like to contribute new code to the QMix project, you can fork the repository, make your changes, and then create a pull request. To remain consistent with the rest of the QMix package, please follow the [QMix code guidelines](https://github.com/garrettj403/QMix/blob/master/CODE_GUIDELINES.md).
 
+Seeking Support
+---------------
+
+If you are having any issues installing QMix or setting up your simulation, please create a new issue with the ``help wanted`` or ``question`` tag.  In your message, please include:
+   - your operating system,
+   - your Python version, and
+   - your package versions (Numpy, SciPy and Matplotlib).
+
 Code of Conduct
 ---------------
 
