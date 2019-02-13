@@ -1,7 +1,7 @@
 Code Guidelines for the QMix Package
 ====================================
 
-- All new code must follow our [Python code guidelines](#new-python-code).
+- All new code must follow our [Python code guidelines](#python-code).
 - In addition, all new contributions must include:
     - [docstrings](#docstrings) for each new module, function, class and dictionary,
     - [unit tests](#unit-tests) for each new function and class, and
