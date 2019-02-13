@@ -1,16 +1,16 @@
 # QMix
 
+***Q**uantum* ***Mix**ing software*
+
 [![GitHub version](https://badge.fury.io/gh/garrettj403%2FQMix.svg)](https://badge.fury.io/gh/garrettj403%2FQMix)
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![Build Status](https://travis-ci.org/garrettj403/QMix.svg?branch=master)](https://travis-ci.org/garrettj403/QMix)
 [![Zenodo](https://zenodo.org/badge/DOI/10.5281/zenodo.2538163.svg)](https://doi.org/10.5281/zenodo.2538163)
 [![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/garrettj403/QMix/blob/master/CONTRIBUTING.md)
 
-***Q**uantum* ***Mix**ing software*
+QMix is a software package for simulating the quasiparticle tunneling currents in Superconductor/Insulator/Superconductor (SIS) junctions. These junctions are commonly used for heterodyne mixing at millimeter and submillimeter wavelengths. QMix can be used to simulate their performance, investigate their experimental results and optimize their operation.
 
-QMix is a software package for simulating quasiparticle tunneling currents in Superconductor/Insulator/Superconductor (SIS) junctions. These junctions are commonly used for heterodyne mixing at millimeter and submillimeter wavelengths. QMix can be used to simulate their performance, investigate their experimental results and optimize their operation.
-
-In order to calculate the quasiparticle tunneling currents, QMix uses *multi-tone spectral domain analysis* (see references below for more information). Unlike other software packages that are based on perturbation techniques, QMix is ideal for simulating higher-order harmonics, power saturation, subharmonic pumping and frequency multiplication. 
+In order to calculate the quasiparticle tunneling currents, QMix uses *multi-tone spectral domain analysis* (see references below for more information). This makes QMix ideal for simulating higher-order harmonics, power saturation, sub-harmonic pumping and frequency multiplication.
 
 **Website:** https://garrettj403.github.io/QMix/
 
@@ -30,7 +30,7 @@ QMix can be used to simulate the performance of SIS mixers (example below).
 
 ![](example.png)
 
-Please see the ``QMix/examples/`` directory or the [QMix website](https://garrettj403.github.io/QMix/single-tone-simple.html) for more examples! 
+Please see ``QMix/examples/`` or the [QMix website](https://garrettj403.github.io/QMix/single-tone-simple.html) for more examples! 
 
 Citing QMix
 -----------
@@ -46,6 +46,11 @@ If you use QMix, please cite the Zenodo archive:
       doi          = {10.5281/zenodo.2538163},
       url          = {https://doi.org/10.5281/zenodo.2538163}
     }
+
+License
+-------
+
+QMix uses a GPL v3 license. Please see ``QMix/LICENSE`` for more information.
 
 References
 ----------
