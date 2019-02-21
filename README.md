@@ -1,16 +1,16 @@
 # QMix
 
-***Q**uantum* ***Mix**ing software*
+**Quantum Mixing software**
 
 [![GitHub version](https://badge.fury.io/gh/garrettj403%2FQMix.svg)](https://badge.fury.io/gh/garrettj403%2FQMix)
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://github.com/garrettj403/QMix/blob/master/LICENSE)
 [![Build Status](https://travis-ci.org/garrettj403/QMix.svg?branch=master)](https://travis-ci.org/garrettj403/QMix)
-[![Zenodo](https://zenodo.org/badge/DOI/10.5281/zenodo.2538163.svg)](https://doi.org/10.5281/zenodo.2538163)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.2557839.svg)](https://doi.org/10.5281/zenodo.2557839)
 [![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/garrettj403/QMix/blob/master/CONTRIBUTING.md)
 
 QMix is a software package for simulating the quasiparticle tunneling currents in Superconductor/Insulator/Superconductor (SIS) junctions. These junctions are commonly used for heterodyne mixing at millimeter and submillimeter wavelengths. QMix can be used to simulate their performance, investigate their experimental results and optimize their operation.
 
-In order to calculate the quasiparticle tunneling currents, QMix uses *multi-tone spectral domain analysis* (see references below for more information). This makes QMix ideal for simulating higher-order harmonics, power saturation, sub-harmonic pumping and frequency multiplication.
+In order to calculate the quasiparticle tunneling currents, QMix uses **multi-tone spectral domain analysis** (see references below). This makes QMix ideal for simulating power saturation, higher-order harmonics, sub-harmonic pumping and frequency multiplication.
 
 **Website:** https://garrettj403.github.io/QMix/
 
@@ -24,34 +24,40 @@ The easiest way to install QMix is using ``pip``:
 Support 
 -------
 
-The [QMix website](https://garrettj403.github.io/QMix/) contains much more information on the QMix package. If you still have any problems, please create a new issue through the [GitHub issue tracker](https://github.com/garrettj403/QMix/issues) with the ``help wanted`` or ``question`` tag. In your message, please include your operating system, your Python version, and your package versions (QMix, Numpy, SciPy and Matplotlib).
+The [QMix website](https://garrettj403.github.io/QMix/) has much more information on how to use the QMix package. If you run into any problems, please create an issue through the [GitHub issue tracker](https://github.com/garrettj403/QMix/issues) with the ``help wanted`` or ``question`` tag. In your message, please include your operating system, Python version, and package versions for QMix, Numpy, SciPy and Matplotlib.
 
 Contributing to QMix
 --------------------
 
-If you would like to contribute to the QMix project, please see [``QMix/CONTRIBUTING.md``](https://github.com/garrettj403/QMix/blob/master/CONTRIBUTING.md). This document includes information on reporting bugs, requesting new features and creating pull requests.
+If you would like to contribute to the QMix project, please take a look at [``QMix/CONTRIBUTING.md``](https://github.com/garrettj403/QMix/blob/master/CONTRIBUTING.md). This document includes information on reporting bugs, requesting new features, creating pull requests and contributing new code.
 
 Examples
 --------
 
-QMix can be used to simulate a wide variety of SIS behavior. A simple example is shown below for an SIS mixer at 230 GHz. Please see ``QMix/examples/`` or the [QMix website](https://garrettj403.github.io/QMix/single-tone-simple.html) for more examples! 
+QMix can be used to simulate a wide variety of SIS junction behavior. A simple example is shown below for simulating an SIS mixer at 230 GHz. Please see ``QMix/examples/`` or the [QMix website](https://garrettj403.github.io/QMix/single-tone-simple.html) for more! 
 
 ![](example.png)
 
 Citing QMix
 -----------
 
-If you use QMix, please cite the Zenodo archive:
+If you use QMix, please cite the Zenodo archive: 
+
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.2557839.svg)](https://doi.org/10.5281/zenodo.2557839)
 
     @article{Garrett2019,
       author       = {J. D. Garrett and G. Yassin},
-      title        = {{garrettj403/QMix  (Version v1.0.0)}},
-      month        = jan,
+      title        = {{garrettj403/QMix  (Version v1.0.1)}},
+      month        = feb,
       year         = 2019,
       publisher    = {Zenodo},
-      doi          = {10.5281/zenodo.2538163},
-      url          = {https://doi.org/10.5281/zenodo.2538163}
+      doi          = {10.5281/zenodo.2557839},
+      url          = {http://doi.org/10.5281/zenodo.2557839}
     }
+
+We have also submitted a paper to the Journal of Open Source Software. Once this paper is accepted, please cite this paper instead of the Zenodo archive (or both!).
+
+[![status](http://joss.theoj.org/papers/00018094ad4ceb3165ed9515e6f912a4/status.svg)](http://joss.theoj.org/papers/00018094ad4ceb3165ed9515e6f912a4)
 
 References
 ----------
