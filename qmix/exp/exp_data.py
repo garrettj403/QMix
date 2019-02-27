@@ -78,67 +78,69 @@ _file_structure = {'DC IV data':          '01_dciv/',
 # CLASSES FOR RAW DATA -------------------------------------------------------
 
 class RawData0(object):
-    """Class for experimental DC data (i.e., no LO present).
+    """Class for importing and analyzing experimental DC data (with no LO).
 
     Note:
 
         See ``qmix.exp.parameters.params`` for all possible keyword arguments.
 
     Args:
-        dciv_file: file path for unpumped I-V data
+        dciv_file: file path for unpumped I-V curve
 
     Keyword arguments:
-        dcif_file (str): file path for unpumped IF data
+        dcif_file (str): file path for unpumped IF data (default is None)
         area (float): area of the junction in um^2 (default is 1.5)
         comment (str): add comment to this instance (default is '')
-        filter_data (bool): smooth/filter the I-V data (default is True)
-        i_fmt (str): units for current ('uA', 'mA', etc.)
-        igap_guess (float): Gap current estimate (used to temporarily normalize the input data during filtering)
-        ioffset (float): current offset
-        rseries (float): Remove the effect of a series resistance
-        v_fmt (str): units for voltage ('mV', 'V', etc.)
-        v_smear (float): smear DC I-V by this amount when generating response function
-        vgap_guess (float): Gap voltage estimate (used to temporarily normalize the input data during filtering)
-        voffset (float): voltage offset
-        vmax (float): maximum voltage value to import (in case the I-V curve saturates at some point)
-        vrsg (float): The voltage to calculate the subgap resistance at
+        filter_data (bool): smooth the I-V data (default is True)
+        i_fmt (str): units for current: 'uA', 'mA', etc. (default is 'mA')
+        igap_guess (float): Gap current estimate, used to temporarily normalize the input data while filtering (default is 2e-4 A)
+        ioffset (float): current offset (default is None)
+        rseries (float): Remove influence of a series resistance (default is None)
+        v_fmt (str): units for voltage: 'mV', 'V', etc. (default is 'mV')
+        v_smear (float): smear DC I-V by this amount when generating smeared response function (default is 0.020)
+        vgap_guess (float): Gap voltage estimate, used to temporarily normalize the input data while filtering (default is 2.7e-3 V)
+        voffset (float): voltage offset (default is None)
+        vmax (float): maximum voltage value to import, used in case the I-V curve saturates at some point
+        vrsg (float): The voltage at which to calculate the subgap resistance (default is 2e-3 V)
 
     """
 
-    def __init__(self, dciv_file, dcif_file=None, **kwargs):
+    def __init__(self, dciv_file, dcif_file=None, **kw):
 
         # Import keyword arguments
         tmp = deepcopy(params)
-        tmp.update(kwargs)
-        kwargs = tmp
+        tmp.update(kw)
+        kw = tmp
 
         # Unpack keyword arguments
-        comment = kwargs['comment']
-        v_smear = kwargs['v_smear']
-        vleak = kwargs['vleak']
-        area = kwargs['area']
-        verbose = kwargs['verbose']
+        comment = kw['comment']
+        v_smear = kw['v_smear']
+        vleak   = kw['vleak']
+        area    = kw['area']
+        verbose = kw['verbose']
 
-        self.kwargs = kwargs
+        self.kwargs    = kw
         self.file_path = dciv_file
-        self.comment = comment
+        self.comment   = comment
+        self.vleak     = vleak
 
         # Get DC I-V data
-        self.voltage, self.current, self.dc = dciv_curve(dciv_file, **kwargs)
-        self.vgap = self.dc.vgap
-        self.igap = self.dc.igap
-        self.fgap = self.dc.fgap
-        self.rn = self.dc.rn
-        self.rsg = self.dc.rsg
-        self.q = self.rsg / self.rn
-        self.rna = self.rn * area * 1e-12
-        self.jc = self.vgap / self.rna
+        self.voltage, self.current, self.dc = dciv_curve(dciv_file, **kw)
+        
+        # Unpack DC I-V metadata
+        self.vgap   = self.dc.vgap
+        self.igap   = self.dc.igap
+        self.fgap   = self.dc.fgap
+        self.rn     = self.dc.rn
+        self.rsg    = self.dc.rsg
+        self.q      = self.rsg / self.rn
+        self.rna    = self.rn * area * 1e-12
+        self.jc     = self.vgap / self.rna
         self.offset = self.dc.offset
-        self.vint = self.dc.vint
-        self.vleak = vleak
-        self.ileak = np.interp(vleak / self.vgap,
-                               self.voltage,
-                               self.current) * self.igap
+        self.vint   = self.dc.vint
+        self.ileak  = np.interp(vleak / self.vgap,
+                                self.voltage,
+                                self.current) * self.igap
 
         # Generate response function from DC I-V curve
         self.resp = RespFnFromIVData(self.voltage, self.current,
@@ -152,26 +154,28 @@ class RawData0(object):
 
         # Import DC IF data (if it exists)
         if dcif_file is not None:
-            self.if_data, dcif = dcif_data(dcif_file, self.dc, **kwargs)
-            self.dcif = dcif
-            self.if_noise = dcif.if_noise
-            self.corr = dcif.corr
+            # Import
+            self.if_data, dcif = dcif_data(dcif_file, self.dc, **kw)
+            # Unpack DC IF metadata
+            self.dcif       = dcif
+            self.if_noise   = dcif.if_noise
+            self.corr       = dcif.corr
             self.shot_slope = dcif.shot_slope
-            self.if_fit = dcif.if_fit
+            self.if_fit     = dcif.if_fit
         else:  # pragma: no cover
-            self.dcif = None
-            self.if_data = None
-            self.if_noise = None
-            self.corr = None
+            self.dcif       = None
+            self.if_data    = None
+            self.if_noise   = None
+            self.corr       = None
             self.shot_slope = None
-            self.if_fit = None
+            self.if_fit     = None
 
         if verbose:
             print(self)
 
     def __str__(self):  # pragma: no cover
 
-        fgap = self.vgap * sc.e / sc.h / sc.giga
+        fgap = self.vgap * sc.e / sc.h / sc.giga  # gap voltage
 
         message = "\033[35m\nDC I-V data:\033[0m {0}\n".format(self.comment)
         message += "\tVgap:  \t\t{:6.2f}\tmV\n".format(self.vgap * 1e3)
@@ -203,29 +207,41 @@ class RawData0(object):
 
         print(self)
 
-    def plot_dciv(self, fig_name=None, vmax_plot=4., **kw):  # pragma: no cover
-        """Plot DC I-V data.
+    def plot_dciv(self, fig_name=None, ax=None, vmax_plot=4., **kw):  # pragma: no cover
+        """Plot DC I-V curve.
 
+        Some additional labels will be added as well, including normal-state
+        resistance, subgap resistance, gap voltage, and gap current.
+        
+        Note: If ``fig_name`` is provided, this method will save the plot 
+        to the specified folder. If ``ax`` is provided, this method will return
+        the Matplotlib axis. **Do not define both.** 
+        
         Args:
-            fig_name: figure filename
-            vmax_plot: max voltage to include in plot (in mV)
-            kw (dict): keyword arguments (not used)
+            fig_name (str): figure filename
+            ax: Matplotlib axis
+            vmax_plot (float): max voltage to include in plot (in mV)
+            kw: keyword arguments (not used)
 
         """
 
+        # Check plotting arguments
+        # assert fig_name is None or ax is None
+
         # Unnormalize the data
-        mv = self.vgap * 1e3  # mV
-        ua = self.vgap / self.rn * 1e6  # uA
+        mv = self.vgap * 1e3  # norm -> mV
+        ua = self.vgap / self.rn * 1e6  # norm -> uA
         v_mv = self.voltage * mv
         i_ua = self.current * ua
+        v_v = v_mv / 1000
 
-        # Other values for plotting
+        # Other values to plot
         rn_slope = -self.vint / self.rn * 1e6 + self.voltage * ua
         i_at_gap = np.interp([1.], self.voltage, self.current) * ua
         i_leak = np.interp(self.vleak / self.vgap, self.voltage, self.current)
 
-        # Subgap resistance
-        mask = (self.vleak * 999.9 < v_mv) & (v_mv < self.vleak * 1000.1)
+        # Fit sub-gap resistance
+        mask = (self.vleak - 0.2e-3 < v_v) & (v_v < self.vleak + 0.2e-3)
         psg = np.polyfit(v_mv[mask], i_ua[mask], 1)
 
         # Strings for legend labels
@@ -236,158 +252,221 @@ class RawData0(object):
         lgd_str5 = r'$R_\mathrm{{sg}}$ = %.1f $\Omega$' % self.rsg
 
         # Plot DC I-V curve
-        fig, ax = plt.subplots()
-        plt.plot(v_mv, i_ua, label=lgd_str1)
-        plt.plot(self.vgap * 1e3, i_at_gap,
-                 marker='o', ls='None', color='r',
-                 mfc='None', markeredgewidth=1,
-                 label=lgd_str3)
-        plt.plot(2, i_leak * ua,
-                 marker='o', ls='None', color='g',
-                 mfc='None', markeredgewidth=1,
-                 label=lgd_str4)
-        plt.plot(v_mv, rn_slope, 'k--', label=lgd_str2)
-        plt.plot(v_mv, np.polyval(psg, v_mv), 'k:', label=lgd_str5)
-        plt.xlabel('Bias Voltage (mV)')
-        plt.ylabel(r'Current ($\mu$A)')
+        if ax is None:
+            fig, ax = plt.subplots()
+        ax.plot(v_mv, i_ua, label=lgd_str1)
+        # Label gap
+        ax.plot(self.vgap * 1e3, i_at_gap, 
+                marker='o', ls='None', color='r', mfc='None', 
+                markeredgewidth=1, label=lgd_str3)
+        # Label leakage current
+        ax.plot(2, i_leak * ua,
+                marker='o', ls='None', color='g', mfc='None', 
+                markeredgewidth=1, label=lgd_str4)
+        # Fit line to normal resistance slope
+        ax.plot(v_mv, rn_slope, 'k--', label=lgd_str2)
+        # Fit line to sub-gap resistance
+        ax.plot(v_mv, np.polyval(psg, v_mv), 'k:', label=lgd_str5)
+        # Set max voltage
         idx = np.abs(vmax_plot - v_mv).argmin()
-        plt.xlim([0, v_mv[idx]])
-        plt.ylim([0, i_ua[idx]])
-        plt.minorticks_on()
-        plt.legend(loc=2, fontsize=8)
-        if fig_name is None:
-            plt.show()
-        else:
+        ax.set_xlim([0, v_mv[idx]])
+        ax.set_ylim([0, i_ua[idx]])
+        # Set figure properties
+        ax.set_xlabel(r'Bias Voltage (mV)')
+        ax.set_ylabel(r'Current ($\mu$A)')
+        ax.minorticks_on()
+        ax.legend(loc=2, fontsize=8)
+        if fig_name is not None:
             fig.savefig(fig_name, **_plot_params)
             plt.close(fig)
+        else:
+            return ax
 
-    def plot_offset(self, fig_name=None, **kw):  # pragma: no cover
-        """Plot offset in DC I-V data.
+    def plot_offset(self, fig_name=None, ax=None, **kw):  # pragma: no cover
+        """Plot DC I-V curve at the origin to see if there is an offset.
 
+        Note: If ``fig_name`` is provided, this method will save the plot 
+        to the specified folder. If ``ax`` is provided, this method will return
+        the Matplotlib axis. **Do not define both.**
+        
         Args:
-            fig_name: figure filename
-            kw (dict): keyword arguments (not used)
+            fig_name (str): figure filename
+            ax: Matplotlib axis
+            kw: keyword arguments (not used)
 
         """
 
-        # Unnormalize the data
-        mv = self.vgap * 1e3  # norm. voltage to mV
-        ua = self.vgap / self.rn * 1e6  # norm. current to uA
+        # Check arguments
+        # assert fig_name is None or ax is None
 
-        mask = (-0.2 < self.voltage * mv) & (self.voltage * mv < 0.2)
+        # Unnormalize the data
+        mv = self.vgap * 1e3  # norm -> mV
+        ua = self.vgap / self.rn * 1e6  # norm -> uA
+        v_mv = self.voltage * mv
+        i_ua = self.current * ua
+
+        # Only plot around the origin
+        mask = (-0.2 < v_mv) & (v_mv < 0.2)
 
         # Plot offset (to make sure it was corrected properly)
-        fig, ax = plt.subplots()
-        ax.plot(self.voltage[mask] * mv, 
-                self.current[mask] * ua)
+        if ax is None:
+            fig, ax = plt.subplots()
+        ax.plot(v_mv[mask], i_ua[mask])
         ax.set_xlim([-0.2, 0.2])
-        ax.set_xlabel('Bias Voltage (mV)')
+        ax.set_xlabel(r'Bias Voltage (mV)')
         ax.set_ylabel(r'Current ($\mu$A)')
         ax.minorticks_on()
         ax.grid()
-        if fig_name is None:
-            plt.show()
-        else:
+        if fig_name is not None:
             fig.savefig(fig_name, **_plot_params)
             plt.close(fig)
+        else:
+            return ax
 
-    def plot_rdyn(self, fig_name=None, vmax_plot=4., **kw):  # pragma: no cover
-        """Plot dynamic resistance of DC I-V data.
+    def plot_rdyn(self, fig_name=None, ax=None, vmax_plot=4., **kw):  # pragma: no cover
+        """Plot dynamic resistance of the DC I-V curve.
+        
+        The dynamic resistance is the derivative of the I-V data, inverted to
+        get resistance.
 
+        Note: If ``fig_name`` is provided, this method will save the plot 
+        to the specified folder. If ``ax`` is provided, this method will return
+        the Matplotlib axis. **Do not define both.**
+        
         Args:
             fig_name: figure filename
+            ax: Matplotlib axis
             vmax_plot: max voltage to include in plot (in mV)
             kw (dict): keyword arguments (not used)
 
         """
 
-        x = self.voltage * self.vgap * 1e3
-        y = self.current * self.igap * 1e3 
-        d_r_filt = slope_span_n(x, y, 11)
+        # Check arguments
+        # assert not fig_name is not None and ax is not None
+
+        # De-normalize
+        v_mv = self.voltage * self.vgap * 1e3
+        i_ma = self.current * self.igap * 1e3
+
+        # Calculate dynamic resistance
+        rdyn = slope_span_n(v_mv, i_ma, 11)
 
         # Plot dynamic resistance
-        fig, ax = plt.subplots()
-        ax.semilogy(x, 1 / d_r_filt)
-        ax.set_xlabel('Bias Voltage (mV)')
+        if ax is None:
+            fig, ax = plt.subplots()
+        ax.semilogy(v_mv, 1 / rdyn)
+        ax.set_xlabel(r'Bias Voltage (mV)')
         ax.set_ylabel(r'Dynamic Resistance ($\Omega$)')
         ax.set_xlim([0, vmax_plot])
         ax.minorticks_on()
-        if fig_name is None:
-            plt.show()
-        else:
+        if fig_name is not None:
             fig.savefig(fig_name, **_plot_params)
             plt.close(fig)
+        else:
+            return ax
 
-    def plot_rstat(self, fig_name=None, vmax_plot=4., **kw):  # pragma: no cover
+    def plot_rstat(self, fig_name=None, ax=None, vmax_plot=4., **kw):  # pragma: no cover
         """Plot static resistance of DC I-V data.
+        
+        The static resistance is the DC voltage divided by the DC current.
 
+        Note: If ``fig_name`` is provided, this method will save the plot 
+        to the specified folder. If ``ax`` is provided, this method will return
+        the Matplotlib axis. **Do not define both.**
+        
         Args:
             fig_name: figure filename
+            ax: Matplotlib axis
             vmax_plot: max voltage to include in plot (in mV)
             kw (dict): keyword arguments (not used)
 
         """
 
-        mask = (0 < self.voltage) & (self.voltage*self.vgap*1e3 < vmax_plot)
-        x = self.voltage[mask] * self.vgap * 1e3
-        y = self.current[mask] * self.igap * 1e3
-        r_stat = x / y
+        # Check arguments
+        # assert fig_name is not None and ax is not None
+
+        # De-normalize
+        v_mv = self.voltage * self.vgap * 1e3
+        i_ma = self.current * self.igap * 1e3
+
+        # Only plot up to a given voltage
+        mask = (0 < v_mv) & (v_mv < vmax_plot)
+        v_mv, i_ma = v_mv[mask], i_ma[mask]
+
+        # Calculate static resistance
+        r_stat = v_mv / i_ma
 
         # Plot static resistance
-        fig, ax = plt.subplots()
-        plt.plot(x, r_stat)
-        plt.xlabel('Bias Voltage (mV)')
-        plt.ylabel(r'Static Resistance ($\Omega$)')
-        plt.xlim([0, vmax_plot])
-        plt.ylim(bottom=0)
-        plt.minorticks_on()
-        if fig_name is None:
-            plt.show()
-        else:
+        if ax is None:
+            fig, ax = plt.subplots()
+        ax.plot(v_mv, r_stat)
+        ax.set_xlabel(r'Bias Voltage (mV)')
+        ax.set_ylabel(r'Static Resistance ($\Omega$)')
+        ax.set_xlim([0, vmax_plot])
+        ax.set_ylim(bottom=0)
+        ax.minorticks_on()
+        if fig_name is not None:
             fig.savefig(fig_name, **_plot_params)
             plt.close(fig)
+        else:
+            return ax
 
-    def plot_if_noise(self, fig_name=None, **kw):  # pragma: no cover
+    def plot_if_noise(self, fig_name=None, ax=None, **kw):  # pragma: no cover
         """Plot IF noise.
+        
+        The IF noise is calculated from the slope of the shot noise.
 
+        Note: If ``fig_name`` is provided, this method will save the plot 
+        to the specified folder. If ``ax`` is provided, this method will return
+        the Matplotlib axis. **Do not define both.**
+        
         Args:
             fig_name: figure filename
+            ax: Matplotlib axis (should be tuple with two axes)
             kw (dict): keyword arguments (not used)
 
         """
+
+        # Check arguments
+        # assert fig_name is not None and ax is not None
 
         if self.if_data is None:
             print('No DC IF data loaded.')
             return
 
-        # Unnormalize the data (to mV and uA)
-        mv = self.vgap * 1e3
-        ua = self.igap * 1e6
-
+        # Line that fits to normal-state resistance
         rslope = (self.voltage * self.vgap /
                   self.rn - self.vint / self.rn) * 1e6
 
+        # Denormalize data
+        mv = self.vgap * 1e3  # norm -> mV
+        ua = self.igap * 1e6  # norm -> uA
         v_mv = self.voltage * mv
         i_ua = self.current * ua
-        vmax = v_mv.max()
-        imax = i_ua.max()
+        # vmax = v_mv.max()
+        # imax = i_ua.max()
 
-        fig1, (ax1, ax2) = plt.subplots(2, sharex=True, figsize=(6, 9))
+        if ax is None:
+            fig, (ax1, ax2) = plt.subplots(2, sharex=True, figsize=(6, 9))
+        else:
+            ax1, ax2 = ax
         plt.subplots_adjust(hspace=0., wspace=0.)
+
+        # Plot DC I-V curve
         ax1.plot(v_mv, i_ua, label='DC I-V')
         ax1.plot(v_mv, rslope, 'k--', label=r'$R_\mathrm{{n}}^{{-1}}$ slope')
-        ax1.axvline(self.vint * 1e3, c='k', ls=':',
-                    lw=0.5, label=r'$V_\mathrm{{int}}$')
+        ax1.axvline(self.vint * 1e3, c='k', ls=':', lw=0.5, label=r'$V_\mathrm{{int}}$')
         ax1.set_ylabel(r'Current ($\mu$A)')
         ax1.set_ylim(bottom=0)
         ax1.set_xlim(left=0)
         ax1.legend(loc=4, fontsize=8, frameon=False)
 
+        # Plot DC IF data
         v_mv = self.if_data[:, 0] * mv
         ax2.plot(v_mv, self.if_data[:, 1], _pale_red, label='IF (unpumped)')
         ax2.plot(self.shot_slope[:, 0] * self.vgap * 1e3,
                  self.shot_slope[:, 1], 'k--', label='Shot noise slope')
-        plt.plot(self.vint * 1e3, self.if_noise,
+        ax2.plot(self.vint * 1e3, self.if_noise,
                  marker='o', ls='None', color='r',
                  mfc='None', markeredgewidth=1,
                  label='IF Noise: {0:.2f} K'.format(self.if_noise))
@@ -397,10 +476,12 @@ class RawData0(object):
         ax2.set_xlim([0, v_mv.max()])
         ax2.set_ylim(bottom=0)
         ax2.legend(loc=4, fontsize=8, frameon=False)
-        if fig_name is None:
-            plt.show()
+
+        if fig_name is not None:
+            fig.savefig(fig_name, **_plot_params)
+            plt.close(fig)
         else:
-            fig1.savefig(fig_name, **_plot_params)
+            return ax1, ax2
 
     def plot_all(self, fig_folder, sub_folder=None, **kw):  # pragma: no cover
         """Plot all DC data and save it to a specified directory.
@@ -446,7 +527,7 @@ class RawData0(object):
 
 
 class RawData(object):
-    """Class for experimental pumped data (i.e., LO present).
+    """Class for importing and analyzing experimental pumped data (LO present).
 
     Note:
 
@@ -468,45 +549,48 @@ class RawData(object):
 
     """
 
-    def __init__(self, iv_file, dciv, if_hot_file=None, if_cold_file=None, **kwargs):
+    def __init__(self, iv_file, dciv, if_hot_file=None, if_cold_file=None, **kw):
 
         # Import keyword arguments
         tmp = deepcopy(params)
-        tmp.update(kwargs)
-        kwargs = tmp
-        self.kwargs = kwargs
+        tmp.update(kw)
+        kw = tmp
+        self.kwargs = kw
 
-        comment = kwargs['comment']
-        freq = kwargs['freq']
-        analyze = kwargs['analyze']
-        analyze_if = kwargs['analyze_if']
-        analyze_iv = kwargs['analyze_iv']
-        verbose = kwargs['verbose']
+        # Unpack keyword arguments
+        comment    = kw['comment']
+        freq       = kw['freq']
+        analyze    = kw['analyze']
+        analyze_if = kw['analyze_if']
+        analyze_iv = kw['analyze_iv']
+        verbose    = kw['verbose']
 
+        # Analyze data? (i.e., calculate noise temp./gain/etc.)
         if analyze is not None:
             analyze_iv = analyze
             analyze_if = analyze
 
-        # I-V file path
+        # I-V data file path
         self.iv_file = iv_file
         self.directory = os.path.dirname(iv_file)
         self.iv_filename = os.path.basename(iv_file)
 
-        # Data from DC I-V curve (i.e., unpumped I-V curve)
-        self.dciv = dciv
-        self.vgap = dciv.dc.vgap
-        self.igap = dciv.dc.igap
-        self.fgap = dciv.dc.fgap
-        self.rn = dciv.rn
-        self.offset = dciv.offset
-        self.vint = dciv.vint
-        self.dc = dciv.dc
+        # Unpack DC I-V metadata
+        self.dciv       = dciv
+        self.vgap       = dciv.dc.vgap
+        self.igap       = dciv.dc.igap
+        self.fgap       = dciv.dc.fgap
+        self.rn         = dciv.rn
+        self.offset     = dciv.offset
+        self.vint       = dciv.vint
+        self.dc         = dciv.dc
         self.voltage_dc = dciv.voltage
         self.current_dc = dciv.current
 
+        # Frequency
         self.freq, self.freq_str = _get_freq(freq, iv_file)
-        kwargs['freq'] = self.freq
-        self.vph = self.freq / self.fgap * 1e9
+        kw['freq'] = self.freq
+        self.vph = self.freq / self.fgap * 1e9  # photon voltage
 
         # Print to terminal
         if verbose:
@@ -517,8 +601,10 @@ class RawData(object):
             print("\tIF cold file:\t{}".format(if_cold_file))
             print(" -> Frequency: {:.1f} GHz".format(self.freq))
 
-        # Import/analyze pumped I-V curve
-        self.voltage, self.current = iv_curve(iv_file, self.dc, **kwargs)
+        # Import pumped I-V curve
+        self.voltage, self.current = iv_curve(iv_file, self.dc, **kw)
+
+        # Dynamic resistance
         self.rdyn = slope_span_n(self.current, self.voltage, 21)
 
         # Impedance recovery
@@ -531,35 +617,38 @@ class RawData(object):
             self.zw = None
             self.alpha = None
 
-        # Import/analyze IF data
+        # Import and analyze IF data from hot/cold loads
         self.good_if_noise_fit = True
         if if_hot_file is not None and if_cold_file is not None and analyze_if:
-            self.filename_hot = os.path.basename(if_hot_file)
+
+            self.filename_hot  = os.path.basename(if_hot_file)
             self.filename_cold = os.path.basename(if_cold_file)
+
             # Import and analyze IF data
             results, self.idx_best, dcif = if_data(if_hot_file, if_cold_file,
                                                    self.dc, dcif=dciv.dcif,
-                                                   **kwargs)
+                                                   **kw)
+
             # Unpack results
-            self.if_hot = results[:, :2]
+            self.if_hot  = results[:, :2]
             self.if_cold = np.vstack((results[:, 0], results[:, 2])).T
-            self.tn = results[:, 3]
-            self.gain = results[:, 4]
+            self.tn      = results[:, 3]
+            self.gain    = results[:, 4]
             # DC IF values
-            self.if_noise = dcif.if_noise
-            self.corr = dcif.corr
-            self.shot_slope = dcif.shot_slope
+            self.if_noise          = dcif.if_noise
+            self.corr              = dcif.corr
+            self.shot_slope        = dcif.shot_slope
             self.good_if_noise_fit = dcif.if_fit
             # Best values
-            self.tn_best = self.tn[self.idx_best]
+            self.tn_best   = self.tn[self.idx_best]
             self.gain_best = self.gain[self.idx_best]
-            self.g_db = 10 * np.log10(self.gain[self.idx_best])
-            self.v_best = self.if_hot[self.idx_best, 0]
+            self.g_db      = 10 * np.log10(self.gain[self.idx_best])
+            self.v_best    = self.if_hot[self.idx_best, 0]
             # Dynamic resistance at optimal bias voltage
-            idx = np.abs(self.voltage - self.v_best).argmin()
-            p = np.polyfit(self.voltage[idx:idx + 10],
-                           self.current[idx:idx + 10], 1)
+            i = np.abs(self.voltage - self.v_best).argmin()
+            p = np.polyfit(self.voltage[i:i + 10], self.current[i:i + 10], 1)
             self.zj_if = self.rn / p[0]
+
         else:  # pragma: no cover
             self.filename_hot = None
             self.filename_cold = None
@@ -573,19 +662,20 @@ class RawData(object):
             self.shot_slope = None
             self.tn_best = None
             self.g_db = None
+
         if verbose:
             print("")
 
     def _recover_zemb(self, **kwargs):
-        """Recover the embedding impedance (i.e., the Thevenin impedance).
+        """Recover the embedding circuit (i.e., the Thevenin eqiv. circuit).
 
+        The technique used here is the RF voltage match method described by 
+        Skalare (1989) and Withington et al. (1995).
+            
         Note: 
 
             All currents and voltages are normalized to the gap voltage and 
             to the normal resistance, respectively. 
-
-            The technique used here is the RF voltage match method described 
-            by Skalare (1989) and Withington et al. (1995).
 
         Args:
             kwargs: Keyword arguments
@@ -604,7 +694,7 @@ class RawData(object):
 
         """
 
-        fit_low = self.kwargs.get('cut_low', 0.25)
+        fit_low  = self.kwargs.get('cut_low', 0.25)
         fit_high = self.kwargs.get('cut_high', 0.2)
 
         remb_range = self.kwargs.get('remb_range', (0, 1))
@@ -679,93 +769,122 @@ class RawData(object):
 
         self.err_surf = err_surf
 
-    def plot_iv(self, fig_name=None, vmax_plot=4.):  # pragma: no cover
+    def plot_iv(self, fig_name=None, ax=None, vmax_plot=4.):  # pragma: no cover
         """Plot pumped I-V curve.
 
+        Note: If ``fig_name`` is provided, this method will save the plot 
+        to the specified folder. If ``ax`` is provided, this method will return
+        the Matplotlib axis. **Do not define both.**
+        
         Args:
             fig_name: figure filename
+            ax: Matplotlib axis
             vmax_plot: max voltage to include in plot (in mV)
 
         """
 
+        # Check arguments
+        # assert fig_name is not None and ax is not None
+
+        # DC I-V curve
         dciv = self.dciv
-        vmv = dciv.vgap * 1e3
-        iua = dciv.igap * 1e6
+
+        # De-normalize
+        vmv = dciv.vgap * 1e3  # norm -> mV
+        iua = dciv.igap * 1e6  # norm -> uA
 
         imax = np.interp(vmax_plot, dciv.voltage * vmv, dciv.current * iua)
 
-        fig, ax = plt.subplots()
-        plt.plot(dciv.voltage * vmv, 
-                 dciv.current * iua, label="Unpumped")
-        plt.plot(self.voltage * vmv, 
-                 self.current * iua, 'r', label="Pumped")
-        plt.xlabel(r'Bias Voltage (mV)')
-        plt.ylabel(r'DC Current (uA)')
-        plt.xlim([0, vmax_plot])
-        plt.ylim([0, imax])
+        if ax is None:
+            fig, ax = plt.subplots()
+        ax.plot(dciv.voltage * vmv, dciv.current * iua, label="Unpumped")
+        ax.plot(self.voltage * vmv, self.current * iua, 'r', label="Pumped")
+        ax.set_xlabel(r'Bias Voltage (mV)')
+        ax.set_ylabel(r'DC Current (uA)')
+        ax.set_xlim([0, vmax_plot])
+        ax.set_ylim([0, imax])
         msg = 'LO: {:.1f} GHz'.format(self.freq)
-        plt.legend(loc=2, title=msg, frameon=False)
-        plt.minorticks_on()
-        if fig_name is None:
-            plt.show()
-        else:
+        ax.legend(loc=2, title=msg, frameon=False)
+        ax.minorticks_on()
+        if fig_name is not None:
             fig.savefig(fig_name, **_plot_params)
             plt.close(fig)
+        else:
+            return ax
 
-    def plot_if(self, fig_name=None, vmax_plot=4.):  # pragma: no cover
-        """Plot IF data.
+    def plot_if(self, fig_name=None, ax=None, vmax_plot=4.):  # pragma: no cover
+        """Plot IF power from hot and cold loads.
 
+        Note: If ``fig_name`` is provided, this method will save the plot 
+        to the specified folder. If ``ax`` is provided, this method will return
+        the Matplotlib axis. **Do not define both.**
+        
         Args:
             fig_name: figure filename
+            ax: Matplotlib axis
             vmax_plot: max voltage to include in plot (in mV)
 
         """
 
+        # Check arguments
+        # assert fig_name is not None and ax is not None
+
+        # De-normalize voltage
         v_mv = self.if_hot[:, 0] * self.vgap * 1e3
 
         # Plot IF data
-        fig, ax = plt.subplots()
-        plt.plot(v_mv, self.if_hot[:, 1], _pale_red, label='Hot')
-        plt.plot(v_mv, self.if_cold[:, 1], _pale_blue, label='Cold')
+        if ax is None:
+            fig, ax = plt.subplots()
+        ax.plot(v_mv, self.if_hot[:, 1], _pale_red, label='Hot')
+        ax.plot(v_mv, self.if_cold[:, 1], _pale_blue, label='Cold')
         if self.dciv.if_data is not None:
             v_tmp = self.dciv.if_data[:, 0] * self.vgap * 1e3
-            plt.plot(v_tmp, self.dciv.if_data[:, 1], 'k--', label='No LO')
-        plt.xlabel('Bias Voltage (mV)')
-        plt.ylabel('IF Power (K)')
-        plt.ylim(bottom=0)
-        plt.xlim([0, vmax_plot])
+            ax.plot(v_tmp, self.dciv.if_data[:, 1], 'k--', label='No LO')
+        ax.set_xlabel('Bias Voltage (mV)')
+        ax.set_ylabel('IF Power (K)')
+        ax.set_ylim(bottom=0)
+        ax.set_xlim([0, vmax_plot])
         msg = 'LO: {:.1f} GHz'.format(self.freq)
-        plt.legend(loc=1, title=msg, frameon=False)
-        plt.minorticks_on()
-        if fig_name is None:
-            plt.show()
-        else:
+        ax.legend(loc=1, title=msg, frameon=False)
+        ax.minorticks_on()
+        if fig_name is not None:
             fig.savefig(fig_name, **_plot_params)
             plt.close(fig)
+        else:
+            return ax
 
-    def plot_ivif(self, fig_name=None, vmax_plot=4.):  # pragma: no cover
+    def plot_ivif(self, fig_name=None, ax=None, vmax_plot=4.):  # pragma: no cover
         """Plot IV and IF data on same plot.
 
+        Note: If ``fig_name`` is provided, this method will save the plot 
+        to the specified folder. If ``ax`` is provided, this method will return
+        the Matplotlib axis. **Do not define both.**
+        
         Args:
             fig_name: figure filename
+            ax: Matplotlib axis (should be tuple with two axes)
             vmax_plot: max voltage to include in plot (in mV)
 
         """
 
-        v_mv = self.vgap * 1e3
-        i_ua = self.vgap / self.rn * 1e6
+        # Check arguments
+        # assert fig_name is not None and ax is not None
 
-        imax = np.interp(vmax_plot, 
-                         self.voltage_dc * v_mv, 
-                         self.current_dc * i_ua)
+        # De-normalize
+        mv = self.vgap * 1e3
+        ua = self.vgap / self.rn * 1e6
 
-        # Plot I-V + IF data
-        fig, ax1 = plt.subplots()
-        ax1.plot(self.voltage_dc * v_mv, 
-                 self.current_dc * i_ua, 
+        imax = np.interp(vmax_plot, self.voltage_dc * mv, self.current_dc * ua)
+
+        if ax is None:
+            fig, ax1 = plt.subplots()
+        else:
+            ax1, ax2 = ax
+
+        # Plot I-V data
+        ax1.plot(self.voltage_dc * mv, self.current_dc * ua,
                  '#8c8c8c', label="Unpumped")
-        ax1.plot(self.voltage * v_mv, 
-                 self.current * i_ua, 
+        ax1.plot(self.voltage * mv, self.current * ua,
                  'k', label="Pumped")
         ax1.set_xlabel('Bias Voltage (mV)')
         ax1.set_ylabel(r'DC Current ($\mu$A)')
@@ -773,61 +892,82 @@ class RawData(object):
         ax1.legend(loc=2, fontsize=6, frameon=True, framealpha=1.)
         ax1.grid(False)
 
-        v_mv = self.if_hot[:, 0] * self.vgap * 1e3
-        
+        # Plot IF data
+        mv = self.if_hot[:, 0] * self.vgap * 1e3
         ax2 = ax1.twinx()
-        ax2.plot(v_mv, self.if_hot[:, 1], '#f96b6b', label='Hot')
-        ax2.plot(v_mv, self.if_cold[:, 1], '#6ba2f9', label='Cold')
+        ax2.plot(mv, self.if_hot[:, 1], '#f96b6b', label='Hot')
+        ax2.plot(mv, self.if_cold[:, 1], '#6ba2f9', label='Cold')
         ax2.set_ylabel('IF Power (K)')
         ax2.legend(loc=1, fontsize=6, framealpha=1., frameon=True)
         ax2.grid(False)
         ax2.set_ylim(bottom=0)
-        plt.xlim([0, vmax_plot])
+        ax2.set_xlim([0, vmax_plot])
         ax1.minorticks_on()
         ax2.minorticks_on()
-        
-        if fig_name is None:
-            plt.show()
-        else:
+
+        if fig_name is not None:
             fig.savefig(fig_name, **_plot_params)
             plt.close(fig)
+        else:
+            return ax1, ax2
 
-    def plot_shapiro(self, fig_name=None):  # pragma: no cover
-        """Plot shapiro steps.
+    def plot_shapiro(self, fig_name=None, ax=None):  # pragma: no cover
+        """Plot Shapiro steps.
 
+        Note: If ``fig_name`` is provided, this method will save the plot 
+        to the specified folder. If ``ax`` is provided, this method will return
+        the Matplotlib axis. **Do not define both.**
+        
         Args:
             fig_name: figure filename
+            ax: Matplotlib axis
 
         """
 
+        # Check arguments
+        # assert fig_name is not None and ax is not None
+
+        # De-normalize voltage
         v_mv = self.if_hot[:, 0] * self.vgap * 1e3
-        vtmp = float(self.freq)*1e9*sc.h/sc.e/2/sc.milli
-        mask = (0. < v_mv) & (v_mv < 3.5 * vtmp)
-        
-        fig, ax = plt.subplots()
+
+        # Calculate Shaprio voltage separation
+        f_hz = float(self.freq) * 1e9
+        vshapiro = f_hz * sc.h / sc.e / 2 / sc.milli
+        mask = (0. < v_mv) & (v_mv < 3.5 * vshapiro)
+
+        if ax is None:
+            fig, ax = plt.subplots()
         ax.plot(v_mv[mask], self.if_hot[mask, 1], '#f96b6b', label='Hot')
         ax.plot(v_mv[mask], self.if_cold[mask, 1], '#6ba2f9', label='Cold')
-        ax.axvline(vtmp, label=r'$\omega_{_\mathrm{LO}} h/2e$', c='k', ls='--')
-        ax.axvline(2*vtmp, c='k', ls='--')
-        ax.axvline(3*vtmp, c='k', ls='--')
-        ax.set_xlim([0, 3.5*vtmp])
+        ax.axvline(vshapiro, label=r'$\omega_\mathrm{LO}h/2e$', c='k', ls='--')
+        ax.axvline(2 * vshapiro, c='k', ls='--')
+        ax.axvline(3 * vshapiro, c='k', ls='--')
+        ax.set_xlim([0, 3.5 * vshapiro])
         ax.set_xlabel('Bias Voltage (mV)')
         ax.set_ylabel('IF Power (K)')
         ax.minorticks_on()
         ax.legend()
-        if fig_name is None:
-            plt.show()
-        else:
+        if fig_name is not None:
             fig.savefig(fig_name, **_plot_params)
             plt.close(fig)
+        else:
+            return ax
 
-    def plot_if_noise(self, fig_name=None):  # pragma: no cover
+    def plot_if_noise(self, fig_name=None, ax=None):  # pragma: no cover
         """Plot IF noise.
 
+        Note: If ``fig_name`` is provided, this method will save the plot 
+        to the specified folder. If ``ax`` is provided, this method will return
+        the Matplotlib axis. **Do not define both.**
+        
         Args:
             fig_name: figure filename
+            ax: Matplotlib axis (should be tuple with two axes)
 
         """
+
+        # Check arguments
+        # assert fig_name is not None and ax is not None
 
         rslope = (self.voltage_dc * self.vgap /
                   self.rn - self.vint / self.rn) * 1e6
@@ -835,7 +975,10 @@ class RawData(object):
         vmax = self.voltage.max() * self.vgap * 1e3
         imax = self.current.max() * self.igap * 1e6
 
-        fig1, (ax1, ax2) = plt.subplots(2, sharex=True, figsize=(6, 9))
+        if ax is None:
+            fig, (ax1, ax2) = plt.subplots(2, sharex=True, figsize=(6, 9))
+        else:
+            ax1, ax2 = ax
         plt.subplots_adjust(hspace=0., wspace=0.)
 
         ax1.plot(self.dciv.voltage * self.vgap * 1e3, 
@@ -863,34 +1006,50 @@ class RawData(object):
         ax2.set_xlim([0, v_mv.max()])
         ax2.set_ylim([0, np.max(self.shot_slope) * 1.1])
         ax2.legend(loc=0)
-        
-        if fig_name is None:
-            plt.show()
-        else:
-            fig1.savefig(fig_name, **_plot_params)
 
-    def plot_noise_temp(self, fig_name=None, vmax_plot=4.):  # pragma: no cover
+        if fig_name is not None:
+            fig.savefig(fig_name, **_plot_params)
+            plt.close(fig)
+        else:
+            return ax1, ax2
+
+    def plot_noise_temp(self, fig_name=None, ax=None, vmax_plot=4.):  # pragma: no cover
         """Plot noise temperature.
 
+        Note: If ``fig_name`` is provided, this method will save the plot 
+        to the specified folder. If ``ax`` is provided, this method will return
+        the Matplotlib axis. **Do not define both.**
+        
         Args:
             fig_name: figure filename
+            ax: Matplotlib axis (should be tuple with two axes)
             vmax_plot: max voltage to include in plot (in mV)
 
         """
+
+        # Check arguments
+        # assert fig_name is not None and ax is not None
 
         v_mv = self.if_hot[:, 0] * self.vgap * 1e3
         hot = gauss_conv(self.if_hot[:, 1], 5)
         cold = gauss_conv(self.if_cold[:, 1], 5)
 
-        fig, ax1 = plt.subplots()
+        if ax is None:
+            fig, ax1 = plt.subplots()
+            ax2 = ax1.twinx()
+        else:
+            ax1, ax2 = ax
+
+        # Plot IF power from hot/cold loads
         l1 = ax1.plot(v_mv, hot, _pale_red, label='Hot IF')
         l2 = ax1.plot(v_mv, cold, _pale_blue, label='Cold IF')
         ax1.set_xlabel('Bias Voltage (mV)')
         ax1.set_ylabel('IF Power (K)')
         ax1.set_xlim([1, 3.5])
         ax1.set_ylim([0, hot.max() * 1.3])
+        ax1.grid(False)
 
-        ax2 = ax1.twinx()
+        # Plot noise temperature
         l3 = ax2.plot(v_mv, self.tn, _pale_green, ls='--', label='Noise Temp.')
         l4 = ax2.plot(v_mv[self.idx_best], self.tn_best,
                       label=r'$T_\mathrm{{n}}={:.1f}$ K'.format(self.tn_best),
@@ -901,36 +1060,49 @@ class RawData(object):
         ax2.set_xlim([0., vmax_plot])
         for tl in ax2.get_yticklabels():
             tl.set_color('g')
+        ax2.grid(False)
 
+        # Build legend
         lns = l1 + l2 + l3 + l4
         labs = [l.get_label() for l in lns]
         ax2.legend(lns, labs, loc=2, fontsize=7, frameon=True, framealpha=1.)
-        ax1.grid(False)
-        ax2.grid(False)
 
-        if fig_name is None:
-            plt.show()
-        else:
+        if fig_name is not None:
             fig.savefig(fig_name, **_plot_params)
             plt.close(fig)
+        else:
+            return ax1, ax2
 
-    def plot_yfac_noise_temp(self, fig_name=None, vmax_plot=4.):  # pragma: no cover
+    def plot_yfac_noise_temp(self, fig_name=None, ax=None, vmax_plot=4.):  # pragma: no cover
         """Plot Y-factor and noise temperature.
 
+        Note: If ``fig_name`` is provided, this method will save the plot 
+        to the specified folder. If ``ax`` is provided, this method will return
+        the Matplotlib axis. **Do not define both.**
+        
         Args:
             fig_name: figure filename
+            ax: Matplotlib axis
             vmax_plot: max voltage to include in plot (in mV)
 
         """
+
+        # Check arguments
+        # assert fig_name is not None and ax is not None
 
         # Plot y-factor and noise temperature
         v_mv = self.if_hot[:, 0] * self.vgap * 1e3
         hot = gauss_conv(self.if_hot[:, 1], 5)
         cold = gauss_conv(self.if_cold[:, 1], 5)
         yfac = hot / cold
-        
-        fig, ax1 = plt.subplots()
-        
+
+        if ax is None:
+            fig, ax1 = plt.subplots()
+            ax2 = ax1.twinx()
+        else:
+            ax1, ax2 = ax
+
+        # Plot y factor
         ax1.plot(v_mv, yfac, _dark_blue, label='Y-factor')
         ax1.axhline(293. / 77., c=_dark_blue, ls=':')
         ax1.set_xlabel('Bias Voltage (mV)')
@@ -938,8 +1110,8 @@ class RawData(object):
         for tl in ax1.get_yticklabels():
             tl.set_color(_dark_blue)
         ax1.set_ylim([1., 4.])
-        
-        ax2 = ax1.twinx()
+
+        # Plot noise temperature
         ax2.plot(v_mv, self.tn, _red, label='Noise Temp.')
         ax2.plot(v_mv[self.idx_best], self.tn_best,
                  marker='o', ls='None', color='k',
@@ -956,26 +1128,40 @@ class RawData(object):
             tl.set_color(_red)
         ax2.set_ylim([0, 300.])
         ax2.set_xlim([0., vmax_plot])
-        
-        if fig_name is None:
-            plt.show()
-        else:
+
+        if fig_name is not None:
             fig.savefig(fig_name, **_plot_params)
             plt.close(fig)
+        else:
+            return ax1, ax2
 
-    def plot_gain_noise_temp(self, fig_name=None, vmax_plot=4.):  # pragma: no cover
+    def plot_gain_noise_temp(self, fig_name=None, ax=None, vmax_plot=4.):  # pragma: no cover
         """Plot gain and noise temperature.
 
+        Note: If ``fig_name`` is provided, this method will save the plot 
+        to the specified folder. If ``ax`` is provided, this method will return
+        the Matplotlib axis. **Do not define both.**
+        
         Args:
             fig_name: figure filename
+            ax: Matplotlib axis
             vmax_plot: max voltage to include in plot (in mV)
 
         """
 
+        # Check arguments
+        # assert fig_name is not None and ax is not None
+
+        # De-normalize voltage
         v_mv = self.if_hot[:, 0] * self.vgap * 1e3
 
-        fig, ax1 = plt.subplots()
+        if ax is None:
+            fig, ax1 = plt.subplots()
+            ax2 = ax1.twinx()
+        else:
+            ax1, ax2 = ax
 
+        # Plot gain
         ax1.plot(v_mv, self.gain, label=r'Gain', color=_dark_blue)
         ax1.plot(v_mv[self.idx_best], self.gain[self.idx_best],
                  marker='o', ls='None', color='k',
@@ -994,41 +1180,45 @@ class RawData(object):
             tl.set_color(_dark_blue)
         ax1.set_ylim(bottom=0)
         ax1.minorticks_on()
-        
-        ax2 = ax1.twinx()
+
+        # Plot noise temperature
         ax2.plot(v_mv, self.tn, _red, label='Noise Temp.')
-        ax2.plot(v_mv[self.idx_best], self.tn_best,
-                 marker='o', ls='None', color='k',
-                 mfc='None', markeredgewidth=1)
+        ax2.plot(v_mv[self.idx_best], self.tn_best, marker='o', ls='None',
+                 color='k', mfc='None', markeredgewidth=1)
         msg = r'$T_\mathrm{{N}}={0:.1f}$ K'.format(self.tn_best)
-        ax2.annotate(msg,
-                     xy=(v_mv[self.idx_best], self.tn_best),
+        ax2.annotate(msg, xy=(v_mv[self.idx_best], self.tn_best),
                      xytext=(v_mv[self.idx_best] + 0.75, self.tn_best + 50),
                      arrowprops=dict(color='black', arrowstyle="->", lw=0.5),
-                     va="center", ha="left",
-                     )
-        
+                     va="center", ha="left")
         ax2.set_ylabel('Noise Temperature (K)', color=_red)
         for tl in ax2.get_yticklabels():
             tl.set_color(_red)
         ax2.set_ylim([0, self.tn_best * 5])
         ax2.set_xlim([0., vmax_plot])
         ax2.minorticks_on()
-        
-        if fig_name is None:
-            plt.show()
-        else:
+
+        if fig_name is not None:
             fig.savefig(fig_name, **_plot_params)
             plt.close(fig)
+        else:
+            return ax1, ax2
 
-    def plot_rdyn(self, fig_name=None, vmax_plot=4.):  # pragma: no cover
+    def plot_rdyn(self, fig_name=None, ax=None, vmax_plot=4.):  # pragma: no cover
         """Plot dynamic resistance.
 
+        Note: If ``fig_name`` is provided, this method will save the plot 
+        to the specified folder. If ``ax`` is provided, this method will return
+        the Matplotlib axis. **Do not define both.**
+        
         Args:
             fig_name: figure filename
+            ax: Matplotlib axis
             vmax_plot: max voltage to include in plot (in mV)
 
         """
+
+        # Check arguments
+        # assert fig_name is not None and ax is not None
 
         # Unnormalize current/voltage
         v_mv = self.voltage * self.vgap * 1e3
@@ -1046,78 +1236,97 @@ class RawData(object):
         vb_best = (self.if_hot[:, 0] * self.vgap * 1e3)[self.idx_best]
         rdyn_bias = np.interp(vb_best, v_mv, rdyn)
 
-        fig, ax = plt.subplots()
-        
-        plt.plot(v_mv, rdyn, label=r'$R_\mathrm{dyn}$')
-        plt.plot(vb_best, rdyn_bias, 'r^', label=r'%.1f $\Omega$' % rdyn_bias)
-        plt.plot(v_steps, r_steps, 'k+',
+        if ax is None:
+            fig, ax = plt.subplots()
+        ax.plot(v_mv, rdyn, label=r'$R_\mathrm{dyn}$')
+        ax.plot(vb_best, rdyn_bias, 'r^', label=r'%.1f $\Omega$' % rdyn_bias)
+        ax.plot(v_steps, r_steps, 'k+',
                  label=r'$V_\mathrm{gap} + nV_\mathrm{ph}$')
         plt.axvline(-1 * self.vgap * 1e3, c='k', ls='--', lw=0.5)
         plt.axvline(0, c='k', ls='--', lw=0.5)
         plt.axvline(1 * self.vgap * 1e3, c='k', ls='--', lw=0.5)
-        
-        plt.xlabel('Bias Voltage (mV)')
-        plt.ylabel(r'Dynamic Resistance ($\Omega$)')
-        plt.xlim([0, vmax_plot])
-        plt.ylim(bottom=0)
-        plt.legend(loc=0, title='LO: ' + str(self.freq) + ' GHz')
-        plt.minorticks_on()
-        
-        if fig_name is None:
-            plt.show()
-        else:
+        ax.set_xlabel('Bias Voltage (mV)')
+        ax.set_ylabel(r'Dynamic Resistance ($\Omega$)')
+        ax.set_xlim([0, vmax_plot])
+        ax.set_ylim(bottom=0)
+        ax.legend(loc=0, title='LO: ' + str(self.freq) + ' GHz')
+        ax.minorticks_on()
+        if fig_name is not None:
             fig.savefig(fig_name, **_plot_params)
             plt.close(fig)
+        else:
+            return ax
 
-    def plot_gain(self, fig_name=None, vmax_plot=4.):  # pragma: no cover
+    def plot_gain(self, fig_name=None, ax=None, vmax_plot=4.):  # pragma: no cover
         """Plot gain.
 
+        Note: If ``fig_name`` is provided, this method will save the plot 
+        to the specified folder. If ``ax`` is provided, this method will return
+        the Matplotlib axis. **Do not define both.**
+        
         Args:
             fig_name: figure filename
+            ax: Matplotlib axis
             vmax_plot: max voltage to include in plot (in mV)
 
         """
-    
-        v_mv = self.if_hot[:, 0] * self.vgap * 1e3
-    
-        fig, ax = plt.subplots()
-        plt.plot(v_mv, self.gain*100, label=r'$G_{{c}}$')
-        plt.xlabel('Bias Voltage (mV)')
-        plt.ylabel('Gain (%)')
-        plt.xlim([0, vmax_plot])
-        plt.ylim([0, self.gain.max() * 105])
-        plt.minorticks_on()
 
-        if fig_name is None:
-            plt.show()
-        else:
+        # Check arguments
+        # assert fig_name is not None and ax is not None
+
+        # De-normalize voltage
+        v_mv = self.if_hot[:, 0] * self.vgap * 1e3
+
+        if ax is None:
+            fig, ax = plt.subplots()
+        ax.plot(v_mv, self.gain*100, label=r'$G_{{c}}$')
+        ax.set_xlabel('Bias Voltage (mV)')
+        ax.set_ylabel('Gain (%)')
+        ax.set_xlim([0, vmax_plot])
+        ax.set_ylim([0, self.gain.max() * 105])
+        ax.minorticks_on()
+        if fig_name is not None:
             fig.savefig(fig_name, **_plot_params)
             plt.close(fig)
+        else:
+            return ax
 
-    def plot_error_surface(self, fig_name=None):  # pragma: no cover
-        """Plot error surface (impedance recovery).
+    def plot_error_surface(self, fig_name=None, ax=None):  # pragma: no cover
+        """Plot error surface (from impedance recovery).
 
+        Note: If ``fig_name`` is provided, this method will save the plot 
+        to the specified folder. If ``ax`` is provided, this method will return
+        the Matplotlib axis. **Do not define both.**
+        
         Args:
             fig_name: figure filename
+            ax: Matplotlib axis
 
         """
 
+        # Check arguments
+        # assert fig_name is not None and ax is not None
 
+        # Range of impedance values (normalized)
         remb_range = self.kwargs.get('remb_range', (0, 1))
         xemb_range = self.kwargs.get('xemb_range', (-1, 1))
-        
+
+        # Range of impedance values (de-normalized)
         zt_real = np.linspace(remb_range[0], remb_range[1], 101) * self.rn
         zt_imag = np.linspace(xemb_range[0], xemb_range[1], 201) * self.rn
         zt_real_range = zt_real[-1] - zt_real[0]
         zt_imag_range = zt_imag[-1] - zt_imag[0]
-        
+
+        # Recovered impedance
         zt_best = self.zt * self.rn
         zt_re_best, zt_im_best = zt_best.real, zt_best.imag
 
+        # Mesh (for plotting)
         xx, yy = np.meshgrid(zt_real, zt_imag)
         zz = np.log10(self.err_surf)
 
-        fig, ax = plt.subplots()
+        if ax is None:
+            fig, ax = plt.subplots()
         pc = ax.pcolor(xx, yy, zz.T, cmap='viridis')
         # Add color bar
         cbar = plt.colorbar(pc, ax=ax)
@@ -1149,29 +1358,36 @@ class RawData(object):
                     va=text_va, ha=text_ha,
                     fontsize=8,
                     arrowprops=dict(color='black', arrowstyle="->", lw=2))
-        plt.xlabel(r'$R_\mathrm{{T}}$ ($\Omega$)')
-        plt.ylabel(r'$X_\mathrm{{T}}$ ($\Omega$)')
+        ax.set_xlabel(r'$R_\mathrm{{T}}$ ($\Omega$)')
+        ax.set_ylabel(r'$X_\mathrm{{T}}$ ($\Omega$)')
         # Add text box
         textstr1 = 'Embedding impedance:\n'
         textstr2 = r'$Z_\mathrm{{T}}=R_\mathrm{{T}}+j\,X_\mathrm{{T}}$'
         textstr = textstr1 + textstr2
         ax.text(0.05, 0.95, textstr, transform=ax.transAxes, fontsize=7,
                 verticalalignment='top', bbox=bbox_props)
-
-        if fig_name is None:
-            plt.show()
-        else:
+        if fig_name is not None:
             fig.savefig(fig_name, **_plot_params)
             plt.close(fig)
+        else:
+            return ax
 
-    def plot_simulated(self, fig_name=None, vmax_plot=4.):  # pragma: no cover
-        """Plot simulated I-V curve (based on impedance recovery).
+    def plot_simulated(self, fig_name=None, ax=None, vmax_plot=4.):  # pragma: no cover
+        """Plot simulated I-V curve (from impedance recovery).
 
+        Note: If ``fig_name`` is provided, this method will save the plot 
+        to the specified folder. If ``ax`` is provided, this method will return
+        the Matplotlib axis. **Do not define both.**
+        
         Args:
             fig_name: figure filename
+            ax: Matplotlib axis
             vmax_plot: max voltage to include in plot (in mV)
 
         """
+
+        # Check arguments
+        # assert fig_name is not None and ax is not None
 
         # Unpack
         vph = self.freq * sc.giga / self.dciv.fgap
@@ -1183,47 +1399,48 @@ class RawData(object):
         v_min = (1 - vph + vph * fit_low) * self.vgap * 1e3
         v_max = (1 - vph * fit_high) * self.vgap * 1e3
 
+        # Build embedding circuit
         cct = qmix.circuit.EmbeddingCircuit(1, 1)
         cct.vph[1] = vph
         cct.zt[1, 1] = self.zt
         cct.vt[1, 1] = self.vt
 
+        # Simulate pumped I-V curve
         vj = harmonic_balance(cct, resp, num_b=30, verbose=False)
         vph_list = [0, cct.vph[1]]
         current = qtcurrent(vj, cct, resp, vph_list, num_b=30, verbose=False)
 
-        fig = plt.figure()
-        plt.plot(self.dciv.voltage * self.vgap * 1e3, 
-                 self.dciv.current * self.igap * 1e6, 
-                 label='Unpumped', c='gray')
-        plt.plot(self.voltage * self.vgap * 1e3, 
-                 self.current * self.igap * 1e6, 
-                 label='Pumped')
-        plt.plot(cct.vb * self.vgap * 1e3, 
-                 current[0].real * self.igap * 1e6, 
-                 label='Simulated', c='r', ls='--')
-        plt.plot([v_min, v_max],
-                 np.interp([v_min, v_max], 
-                           cct.vb * self.vgap * 1e3, 
-                           current[0].real * self.igap * 1e6),
-                 'k+', label='Fit Interval')
-        plt.xlim([0, vmax_plot])
-        plt.ylim([0, np.interp(vmax_plot, 
-                               self.dciv.voltage * self.vgap * 1e3, 
-                               self.dciv.current * self.igap * 1e6)])
-        plt.xlabel(r'Bias Voltage (mV)')
-        plt.ylabel(r'DC Current (uA)')
-        msg1 = 'LO: {:.1f} GHz'.format(self.freq)
-        msg2 = r'$V_T^{{LO}}$ = {:.2f} mV'.format(self.vt*self.vgap*1e3)
-        msg3 = r'$Z_T^{{LO}}$ = {:.2f} $\Omega$'.format(self.zt*self.rn)
-        msg = msg1 + '\n' + msg2 + '\n' + msg3
-        plt.legend(title=msg, frameon=False)
+        # De-normalize
+        mv = self.vgap * 1e3  # norm -> mV
+        ua = self.igap * 1e6  # norm -> uA
 
-        if fig_name is None:
-            plt.show()
-        else:
+        if ax is None:
+            fig, ax = plt.subplots()
+        ax.plot(self.dciv.voltage * mv, self.dciv.current * ua,
+                 label='Unpumped', c='gray')
+        ax.plot(self.voltage * mv, self.current * ua,
+                 label='Pumped')
+        ax.plot(cct.vb * mv, current[0].real * ua,
+                 label='Simulated', c='r', ls='--')
+        ax.plot([v_min, v_max],
+                 np.interp([v_min, v_max], 
+                           cct.vb * mv, current[0].real * ua),
+                 'k+', label='Fit Interval')
+        ax.set_xlim([0, vmax_plot])
+        ax.set_ylim([0, np.interp(vmax_plot, self.dciv.voltage * mv,
+                                  self.dciv.current * ua)])
+        ax.set_xlabel(r'Bias Voltage (mV)')
+        ax.set_ylabel(r'DC Current (uA)')
+        msg1 = 'LO: {:.1f} GHz'.format(self.freq)
+        msg2 = r'$V_T$ = {:.2f} mV'.format(self.vt*self.vgap*1e3)
+        msg3 = r'$Z_T$ = {:.2f} $\Omega$'.format(self.zt*self.rn)
+        msg = msg1 + '\n' + msg2 + '\n' + msg3
+        ax.legend(title=msg, frameon=False)
+        if fig_name is not None:
             fig.savefig(fig_name, **_plot_params)
             plt.close(fig)
+        else:
+            return ax
 
     def plot_all(self, fig_folder, file_struc=None, **kw):  # pragma: no cover
         """Plot all pumped data and save to specified directory.
@@ -1332,6 +1549,10 @@ def _db_to_lin(db):
 def plot_if_spectrum(data_folder, fig_folder=None, figsize=None):  # pragma: no cover
     """Plot all IF spectra within data_folder.
 
+    Note: If ``fig_name`` is provided, this method will save the plot 
+        to the specified folder. If ``ax`` is provided, this method will return
+        the Matplotlib axis. **Do not define both.**
+        
     Args:
         data_folder: data folder
         fig_folder: figure folder
@@ -1344,8 +1565,8 @@ def plot_if_spectrum(data_folder, fig_folder=None, figsize=None):  # pragma: no 
 
     if_spectra_files = glob.glob(os.path.join(data_folder, '*comb*.dat'))
 
-    fig, ax = plt.subplots(figsize=figsize)
     fig1, ax1 = plt.subplots(figsize=figsize)
+    fig2, ax2 = plt.subplots(figsize=figsize)
 
     for if_file in if_spectra_files:
 
@@ -1357,8 +1578,8 @@ def plot_if_spectrum(data_folder, fig_folder=None, figsize=None):  # pragma: no 
 
         fig2, ax2 = plt.subplots(figsize=figsize)
         ax2.plot(freq, t_n)
-        ax.plot(freq, t_n, label="{} GHz".format(base))
-        ax1.plot(freq, gauss_conv(t_n, sigma=1), label="{} GHz".format(base))
+        ax1.plot(freq, t_n, label="{} GHz".format(base))
+        ax2.plot(freq, gauss_conv(t_n, sigma=1), label="{} GHz".format(base))
         ax2.set_ylabel('Noise Temperature (K)')
         ax2.set_xlabel('Frequency (GHz)')
         ax2.set_ylim([0, 400])
@@ -1371,23 +1592,23 @@ def plot_if_spectrum(data_folder, fig_folder=None, figsize=None):  # pragma: no 
         else:
             fig2.show()
 
-    ax.set_ylabel('Noise Temperature (K)')
-    ax.set_xlabel('Frequency (GHz)')
-    ax.set_ylim([0, 500])
-    ax.set_xlim([0, 20])
-    ax.legend()
-    fig.savefig(os.path.join(fig_folder, 'if_spectra.png'), **_plot_params)
-    ax.set_ylim([0, 2000])
-    fig.savefig(os.path.join(fig_folder, 'if_spectra2.png'), **_plot_params)
-
     ax1.set_ylabel('Noise Temperature (K)')
     ax1.set_xlabel('Frequency (GHz)')
     ax1.set_ylim([0, 500])
     ax1.set_xlim([0, 20])
     ax1.legend()
-    fig1.savefig(os.path.join(fig_folder, 'if_spectra_smooth.png'), **_plot_params)
+    fig1.savefig(os.path.join(fig_folder, 'if_spectra.png'), **_plot_params)
     ax1.set_ylim([0, 2000])
-    fig1.savefig(os.path.join(fig_folder, 'if_spectra_smooth2.png'), **_plot_params)
+    fig1.savefig(os.path.join(fig_folder, 'if_spectra2.png'), **_plot_params)
+
+    ax2.set_ylabel('Noise Temperature (K)')
+    ax2.set_xlabel('Frequency (GHz)')
+    ax2.set_ylim([0, 500])
+    ax2.set_xlim([0, 20])
+    ax2.legend()
+    fig2.savefig(os.path.join(fig_folder, 'if_spectra_smooth.png'), **_plot_params)
+    ax2.set_ylim([0, 2000])
+    fig2.savefig(os.path.join(fig_folder, 'if_spectra_smooth2.png'), **_plot_params)
 
     print("")
 
@@ -1396,6 +1617,9 @@ def plot_if_spectrum(data_folder, fig_folder=None, figsize=None):  # pragma: no 
 
 def plot_overall_results(dciv, data_list, fig_folder, vmax_plot=4., figsize=None, tn_max=None, f_range=None):  # pragma: no cover
     """Plot overall results.
+    
+    This function is somewhat messy, but it will take in a list of RawData 
+    class instances, and plot the overall figures of merit.
 
     Args:
         dciv: DC I-V data (instance of RawData0)
@@ -1405,6 +1629,12 @@ def plot_overall_results(dciv, data_list, fig_folder, vmax_plot=4., figsize=None
     """
 
     cprint("\nPlotting results.", 'HEADER')
+
+    # Initialize results directory (if needed)
+    for sub_folder in _file_structure.values():
+        path = os.path.join(fig_folder, sub_folder)
+        if not os.path.exists(path):
+            os.makedirs(path)
 
     plotparam = dict(ls='--', marker='o')
 
@@ -1659,6 +1889,7 @@ def plot_overall_results(dciv, data_list, fig_folder, vmax_plot=4., figsize=None
     plt.close(fig)
 
     print(" -> Done\n")
+
 
 # IMPEDANCE RECOVERY HELPER FUNCTIONS (PRIVATE) -------------------------------
 
