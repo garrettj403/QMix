@@ -65,15 +65,3 @@ params = {
           'comment':        '',      # add a comment to instance
           'verbose':        True,    # print to terminal
           }
-
-"""Default file hierarchy to use when plotting experimental data."""
-file_structure = {'DC IV data':          '01_dciv/',
-                  'Pumped IV data':      '02_iv_curves/',
-                  'IF data':             '03_if_data/',
-                  'Impedance recovery':  '04_impedance/',
-                  'IF noise':            '05_if_noise/',
-                  'Noise temperature':   '06_noise_temp/',
-                  'IF spectrum':         '07_spectrum/',
-                  'Overall performance': '08_overall_performance/',
-                  'CSV data':            '09_csv_data/'
-                  }
