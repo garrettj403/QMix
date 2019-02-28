@@ -3,40 +3,83 @@ SIS junction.
 
 Upon initialization, these classes will:
 
-   1. Load or calculate the DC I-V curve (imagainary part of resp. func.)
+   1. Load or calculate the DC I-V curve (which is the imagainary part of 
+      response function).
 
       - The I-V curve can either be loaded from a csv file or generated from
-        an I-V curve model (e.g., polynomial model, exponential model, etc.),
+        an I-V curve model (e.g., polynomial model, exponential model, etc.).
 
-   2. Calculate the Kramers-Kronig transform of the DC I-V curve
+   2. Calculate the Kramers-Kronig transform of the DC I-V curve (which is the
+      real part of the response function).
 
-   3. Setup the density of data points to optimize interpolation
+   3. Setup the density of the data points to optimize interpolation.
 
-      - The I-V curve needs to be interpolated and the number of points has a
-        large affect on the speed of this, but at the same time there needs to
-        be enough points to accurately represent the original I-V curve.
+      - The response function needs enough data points that it can be 
+        interpolated accurately, but at the same time, not so many points 
+        that the interpolation takes too long.
 
-   4. Calculate cubic spline fits for the I-V curve and the KK transform
+   4. Calculate cubic spline fits for the I-V curve and the KK transform.
 
       - Doing this once at the start allows the data to be interpolated very
         quickly later on.
 
    5. Determine the derivative of the I-V curve and the KK transform based on
-      the spline fits
+      the spline fits.
 
-Then when needed, the classes allow the user to interpolated the DC I-V curve,
+      - These derivatives aren't needed by QMix, but they are needed for the
+        equations from Tucker theory (Tucker and Feldman, 1985).
+
+Once initialized, the classes allow the user to interpolated the DC I-V curve,
 the KK transform, the derivative of the I-V curve, the derivative of the KK
-transform, or the response function (a complex value). This is set up to run
-very quickly.
+transform, and the response function (a complex value). These classes are 
+optimized to interpolate very quickly.
+
+There are several different response functions classes contained within this
+module:
+
+   - Response functions generated from voltage and current data:
+   
+      - ``RespFn``: This is the base class for all of the other response 
+        function classes. This class will generate a response function 
+        based on a DC I-V curve (i.e., DC voltage and current data). Note that 
+        this class assumes that you have "pre-processed" the data. This means 
+        that it will use the voltage and current data to generate the 
+        interpolation directly. Normally, you want to have more data points 
+        around curvier regions in order to minimize how much time the 
+        interpolation takes. If you haven't done this, it is a good idea to use
+        ``RespFnFromIVData`` instead.
+
+      - ``RespFnFromIVData``: This class will generate a response function 
+        based on a DC I-V curve (i.e., DC voltage and current data). Unlike
+        ``RespFn``, this class will resample the response function in order to
+        optimize the interpolation.
+
+   - Response functions generated from mathematical models:
+
+      - ``RespFnPerfect``: This class will generate a response function based
+        on an ideal DC I-V curve (i.e., the subgap current is exactly zero
+        below the gap voltage and, above the gap, it is exactly equal to the
+        bias voltage, assuming normalized values). This DC I-V curve has an
+        infinitely sharp transition.
+
+      - ``RespFnPolynomial``: This class will generate a response function 
+        based on the polynomial model from Kennedy (1999). This class can be
+        used to simulate the effect of the transition's sharpness (i.e., how do
+        the results change when the gap is more or less sharp).
+        
+      - ``RespFnExponential``: This class will generate a response function 
+        based on the exponential model from Rashid et al. (2016). This model is
+        very similar to ``RespFnPolynomial``, except that you can include a 
+        constant subgap resistance.
 
 """
 
-import qmix
 import numpy as np
 import matplotlib.pyplot as plt
 from qmix.mathfn.misc import slope
 import qmix.mathfn.ivcurve_models as iv
 from qmix.mathfn.filters import gauss_conv
+from qmix.mathfn.kktrans import kk_trans
 from scipy.interpolate import InterpolatedUnivariateSpline as Interp
 
 
@@ -44,14 +87,14 @@ from scipy.interpolate import InterpolatedUnivariateSpline as Interp
 VRANGE = 35
 VNPTS = 7001
 VINIT = np.linspace(0, VRANGE, VNPTS)
-VSTEP = VINIT[1] - VINIT[0]
+VSTEP = float(VINIT[1] - VINIT[0])
 VINIT.flags.writeable = False
 
 
 # Generate response function -------------------------------------------------
 
 class RespFn(object):
-    """ Generate the response function from pre-processed I-V data.
+    """Generate the response function from pre-processed I-V data.
 
     This is a class to contain, interpolate and plot the response function.
 
@@ -63,11 +106,44 @@ class RespFn(object):
         for "pre-processed" I-V data.
 
     Args:
-        voltage (ndarray): normalized voltage
-        current (ndarray): normalized current
+        voltage (numpy.ndarray): normalized voltage
+        current (numpy.ndarray): normalized current
 
-    Keyword arguments:
-        verbose: set to True to print to terminal
+    Keyword Args:
+        verbose (bool, default is True): print info to terminal?
+        max_npts_dc (int, default is 101): maximum number of points in DC I-V 
+            curve
+        max_npts_kk (int, default is 151): maximum number of points in KK 
+            transform
+        max_interp_error (float, default is 0.001): maximum interpolation error
+            (in units of normalized current)
+        check_error (bool, default is False): check interpolation error?
+        v_smear (float, default is None): smear DC I-V curve by convolving with
+            a Gaussian dist. with this std. dev.
+        kk_n (int, default is 50): padding for Hilbert transform 
+            (see ``qmix.mathfn.kktrans.kk_trans``)
+        spline_order (int, default is 3): spline order for interpolations
+
+    Attributes:
+        f_idc (scipy.interpolate.fitpack2.InterpolatedUnivariateSpline):
+            Instance of the interpolation class for the DC I-V curve. For
+            example, to interpolate the DC I-V curve at a bias voltage of 0.5,
+            you would use ``resp.f_idc(0.5)``, assuming that ``resp`` is an
+            instance of this class.
+        f_ikk (scipy.interpolate.fitpack2.InterpolatedUnivariateSpline):
+            Instance of the interpolation class for the KK transform of the
+            DC I-V curve.
+        f_didc (scipy.interpolate.fitpack2.InterpolatedUnivariateSpline):
+            Instance of the interpolation class for the derivative of the
+            DC I-V curve.
+        f_dikk (scipy.interpolate.fitpack2.InterpolatedUnivariateSpline):
+            Instance of the interpolation class for the derivative of the
+            KK transform of the DC I-V curve.
+        voltage (ndarray): The DC bias voltage values.
+        current (ndarray): The DC tunneling current values.
+        voltage_kk (ndarray): The DC bias voltage values that correspond to
+            ``current_kk``.
+        current_kk (ndarray): The values of the KK transform of the DC I-V curve.
 
     """
 
@@ -85,42 +161,45 @@ class RespFn(object):
         voltage = np.r_[-voltage[::-1][:-1], voltage]
         current = np.r_[-current[::-1][:-1], current]
 
-        # Smear (optional)
+        # Smear DC I-V curve (optional)
         if params['v_smear'] is not None:
             v_step = voltage[1] - voltage[0]
-            current = gauss_conv(current-voltage, sigma=params['v_smear']/v_step) + voltage
+            current = gauss_conv(current - voltage, 
+                                 sigma=params['v_smear'] / v_step) + voltage
             if params['verbose']:
                 print(" - Voltage smear: {:.4f}".format(params['v_smear']))
 
-        # KK transform
-        current_kk = qmix.mathfn.kktrans.kk_trans(voltage, current, params['kk_n'])
+        # Calculate Kramers-Kronig (KK) transform
+        current_kk = kk_trans(voltage, current, params['kk_n'])
 
         # Interpolate
         f_interp = _setup_interpolation(voltage, current, current_kk, **params)
 
         # Place into attributes
-        self.f_idc = f_interp[0]
-        self.f_ikk = f_interp[1]
-        self.f_didc = f_interp[2]
-        self.f_dikk = f_interp[3]
-        self.voltage = voltage
-        self.current = current
-        self.voltage_kk = voltage
-        self.current_kk = current_kk
+        self.f_idc = f_interp[0]  # DC I-V curve
+        self.f_ikk = f_interp[1]  # KK transform
+        self.f_didc = f_interp[2]  # Derivative of DC I-V curve
+        self.f_dikk = f_interp[3]  # Derivative of KK transform
+        self.voltage = voltage  # DC I-V: voltage values
+        self.current = current  # DC I-V: current values
+        self.voltage_kk = voltage  # KK: voltage
+        self.current_kk = current_kk  # KK: current
 
     def plot_interpolation(self, fig_name=None, ax=None):  # pragma: no cover
         """Plot the interpolation of the response function.
 
-        Note: If ``fig_name`` is defined, this method will save the figure
-        in the specified file. Otherwise, this method will return the 
-        Matplotlib axis.
+        Note: If ``fig_name`` is defined, this method will not return the 
+            figure axis.
 
         Args:
-            fig_name: figure name (optional)
-            ax: figure axis (optional)
+            fig_name (str, default is None): name of figure file name, if you 
+                wish to save
+            ax (matplotlib.axes.Axes, default is None): figure axis, if you 
+                would like to add to an existing figure
 
         Returns:
-            `matplotlib.axes.Axes`: figure axis
+            matplotlib.axes.Axes: figure axis
+            
         """
 
         # Figure labels
@@ -131,6 +210,8 @@ class RespFn(object):
 
         if ax is None:
             fig, ax = plt.subplots()
+        else:
+            fig = ax.get_figure()
         ax.plot(self.voltage, self.current, 'k--', label=lb1)
         ax.plot(self.voltage, self.f_idc(self.voltage), 'k-', label=lb2)
         ax.plot(self.voltage_kk, self.current_kk, 'r--', label=lb3)
@@ -143,6 +224,8 @@ class RespFn(object):
         ax.grid()
         if fig_name is not None:
             fig.savefig(fig_name, bbox_inches='tight')
+            plt.close(fig)
+            return
         else:
             return ax
 
@@ -171,7 +254,7 @@ class RespFn(object):
         return self.plot_interpolation(fig_name, ax)
 
     def resp(self, vbias):
-        """Interpolate the response function current
+        """Interpolate the response function current at the given bias voltage.
 
         Args:
             vbias (ndarray): Bias voltage (normalized)
@@ -184,7 +267,8 @@ class RespFn(object):
         return self.f_ikk(vbias) + 1j * self.f_idc(vbias)
 
     def resp_conj(self, vbias):
-        """Interpolate the complex conjugate of the response function current
+        """Interpolate the complex conjugate of the response function current 
+         at the given bias voltage.
 
         Args:
             vbias (ndarray): Bias voltage (normalized)
@@ -197,8 +281,12 @@ class RespFn(object):
         return self.f_ikk(vbias) - 1j * self.f_idc(vbias)
 
     def resp_swap(self, vbias):
-        """Interpolate the response function current with the real and
-        imaginary components swapped.
+        """Interpolate the response function current, with the real and
+        imaginary components swapped, at the given bias voltage.
+        
+        Note: This method is not used by QMix, but it can be useful if you are
+        calculating the tunneling currents using Tucker theory (Tucker and 
+        Feldman, 1985).
 
         Args:
             vbias (ndarray): Bias voltage (normalized)
@@ -209,20 +297,6 @@ class RespFn(object):
         """
 
         return self.f_idc(vbias) + 1j * self.f_ikk(vbias)
-
-    # def increasing_monotonically(self, vlow=-0.1, vhigh=2, npts=6000):
-
-    #     vtmp = np.linspace(-vlow, vhigh, npts)
-    #     idctmp = self.f_idc(vtmp)
-    #     testdc = (idctmp[1:] > idctmp[:-1])
-
-    #     if not testdc.all():
-    #         print(" **DC I-V NOT INCREASING MONOTONICALLY**\n")
-    #         print(vtmp[1:][np.invert(testdc)])
-    #     else:
-    #         print(" - Dc I-V increases monotonically\n")
-
-    #     return testdc.all()  # & testkk.all()
 
 
 # Generate from I-V data -----------------------------------------------------
@@ -241,6 +315,21 @@ class RespFnFromIVData(RespFn):
         voltage (ndarray): normalized voltage
         current (ndarray): normalized current
 
+    Keyword Args:
+        verbose (bool, default is True): print info to terminal?
+        max_npts_dc (int, default is 101): maximum number of points in DC I-V
+            curve
+        max_npts_kk (int, default is 151): maximum number of points in KK
+            transform
+        max_interp_error (float, default is 0.001): maximum interpolation error
+            (in units of normalized current)
+        check_error (bool, default is False): check interpolation error?
+        v_smear (float, default is None): smear DC I-V curve by convolving with
+            a Gaussian dist. with this std. dev.
+        kk_n (int, default is 50): padding for Hilbert transform
+            (see ``qmix.mathfn.kktrans.kk_trans``)
+        spline_order (int, default is 3): spline order for interpolations
+
     """
 
     def __init__(self, voltage, current, **kwargs):
@@ -253,8 +342,8 @@ class RespFnFromIVData(RespFn):
         current = current[mask]
         voltage = voltage[mask]
         b = current[-1] - voltage[-1]
-        current = np.append(current, 50. + b)
-        voltage = np.append(voltage, 50.)
+        current = np.append(current, [50. + b])
+        voltage = np.append(voltage, [50.])
 
         # Re-sample I-V data
         current = np.interp(VINIT, voltage, current)
@@ -272,6 +361,21 @@ class RespFnPolynomial(RespFn):
 
     Args:
         p_order (int): Order of the polynomial
+
+    Keyword Args:
+        verbose (bool, default is True): print info to terminal?
+        max_npts_dc (int, default is 101): maximum number of points in DC I-V
+            curve
+        max_npts_kk (int, default is 151): maximum number of points in KK
+            transform
+        max_interp_error (float, default is 0.001): maximum interpolation error
+            (in units of normalized current)
+        check_error (bool, default is False): check interpolation error?
+        v_smear (float, default is None): smear DC I-V curve by convolving with
+            a Gaussian dist. with this std. dev.
+        kk_n (int, default is 50): padding for Hilbert transform
+            (see ``qmix.mathfn.kktrans.kk_trans``)
+        spline_order (int, default is 3): spline order for interpolations
 
     """
 
@@ -302,6 +406,21 @@ class RespFnExponential(RespFn):
         rn (float): Normal resistance (un-normalized)
         a (float): Gap smearing parameter (4e4 is typical)
 
+    Keyword Args:
+        verbose (bool, default is True): print info to terminal?
+        max_npts_dc (int, default is 101): maximum number of points in DC I-V
+            curve
+        max_npts_kk (int, default is 151): maximum number of points in KK
+            transform
+        max_interp_error (float, default is 0.001): maximum interpolation error
+            (in units of normalized current)
+        check_error (bool, default is False): check interpolation error?
+        v_smear (float, default is None): smear DC I-V curve by convolving with
+            a Gaussian dist. with this std. dev.
+        kk_n (int, default is 50): padding for Hilbert transform
+            (see ``qmix.mathfn.kktrans.kk_trans``)
+        spline_order (int, default is 3): spline order for interpolations
+
     """
 
     def __init__(self, vgap=2.8e-3, rn=14, rsg=1000, agap=4e4, **kwargs):
@@ -318,6 +437,21 @@ class RespFnPerfect(RespFn):
     """Response function based on the perfect I-V curve model.
 
     Class to contain, interpolate and plot the response function.
+
+    Keyword Args:
+        verbose (bool, default is True): print info to terminal?
+        max_npts_dc (int, default is 101): maximum number of points in DC I-V
+            curve
+        max_npts_kk (int, default is 151): maximum number of points in KK
+            transform
+        max_interp_error (float, default is 0.001): maximum interpolation error
+            (in units of normalized current)
+        check_error (bool, default is False): check interpolation error?
+        v_smear (float, default is None): smear DC I-V curve by convolving with
+            a Gaussian dist. with this std. dev.
+        kk_n (int, default is 50): padding for Hilbert transform
+            (see ``qmix.mathfn.kktrans.kk_trans``)
+        spline_order (int, default is 3): spline order for interpolations
 
     """
 
@@ -369,6 +503,34 @@ class RespFnPerfect(RespFn):
 # Helper functions -----------------------------------------------------------
 
 def _setup_interpolation(voltage, current, current_kk, **params):
+    """Setup interpolation.
+
+    This function will sample the response function, such that there are more
+    points around curvier regions than linear regions, and then setup the
+    interpolation. This is optimized to make interpolating the data as fast as
+    possible.
+
+    Args:
+        voltage: bias voltage
+        current: DC tunneling current
+        current_kk: KK transform of the DC tunneling current
+        **params: interpolation parameters (see keyword arguments)
+
+    Keyword Args:
+        verbose (bool, default is True): print info to terminal?
+        max_npts_dc (int, default is 101): maximum number of points in DC I-V
+            curve
+        max_npts_kk (int, default is 151): maximum number of points in KK
+            transform
+        max_interp_error (float, default is 0.001): maximum interpolation error
+            (in units of normalized current)
+        check_error (bool, default is False): check interpolation error?
+        spline_order (int, default is 3): spline order for interpolations
+
+    Returns:
+        tuple: the interpolation objects
+
+    """
 
     # Interpolation parameters
     npts_dciv = params['max_npts_dc']
@@ -381,7 +543,7 @@ def _setup_interpolation(voltage, current, current_kk, **params):
     if verbose:
         print(" - Interpolating:")
 
-    # Reduce data
+    # Sample data
     dc_idx = _sample_curve(voltage, current, npts_dciv, 0.25)
     kk_idx = _sample_curve(voltage, current, npts_kkiv, 1.)
 
@@ -433,8 +595,17 @@ def _setup_interpolation(voltage, current, current_kk, **params):
     return f_dc, f_kk, f_ddc, f_dkk
 
 
-def _sample_curve(voltage, current, max_npts, v_smear):
+def _sample_curve(voltage, current, max_npts, smear):
     """Sample curve. Sample more often when the curve is curvier.
+
+    Args:
+        voltage (ndarray): DC bias voltage
+        current (ndarray): current (either DC tunneling or KK)
+        max_npts (int): maximum number of sample points
+        smear (float): smear current (only for sampling purposes)
+
+    Returns:
+        list: indices of sample points
 
     """
 
@@ -443,7 +614,7 @@ def _sample_curve(voltage, current, max_npts, v_smear):
 
     # Cumulative sum of second derivative
     v_step = voltage[1] - voltage[0]
-    cumsum = np.cumsum(gauss_conv(dd_current, sigma=v_smear / v_step))
+    cumsum = np.cumsum(gauss_conv(dd_current, sigma=smear / v_step))
 
     # Build sampling array
     idx_list = [0]
@@ -481,7 +652,11 @@ def _sample_curve(voltage, current, max_npts, v_smear):
 def _default_params(kwargs, max_dc=101, max_kk=151, max_error=0.001,
                     check_error=False, verbose=True, v_smear=None, kk_n=50,
                     spline_order=3):
+    """These are the default parameters that are used for generating response
+    functions. These parameters match the keyword arguments of ``RespFn``, so
+    see that docstring for more information."""
 
+    # Grab default params from the keyword arguments for this function
     params = {'max_npts_dc': max_dc,
               'max_npts_kk': max_kk,
               'max_interp_error': max_error,
@@ -492,6 +667,7 @@ def _default_params(kwargs, max_dc=101, max_kk=151, max_error=0.001,
               'spline_order': spline_order,
               }
 
+    # Update kwargs with the new parameters
     params.update(kwargs)
 
     return params
