@@ -132,18 +132,19 @@ class RespFn(object):
             instance of this class.
         f_ikk (scipy.interpolate.fitpack2.InterpolatedUnivariateSpline):
             Instance of the interpolation class for the KK transform of the
-            DC I-V curve.
+            DC I-V curve. Similar to ``f_idc``.
         f_didc (scipy.interpolate.fitpack2.InterpolatedUnivariateSpline):
             Instance of the interpolation class for the derivative of the
-            DC I-V curve.
+            DC I-V curve. Similar to ``f_idc``.
         f_dikk (scipy.interpolate.fitpack2.InterpolatedUnivariateSpline):
             Instance of the interpolation class for the derivative of the
-            KK transform of the DC I-V curve.
+            KK transform of the DC I-V curve. Similar to ``f_idc``.
         voltage (ndarray): The DC bias voltage values.
         current (ndarray): The DC tunneling current values.
         voltage_kk (ndarray): The DC bias voltage values that correspond to
             ``current_kk``.
-        current_kk (ndarray): The values of the KK transform of the DC I-V curve.
+        current_kk (ndarray): The values of the KK transform of the DC I-V
+            curve.
 
     """
 
@@ -560,9 +561,9 @@ def _setup_interpolation(voltage, current, current_kk, **params):
     v_check_range = VRANGE - 1
     # idx_start = (voltage + v_check_range).argmin()
     idx_check = (-v_check_range < voltage) & (voltage < v_check_range)
-    error_v = voltage[idx_check]
-    error_dc = current[idx_check] - f_dc(voltage[idx_check])
-    error_kk = current_kk[idx_check] - f_kk(voltage[idx_check])
+    err_v = voltage[idx_check]
+    err_dc = current[idx_check] - f_dc(voltage[idx_check])
+    err_kk = current_kk[idx_check] - f_kk(voltage[idx_check])
 
     # # Debug
     # plt.figure()
@@ -575,21 +576,23 @@ def _setup_interpolation(voltage, current, current_kk, **params):
 
     # Print to terminal
     if verbose:
-        print("    - DC I-V curve:")
-        print("       - npts for DC I-V: {0}".format(len(dc_idx)))
-        print("       - avg. error: {0:.4E}".format(np.mean(np.abs(error_dc))))
-        print("       - max. error: {0:.4f} at v={1:.2f}".format(error_dc.max(), error_v[error_dc.argmax()]))
-        print("    - KK curve:")
-        print("       - npts for KK I-V: {0}".format(len(kk_idx)))
-        print("       - avg. error: {0:.4E}".format(np.mean(np.abs(error_kk))))
-        print("       - max. error: {0:.4f} at v={1:.2f}".format(error_kk.max(), error_v[error_kk.argmax()]))
+        print("\t- DC I-V curve:")
+        print("\t\t- npts for DC I-V: {0}".format(len(dc_idx)))
+        print("\t\t- avg. error: {0:.4E}".format(np.mean(np.abs(err_dc))))
+        print("\t\t- max. error: {0:.4f} " +
+              "at v={1:.2f}".format(err_dc.max(), err_v[err_dc.argmax()]))
+        print("\t- KK curve:")
+        print("\t\t- npts for KK I-V: {0}".format(len(kk_idx)))
+        print("\t\t- avg. error: {0:.4E}".format(np.mean(np.abs(err_kk))))
+        print("\t\t- max. error: {0:.4f} " +
+              "at v={1:.2f}".format(err_kk.max(), err_v[err_kk.argmax()]))
         print("")
 
     # Check error
     if check_error:
-        assert error_dc.max() < interp_error, \
+        assert err_dc.max() < interp_error, \
             "Interpolation error too high. Please increase max_npts_dc"
-        assert error_kk.max() < interp_error, \
+        assert err_kk.max() < interp_error, \
             "Interpolation error too high. Please increase max_npts_kk"
 
     return f_dc, f_kk, f_ddc, f_dkk
