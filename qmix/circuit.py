@@ -1,21 +1,24 @@
 """ This module contains classes and functions to describe the embedding 
 circuit.
 
-**Description**
-
+**Description:**
+    
     In experimental systems, SIS junctions are embedded within complex RF 
     networks. These networks are referred to as the embedding circuit. Since
     all of the components in these embedding circuits are **linear**, the 
     embedding circuit can be reduced to a Thevenin equivalent circuit for 
     **each tone and harmonic.**
-
+    
     To fully describe the embedding circuit, 3 bits of information are needed
     for each signal that is applied to the junction:
-
+    
         1. the frequency of the applied signal,
         2. the Thevenin voltage of the embedding circuit at this freq., and
         3. the Thevenin impedance of the embedding circuit at this freq.
 
+    The main class in this module (``EmbeddingCircuit``) allows the user to 
+    build an embedding circuit in the proper format.
+    
 """
 
 import re
@@ -27,67 +30,124 @@ from qmix.misc.terminal import cprint
 
 # EMBEDDING CIRCUIT CLASS ----------------------------------------------------
 
-
 class EmbeddingCircuit(object):
-    """Class for describing the embedding circuit. 
+    """Class for building and describing the embedding circuit. 
 
-    This includes the voltages, impedances and frequencies of all signals 
-    applied to the junction.
+    This includes the frequencies, Thevenin voltages and Thevenin impedances 
+    of all signals applied to the junction.
 
-    Creating an instance of this class will set the sizes and data types
-    of all of the class attributes, but the actual values will need to be set
-    manually. In this way, this class is sort of like a struct. The
-    class attributes that have to be set manually are:
-
-       - ``vph``:  photon voltage (freq / gap freq)
-       - ``vt``:  Thevenin voltage (normalized to the gap voltage)
-       - ``zt``:  Thevenin impedance (normalized to the normal resistance)
-
-    Note:
-
-        1. Unless specified otherwise, **all input values are normalized**. 
-        The voltages are normalized to the gap voltage (Vgap), the 
-        resistances are normalized to the normal-state resistance (Rn), the 
-        currents are normalized to Igap=Vgap/Rn, and the frequencies are 
-        normalized to the gap frequency fgap=e*Vgap/h.
-
-        2. The photon voltage is defined as hf/e. Therefore, the normalized 
-        photon voltage is equal to the frequency of the input signal divided
-        by the the gap frequency. **Normalized photon voltage is equal to the
-        normalized frequency.**
+    Note: 
+    
+        Unless specified otherwise, **all input values are normalized**. The 
+        voltages are normalized to the gap voltage, resistances are normalized 
+        to the normal-state resistance, currents are normalized to gap current, 
+        and frequencies are normalized to the gap frequency. Refer to the 
+        argument descriptions below to see if the value is normalized or not.
+        
+        Creating an instance of this class will set the sizes and data types
+        of all of the class attributes, but the actual values will need to be 
+        set manually. In this way, this class is sort of like a fancy struct. 
+        The class attributes that have to be set manually are:
+    
+           - ``vph``:  photon voltage (freq / gap freq)
+           - ``vt``:  Thevenin voltage (normalized to the gap voltage)
+           - ``zt``:  Thevenin impedance (normalized to the normal resistance)
+    
+        The photon voltage is defined as hf/e. Therefore, the normalized photon
+        voltage is equal to the fundamental frequency divided by the the gap 
+        frequency (i.e., the normalized frequency). 
 
     Example:
-
+    
         To create an instance of the embedding circuit class with 2 tones and 
         3 harmonices, you would set:
-
             ``cct = EmbeddingCircuit(2, 3)``
-
         Then, to set the Thevenin voltage of the 3rd harmonic of the 2nd tone
         to 0.3, you would set:
-
             ``cct.vt[2,3] = 0.3``
-
         For each signal, you then have to repeat this to set each voltage, 
         impedance and photon voltage.
+        
+    Keyword Args:
+        num_f (int, default is 1): Number of fundamental frequencies (tones) 
+            applied to the junction.
+        num_p (int, default is 1): Number of harmonics included for each tone.
+        vb_min (float, default is 0): Minimum bias voltage for array.
+        vb_max (float, default is 2): Maximum bias voltage for array.
+        vb_npts (int, default is 201): Number of bias voltage points for array.
+        fgap (float): Gap frequency of the junction in units [Hz]. This is 
+            equal to ``e*Vgap/h``, where ``e`` is the charge of an electron, 
+            ``Vgap`` is the gap voltage, and ``h`` is the Planck constant. 
+            ``fgap`` is used to normalize and de-normalize frequency values 
+            (that't it).
+        vgap (float): Gap voltage of the junction in units [V]. This is the 
+            voltage where the sharp non-linearity in the DC I-V curve occurs 
+            (a.k.a., the transition voltage).
+        rn (float): Normal-state resistance of the junction in units [ohms]. 
+            This is the resistance of the junction at a temperature slight 
+            above the critical temperature. It is found by calculating the 
+            dynamic resistance of the DC I-V curve above the gap voltage.
+        name (str): Name used to describe this specific instance.
 
-    Keyword arguments:
-
-        num_f (int): Number of fundamental tones/frequencies
-        num_p (int): Number of harmonics
-        vb_min (float): Minimum bias voltage
-        vb_max (float): Maximum bias voltage
-        vb_npts (int): Number of bias voltage points
-        fgap (float): Gap frequency, in units [Hz]
-        vgap (float): Gap voltage, in units [V]
-        rn (float): Normal-state resistance, in units [ohms]
-        name (str): Name of this instance (optional)
-
+    Attributes:
+        num_f (int): Number of fundamental frequencies (tones) applied to the 
+            junction. Must be set during initialization.
+        num_p (int): Number of harmonics included for each tone. Must be set 
+            during initialization.
+        num_n (int): Total number of signals. This is equal to 
+            ``num_f * num_p``. Set automatically during initialization.
+        fgap (float): Gap frequency of the junction in units [Hz]. This is 
+            equal to ``e*Vgap/h``, where ``e`` is the charge of an electron, 
+            ``Vgap`` is the gap voltage, and ``h`` is the Planck constant. 
+            ``fgap`` is used to normalize and de-normalize frequency values 
+            (that't it).
+        vgap (float): Gap voltage of the junction in units [V]. This is the 
+            voltage where the sharp non-linearity in the DC I-V curve occurs 
+            (a.k.a., the transition voltage). This value is used to normalize 
+            and de-normalize voltages.
+        igap (float): Gap current of the junction in units [A]. This is equal 
+            to ``vgap/rn``. This value is used to normalize and de-normalize 
+            currents.
+        rn (float): Normal-state resistance of the junction in units [ohms]. 
+            This is the resistance of the junction at a temperature slight 
+            above the critical temperature. It is found by calculating the 
+            dynamic resistance of the DC I-V curve above the gap voltage. This 
+            value is used to normalize and de-normalize resistances.
+        vph (numpy.ndarray): Photon voltage array normalized to the gap 
+            voltage. This is a 1-dimensional array that includes all of the 
+            photon voltages for the fundamental tones that are applied to the 
+            junction. The photon voltage is defined as ``hf/e``, where ``h`` is
+            the Planck constant, ``f`` is the frequency of the given 
+            fundamental tone, and ``e`` is the charge of an electron. However, 
+            since this value is normalized to the gap voltage, the photon 
+            voltage is also equal to the normalized frequency: ``f/fgap``, 
+            where ``fgap`` is the gap frequency. Note that this array is 
+            1-based, meaning that the photon voltage of the 1st tone is located 
+            in vph[1]. (The index represents the tone number.)
+        vt (numpy.ndarray): Thevenin voltage array normalized to the gap 
+            voltage. This is a 2-dimensional array that includes the voltages 
+            for all of the Thevenin equivalent circuits (which describe the 
+            embedding circuit). The indices are: ``f``, and ``p`` for tone 
+            ``f`` and harmonic ``p``. Note that this array is 1-based, meaning 
+            that the voltage for tone number 2, and harmonic number 3 is stored
+            in ``vt[2,3]``.
+        zt (numpy.ndarray): Thevenin impedance array normalized to the normal 
+            resistance. This is a 2-dimensional array that includes the 
+            impedances for all of the Thevenin equivalent circuits (which 
+            describe the embedding circuit). The indices are: ``f`` and ``p`` 
+            for tone ``f`` and harmonic ``p``. Note that this array is 1-based,
+            meaning that the impedance for tone number 2, and harmonic number 3
+            is stored in ``zt[2,3]``.
+        vb (numpy.ndarray): Bias voltage array. This is the DC voltage sweep. 
+            This value is normalized to the gap voltage.
+        vb_npts (int): Number of points in the bias voltage sweep (self.vb).
+        comment (str): A comment to describe this specific class instance.
+        
     """
 
     def __init__(self, num_f=1, num_p=1, vb_min=0, vb_max=2, vb_npts=201, fgap=None, vgap=None, rn=None, name=''):
 
-        self.name = name  # used to identify the circuit (optional)
+        self.name = name  # used to identify the instance
 
         # Check input
         assert num_f in [1, 2, 3, 4], "Number of tones (num_f) must be equal to 1, 2, 3, or 4."
@@ -119,11 +179,11 @@ class EmbeddingCircuit(object):
         self.vt = np.zeros((num_f + 1, num_p + 1), dtype=complex)
         self.zt = np.zeros((num_f + 1, num_p + 1), dtype=complex)
 
-        # Set bias voltage sweep
+        # Set up bias voltage sweep
         self.vb_npts = vb_npts
         self.vb = np.linspace(vb_min, vb_max, vb_npts)
 
-        # Initialize comment list to label tones/harmonics
+        # Initialize comment list to label tones/harmonics (optional)
         self.comment = []
         for f in range(num_f + 1):
             self.comment.append(['' for _ in range(num_p + 1)])
@@ -136,24 +196,26 @@ class EmbeddingCircuit(object):
 
         return self.__str__()
 
-    # @property
     def initialize_vj(self):
-        """ DEPRECATED
+        """Initialize junction voltage array.
 
-        Initialize junction voltage array.
-
-        Return an empty matrix that is the shape that ``vj`` should be (the
+        Returns an empty matrix that is the shape that ``vj`` should be (the
         voltage across the junction).
 
         Strictly speaking, ``vj`` shouldn't be saved within this class, but
         it is okay for this class to initialize ``vj`` since it has all the
-        data about matrix sizes.
-
-        This function is useful when the embedding impedance aren't included, 
-        and you want to set the voltage across the junction manually.
+        data about matrix sizes. This function is useful when the embedding 
+        impedance aren't included, and you want to set the voltage across the 
+        junction manually.
+        
+        Warnings:
+            
+            This method is deprecated. Moving forward, please use 
+            ``qmix.harmonic_balance.harmonic_balance`` to initialize the 
+            junction voltage.
 
         Returns:
-            ndarray: Empty matrix to initializing vj
+            ndarray: An empty matrix for the junction voltage
 
         """
 
@@ -166,17 +228,18 @@ class EmbeddingCircuit(object):
         """ Return available power of tone f and harmonic p.
 
         Note: 
-
+        
             Gap voltage and normal resistance must be set prior to using this
             method. If they are not, an error will be raised.
 
-        Keyword Arguments:
-            f (int): tone
-            p (int): harmonic
-            units (str): units for power, either 'W' or 'dBm'
+        Args:
+            f (int, optional, default is 1): Tone index number.
+            p (int, optional, default is 1): Harmonic index number.
+            units (str, optional, default is 'W'): Units for power. Either 'W' 
+                or 'dBm'.
 
         Returns:
-            float: available power in specified units
+            float: Available power in specified units
 
         """
 
@@ -206,11 +269,10 @@ class EmbeddingCircuit(object):
 
         Args:
             power (float): power, in given units
-
-        Keyword Arguments:
-            f (int): tone
-            p (int): harmonic
-            units (str): units for power, either 'W' or 'dBm'
+            f (int, optional, default is 1): tone
+            p (int, optional, default is 1): harmonic
+            units (str, optional, default is 'W'): units for power, either 'W' 
+                or 'dBm'
 
         """
 
@@ -231,7 +293,7 @@ class EmbeddingCircuit(object):
         self.vt[f, p] = volt_v / self.vgap
 
     def set_alpha(self, alpha, f=1, p=1, zj=0.66):
-        """ Set (approximately) the drive level of tone f and harmonic p.
+        """ Set the drive level of tone f and harmonic p (approximately).
 
         This method guesses what the source voltage should be in order to get 
         the desired drive level.
@@ -243,11 +305,9 @@ class EmbeddingCircuit(object):
 
         Args:
             alpha (float): drive level, alpha = voltage / vph
-
-        Keyword Arguments:
-            f (int): tone
-            p (int): harmonic
-            zj (float): junction impedance to assume
+            f (int, optional, default is 1): tone
+            p (int, optional, default is 1): harmonic
+            zj (float, optional, default is 0.66): junction impedance to assume
 
         """
 
@@ -260,12 +320,11 @@ class EmbeddingCircuit(object):
 
         Args:
             value (float): value to set using given units
-
-        Keyword Arguments:
-            f (int): tone
-            units (str): units for input value, 'Hz' for frequency in units 
-                Hz, 'V' for photon voltage in units V, and 'norm' for either
-                normalized photon voltage or normalized frequency
+            f (int, optional, default is 1): tone number
+            units (str, optional, default is 'Hz'): units for input value, 'Hz'
+                for frequency in units Hz, 'V' for photon voltage in units V, 
+                and 'norm' for either normalized photon voltage or normalized 
+                frequency.
 
         """
 
@@ -281,17 +340,15 @@ class EmbeddingCircuit(object):
             raise ValueError('Units not recognized.')
 
     def set_name(self, name, f=1, p=1):
-        """ Set a name for a given tone + harmonic.
+        """ Set a name for a given tone and harmonic combination.
 
         This has no effect on the simulation. It's just nice for keeping track
         of the different signals.
 
         Args:
             name (str): name of tone/harmonic
-
-        Keyword Arguments:
-            f (int): frequency number to set
-            p (int): harmonic number to set
+            f (int, optional, default is 1): frequency number to set
+            p (int, optional, default is 1): harmonic number to set
 
         """
 
@@ -341,8 +398,8 @@ class EmbeddingCircuit(object):
     def save_info(self, filename='embedding-circuit.txt'):
         """Save this embedding circuit to a text file.
 
-        Keyword Arguments:
-            filename (string): Filename
+        Args:
+            filename (string): Filename for information file
 
         """
 
@@ -378,6 +435,8 @@ class EmbeddingCircuit(object):
 
     def unlock(self):
         """Make all Numpy arrays contained within this class writeable.
+        
+        This can be useful for debugging.
 
         """
 
@@ -388,17 +447,17 @@ class EmbeddingCircuit(object):
 
 
 def read_circuit(filename):
-    """ Build embedding circuit based on information file.
+    """Build embedding circuit from on information file.
 
     This function will build an instance of the EmbeddingCircuit class 
-    based on a file built previously by `EmbeddingCircuit.save_info(filename)`
-    method.
+    based on a file built previously generated by the 
+    ``EmbeddingCircuit.save_info()`` method.
 
     Args:
-        filename: filename
+        filename (str): filename
 
     Returns:
-        instance of EmbeddingCircuit
+        qmix.circuit.EmbeddingCircuit: instance of the embedding circuit class
 
     """
 
