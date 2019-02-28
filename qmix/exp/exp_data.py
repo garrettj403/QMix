@@ -254,6 +254,8 @@ class RawData0(object):
         # Plot DC I-V curve
         if ax is None:
             fig, ax = plt.subplots()
+        else:
+            fig = ax.get_figure()
         ax.plot(v_mv, i_ua, label=lgd_str1)
         # Label gap
         ax.plot(self.vgap * 1e3, i_at_gap, 
@@ -279,6 +281,7 @@ class RawData0(object):
         if fig_name is not None:
             fig.savefig(fig_name, **_plot_params)
             plt.close(fig)
+            return
         else:
             return ax
 
@@ -311,6 +314,8 @@ class RawData0(object):
         # Plot offset (to make sure it was corrected properly)
         if ax is None:
             fig, ax = plt.subplots()
+        else:
+            fig = ax.get_figure()
         ax.plot(v_mv[mask], i_ua[mask])
         ax.set_xlim([-0.2, 0.2])
         ax.set_xlabel(r'Bias Voltage (mV)')
@@ -320,6 +325,7 @@ class RawData0(object):
         if fig_name is not None:
             fig.savefig(fig_name, **_plot_params)
             plt.close(fig)
+            return
         else:
             return ax
 
@@ -354,6 +360,8 @@ class RawData0(object):
         # Plot dynamic resistance
         if ax is None:
             fig, ax = plt.subplots()
+        else:
+            fig = ax.get_figure()
         ax.semilogy(v_mv, 1 / rdyn)
         ax.set_xlabel(r'Bias Voltage (mV)')
         ax.set_ylabel(r'Dynamic Resistance ($\Omega$)')
@@ -362,6 +370,7 @@ class RawData0(object):
         if fig_name is not None:
             fig.savefig(fig_name, **_plot_params)
             plt.close(fig)
+            return
         else:
             return ax
 
@@ -399,6 +408,8 @@ class RawData0(object):
         # Plot static resistance
         if ax is None:
             fig, ax = plt.subplots()
+        else:
+            fig = ax.get_figure()
         ax.plot(v_mv, r_stat)
         ax.set_xlabel(r'Bias Voltage (mV)')
         ax.set_ylabel(r'Static Resistance ($\Omega$)')
@@ -408,6 +419,7 @@ class RawData0(object):
         if fig_name is not None:
             fig.savefig(fig_name, **_plot_params)
             plt.close(fig)
+            return
         else:
             return ax
 
@@ -450,6 +462,7 @@ class RawData0(object):
             fig, (ax1, ax2) = plt.subplots(2, sharex=True, figsize=(6, 9))
         else:
             ax1, ax2 = ax
+            fig = ax1.get_figure()
         plt.subplots_adjust(hspace=0., wspace=0.)
 
         # Plot DC I-V curve
@@ -480,6 +493,7 @@ class RawData0(object):
         if fig_name is not None:
             fig.savefig(fig_name, **_plot_params)
             plt.close(fig)
+            return
         else:
             return ax1, ax2
 
@@ -797,6 +811,8 @@ class RawData(object):
 
         if ax is None:
             fig, ax = plt.subplots()
+        else:
+            fig = ax.get_figure()
         ax.plot(dciv.voltage * vmv, dciv.current * iua, label="Unpumped")
         ax.plot(self.voltage * vmv, self.current * iua, 'r', label="Pumped")
         ax.set_xlabel(r'Bias Voltage (mV)')
@@ -809,6 +825,7 @@ class RawData(object):
         if fig_name is not None:
             fig.savefig(fig_name, **_plot_params)
             plt.close(fig)
+            return
         else:
             return ax
 
@@ -835,6 +852,8 @@ class RawData(object):
         # Plot IF data
         if ax is None:
             fig, ax = plt.subplots()
+        else:
+            fig = ax.get_figure()
         ax.plot(v_mv, self.if_hot[:, 1], _pale_red, label='Hot')
         ax.plot(v_mv, self.if_cold[:, 1], _pale_blue, label='Cold')
         if self.dciv.if_data is not None:
@@ -850,6 +869,7 @@ class RawData(object):
         if fig_name is not None:
             fig.savefig(fig_name, **_plot_params)
             plt.close(fig)
+            return
         else:
             return ax
 
@@ -880,6 +900,7 @@ class RawData(object):
             fig, ax1 = plt.subplots()
         else:
             ax1, ax2 = ax
+            fig = ax1.get_figure()
 
         # Plot I-V data
         ax1.plot(self.voltage_dc * mv, self.current_dc * ua,
@@ -908,6 +929,7 @@ class RawData(object):
         if fig_name is not None:
             fig.savefig(fig_name, **_plot_params)
             plt.close(fig)
+            return
         else:
             return ax1, ax2
 
@@ -937,6 +959,8 @@ class RawData(object):
 
         if ax is None:
             fig, ax = plt.subplots()
+        else:
+            fig = ax.get_figure()
         ax.plot(v_mv[mask], self.if_hot[mask, 1], '#f96b6b', label='Hot')
         ax.plot(v_mv[mask], self.if_cold[mask, 1], '#6ba2f9', label='Cold')
         ax.axvline(vshapiro, label=r'$\omega_\mathrm{LO}h/2e$', c='k', ls='--')
@@ -950,6 +974,7 @@ class RawData(object):
         if fig_name is not None:
             fig.savefig(fig_name, **_plot_params)
             plt.close(fig)
+            return
         else:
             return ax
 
@@ -979,6 +1004,7 @@ class RawData(object):
             fig, (ax1, ax2) = plt.subplots(2, sharex=True, figsize=(6, 9))
         else:
             ax1, ax2 = ax
+            fig = ax1.get_figure()
         plt.subplots_adjust(hspace=0., wspace=0.)
 
         ax1.plot(self.dciv.voltage * self.vgap * 1e3, 
@@ -1010,6 +1036,7 @@ class RawData(object):
         if fig_name is not None:
             fig.savefig(fig_name, **_plot_params)
             plt.close(fig)
+            return
         else:
             return ax1, ax2
 
@@ -1039,6 +1066,7 @@ class RawData(object):
             ax2 = ax1.twinx()
         else:
             ax1, ax2 = ax
+            fig = ax1.get_figure()
 
         # Plot IF power from hot/cold loads
         l1 = ax1.plot(v_mv, hot, _pale_red, label='Hot IF')
@@ -1070,6 +1098,7 @@ class RawData(object):
         if fig_name is not None:
             fig.savefig(fig_name, **_plot_params)
             plt.close(fig)
+            return
         else:
             return ax1, ax2
 
@@ -1101,6 +1130,7 @@ class RawData(object):
             ax2 = ax1.twinx()
         else:
             ax1, ax2 = ax
+            fig = ax1.get_figure()
 
         # Plot y factor
         ax1.plot(v_mv, yfac, _dark_blue, label='Y-factor')
@@ -1132,6 +1162,7 @@ class RawData(object):
         if fig_name is not None:
             fig.savefig(fig_name, **_plot_params)
             plt.close(fig)
+            return
         else:
             return ax1, ax2
 
@@ -1160,6 +1191,7 @@ class RawData(object):
             ax2 = ax1.twinx()
         else:
             ax1, ax2 = ax
+            fig = ax1.get_figure()
 
         # Plot gain
         ax1.plot(v_mv, self.gain, label=r'Gain', color=_dark_blue)
@@ -1200,6 +1232,7 @@ class RawData(object):
         if fig_name is not None:
             fig.savefig(fig_name, **_plot_params)
             plt.close(fig)
+            return
         else:
             return ax1, ax2
 
@@ -1238,6 +1271,8 @@ class RawData(object):
 
         if ax is None:
             fig, ax = plt.subplots()
+        else:
+            fig = ax.get_figure()
         ax.plot(v_mv, rdyn, label=r'$R_\mathrm{dyn}$')
         ax.plot(vb_best, rdyn_bias, 'r^', label=r'%.1f $\Omega$' % rdyn_bias)
         ax.plot(v_steps, r_steps, 'k+',
@@ -1254,6 +1289,7 @@ class RawData(object):
         if fig_name is not None:
             fig.savefig(fig_name, **_plot_params)
             plt.close(fig)
+            return
         else:
             return ax
 
@@ -1279,6 +1315,8 @@ class RawData(object):
 
         if ax is None:
             fig, ax = plt.subplots()
+        else:
+            fig = ax.get_figure()
         ax.plot(v_mv, self.gain*100, label=r'$G_{{c}}$')
         ax.set_xlabel('Bias Voltage (mV)')
         ax.set_ylabel('Gain (%)')
@@ -1288,6 +1326,7 @@ class RawData(object):
         if fig_name is not None:
             fig.savefig(fig_name, **_plot_params)
             plt.close(fig)
+            return
         else:
             return ax
 
@@ -1327,6 +1366,8 @@ class RawData(object):
 
         if ax is None:
             fig, ax = plt.subplots()
+        else:
+            fig = ax.get_figure()
         pc = ax.pcolor(xx, yy, zz.T, cmap='viridis')
         # Add color bar
         cbar = plt.colorbar(pc, ax=ax)
@@ -1369,6 +1410,7 @@ class RawData(object):
         if fig_name is not None:
             fig.savefig(fig_name, **_plot_params)
             plt.close(fig)
+            return
         else:
             return ax
 
@@ -1416,6 +1458,8 @@ class RawData(object):
 
         if ax is None:
             fig, ax = plt.subplots()
+        else:
+            fig = ax.get_figure()
         ax.plot(self.dciv.voltage * mv, self.dciv.current * ua,
                  label='Unpumped', c='gray')
         ax.plot(self.voltage * mv, self.current * ua,
@@ -1439,6 +1483,7 @@ class RawData(object):
         if fig_name is not None:
             fig.savefig(fig_name, **_plot_params)
             plt.close(fig)
+            return
         else:
             return ax
 
