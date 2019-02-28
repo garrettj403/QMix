@@ -108,8 +108,59 @@ class RespFn(object):
         self.voltage_kk = voltage
         self.current_kk = current_kk
 
+    def plot_interpolation(self, fig_name=None, ax=None):  # pragma: no cover
+        """Plot the interpolation of the response function.
+
+        Note: If ``fig_name`` is defined, this method will save the figure
+        in the specified file. Otherwise, this method will return the 
+        Matplotlib axis.
+
+        Args:
+            fig_name: figure name (optional)
+            ax: figure axis (optional)
+
+        Returns:
+            `matplotlib.axes.Axes`: figure axis
+        """
+
+        # Figure labels
+        lb1 = r'$I_\mathrm{{dc}}^0(V_0)$: imported'
+        lb2 = r'$I_\mathrm{{dc}}^0(V_0)$: interpolated'
+        lb3 = r'$I_\mathrm{{kk}}^0(V_0)$: imported'
+        lb4 = r'$I_\mathrm{{kk}}^0(V_0)$: interpolated'
+
+        if ax is None:
+            fig, ax = plt.subplots()
+        ax.plot(self.voltage, self.current, 'k--', label=lb1)
+        ax.plot(self.voltage, self.f_idc(self.voltage), 'k-', label=lb2)
+        ax.plot(self.voltage_kk, self.current_kk, 'r--', label=lb3)
+        ax.plot(self.voltage_kk, self.f_ikk(self.voltage_kk), 'r-', label=lb4)
+        ax.set_xlabel(r'Bias Voltage / $V_\mathrm{{gap}}$')
+        ax.set_ylabel(r'Current / $I_\mathrm{{gap}}$')
+        ax.set_xlim([-2, 2])
+        ax.set_ylim([-2, 2])
+        ax.legend(loc=0, fontsize=8, frameon=True)
+        ax.grid()
+        if fig_name is not None:
+            fig.savefig(fig_name, bbox_inches='tight')
+        else:
+            return ax
+
     def show_current(self, fig_name=None, ax=None):  # pragma: no cover
-        """Plot the DC I-V and KK current.
+        """Plot the interpolation of the response function.
+
+        This method can be used to check the interpolation of the response 
+        function.
+
+        Note: If ``fig_name`` is defined, this method will save the figure
+        in the specified file. Otherwise, this method will return the 
+        Matplotlib axis.
+
+        Warning: 
+
+            This function is deprecated. Please use ``plot_interpolation``
+            instead. I renamed this function to be more consistent across
+            the QMix package.
 
         Args:
             fig_name (string): figure name if saved
@@ -117,28 +168,7 @@ class RespFn(object):
 
         """
 
-        if ax is None:
-            fig, ax = plt.subplots()
-        ax.plot(self.voltage, self.current, 'k--',
-                label=r'$I_\mathrm{{dc}}^0(V_0)$: imported')
-        ax.plot(self.voltage, self.f_idc(self.voltage), 'k-',
-                label=r'$I_\mathrm{{dc}}^0(V_0)$: interpolated')
-        ax.plot(self.voltage_kk, self.current_kk, 'r--',
-                label=r'$I_\mathrm{{kk}}^0(V_0)$: imported')
-        ax.plot(self.voltage_kk, self.f_ikk(self.voltage_kk), 'r-',
-                label=r'$I_\mathrm{{kk}}^0(V_0)$: interpolated')
-        ax.set_xlabel(r'Bias Voltage / $V_\mathrm{{gap}}$')
-        ax.set_ylabel(r'Current / $I_\mathrm{{gap}}$')
-        ax.set_xlim([-2, 2])
-        ax.set_ylim([-2, 2])
-        ax.legend(loc=0, fontsize=8, frameon=True)
-        ax.grid()
-        if ax is not None:
-            return ax
-        elif fig_name is not None:
-            fig.savefig(fig_name, bbox_inches='tight')
-        else:
-            plt.show()
+        return self.plot_interpolation(fig_name, ax)
 
     def resp(self, vbias):
         """Interpolate the response function current
