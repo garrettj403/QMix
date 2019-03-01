@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>2. QMix Package &mdash; QMix latest documentation</title>
+  <title>2. Package API &mdash; QMix latest documentation</title>
   
 
   
@@ -84,7 +84,7 @@
             
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="setup.html">1. Getting Started</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">2. QMix Package</a><ul>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">2. Package API</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#subpackages">2.1. Subpackages</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="qmix.exp.html">2.1.1. qmix.exp package</a></li>
 <li class="toctree-l3"><a class="reference internal" href="qmix.mathfn.html">2.1.2. qmix.mathfn package</a></li>
@@ -101,7 +101,8 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="single-tone-simple.html">3. Example #1: Creating a simple 1 tone simulation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="multi-tone.html">4. Example #2: Simulating an SIS mixer</a></li>
-<li class="toctree-l1"><a class="reference internal" href="references.html">5. References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analyze-experimental-data.html">5. Example #3: Analyzing experimental data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="references.html">6. References</a></li>
 </ul>
 
             
@@ -147,7 +148,7 @@
     
       <li><a href="index.html">Docs</a> &raquo;</li>
         
-      <li>2. QMix Package</li>
+      <li>2. Package API</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -190,8 +191,8 @@
     text-align: unset;
 }
 </style>
-<div class="section" id="qmix-package">
-<h1>2. QMix Package<a class="headerlink" href="#qmix-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="package-api">
+<h1>2. Package API<a class="headerlink" href="#package-api" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="subpackages">
 <h2>2.1. Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
 <div class="toctree-wrapper compound">
@@ -232,12 +233,12 @@
 <span id="qmix-circuit-module"></span><h2>2.3. qmix.circuit module<a class="headerlink" href="#module-qmix.circuit" title="Permalink to this headline">¶</a></h2>
 <p>This module contains classes and functions to describe the embedding
 circuit.</p>
-<p><strong>Description</strong></p>
+<p><strong>Description:</strong></p>
 <blockquote>
 <div><p>In experimental systems, SIS junctions are embedded within complex RF
 networks. These networks are referred to as the embedding circuit. Since
 all of the components in these embedding circuits are <strong>linear</strong>, the
-embedding circuit can be reduced to a Thevenin equivalent circuit for
+embedding circuit can be reduced to a <strong>Thevenin equivalent circuit</strong> for
 <strong>each tone and harmonic.</strong></p>
 <p>To fully describe the embedding circuit, 3 bits of information are needed
 for each signal that is applied to the junction:</p>
@@ -248,18 +249,28 @@ for each signal that is applied to the junction:</p>
 <li>the Thevenin impedance of the embedding circuit at this freq.</li>
 </ol>
 </div></blockquote>
+<p>The main class in this module (<code class="docutils literal notranslate"><span class="pre">EmbeddingCircuit</span></code>) allows the user to
+build an embedding circuit in the proper format.</p>
 </div></blockquote>
 <dl class="class">
 <dt id="qmix.circuit.EmbeddingCircuit">
 <em class="property">class </em><code class="descclassname">qmix.circuit.</code><code class="descname">EmbeddingCircuit</code><span class="sig-paren">(</span><em>num_f=1</em>, <em>num_p=1</em>, <em>vb_min=0</em>, <em>vb_max=2</em>, <em>vb_npts=201</em>, <em>fgap=None</em>, <em>vgap=None</em>, <em>rn=None</em>, <em>name=''</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.circuit.EmbeddingCircuit" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Class for describing the embedding circuit.</p>
-<p>This includes the voltages, impedances and frequencies of all signals
-applied to the junction.</p>
+<p>Class for building and describing the embedding circuit.</p>
+<p>This includes the frequencies, Thevenin voltages and Thevenin impedances
+of all signals applied to the junction.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>Unless specified otherwise, <strong>all input values are normalized</strong>. The
+voltages are normalized to the gap voltage, resistances are normalized
+to the normal-state resistance, currents are normalized to gap current,
+and frequencies are normalized to the gap frequency. Refer to the
+argument descriptions below to see if the value should be normalized or
+not.</p>
 <p>Creating an instance of this class will set the sizes and data types
-of all of the class attributes, but the actual values will need to be set
-manually. In this way, this class is sort of like a struct. The
-class attributes that have to be set manually are:</p>
+of all of the class attributes, but the actual values will need to be
+set manually. In this way, this class is sort of like a fancy struct.
+The class attributes that have to be set manually are:</p>
 <blockquote>
 <div><ul class="simple">
 <li><code class="docutils literal notranslate"><span class="pre">vph</span></code>:  photon voltage (freq / gap freq)</li>
@@ -267,49 +278,319 @@ class attributes that have to be set manually are:</p>
 <li><code class="docutils literal notranslate"><span class="pre">zt</span></code>:  Thevenin impedance (normalized to the normal resistance)</li>
 </ul>
 </div></blockquote>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p>1. Unless specified otherwise, <strong>all input values are normalized</strong>.
-The voltages are normalized to the gap voltage (Vgap), the
-resistances are normalized to the normal-state resistance (Rn), the
-currents are normalized to Igap=Vgap/Rn, and the frequencies are
-normalized to the gap frequency fgap=e*Vgap/h.</p>
-<p class="last">2. The photon voltage is defined as hf/e. Therefore, the normalized
-photon voltage is equal to the frequency of the input signal divided
-by the the gap frequency. <strong>Normalized photon voltage is equal to the
-normalized frequency.</strong></p>
+<p class="last">See the attribute descriptions below for information about how to do
+this.</p>
 </div>
 <p class="rubric">Example</p>
 <p>To create an instance of the embedding circuit class with 2 tones and
-3 harmonices, you would set:</p>
-<blockquote>
-<div><code class="docutils literal notranslate"><span class="pre">cct</span> <span class="pre">=</span> <span class="pre">EmbeddingCircuit(2,</span> <span class="pre">3)</span></code></div></blockquote>
-<p>Then, to set the Thevenin voltage of the 3rd harmonic of the 2nd tone
-to 0.3, you would set:</p>
-<blockquote>
-<div><code class="docutils literal notranslate"><span class="pre">cct.vt[2,3]</span> <span class="pre">=</span> <span class="pre">0.3</span></code></div></blockquote>
-<p>For each signal, you then have to repeat this to set each voltage,
-impedance and photon voltage.</p>
+3 harmonices:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">cct1</span> <span class="o">=</span> <span class="n">EmbeddingCircuit</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;Test 1&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">cct1</span><span class="p">)</span>
+<span class="go">Embedding circuit (Tones:2, Harmonics:3): Test 1</span>
+</pre></div>
+</div>
+<p>Once initialized, you can begin defining the properties of the
+embedding circuit. I normally start with the photon voltages (or,
+equivalently, the normalized frequencies):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">cct1</span><span class="o">.</span><span class="n">vph</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.30</span>  <span class="c1"># first tone</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cct1</span><span class="o">.</span><span class="n">vph</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.32</span>  <span class="c1"># second tone</span>
+</pre></div>
+</div>
+<p>Then, you have to set all of the voltages and impdeances for all of the
+different signals. For example, for the 1st harmonic of the 1st tone:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">cct1</span><span class="o">.</span><span class="n">vt</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.5</span>             <span class="c1"># Thevenin voltage</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cct1</span><span class="o">.</span><span class="n">zt</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.3</span> <span class="o">+</span> <span class="mi">1</span><span class="n">j</span> <span class="o">*</span> <span class="mf">0.1</span>  <span class="c1"># Thevenin impedance</span>
+</pre></div>
+</div>
+<p>If you would like the ability to use non-normalized values (e.g., set
+the available power of a signal in units [W]), you need to define the
+properties of the junction during initialization. For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">cct2</span> <span class="o">=</span> <span class="n">EmbeddingCircuit</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">vgap</span><span class="o">=</span><span class="mf">2.8e-3</span><span class="p">,</span> <span class="n">rn</span><span class="o">=</span><span class="mf">14.</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Note that you only need to define either the gap voltage or the gap
+frequency since they can be calculated from each other.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">fgap</span> <span class="o">=</span> <span class="n">cct2</span><span class="o">.</span><span class="n">fgap</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">round</span><span class="p">(</span><span class="n">fgap</span> <span class="o">/</span> <span class="mf">1e9</span><span class="p">)</span>  <span class="c1"># to display in [GHz]</span>
+<span class="go">677</span>
+</pre></div>
+</div>
+<p>You can now set the photon voltage using the frequency of the applied
+signal. E.g.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">cct2</span><span class="o">.</span><span class="n">set_vph</span><span class="p">(</span><span class="mi">250</span><span class="p">,</span> <span class="n">f</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="s1">&#39;GHz&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">round</span><span class="p">(</span><span class="n">cct2</span><span class="o">.</span><span class="n">vph</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">4</span><span class="p">)</span>
+<span class="go">0.3693</span>
+</pre></div>
+</div>
+<p>Once an impedance has been set, you can also set the power of the
+signal using absolute units. Here we will set the available power for
+the first harmonic of the first tone to 10 nW (10e-9 W).</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">cct2</span><span class="o">.</span><span class="n">zt</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.5</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cct2</span><span class="o">.</span><span class="n">set_available_power</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;nW&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>And we can then display this power in units [dBm].</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">cct2</span><span class="o">.</span><span class="n">available_power</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;dBm&#39;</span><span class="p">)</span>
+<span class="go">-50.0</span>
+</pre></div>
+</div>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
-<tr class="field-odd field"><td>&#160;</td><td class="field-body"><ul class="first last simple">
-<li><strong>num_f</strong> (<em>int</em>) – Number of fundamental tones/frequencies</li>
-<li><strong>num_p</strong> (<em>int</em>) – Number of harmonics</li>
-<li><strong>vb_min</strong> (<em>float</em>) – Minimum bias voltage</li>
-<li><strong>vb_max</strong> (<em>float</em>) – Maximum bias voltage</li>
-<li><strong>vb_npts</strong> (<em>int</em>) – Number of bias voltage points</li>
-<li><strong>fgap</strong> (<em>float</em>) – Gap frequency, in units [Hz]</li>
-<li><strong>vgap</strong> (<em>float</em>) – Gap voltage, in units [V]</li>
-<li><strong>rn</strong> (<em>float</em>) – Normal-state resistance, in units [ohms]</li>
-<li><strong>name</strong> (<em>str</em>) – Name of this instance (optional)</li>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>num_f</strong> (<em>int</em><em>, </em><em>optional</em><em>, </em><em>default is 1</em>) – Number of fundamental frequencies (tones)
+applied to the junction.</li>
+<li><strong>num_p</strong> (<em>int</em><em>, </em><em>optional</em><em>, </em><em>default is 1</em>) – Number of harmonics included for each tone.</li>
+<li><strong>vb_min</strong> (<em>float</em><em>, </em><em>optional</em><em>, </em><em>default is 0</em>) – Minimum bias voltage for array.</li>
+<li><strong>vb_max</strong> (<em>float</em><em>, </em><em>optional</em><em>, </em><em>default is 2</em>) – Maximum bias voltage for array.</li>
+<li><strong>vb_npts</strong> (<em>int</em><em>, </em><em>optional</em><em>, </em><em>default is 201</em>) – Number of bias voltage points for array.</li>
+<li><strong>fgap</strong> (<em>float</em><em>, </em><em>optional</em>) – Gap frequency of the junction in units [Hz]. This is
+equal to <code class="docutils literal notranslate"><span class="pre">e*Vgap/h</span></code>, where <code class="docutils literal notranslate"><span class="pre">e</span></code> is the charge of an electron,
+<code class="docutils literal notranslate"><span class="pre">Vgap</span></code> is the gap voltage, and <code class="docutils literal notranslate"><span class="pre">h</span></code> is the Planck constant.
+<code class="docutils literal notranslate"><span class="pre">fgap</span></code> is used to normalize and de-normalize frequency values
+(that’t it).</li>
+<li><strong>vgap</strong> (<em>float</em><em>, </em><em>optional</em>) – Gap voltage of the junction in units [V]. This is the
+voltage where the sharp non-linearity in the DC I-V curve occurs
+(a.k.a., the transition voltage).</li>
+<li><strong>rn</strong> (<em>float</em><em>, </em><em>optional</em>) – Normal-state resistance of the junction in units [ohms].
+This is the resistance of the junction at a temperature slight
+above the critical temperature. It is found by calculating the
+dynamic resistance of the DC I-V curve above the gap voltage.</li>
+<li><strong>name</strong> (<em>str</em><em>, </em><em>optional</em>) – Name used to describe this specific instance.</li>
 </ul>
 </td>
 </tr>
 </tbody>
 </table>
+<dl class="attribute">
+<dt id="qmix.circuit.EmbeddingCircuit.vph">
+<code class="descname">vph</code><a class="headerlink" href="#qmix.circuit.EmbeddingCircuit.vph" title="Permalink to this definition">¶</a></dt>
+<dd><p>An array for the photon voltage normalized to the
+gap voltage. This is a 1-dimensional array of real numbers. It
+contains all of the photon voltages for the fundamental tones that
+are applied to the junction. The photon voltage is defined as
+<code class="docutils literal notranslate"><span class="pre">hf/e</span></code>, where <code class="docutils literal notranslate"><span class="pre">h</span></code> is the Planck constant, <code class="docutils literal notranslate"><span class="pre">f</span></code> is the
+frequency of the fundamental tone, and <code class="docutils literal notranslate"><span class="pre">e</span></code> is the charge of an
+electron. However, since this value is normalized to the gap
+voltage, the photon voltage is also equal to the normalized
+frequency: <code class="docutils literal notranslate"><span class="pre">f/fgap</span></code>, where <code class="docutils literal notranslate"><span class="pre">fgap</span></code> is the gap frequency. Note
+that this array is 1-based, meaning that the photon voltage of the
+1st tone is located in <code class="docutils literal notranslate"><span class="pre">.vph[1]</span></code>. (The index represents the tone
+number.) <strong>This attribute must be set after initialization!</strong></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">numpy.ndarray</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="qmix.circuit.EmbeddingCircuit.vt">
+<code class="descname">vt</code><a class="headerlink" href="#qmix.circuit.EmbeddingCircuit.vt" title="Permalink to this definition">¶</a></dt>
+<dd><p>An array for the Thevenin voltage normalized to the
+gap voltage. This is a 2-dimensional array of complex values. It
+contains the voltages for all of the Thevenin equivalent circuits
+(which describe the embedding circuit). In order, the indices are:
+<code class="docutils literal notranslate"><span class="pre">.vt[f,p]</span></code> for tone <code class="docutils literal notranslate"><span class="pre">f</span></code> and harmonic <code class="docutils literal notranslate"><span class="pre">p</span></code>. Note that this
+array is 1-based, meaning that the voltage for tone number 2 /
+harmonic number 3 is stored in <code class="docutils literal notranslate"><span class="pre">vt[2,3]</span></code>. <strong>This attribute must
+be set after initialization!</strong></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">numpy.ndarray</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="qmix.circuit.EmbeddingCircuit.zt">
+<code class="descname">zt</code><a class="headerlink" href="#qmix.circuit.EmbeddingCircuit.zt" title="Permalink to this definition">¶</a></dt>
+<dd><p>An array for the Thevenin impedance array
+normalized to the normal-state resistance. This is a 2-dimensional
+array of complex values. It contains the impedances of all of the
+Thevenin equivalent circuits (which describe the embedding
+circuit). In order, the indices are: <code class="docutils literal notranslate"><span class="pre">.zt[f,p]</span></code>, for tone
+<code class="docutils literal notranslate"><span class="pre">f</span></code> and harmonic <code class="docutils literal notranslate"><span class="pre">p</span></code>. Note that this array is 1-based, meaning
+that the impedance for tone number 2, and harmonic number 3 is
+stored in <code class="docutils literal notranslate"><span class="pre">zt[2,3]</span></code>. <strong>This attribute must be set after
+initialization!</strong></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">numpy.ndarray</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="qmix.circuit.EmbeddingCircuit.num_f">
+<code class="descname">num_f</code><a class="headerlink" href="#qmix.circuit.EmbeddingCircuit.num_f" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of fundamental frequencies (tones) applied to the
+junction.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="qmix.circuit.EmbeddingCircuit.num_p">
+<code class="descname">num_p</code><a class="headerlink" href="#qmix.circuit.EmbeddingCircuit.num_p" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of harmonics included for each tone.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="qmix.circuit.EmbeddingCircuit.num_n">
+<code class="descname">num_n</code><a class="headerlink" href="#qmix.circuit.EmbeddingCircuit.num_n" title="Permalink to this definition">¶</a></dt>
+<dd><p>Total number of signals. This is equal to <code class="docutils literal notranslate"><span class="pre">num_f*num_p</span></code>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="qmix.circuit.EmbeddingCircuit.fgap">
+<code class="descname">fgap</code><a class="headerlink" href="#qmix.circuit.EmbeddingCircuit.fgap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gap frequency of the junction in units [Hz]. This is
+equal to <code class="docutils literal notranslate"><span class="pre">e*Vgap/h</span></code>, where <code class="docutils literal notranslate"><span class="pre">e</span></code> is the charge of an electron,
+<code class="docutils literal notranslate"><span class="pre">Vgap</span></code> is the gap voltage, and <code class="docutils literal notranslate"><span class="pre">h</span></code> is the Planck constant. Note
+that <code class="docutils literal notranslate"><span class="pre">E=fgap*e</span></code> is the energy required to break Cooper pairs, so
+at frequencies above the <code class="docutils literal notranslate"><span class="pre">fgap</span></code> the superconductors will begin to
+become lossy. Here, <code class="docutils literal notranslate"><span class="pre">fgap</span></code> is used to normalize and de-normalize
+frequency values (that’t it).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">float</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="qmix.circuit.EmbeddingCircuit.vgap">
+<code class="descname">vgap</code><a class="headerlink" href="#qmix.circuit.EmbeddingCircuit.vgap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gap voltage of the junction in units [V]. This is the
+voltage where the sharp non-linearity in the DC I-V curve occurs
+(i.e., the transition voltage). This value is used to normalize
+and de-normalize voltages.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">float</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="qmix.circuit.EmbeddingCircuit.igap">
+<code class="descname">igap</code><a class="headerlink" href="#qmix.circuit.EmbeddingCircuit.igap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gap current of the junction in units [A]. This is equal
+to <code class="docutils literal notranslate"><span class="pre">vgap/rn</span></code>. This value is used to normalize and de-normalize
+currents.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">float</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="qmix.circuit.EmbeddingCircuit.rn">
+<code class="descname">rn</code><a class="headerlink" href="#qmix.circuit.EmbeddingCircuit.rn" title="Permalink to this definition">¶</a></dt>
+<dd><p>Normal-state resistance of the junction in units [ohms].
+This is the resistance of the junction at a temperature slightly
+above the critical temperature. It is found by calculating the
+dynamic resistance of the DC I-V curve above the gap voltage. This
+value is used to normalize and de-normalize resistances.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">float</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="qmix.circuit.EmbeddingCircuit.vb">
+<code class="descname">vb</code><a class="headerlink" href="#qmix.circuit.EmbeddingCircuit.vb" title="Permalink to this definition">¶</a></dt>
+<dd><p>Array for the DC bias voltage sweep. This value is
+normalized to the gap voltage.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">numpy.ndarray</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="qmix.circuit.EmbeddingCircuit.vb_npts">
+<code class="descname">vb_npts</code><a class="headerlink" href="#qmix.circuit.EmbeddingCircuit.vb_npts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of points in the bias voltage sweep.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="qmix.circuit.EmbeddingCircuit.comment">
+<code class="descname">comment</code><a class="headerlink" href="#qmix.circuit.EmbeddingCircuit.comment" title="Permalink to this definition">¶</a></dt>
+<dd><p>A list of comments to describe the different signals.
+For example, to describe tone 1/harmonic 1 as the local-oscillator
+signal, you might use <code class="docutils literal notranslate"><span class="pre">cct.comment[1][1]</span> <span class="pre">=</span> <span class="pre">&quot;LO&quot;</span></code>. This has to be
+done after the initialization of the EmbeddingCircuit class.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">list</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 <dl class="method">
 <dt id="qmix.circuit.EmbeddingCircuit.available_power">
 <code class="descname">available_power</code><span class="sig-paren">(</span><em>f=1</em>, <em>p=1</em>, <em>units='W'</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.circuit.EmbeddingCircuit.available_power" title="Permalink to this definition">¶</a></dt>
@@ -323,15 +604,15 @@ method. If they are not, an error will be raised.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
-<tr class="field-odd field"><td>&#160;</td><td class="field-body"><ul class="first simple">
-<li><strong>f</strong> (<em>int</em>) – tone</li>
-<li><strong>p</strong> (<em>int</em>) – harmonic</li>
-<li><strong>units</strong> (<em>str</em>) – units for power, either ‘W’ or ‘dBm’</li>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>f</strong> (<em>int</em><em>, </em><em>optional</em><em>, </em><em>default is 1</em>) – Tone index number.</li>
+<li><strong>p</strong> (<em>int</em><em>, </em><em>optional</em><em>, </em><em>default is 1</em>) – Harmonic index number.</li>
+<li><strong>units</strong> (<em>str</em><em>, </em><em>optional</em><em>, </em><em>default is 'W'</em>) – Units for power. One of ‘W’,</li>
+<li><strong>'uW'</strong><strong>, </strong><strong>'nW'</strong><strong>, </strong><strong>'pW'</strong><strong>, </strong><strong>'fW'</strong><strong>, </strong><strong>'dBm'</strong><strong>, or </strong><strong>'dBW'.</strong> (<em>'mW'</em><em>,</em>) – </li>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">available power in specified units</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Available power in specified units</p>
 </td>
 </tr>
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">float</p>
@@ -344,20 +625,19 @@ method. If they are not, an error will be raised.</p>
 <dl class="method">
 <dt id="qmix.circuit.EmbeddingCircuit.initialize_vj">
 <code class="descname">initialize_vj</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qmix.circuit.EmbeddingCircuit.initialize_vj" title="Permalink to this definition">¶</a></dt>
-<dd><p>DEPRECATED</p>
-<p>Initialize junction voltage array.</p>
-<p>Return an empty matrix that is the shape that <code class="docutils literal notranslate"><span class="pre">vj</span></code> should be (the
-voltage across the junction).</p>
-<p>Strictly speaking, <code class="docutils literal notranslate"><span class="pre">vj</span></code> shouldn’t be saved within this class, but
-it is okay for this class to initialize <code class="docutils literal notranslate"><span class="pre">vj</span></code> since it has all the
-data about matrix sizes.</p>
-<p>This function is useful when the embedding impedance aren’t included,
-and you want to set the voltage across the junction manually.</p>
+<dd><p>Initialize junction voltage array.</p>
+<p>Returns an empty matrix that is the shape that <code class="docutils literal notranslate"><span class="pre">vj</span></code> should be (the
+voltage across the junction). Strictly speaking, <code class="docutils literal notranslate"><span class="pre">vj</span></code> shouldn’t be
+saved within this class, but it is okay for this class to initialize
+<code class="docutils literal notranslate"><span class="pre">vj</span></code> since it has all the data about what the matrix sizes should be.</p>
+<p>This function is useful when the embedding impedances aren’t included,
+and you want to set the voltage across the junction manually (skipping
+harmonic balance).</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Empty matrix to initializing vj</td>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">An empty matrix for the junction voltage</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">ndarray</td>
 </tr>
@@ -369,7 +649,8 @@ and you want to set the voltage across the junction manually.</p>
 <dt id="qmix.circuit.EmbeddingCircuit.lock">
 <code class="descname">lock</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qmix.circuit.EmbeddingCircuit.lock" title="Permalink to this definition">¶</a></dt>
 <dd><p>Make all Numpy arrays contained within this class unwriteable.</p>
-<p>This can be useful for debugging.</p>
+<p>This can be useful for debugging. An error will be raised if you try to
+change the values of the Numpy arrays while they are locked.</p>
 </dd></dl>
 
 <dl class="method">
@@ -386,8 +667,7 @@ and you want to set the voltage across the junction manually.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
-<tr class="field-odd field"><td>&#160;</td><td class="field-body"><strong>filename</strong> (<em>string</em>) – Filename</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>filename</strong> (<em>string</em>) – Filename for information file</td>
 </tr>
 </tbody>
 </table>
@@ -396,26 +676,32 @@ and you want to set the voltage across the junction manually.</p>
 <dl class="method">
 <dt id="qmix.circuit.EmbeddingCircuit.set_alpha">
 <code class="descname">set_alpha</code><span class="sig-paren">(</span><em>alpha</em>, <em>f=1</em>, <em>p=1</em>, <em>zj=0.66</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.circuit.EmbeddingCircuit.set_alpha" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set (approximately) the drive level of tone f and harmonic p.</p>
-<p>This method guesses what the source voltage should be in order to get
-the desired drive level.</p>
+<dd><p>Set the drive level of tone f and harmonic p (approximately).</p>
+<p>This method guesses what the Thevenin voltage should be in order to get
+the desired drive level. E.g.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">cct</span> <span class="o">=</span> <span class="n">EmbeddingCircuit</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">vgap</span><span class="o">=</span><span class="mf">2.8e-3</span><span class="p">,</span> <span class="n">rn</span><span class="o">=</span><span class="mf">14.</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cct</span><span class="o">.</span><span class="n">vph</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.3</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cct</span><span class="o">.</span><span class="n">zt</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.5</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cct</span><span class="o">.</span><span class="n">set_alpha</span><span class="p">(</span><span class="mf">1.</span><span class="p">,</span> <span class="n">f</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">zj</span><span class="o">=</span><span class="mi">2</span><span class="o">/</span><span class="mf">3.</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>You won’t actually know the drive level until you run the simulation.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">Gap voltage and normal resistance must be set prior to using this
-method. Otherwise, an assertion error will be raised.</p>
+<p class="last">Photon voltage and Thevenin impedance must be set prior to using
+this method. Otherwise, an assertion error will be raised.</p>
 </div>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>alpha</strong> (<em>float</em>) – drive level, alpha = voltage / vph</p>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
-<tr class="field-even field"><td>&#160;</td><td class="field-body"><ul class="first last simple">
-<li><strong>f</strong> (<em>int</em>) – tone</li>
-<li><strong>p</strong> (<em>int</em>) – harmonic</li>
-<li><strong>zj</strong> (<em>float</em>) – junction impedance to assume</li>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>alpha</strong> (<em>float</em>) – drive level, alpha = voltage / vph</li>
+<li><strong>f</strong> (<em>int</em><em>, </em><em>optional</em><em>, </em><em>default is 1</em>) – tone</li>
+<li><strong>p</strong> (<em>int</em><em>, </em><em>optional</em><em>, </em><em>default is 1</em>) – harmonic</li>
+<li><strong>zj</strong> (<em>float</em><em>, </em><em>optional</em><em>, </em><em>default is 0.66</em>) – the impedance to assume for
+the junction (normalized to the normal-state resistance). This
+value will depend on frequency and pump level.</li>
 </ul>
 </td>
 </tr>
@@ -437,14 +723,12 @@ be raised.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>power</strong> (<em>float</em>) – power, in given units</p>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
-<tr class="field-even field"><td>&#160;</td><td class="field-body"><ul class="first last simple">
-<li><strong>f</strong> (<em>int</em>) – tone</li>
-<li><strong>p</strong> (<em>int</em>) – harmonic</li>
-<li><strong>units</strong> (<em>str</em>) – units for power, either ‘W’ or ‘dBm’</li>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>power</strong> (<em>float</em>) – power, in given units</li>
+<li><strong>f</strong> (<em>int</em><em>, </em><em>optional</em><em>, </em><em>default is 1</em>) – tone</li>
+<li><strong>p</strong> (<em>int</em><em>, </em><em>optional</em><em>, </em><em>default is 1</em>) – harmonic</li>
+<li><strong>units</strong> (<em>str</em><em>, </em><em>optional</em><em>, </em><em>default is 'W'</em>) – units for power. One of ‘W’,</li>
+<li><strong>'uW'</strong><strong>, </strong><strong>'nW'</strong><strong>, </strong><strong>'pW'</strong><strong>, </strong><strong>'fW'</strong><strong>, </strong><strong>'dBm'</strong><strong>, or </strong><strong>'dBW'.</strong> (<em>'mW'</em><em>,</em>) – </li>
 </ul>
 </td>
 </tr>
@@ -455,20 +739,17 @@ be raised.</p>
 <dl class="method">
 <dt id="qmix.circuit.EmbeddingCircuit.set_name">
 <code class="descname">set_name</code><span class="sig-paren">(</span><em>name</em>, <em>f=1</em>, <em>p=1</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.circuit.EmbeddingCircuit.set_name" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set a name for a given tone + harmonic.</p>
+<dd><p>Set a name for a given tone and harmonic combination.</p>
 <p>This has no effect on the simulation. It’s just nice for keeping track
 of the different signals.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>name</strong> (<em>str</em>) – name of tone/harmonic</p>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
-<tr class="field-even field"><td>&#160;</td><td class="field-body"><ul class="first last simple">
-<li><strong>f</strong> (<em>int</em>) – frequency number to set</li>
-<li><strong>p</strong> (<em>int</em>) – harmonic number to set</li>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>name</strong> (<em>str</em>) – name of tone/harmonic</li>
+<li><strong>f</strong> (<em>int</em><em>, </em><em>optional</em><em>, </em><em>default is 1</em>) – frequency number to set</li>
+<li><strong>p</strong> (<em>int</em><em>, </em><em>optional</em><em>, </em><em>default is 1</em>) – harmonic number to set</li>
 </ul>
 </td>
 </tr>
@@ -480,19 +761,34 @@ of the different signals.</p>
 <dt id="qmix.circuit.EmbeddingCircuit.set_vph">
 <code class="descname">set_vph</code><span class="sig-paren">(</span><em>value</em>, <em>f=1</em>, <em>units='Hz'</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.circuit.EmbeddingCircuit.set_vph" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set photon voltage of tone f.</p>
+<p>This method sets the normalized photon voltage of tone f. Normally,
+this can be done by setting the value of the attribute directly. E.g.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">cct</span> <span class="o">=</span> <span class="n">EmbeddingCircuit</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">vgap</span><span class="o">=</span><span class="mf">2.8e-3</span><span class="p">,</span> <span class="n">rn</span><span class="o">=</span><span class="mf">14.</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cct</span><span class="o">.</span><span class="n">vph</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.5</span>
+</pre></div>
+</div>
+<p>However, if you would instead like to use non-normalized units, this
+method can be very handy. E.g.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">cct</span><span class="o">.</span><span class="n">set_vph</span><span class="p">(</span><span class="mi">700</span><span class="p">,</span> <span class="n">f</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="s1">&#39;GHz&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The gap frequency or the gap voltage must be defined in order to
+use this method.</p>
+</div>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>value</strong> (<em>float</em>) – value to set using given units</p>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
-<tr class="field-even field"><td>&#160;</td><td class="field-body"><ul class="first last simple">
-<li><strong>f</strong> (<em>int</em>) – tone</li>
-<li><strong>units</strong> (<em>str</em>) – units for input value, ‘Hz’ for frequency in units
-Hz, ‘V’ for photon voltage in units V, and ‘norm’ for either
-normalized photon voltage or normalized frequency</li>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>value</strong> (<em>float</em>) – value to set using given units</li>
+<li><strong>f</strong> (<em>int</em><em>, </em><em>optional</em><em>, </em><em>default is 1</em>) – tone number</li>
+<li><strong>units</strong> (<em>str</em><em>, </em><em>optional</em><em>, </em><em>default is 'Hz'</em>) – units for input value, ‘Hz’
+for frequency in units Hz, ‘V’ for photon voltage in units V,
+and ‘norm’ for either normalized photon voltage or normalized
+frequency. SI prefixes can also be included: ‘MHz’, ‘GHz’,
+‘THz’, and ‘mV’.</li>
 </ul>
 </td>
 </tr>
@@ -504,6 +800,7 @@ normalized photon voltage or normalized frequency</li>
 <dt id="qmix.circuit.EmbeddingCircuit.unlock">
 <code class="descname">unlock</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qmix.circuit.EmbeddingCircuit.unlock" title="Permalink to this definition">¶</a></dt>
 <dd><p>Make all Numpy arrays contained within this class writeable.</p>
+<p>This can be useful for debugging.</p>
 </dd></dl>
 
 </dd></dl>
@@ -511,17 +808,19 @@ normalized photon voltage or normalized frequency</li>
 <dl class="function">
 <dt id="qmix.circuit.read_circuit">
 <code class="descclassname">qmix.circuit.</code><code class="descname">read_circuit</code><span class="sig-paren">(</span><em>filename</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.circuit.read_circuit" title="Permalink to this definition">¶</a></dt>
-<dd><p>Build embedding circuit based on information file.</p>
+<dd><p>Build embedding circuit from an embedding circuit file.</p>
 <p>This function will build an instance of the EmbeddingCircuit class
-based on a file built previously by <cite>EmbeddingCircuit.save_info(filename)</cite>
-method.</p>
+based on a file previously generated by the
+<code class="docutils literal notranslate"><span class="pre">EmbeddingCircuit.save_info()</span></code> method.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>filename</strong> – filename</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>filename</strong> (<em>str</em>) – filename</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">instance of EmbeddingCircuit</td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">instance of the embedding circuit class</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#qmix.circuit.EmbeddingCircuit" title="qmix.circuit.EmbeddingCircuit">qmix.circuit.EmbeddingCircuit</a></td>
 </tr>
 </tbody>
 </table>
@@ -771,67 +1070,267 @@ ndarray: AC tunneling current at f = IF</p>
 <span id="qmix-respfn-module"></span><h2>2.6. qmix.respfn module<a class="headerlink" href="#module-qmix.respfn" title="Permalink to this headline">¶</a></h2>
 <p>This module contains classes to represent the response function of the
 SIS junction.</p>
+<p>There are several different response function classes contained within this
+module:</p>
+<blockquote>
+<div><ul>
+<li><p class="first">Response functions generated directly from voltage and current data:</p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">RespFn</span></code>: This is the base class for all of the other response
+function classes. This class will generate a response function
+based on a DC I-V curve (i.e., DC voltage and current data). Note that
+this class assumes that you have “pre-processed” the data. This means
+that it will use voltage and current data to generate the
+interpolation directly. Normally, you want to have more data points
+around curvier regions in order to minimize how much time the
+interpolation takes. If you haven’t done this, it is a good idea to use
+<code class="docutils literal notranslate"><span class="pre">RespFnFromIVData</span></code> instead.</li>
+<li><code class="docutils literal notranslate"><span class="pre">RespFnFromIVData</span></code>: This class will generate a response function
+based on a DC I-V curve (i.e., DC voltage and current data). Unlike
+<code class="docutils literal notranslate"><span class="pre">RespFn</span></code>, this class will resample the response function in order to
+optimize the interpolation.</li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first">Response functions generated from mathematical models:</p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">RespFnPerfect</span></code>: This class will generate a response function based
+on an ideal DC I-V curve (i.e., the subgap current is exactly zero
+below the gap voltage and exactly equal to the bias voltage above the
+gap, assuming normalized values). This DC I-V curve has an infinitely
+sharp transition.</li>
+<li><code class="docutils literal notranslate"><span class="pre">RespFnPolynomial</span></code>: This class will generate a response function
+based on the polynomial model from Kennedy (1999). This class can be
+used to simulate the effect of the transition’s sharpness (i.e., how do
+the results change when the gap is more or less sharp).</li>
+<li><code class="docutils literal notranslate"><span class="pre">RespFnExponential</span></code>: This class will generate a response function
+based on the exponential model from Rashid et al. (2016). This model is
+very similar to <code class="docutils literal notranslate"><span class="pre">RespFnPolynomial</span></code>, except that you can include a
+constant subgap resistance.</li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</div></blockquote>
 <p>Upon initialization, these classes will:</p>
 <blockquote>
 <div><ol class="arabic simple">
-<li>Load or calculate the DC I-V curve (imagainary part of resp. func.)<ul>
-<li>The I-V curve can either be loaded from a csv file or generated from
-an I-V curve model (e.g., polynomial model, exponential model, etc.),</li>
+<li>Load or calculate the DC I-V curve (which is the imagainary part of
+response function).</li>
+<li>Calculate the Kramers-Kronig transform of the DC I-V curve (which is the
+real part of the response function).</li>
+<li>Setup the density of the data points to optimize interpolation.<ul>
+<li>The response function needs enough data points that it can be
+interpolated accurately, but at the same time, not so many points
+that the interpolation takes too long.</li>
 </ul>
 </li>
-<li>Calculate the Kramers-Kronig transform of the DC I-V curve</li>
-<li>Setup the density of data points to optimize interpolation<ul>
-<li>The I-V curve needs to be interpolated and the number of points has a
-large affect on the speed of this, but at the same time there needs to
-be enough points to accurately represent the original I-V curve.</li>
-</ul>
-</li>
-<li>Calculate cubic spline fits for the I-V curve and the KK transform<ul>
+<li>Calculate cubic spline fits for the I-V curve and the KK transform.<ul>
 <li>Doing this once at the start allows the data to be interpolated very
 quickly later on.</li>
 </ul>
 </li>
-<li>Determine the derivative of the I-V curve and the KK transform based on
-the spline fits</li>
 </ol>
 </div></blockquote>
-<p>Then when needed, the classes allow the user to interpolated the DC I-V curve,
+<p>Once initialized, the classes allow the user to interpolated the DC I-V curve,
 the KK transform, the derivative of the I-V curve, the derivative of the KK
-transform, or the response function (a complex value). This is set up to run
-very quickly.</p>
+transform, and the response function (a complex value). These classes are
+optimized to interpolate very quickly.</p>
+<p class="rubric">Examples</p>
+<p>For a quick example, we will generate a response function using the
+polynomial model, with polynomial order 50:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">resp</span> <span class="o">=</span> <span class="n">RespFnPolynomial</span><span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>You can then interpolate the DC I-V curve and the KK transform:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">bias_voltage</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dc_current</span> <span class="o">=</span> <span class="n">resp</span><span class="o">.</span><span class="n">idc</span><span class="p">(</span><span class="n">bias_voltage</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">around</span><span class="p">(</span><span class="n">dc_current</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="go">array([0. , 0.5, 2. ])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">kk_current</span> <span class="o">=</span> <span class="n">resp</span><span class="o">.</span><span class="n">ikk</span><span class="p">(</span><span class="n">bias_voltage</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">around</span><span class="p">(</span><span class="n">kk_current</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="go">array([-0.5,  1.1,  0.1])</span>
+</pre></div>
+</div>
+<p>You can also interpolate the response function directly, which is a complex
+array:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">resp</span> <span class="o">=</span> <span class="n">resp</span><span class="o">.</span><span class="n">resp</span><span class="p">(</span><span class="n">bias_voltage</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">around</span><span class="p">(</span><span class="n">resp</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="go">array([-0.5+0.j ,  1.1+0.5j,  0.1+2.j ])</span>
+</pre></div>
+</div>
+<p>Here, the real part is the KK transform (same as the previous
+<code class="docutils literal notranslate"><span class="pre">kk_current</span></code> results) and the imaginary part is the DC I-V curve (same as
+the previous <code class="docutils literal notranslate"><span class="pre">dc_current</span></code> results).</p>
 <dl class="class">
 <dt id="qmix.respfn.RespFn">
 <em class="property">class </em><code class="descclassname">qmix.respfn.</code><code class="descname">RespFn</code><span class="sig-paren">(</span><em>voltage</em>, <em>current</em>, <em>**params</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.respfn.RespFn" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Generate the response function from pre-processed I-V data.</p>
 <p>This is a class to contain, interpolate and plot the response function.</p>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">The I-V data must not be too large or else the interpolation will be
-extremely slow. It’s better to have more points around curvier regions
-and fewer points along linear regions. This is why this class is only
-for “pre-processed” I-V data.</p>
-</div>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>voltage</strong> (<em>ndarray</em>) – normalized voltage</li>
-<li><strong>current</strong> (<em>ndarray</em>) – normalized current</li>
+<li><strong>voltage</strong> (<em>ndarray</em>) – normalized DC bias voltage</li>
+<li><strong>current</strong> (<em>ndarray</em>) – normalized DC tunneling current</li>
 </ul>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
-<tr class="field-even field"><td>&#160;</td><td class="field-body"><p class="first last"><strong>verbose</strong> – set to True to print to terminal</p>
+<tr class="field-even field"><td>&#160;</td><td class="field-body"><ul class="first last simple">
+<li><strong>verbose</strong> (<em>bool</em><em>, </em><em>default is True</em>) – print info to terminal?</li>
+<li><strong>max_npts_dc</strong> (<em>int</em><em>, </em><em>default is 101</em>) – maximum number of points in DC I-V
+curve</li>
+<li><strong>max_npts_kk</strong> (<em>int</em><em>, </em><em>default is 151</em>) – maximum number of points in KK
+transform</li>
+<li><strong>max_interp_error</strong> (<em>float</em><em>, </em><em>default is 0.001</em>) – maximum interpolation error
+(in units of normalized current)</li>
+<li><strong>check_error</strong> (<em>bool</em><em>, </em><em>default is False</em>) – check interpolation error?</li>
+<li><strong>v_smear</strong> (<em>float</em><em>, </em><em>default is None</em>) – smear DC I-V curve by convolving with
+a Gaussian dist. with this std. dev.</li>
+<li><strong>kk_n</strong> (<em>int</em><em>, </em><em>default is 50</em>) – padding for Hilbert transform
+(see <code class="docutils literal notranslate"><span class="pre">qmix.mathfn.kktrans.kk_trans</span></code>)</li>
+<li><strong>spline_order</strong> (<em>int</em><em>, </em><em>default is 3</em>) – spline order for interpolations</li>
+</ul>
 </td>
 </tr>
 </tbody>
 </table>
+<dl class="attribute">
+<dt id="qmix.respfn.RespFn.voltage">
+<code class="descname">voltage</code><a class="headerlink" href="#qmix.respfn.RespFn.voltage" title="Permalink to this definition">¶</a></dt>
+<dd><p>The DC bias voltage values.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">ndarray</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="qmix.respfn.RespFn.current">
+<code class="descname">current</code><a class="headerlink" href="#qmix.respfn.RespFn.current" title="Permalink to this definition">¶</a></dt>
+<dd><p>The DC tunneling current values.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">ndarray</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="qmix.respfn.RespFn.voltage_kk">
+<code class="descname">voltage_kk</code><a class="headerlink" href="#qmix.respfn.RespFn.voltage_kk" title="Permalink to this definition">¶</a></dt>
+<dd><p>The DC bias voltage values that correspond to
+<code class="docutils literal notranslate"><span class="pre">current_kk</span></code>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">ndarray</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="qmix.respfn.RespFn.current_kk">
+<code class="descname">current_kk</code><a class="headerlink" href="#qmix.respfn.RespFn.current_kk" title="Permalink to this definition">¶</a></dt>
+<dd><p>The values of the KK transform of the DC I-V
+curve.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">ndarray</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="qmix.respfn.RespFn.idc">
+<code class="descname">idc</code><span class="sig-paren">(</span><em>vbias</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.respfn.RespFn.idc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Interpolate the DC I-V curve at the given bias voltage.</p>
+<p>This is the imaginary component of the respones function.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>vbias</strong> (<em>ndarray</em>) – Bias voltage (normalized)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">DC tunneling current</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">ndarray</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="qmix.respfn.RespFn.ikk">
+<code class="descname">ikk</code><span class="sig-paren">(</span><em>vbias</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.respfn.RespFn.ikk" title="Permalink to this definition">¶</a></dt>
+<dd><p>Interpolate the Kramers-Kronig transform of the DC I-V curve at the
+given bias voltage.</p>
+<p>This is the real component of the response function.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>vbias</strong> (<em>ndarray</em>) – Bias voltage (normalized)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">KK transform of the DC I-V curve</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">ndarray</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="qmix.respfn.RespFn.plot_interpolation">
+<code class="descname">plot_interpolation</code><span class="sig-paren">(</span><em>fig_name=None</em>, <em>ax=None</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.respfn.RespFn.plot_interpolation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot the interpolation of the response function.</p>
+<p>Note: If <code class="docutils literal notranslate"><span class="pre">fig_name</span></code> is defined, this method will not return the
+figure axis. It will instead close the figure, to ensure that there
+aren’t too many figures open at the same time (a common problem when
+saving many figures at the same time).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>fig_name</strong> (<em>str</em><em>, </em><em>default is None</em>) – name of figure file name, if you
+wish to save</li>
+<li><strong>ax</strong> (<em>matplotlib.axes.Axes</em><em>, </em><em>default is None</em>) – figure axis, if you
+would like to add to an existing figure</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">figure axis</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">matplotlib.axes.Axes</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 <dl class="method">
 <dt id="qmix.respfn.RespFn.resp">
 <code class="descname">resp</code><span class="sig-paren">(</span><em>vbias</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.respfn.RespFn.resp" title="Permalink to this definition">¶</a></dt>
-<dd><p>Interpolate the response function current</p>
+<dd><p>Interpolate the response function current at the given bias voltage.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -849,7 +1348,17 @@ for “pre-processed” I-V data.</p>
 <dl class="method">
 <dt id="qmix.respfn.RespFn.resp_conj">
 <code class="descname">resp_conj</code><span class="sig-paren">(</span><em>vbias</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.respfn.RespFn.resp_conj" title="Permalink to this definition">¶</a></dt>
-<dd><p>Interpolate the complex conjugate of the response function current</p>
+<dd><p>Interpolate the complex conjugate of the response function current
+at the given bias voltage.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>This method is not used by QMix, but it can be useful if you are
+calculating the tunneling currents using Tucker theory (Tucker and
+Feldman, 1985).</p>
+<p class="last">This method is included because it might be <em>slightly</em> faster than
+<code class="docutils literal notranslate"><span class="pre">np.conj(resp.resp(vb))</span></code> where <code class="docutils literal notranslate"><span class="pre">resp</span></code> is an instance of this
+class.</p>
+</div>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -867,8 +1376,18 @@ for “pre-processed” I-V data.</p>
 <dl class="method">
 <dt id="qmix.respfn.RespFn.resp_swap">
 <code class="descname">resp_swap</code><span class="sig-paren">(</span><em>vbias</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.respfn.RespFn.resp_swap" title="Permalink to this definition">¶</a></dt>
-<dd><p>Interpolate the response function current with the real and
-imaginary components swapped.</p>
+<dd><p>Interpolate the response function current, with the real and
+imaginary components swapped, at the given bias voltage.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>This method is not used by QMix, but it can be useful if you are
+calculating the tunneling currents using Tucker theory (Tucker and
+Feldman, 1985).</p>
+<p class="last">This method is included because it might be <em>slightly</em> faster than
+<code class="docutils literal notranslate"><span class="pre">1j</span> <span class="pre">*</span> <span class="pre">np.conj(resp.resp(vb))</span></code> where <code class="docutils literal notranslate"><span class="pre">resp</span></code> is an instance of
+this class (which is the normal way that you would swap the real
+and imaginary components).</p>
+</div>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -886,7 +1405,18 @@ imaginary components swapped.</p>
 <dl class="method">
 <dt id="qmix.respfn.RespFn.show_current">
 <code class="descname">show_current</code><span class="sig-paren">(</span><em>fig_name=None</em>, <em>ax=None</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.respfn.RespFn.show_current" title="Permalink to this definition">¶</a></dt>
-<dd><p>Plot the DC I-V and KK current.</p>
+<dd><p>Plot the interpolation of the response function.</p>
+<p>This method can be used to check the interpolation of the response
+function.</p>
+<p>Note: If <code class="docutils literal notranslate"><span class="pre">fig_name</span></code> is defined, this method will save the figure
+in the specified file. Otherwise, this method will return the
+Matplotlib axis.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">This function is deprecated. Please use <code class="docutils literal notranslate"><span class="pre">plot_interpolation</span></code>
+instead. I renamed this function to be more consistent across
+the QMix package.</p>
+</div>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -918,11 +1448,29 @@ vol. 6, 2016.</div></blockquote>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>vgap</strong> (<em>float</em>) – Gap voltage (un-normalized)</li>
 <li><strong>rsg</strong> (<em>float</em>) – Sub-gap resistance (un-normalized)</li>
 <li><strong>rn</strong> (<em>float</em>) – Normal resistance (un-normalized)</li>
 <li><strong>a</strong> (<em>float</em>) – Gap smearing parameter (4e4 is typical)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body"><ul class="first last simple">
+<li><strong>verbose</strong> (<em>bool</em><em>, </em><em>default is True</em>) – print info to terminal?</li>
+<li><strong>max_npts_dc</strong> (<em>int</em><em>, </em><em>default is 101</em>) – maximum number of points in DC I-V
+curve</li>
+<li><strong>max_npts_kk</strong> (<em>int</em><em>, </em><em>default is 151</em>) – maximum number of points in KK
+transform</li>
+<li><strong>max_interp_error</strong> (<em>float</em><em>, </em><em>default is 0.001</em>) – maximum interpolation error
+(in units of normalized current)</li>
+<li><strong>check_error</strong> (<em>bool</em><em>, </em><em>default is False</em>) – check interpolation error?</li>
+<li><strong>v_smear</strong> (<em>float</em><em>, </em><em>default is None</em>) – smear DC I-V curve by convolving with
+a Gaussian dist. with this std. dev.</li>
+<li><strong>kk_n</strong> (<em>int</em><em>, </em><em>default is 50</em>) – padding for Hilbert transform
+(see <code class="docutils literal notranslate"><span class="pre">qmix.mathfn.kktrans.kk_trans</span></code>)</li>
+<li><strong>spline_order</strong> (<em>int</em><em>, </em><em>default is 3</em>) – spline order for interpolations</li>
 </ul>
 </td>
 </tr>
@@ -934,20 +1482,44 @@ vol. 6, 2016.</div></blockquote>
 <dt id="qmix.respfn.RespFnFromIVData">
 <em class="property">class </em><code class="descclassname">qmix.respfn.</code><code class="descname">RespFnFromIVData</code><span class="sig-paren">(</span><em>voltage</em>, <em>current</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.respfn.RespFnFromIVData" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#qmix.respfn.RespFn" title="qmix.respfn.RespFn"><code class="xref py py-class docutils literal notranslate"><span class="pre">qmix.respfn.RespFn</span></code></a></p>
-<p>Response function for I-V data.</p>
-<p>Class to contain, interpolate and plot the response function.</p>
+<p>Generate the response function from I-V data.</p>
+<p>This is a class to contain, interpolate and plot the response function.</p>
+<p>Unlike <code class="docutils literal notranslate"><span class="pre">RespFn</span></code>, this class will resample the I-V data to optimize the
+interpolation.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">This class expects normalized I-V data that extends at least from bias
-voltage = 0 to “vlimit”.</p>
+<p class="last">This class expects normalized I-V data that extends from at least
+<code class="docutils literal notranslate"><span class="pre">vb=0</span></code> to <code class="docutils literal notranslate"><span class="pre">vb=vlimit</span></code>, where <code class="docutils literal notranslate"><span class="pre">vb</span></code> is the bias voltage and
+<code class="docutils literal notranslate"><span class="pre">vlimit</span></code> is one of the keyword arguments.</p>
 </div>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>voltage</strong> (<em>ndarray</em>) – normalized voltage</li>
-<li><strong>current</strong> (<em>ndarray</em>) – normalized current</li>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>voltage</strong> (<em>ndarray</em>) – normalized DC bias voltage</li>
+<li><strong>current</strong> (<em>ndarray</em>) – normalized DC tunneling current</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body"><ul class="first last simple">
+<li><strong>verbose</strong> (<em>bool</em><em>, </em><em>default is True</em>) – print info to terminal?</li>
+<li><strong>max_npts_dc</strong> (<em>int</em><em>, </em><em>default is 101</em>) – maximum number of points in DC I-V
+curve</li>
+<li><strong>max_npts_kk</strong> (<em>int</em><em>, </em><em>default is 151</em>) – maximum number of points in KK
+transform</li>
+<li><strong>max_interp_error</strong> (<em>float</em><em>, </em><em>default is 0.001</em>) – maximum interpolation error
+(in units of normalized current)</li>
+<li><strong>check_error</strong> (<em>bool</em><em>, </em><em>default is False</em>) – check interpolation error?</li>
+<li><strong>v_smear</strong> (<em>float</em><em>, </em><em>default is None</em>) – smear DC I-V curve by convolving with
+a Gaussian dist. with this std. dev.</li>
+<li><strong>kk_n</strong> (<em>int</em><em>, </em><em>default is 50</em>) – padding for Hilbert transform
+(see <code class="docutils literal notranslate"><span class="pre">qmix.mathfn.kktrans.kk_trans</span></code>)</li>
+<li><strong>spline_order</strong> (<em>int</em><em>, </em><em>default is 3</em>) – spline order for interpolations</li>
+<li><strong>vlimit</strong> (<em>float</em><em>, </em><em>default is 1.8</em>) – import all DC I-V data from <code class="docutils literal notranslate"><span class="pre">vb=0</span></code> to
+<code class="docutils literal notranslate"><span class="pre">vb=vlimit</span></code>, where <code class="docutils literal notranslate"><span class="pre">vb</span></code> is the bias voltage normalized to the
+gap voltage.</li>
 </ul>
 </td>
 </tr>
@@ -961,6 +1533,30 @@ voltage = 0 to “vlimit”.</p>
 <dd><p>Bases: <a class="reference internal" href="#qmix.respfn.RespFn" title="qmix.respfn.RespFn"><code class="xref py py-class docutils literal notranslate"><span class="pre">qmix.respfn.RespFn</span></code></a></p>
 <p>Response function based on the perfect I-V curve model.</p>
 <p>Class to contain, interpolate and plot the response function.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
+<tr class="field-odd field"><td>&#160;</td><td class="field-body"><ul class="first last simple">
+<li><strong>verbose</strong> (<em>bool</em><em>, </em><em>default is True</em>) – print info to terminal?</li>
+<li><strong>max_npts_dc</strong> (<em>int</em><em>, </em><em>default is 101</em>) – maximum number of points in DC I-V
+curve</li>
+<li><strong>max_npts_kk</strong> (<em>int</em><em>, </em><em>default is 151</em>) – maximum number of points in KK
+transform</li>
+<li><strong>max_interp_error</strong> (<em>float</em><em>, </em><em>default is 0.001</em>) – maximum interpolation error
+(in units of normalized current)</li>
+<li><strong>check_error</strong> (<em>bool</em><em>, </em><em>default is False</em>) – check interpolation error?</li>
+<li><strong>v_smear</strong> (<em>float</em><em>, </em><em>default is None</em>) – smear DC I-V curve by convolving with
+a Gaussian dist. with this std. dev.</li>
+<li><strong>kk_n</strong> (<em>int</em><em>, </em><em>default is 50</em>) – padding for Hilbert transform
+(see <code class="docutils literal notranslate"><span class="pre">qmix.mathfn.kktrans.kk_trans</span></code>)</li>
+<li><strong>spline_order</strong> (<em>int</em><em>, </em><em>default is 3</em>) – spline order for interpolations</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="class">
@@ -973,7 +1569,26 @@ voltage = 0 to “vlimit”.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>p_order</strong> (<em>int</em>) – Order of the polynomial</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>p_order</strong> (<em>int</em>) – Order of the polynomial</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body"><ul class="first last simple">
+<li><strong>verbose</strong> (<em>bool</em><em>, </em><em>default is True</em>) – print info to terminal?</li>
+<li><strong>max_npts_dc</strong> (<em>int</em><em>, </em><em>default is 101</em>) – maximum number of points in DC I-V
+curve</li>
+<li><strong>max_npts_kk</strong> (<em>int</em><em>, </em><em>default is 151</em>) – maximum number of points in KK
+transform</li>
+<li><strong>max_interp_error</strong> (<em>float</em><em>, </em><em>default is 0.001</em>) – maximum interpolation error
+(in units of normalized current)</li>
+<li><strong>check_error</strong> (<em>bool</em><em>, </em><em>default is False</em>) – check interpolation error?</li>
+<li><strong>v_smear</strong> (<em>float</em><em>, </em><em>default is None</em>) – smear DC I-V curve by convolving with
+a Gaussian dist. with this std. dev.</li>
+<li><strong>kk_n</strong> (<em>int</em><em>, </em><em>default is 50</em>) – padding for Hilbert transform
+(see <code class="docutils literal notranslate"><span class="pre">qmix.mathfn.kktrans.kk_trans</span></code>)</li>
+<li><strong>spline_order</strong> (<em>int</em><em>, </em><em>default is 3</em>) – spline order for interpolations</li>
+</ul>
+</td>
 </tr>
 </tbody>
 </table>
@@ -1035,6 +1650,7 @@ saturation and wide IF bandwidth devices.</p>
         <script type="text/javascript" src="_static/jquery.js"></script>
         <script type="text/javascript" src="_static/underscore.js"></script>
         <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
     
 
   

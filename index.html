@@ -83,10 +83,11 @@
             
               <ul>
 <li class="toctree-l1"><a class="reference internal" href="setup.html">1. Getting Started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="qmix.html">2. QMix Package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="qmix.html">2. Package API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="single-tone-simple.html">3. Example #1: Creating a simple 1 tone simulation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="multi-tone.html">4. Example #2: Simulating an SIS mixer</a></li>
-<li class="toctree-l1"><a class="reference internal" href="references.html">5. References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analyze-experimental-data.html">5. Example #3: Analyzing experimental data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="references.html">6. References</a></li>
 </ul>
 
             
@@ -178,7 +179,7 @@
 <div class="section" id="qmix-quantum-mixing-software">
 <h1>QMix: Quantum Mixing Software<a class="headerlink" href="#qmix-quantum-mixing-software" title="Permalink to this headline">¶</a></h1>
 <p>QMix is a software package for simulating the quasiparticle tunneling currents in Superconductor/Insulator/Superconductor (SIS) junctions. These junctions are commonly used for heterodyne mixing at millimeter and submillimeter wavelengths. QMix can be used to simulate the performance of SIS mixers, investigate their experimental results and optimize their operation.</p>
-<p>In order to calculate the quasiparticle tunneling currents, QMix uses <em>multi-tone spectral domain analysis</em> (see references for more information). This makes QMix ideal for simulating higher-order harmonics, power saturation, subharmonic pumping and frequency multiplication.</p>
+<p>In order to calculate the quasiparticle tunneling currents, QMix uses <em>multi-tone spectral domain analysis</em> (see references for more information). This makes QMix ideal for simulating higher-order harmonics, power saturation, sub-harmonic pumping and frequency multiplication.</p>
 <p><strong>Repository address:</strong> <a class="reference external" href="https://github.com/garrettj403/QMix/">https://github.com/garrettj403/QMix/</a></p>
 </div>
 <div class="section" id="contents">
@@ -192,7 +193,7 @@
 <li class="toctree-l2"><a class="reference internal" href="setup.html#testing-your-installation">1.4. Testing Your Installation</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="qmix.html">2. QMix Package</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="qmix.html">2. Package API</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="qmix.html#subpackages">2.1. Subpackages</a></li>
 <li class="toctree-l2"><a class="reference internal" href="qmix.html#submodules">2.2. Submodules</a></li>
 <li class="toctree-l2"><a class="reference internal" href="qmix.html#module-qmix.circuit">2.3. qmix.circuit module</a></li>
@@ -219,7 +220,12 @@
 <li class="toctree-l2"><a class="reference internal" href="multi-tone.html#Plot-the-pumped-I-V-curve">4.6. Plot the pumped I-V curve</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="references.html">5. References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analyze-experimental-data.html">5. Example #3: Analyzing experimental data</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="analyze-experimental-data.html#Import-DC-I-V-data">5.1. Import DC I-V data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="analyze-experimental-data.html#Import-Data-at-230-GHz">5.2. Import Data at 230 GHz</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="references.html">6. References</a></li>
 </ul>
 </div>
 </div>
@@ -274,6 +280,7 @@
         <script type="text/javascript" src="_static/jquery.js"></script>
         <script type="text/javascript" src="_static/underscore.js"></script>
         <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
     
 
   

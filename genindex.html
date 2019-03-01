@@ -83,10 +83,11 @@
             
               <ul>
 <li class="toctree-l1"><a class="reference internal" href="setup.html">1. Getting Started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="qmix.html">2. QMix Package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="qmix.html">2. Package API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="single-tone-simple.html">3. Example #1: Creating a simple 1 tone simulation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="multi-tone.html">4. Example #2: Simulating an SIS mixer</a></li>
-<li class="toctree-l1"><a class="reference internal" href="references.html">5. References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analyze-experimental-data.html">5. Example #3: Analyzing experimental data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="references.html">6. References</a></li>
 </ul>
 
             
@@ -164,6 +165,7 @@
  | <a href="#K"><strong>K</strong></a>
  | <a href="#L"><strong>L</strong></a>
  | <a href="#M"><strong>M</strong></a>
+ | <a href="#N"><strong>N</strong></a>
  | <a href="#O"><strong>O</strong></a>
  | <a href="#P"><strong>P</strong></a>
  | <a href="#Q"><strong>Q</strong></a>
@@ -173,6 +175,7 @@
  | <a href="#U"><strong>U</strong></a>
  | <a href="#V"><strong>V</strong></a>
  | <a href="#X"><strong>X</strong></a>
+ | <a href="#Z"><strong>Z</strong></a>
  
 </div>
 <h2 id="A">A</h2>
@@ -188,17 +191,21 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="qmix.html#qmix.harmonic_balance.check_hb_error">check_hb_error() (in module qmix.harmonic_balance)</a>
 </li>
-      <li><a href="qmix.exp.html#qmix.exp.exp_data.check_iv_if_matching">check_iv_if_matching() (in module qmix.exp.exp_data)</a>
-</li>
       <li><a href="qmix.exp.html#qmix.exp.clean_data.clean_matrix">clean_matrix() (in module qmix.exp.clean_data)</a>
+</li>
+      <li><a href="qmix.exp.html#qmix.exp.clean_data.clean_xy">clean_xy() (in module qmix.exp.clean_data)</a>
+</li>
+      <li><a href="qmix.html#qmix.circuit.EmbeddingCircuit.comment">comment (qmix.circuit.EmbeddingCircuit attribute)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="qmix.exp.html#qmix.exp.clean_data.clean_xy">clean_xy() (in module qmix.exp.clean_data)</a>
-</li>
       <li><a href="qmix.exp.html#qmix.exp.if_data.DCIFData.corr">corr (qmix.exp.if_data.DCIFData attribute)</a>
 </li>
       <li><a href="qmix.misc.html#qmix.misc.terminal.cprint">cprint() (in module qmix.misc.terminal)</a>
+</li>
+      <li><a href="qmix.html#qmix.respfn.RespFn.current">current (qmix.respfn.RespFn attribute)</a>
+</li>
+      <li><a href="qmix.html#qmix.respfn.RespFn.current_kk">current_kk (qmix.respfn.RespFn attribute)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -236,8 +243,12 @@
 <h2 id="F">F</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="qmix.exp.html#qmix.exp.iv_data.DCIVData.fgap">fgap (qmix.exp.iv_data.DCIVData attribute)</a>
+      <li><a href="qmix.html#qmix.circuit.EmbeddingCircuit.fgap">fgap (qmix.circuit.EmbeddingCircuit attribute)</a>
+
+      <ul>
+        <li><a href="qmix.exp.html#qmix.exp.iv_data.DCIVData.fgap">(qmix.exp.iv_data.DCIVData attribute)</a>
 </li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
@@ -245,14 +256,6 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="qmix.mathfn.html#qmix.mathfn.filters.gauss_conv">gauss_conv() (in module qmix.mathfn.filters)</a>
-</li>
-      <li><a href="qmix.exp.html#qmix.exp.exp_data.generate_filename_from_f">generate_filename_from_f() (in module qmix.exp.exp_data)</a>
-</li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="qmix.exp.html#qmix.exp.exp_data.get_freq">get_freq() (in module qmix.exp.exp_data)</a>
-</li>
-      <li><a href="qmix.exp.html#qmix.exp.exp_data.get_freq_from_filename">get_freq_from_filename() (in module qmix.exp.exp_data)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -272,18 +275,26 @@
 <h2 id="I">I</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="qmix.html#qmix.respfn.RespFn.idc">idc() (qmix.respfn.RespFn method)</a>
+</li>
       <li><a href="qmix.exp.html#qmix.exp.if_data.if_data">if_data() (in module qmix.exp.if_data)</a>
 </li>
       <li><a href="qmix.exp.html#qmix.exp.if_data.DCIFData.if_fit">if_fit (qmix.exp.if_data.DCIFData attribute)</a>
 </li>
       <li><a href="qmix.exp.html#qmix.exp.if_data.DCIFData.if_noise">if_noise (qmix.exp.if_data.DCIFData attribute)</a>
 </li>
-      <li><a href="qmix.exp.html#qmix.exp.iv_data.DCIVData.igap">igap (qmix.exp.iv_data.DCIVData attribute)</a>
+      <li><a href="qmix.html#qmix.circuit.EmbeddingCircuit.igap">igap (qmix.circuit.EmbeddingCircuit attribute)</a>
+
+      <ul>
+        <li><a href="qmix.exp.html#qmix.exp.iv_data.DCIVData.igap">(qmix.exp.iv_data.DCIVData attribute)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="qmix.html#qmix.respfn.RespFn.ikk">ikk() (qmix.respfn.RespFn method)</a>
 </li>
       <li><a href="qmix.exp.html#qmix.exp.exp_data.initialize_dir">initialize_dir() (in module qmix.exp.exp_data)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="qmix.html#qmix.circuit.EmbeddingCircuit.initialize_vj">initialize_vj() (qmix.circuit.EmbeddingCircuit method)</a>
 </li>
       <li><a href="qmix.exp.html#qmix.exp.iv_data.DCIVData.inorm">inorm (qmix.exp.iv_data.DCIVData attribute)</a>
@@ -329,6 +340,20 @@
   </ul></td>
 </tr></table>
 
+<h2 id="N">N</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="qmix.html#qmix.circuit.EmbeddingCircuit.num_f">num_f (qmix.circuit.EmbeddingCircuit attribute)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="qmix.html#qmix.circuit.EmbeddingCircuit.num_n">num_n (qmix.circuit.EmbeddingCircuit attribute)</a>
+</li>
+      <li><a href="qmix.html#qmix.circuit.EmbeddingCircuit.num_p">num_p (qmix.circuit.EmbeddingCircuit attribute)</a>
+</li>
+  </ul></td>
+</tr></table>
+
 <h2 id="O">O</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
@@ -370,14 +395,16 @@
       </ul></li>
       <li><a href="qmix.exp.html#qmix.exp.exp_data.plot_if_spectrum">plot_if_spectrum() (in module qmix.exp.exp_data)</a>
 </li>
+      <li><a href="qmix.html#qmix.respfn.RespFn.plot_interpolation">plot_interpolation() (qmix.respfn.RespFn method)</a>
+</li>
       <li><a href="qmix.exp.html#qmix.exp.exp_data.RawData.plot_iv">plot_iv() (qmix.exp.exp_data.RawData method)</a>
 </li>
       <li><a href="qmix.exp.html#qmix.exp.exp_data.RawData.plot_ivif">plot_ivif() (qmix.exp.exp_data.RawData method)</a>
 </li>
-      <li><a href="qmix.exp.html#qmix.exp.exp_data.RawData.plot_noise_temp">plot_noise_temp() (qmix.exp.exp_data.RawData method)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="qmix.exp.html#qmix.exp.exp_data.RawData.plot_noise_temp">plot_noise_temp() (qmix.exp.exp_data.RawData method)</a>
+</li>
       <li><a href="qmix.exp.html#qmix.exp.exp_data.RawData0.plot_offset">plot_offset() (qmix.exp.exp_data.RawData0 method)</a>
 </li>
       <li><a href="qmix.exp.html#qmix.exp.exp_data.plot_overall_results">plot_overall_results() (in module qmix.exp.exp_data)</a>
@@ -504,8 +531,12 @@
 </li>
       <li><a href="qmix.html#qmix.respfn.RespFnPolynomial">RespFnPolynomial (class in qmix.respfn)</a>
 </li>
-      <li><a href="qmix.exp.html#qmix.exp.iv_data.DCIVData.rn">rn (qmix.exp.iv_data.DCIVData attribute)</a>
+      <li><a href="qmix.html#qmix.circuit.EmbeddingCircuit.rn">rn (qmix.circuit.EmbeddingCircuit attribute)</a>
+
+      <ul>
+        <li><a href="qmix.exp.html#qmix.exp.iv_data.DCIVData.rn">(qmix.exp.iv_data.DCIVData attribute)</a>
 </li>
+      </ul></li>
       <li><a href="qmix.exp.html#qmix.exp.iv_data.DCIVData.rseries">rseries (qmix.exp.iv_data.DCIVData attribute)</a>
 </li>
       <li><a href="qmix.exp.html#qmix.exp.iv_data.DCIVData.rsg">rsg (qmix.exp.iv_data.DCIVData attribute)</a>
@@ -562,17 +593,33 @@
 <h2 id="V">V</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="qmix.exp.html#qmix.exp.iv_data.DCIVData.vgap">vgap (qmix.exp.iv_data.DCIVData attribute)</a>
+      <li><a href="qmix.html#qmix.circuit.EmbeddingCircuit.vb">vb (qmix.circuit.EmbeddingCircuit attribute)</a>
 </li>
+      <li><a href="qmix.html#qmix.circuit.EmbeddingCircuit.vb_npts">vb_npts (qmix.circuit.EmbeddingCircuit attribute)</a>
+</li>
+      <li><a href="qmix.html#qmix.circuit.EmbeddingCircuit.vgap">vgap (qmix.circuit.EmbeddingCircuit attribute)</a>
+
+      <ul>
+        <li><a href="qmix.exp.html#qmix.exp.iv_data.DCIVData.vgap">(qmix.exp.iv_data.DCIVData attribute)</a>
+</li>
+      </ul></li>
       <li><a href="qmix.exp.html#qmix.exp.iv_data.DCIVData.vint">vint (qmix.exp.iv_data.DCIVData attribute)</a>
+</li>
+      <li><a href="qmix.exp.html#qmix.exp.if_data.DCIFData.vmax">vmax (qmix.exp.if_data.DCIFData attribute)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="qmix.exp.html#qmix.exp.if_data.DCIFData.vmax">vmax (qmix.exp.if_data.DCIFData attribute)</a>
-</li>
       <li><a href="qmix.exp.html#qmix.exp.iv_data.DCIVData.vnorm">vnorm (qmix.exp.iv_data.DCIVData attribute)</a>
 </li>
+      <li><a href="qmix.html#qmix.respfn.RespFn.voltage">voltage (qmix.respfn.RespFn attribute)</a>
+</li>
+      <li><a href="qmix.html#qmix.respfn.RespFn.voltage_kk">voltage_kk (qmix.respfn.RespFn attribute)</a>
+</li>
+      <li><a href="qmix.html#qmix.circuit.EmbeddingCircuit.vph">vph (qmix.circuit.EmbeddingCircuit attribute)</a>
+</li>
       <li><a href="qmix.exp.html#qmix.exp.iv_data.DCIVData.vraw">vraw (qmix.exp.iv_data.DCIVData attribute)</a>
+</li>
+      <li><a href="qmix.html#qmix.circuit.EmbeddingCircuit.vt">vt (qmix.circuit.EmbeddingCircuit attribute)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -581,6 +628,14 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="qmix.exp.html#qmix.exp.clean_data.xy_to_matrix">xy_to_matrix() (in module qmix.exp.clean_data)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="Z">Z</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="qmix.html#qmix.circuit.EmbeddingCircuit.zt">zt (qmix.circuit.EmbeddingCircuit attribute)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -622,6 +677,7 @@
         <script type="text/javascript" src="_static/jquery.js"></script>
         <script type="text/javascript" src="_static/underscore.js"></script>
         <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
     
 
   

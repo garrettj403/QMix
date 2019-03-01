@@ -82,10 +82,11 @@
             
               <ul>
 <li class="toctree-l1"><a class="reference internal" href="../setup.html">1. Getting Started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../qmix.html">2. QMix Package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../qmix.html">2. Package API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../single-tone-simple.html">3. Example #1: Creating a simple 1 tone simulation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../multi-tone.html">4. Example #2: Simulating an SIS mixer</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../references.html">5. References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../analyze-experimental-data.html">5. Example #3: Analyzing experimental data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../references.html">6. References</a></li>
 </ul>
 
             
@@ -178,12 +179,12 @@
 <span id="qmix-circuit"></span><h1>qmix.circuit<a class="headerlink" href="#module-qmix.circuit" title="Permalink to this headline">¶</a></h1>
 <p>This module contains classes and functions to describe the embedding
 circuit.</p>
-<p><strong>Description</strong></p>
+<p><strong>Description:</strong></p>
 <blockquote>
 <div><p>In experimental systems, SIS junctions are embedded within complex RF
 networks. These networks are referred to as the embedding circuit. Since
 all of the components in these embedding circuits are <strong>linear</strong>, the
-embedding circuit can be reduced to a Thevenin equivalent circuit for
+embedding circuit can be reduced to a <strong>Thevenin equivalent circuit</strong> for
 <strong>each tone and harmonic.</strong></p>
 <p>To fully describe the embedding circuit, 3 bits of information are needed
 for each signal that is applied to the junction:</p>
@@ -194,6 +195,8 @@ for each signal that is applied to the junction:</p>
 <li>the Thevenin impedance of the embedding circuit at this freq.</li>
 </ol>
 </div></blockquote>
+<p>The main class in this module (<code class="docutils literal notranslate"><span class="pre">EmbeddingCircuit</span></code>) allows the user to
+build an embedding circuit in the proper format.</p>
 </div></blockquote>
 <p class="rubric">Functions</p>
 <table border="1" class="longtable docutils">
@@ -203,7 +206,7 @@ for each signal that is applied to the junction:</p>
 </colgroup>
 <tbody valign="top">
 <tr class="row-odd"><td><a class="reference internal" href="../qmix.html#qmix.circuit.read_circuit" title="qmix.circuit.read_circuit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_circuit</span></code></a>(filename)</td>
-<td>Build embedding circuit based on information file.</td>
+<td>Build embedding circuit from an embedding circuit file.</td>
 </tr>
 </tbody>
 </table>
@@ -215,7 +218,7 @@ for each signal that is applied to the junction:</p>
 </colgroup>
 <tbody valign="top">
 <tr class="row-odd"><td><a class="reference internal" href="../qmix.html#qmix.circuit.EmbeddingCircuit" title="qmix.circuit.EmbeddingCircuit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">EmbeddingCircuit</span></code></a>([num_f,&nbsp;num_p,&nbsp;vb_min,&nbsp;…])</td>
-<td>Class for describing the embedding circuit.</td>
+<td>Class for building and describing the embedding circuit.</td>
 </tr>
 </tbody>
 </table>
@@ -257,6 +260,7 @@ for each signal that is applied to the junction:</p>
         <script type="text/javascript" src="../_static/jquery.js"></script>
         <script type="text/javascript" src="../_static/underscore.js"></script>
         <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
     
 
   

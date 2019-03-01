@@ -9,7 +9,7 @@ QMix: Quantum Mixing Software
 
 QMix is a software package for simulating the quasiparticle tunneling currents in Superconductor/Insulator/Superconductor (SIS) junctions. These junctions are commonly used for heterodyne mixing at millimeter and submillimeter wavelengths. QMix can be used to simulate the performance of SIS mixers, investigate their experimental results and optimize their operation.
 
-In order to calculate the quasiparticle tunneling currents, QMix uses *multi-tone spectral domain analysis* (see references for more information). This makes QMix ideal for simulating higher-order harmonics, power saturation, subharmonic pumping and frequency multiplication. 
+In order to calculate the quasiparticle tunneling currents, QMix uses *multi-tone spectral domain analysis* (see references for more information). This makes QMix ideal for simulating higher-order harmonics, power saturation, sub-harmonic pumping and frequency multiplication. 
 
 **Repository address:** https://github.com/garrettj403/QMix/
 
@@ -24,6 +24,7 @@ Contents
    qmix
    single-tone-simple
    multi-tone
+   analyze-experimental-data
    references
 
 Indices and tables
