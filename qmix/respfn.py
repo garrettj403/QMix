@@ -117,16 +117,9 @@ class RespFn(object):
 
     This is a class to contain, interpolate and plot the response function.
 
-    Note:
-
-        The I-V data must not be too large or else the interpolation will be
-        extremely slow. It's better to have more points around curvier regions
-        and fewer points along linear regions. This is why this class is only
-        for "pre-processed" I-V data.
-
     Args:
-        voltage (numpy.ndarray): normalized voltage
-        current (numpy.ndarray): normalized current
+        voltage (ndarray): normalized DC bias voltage
+        current (ndarray): normalized DC tunneling current
 
     Keyword Args:
         verbose (bool, default is True): print info to terminal?
@@ -273,6 +266,8 @@ class RespFn(object):
     def idc(self, vbias):
         """Interpolate the DC I-V curve at the given bias voltage.
 
+        This is the imaginary component of the respones function.
+
         Args:
             vbias (ndarray): Bias voltage (normalized)
 
@@ -287,6 +282,8 @@ class RespFn(object):
         """Interpolate the Kramers-Kronig transform of the DC I-V curve at the
         given bias voltage.
 
+        This is the real component of the response function.
+
         Args:
             vbias (ndarray): Bias voltage (normalized)
 
@@ -296,6 +293,53 @@ class RespFn(object):
         """
 
         return self._f_ikk(vbias)
+
+    def didc(self, vbias):
+        """Interpolate the derivative of the DC I-V curve at the given bias
+        voltage.
+
+        This is defined as ``d(idc) / d(vb)`` where ``idc`` is the DC tunneling
+        current and ``vb`` is the bias voltage.
+
+        Note:
+
+            This method is not used by QMix, but it can be useful if you are
+            calculating the tunneling currents using Tucker theory (Tucker and
+            Feldman, 1985).
+
+        Args:
+            vbias (ndarray): Bias voltage (normalized)
+
+        Returns:
+            ndarray: derivative of the DC tunneling current
+
+        """
+
+        return self._f_didc(vbias)
+
+    def dikk(self, vbias):
+        """Interpolate the derivative of the Kramers-Kronig transform of the DC
+        I-V curve at the given bias voltage.
+
+        This is defined as ``d(ikk) / d(vb)`` where ``ikk`` is the Kramers-
+        Kronig transform of the DC tunneling current and ``vb`` is the bias
+        voltage.
+
+        Note:
+
+            This method is not used by QMix, but it can be useful if you are
+            calculating the tunneling currents using Tucker theory (Tucker and
+            Feldman, 1985).
+
+        Args:
+            vbias (ndarray): Bias voltage (normalized)
+
+        Returns:
+            ndarray: derivative of the KK transform of the DC I-V curve
+
+        """
+
+        return self._f_dikk(vbias)
 
     def resp(self, vbias):
         """Interpolate the response function current at the given bias voltage.
@@ -346,7 +390,8 @@ class RespFn(object):
 
             This method is included because it might be *slightly* faster than
             ``1j * np.conj(resp.resp(vb))`` where ``resp`` is an instance of
-            this class.
+            this class (which is the normal way that you would swap the real
+            and imaginary components).
 
         Args:
             vbias (ndarray): Bias voltage (normalized)
@@ -362,18 +407,22 @@ class RespFn(object):
 # Generate from I-V data ------------------------------------------------------
 
 class RespFnFromIVData(RespFn):
-    """Response function for I-V data.
+    """Generate the response function from I-V data.
 
-    Class to contain, interpolate and plot the response function.
+    This is a class to contain, interpolate and plot the response function.
+
+    Unlike ``RespFn``, this class will resample the I-V data to optimize the
+    interpolation.
 
     Note:
 
-        This class expects normalized I-V data that extends at least from bias
-        voltage = 0 to "vlimit".
+        This class expects normalized I-V data that extends from at least
+        ``vb=0`` to ``vb=vlimit``, where ``vb`` is the bias voltage and
+        ``vlimit`` is one of the keyword arguments.
 
     Args:
-        voltage (ndarray): normalized voltage
-        current (ndarray): normalized current
+        voltage (ndarray): normalized DC bias voltage
+        current (ndarray): normalized DC tunneling current
 
     Keyword Args:
         verbose (bool, default is True): print info to terminal?
@@ -389,6 +438,9 @@ class RespFnFromIVData(RespFn):
         kk_n (int, default is 50): padding for Hilbert transform
             (see ``qmix.mathfn.kktrans.kk_trans``)
         spline_order (int, default is 3): spline order for interpolations
+        vlimit (float, default is 1.8): import all DC I-V data from ``vb=0`` to
+            ``vb=vlimit``, where ``vb`` is the bias voltage normalized to the
+            gap voltage.
 
     """
 
