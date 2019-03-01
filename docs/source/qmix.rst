@@ -1,5 +1,5 @@
-QMix Package
-============
+Package API
+===========
 
 Subpackages
 -----------

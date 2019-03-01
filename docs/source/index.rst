@@ -24,6 +24,7 @@ Contents
    qmix
    single-tone-simple
    multi-tone
+   analyze-experimental-data
    references
 
 Indices and tables
