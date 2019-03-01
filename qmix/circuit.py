@@ -382,6 +382,7 @@ class EmbeddingCircuit(object):
         the desired drive level. E.g.:
 
         >>> cct = EmbeddingCircuit(1, 1, vgap=2.8e-3, rn=14.)
+        >>> cct.vph[1] = 0.3
         >>> cct.zt[1,1] = 0.5
         >>> cct.set_alpha(1., f=1, p=1, zj=2/3.)
 
