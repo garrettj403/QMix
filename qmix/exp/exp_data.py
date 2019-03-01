@@ -1960,8 +1960,8 @@ def _find_ac_current(resp, vb, vph, alpha, num_b=15):
     ac_current = np.zeros_like(vb, dtype=complex)
 
     for n in range(-num_b, num_b + 1):
-        idc_tmp = resp.f_idc(vb + n * vph)
-        ikk_tmp = resp.f_ikk(vb + n * vph)
+        idc_tmp = resp.idc(vb + n * vph)
+        ikk_tmp = resp.ikk(vb + n * vph)
 
         j_n = special.jv(n, alpha)
         j_minus = special.jv(n - 1, alpha)
@@ -1977,7 +1977,7 @@ def _find_pumped_iv_curve(resp, vb, vph, alpha, num_b=15):
 
     dc_current = np.zeros_like(vb, dtype=float)
     for n in range(-num_b, num_b + 1):
-        dc_current += special.jv(n, alpha) ** 2 * resp.f_idc(vb + n * vph)
+        dc_current += special.jv(n, alpha) ** 2 * resp.idc(vb + n * vph)
 
     return dc_current
 
@@ -1988,7 +1988,7 @@ def _find_alpha(dciv, vdc_exp, idc_exp, vph, alpha_max=1.5, num_b=20):
 
     # Get alpha guess from Bisection Method
     idc_tmp = _find_pumped_iv_curve(resp, vdc_exp, vph, alpha_max, num_b=num_b)
-    idciv = resp.f_idc(vdc_exp)
+    idciv = resp.idc(vdc_exp)
     alpha = (idc_exp - idciv) / (idc_tmp - idciv) * alpha_max
     alpha[alpha < 0] = 0
 

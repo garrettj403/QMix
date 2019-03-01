@@ -61,7 +61,7 @@ def test_RespFnFromIVData():
     resp = RespFnFromIVData(voltage, current)
 
     # High-density interpolation
-    i_resp = resp.f_idc(voltage)
+    i_resp = resp._f_idc(voltage)
 
     # Check interpolated values
     max_diff = np.abs(i_resp - current).max()
@@ -81,7 +81,7 @@ def test_polynomial():
 
     # Interpolated values
     resp = RespFnPolynomial(order)
-    i_resp = resp.f_idc(v)
+    i_resp = resp._f_idc(v)
 
     # Check interpolated values
     max_diff = np.abs(i_resp - current).max()
@@ -104,7 +104,7 @@ def test_exponential_interpolation():
 
     # Interpolated values
     resp = RespFnExponential(v_gap, r_n, r_sg, a_g)
-    i_resp = resp.f_idc(v)
+    i_resp = resp._f_idc(v)
 
     # Check interpolated values
     max_diff = np.abs(i_resp - current).max()
@@ -118,19 +118,19 @@ def test_perfect_interpolation():
     resp = RespFnPerfect()
 
     # Check individual DC I-V values using known values
-    assert resp.f_idc(-2.0) == -2.
-    assert resp.f_idc(-1.0) == -0.5
-    assert resp.f_idc(0.00) == 0.
-    assert resp.f_idc(0.99) == 0
-    assert resp.f_idc(1.00) == 0.5
-    assert resp.f_idc(1.01) == 1.01
-    assert resp.f_idc(2.00) == 2.
+    assert resp.idc(-2.0) == -2.
+    assert resp.idc(-1.0) == -0.5
+    assert resp.idc(0.00) == 0.
+    assert resp.idc(0.99) == 0
+    assert resp.idc(1.00) == 0.5
+    assert resp.idc(1.01) == 1.01
+    assert resp.idc(2.00) == 2.
 
     # Check individual KK values using known values
-    assert resp.f_ikk(-1e10) < 1e-7
-    assert resp.f_ikk(-1.0) >= 100
-    assert resp.f_ikk(1.00) >= 100
-    assert resp.f_ikk(1e10) < 1e-7
+    assert resp._f_ikk(-1e10) < 1e-7
+    assert resp._f_ikk(-1.0) >= 100
+    assert resp._f_ikk(1.00) >= 100
+    assert resp._f_ikk(1e10) < 1e-7
 
 
 def test_smearing_perfect_respfn():
@@ -147,5 +147,5 @@ def test_smearing_perfect_respfn():
     # The smear should only affect the region around the transition
     # It should NOT introduce any sort of offset (which we will check now)
     x = np.array([0., 0.5, 1.5, -1.5])
-    y = resp.f_idc(x)
+    y = resp.idc(x)
     np.testing.assert_almost_equal(y, [0., 0., 1.5, -1.5], 5)

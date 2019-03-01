@@ -1,49 +1,16 @@
 """ This module contains classes to represent the response function of the 
 SIS junction.
 
-Upon initialization, these classes will:
-
-   1. Load or calculate the DC I-V curve (which is the imagainary part of 
-      response function).
-
-      - The I-V curve can either be loaded from a csv file or generated from
-        an I-V curve model (e.g., polynomial model, exponential model, etc.).
-
-   2. Calculate the Kramers-Kronig transform of the DC I-V curve (which is the
-      real part of the response function).
-
-   3. Setup the density of the data points to optimize interpolation.
-
-      - The response function needs enough data points that it can be 
-        interpolated accurately, but at the same time, not so many points 
-        that the interpolation takes too long.
-
-   4. Calculate cubic spline fits for the I-V curve and the KK transform.
-
-      - Doing this once at the start allows the data to be interpolated very
-        quickly later on.
-
-   5. Determine the derivative of the I-V curve and the KK transform based on
-      the spline fits.
-
-      - These derivatives aren't needed by QMix, but they are needed for the
-        equations from Tucker theory (Tucker and Feldman, 1985).
-
-Once initialized, the classes allow the user to interpolated the DC I-V curve,
-the KK transform, the derivative of the I-V curve, the derivative of the KK
-transform, and the response function (a complex value). These classes are 
-optimized to interpolate very quickly.
-
-There are several different response functions classes contained within this
+There are several different response function classes contained within this
 module:
 
-   - Response functions generated from voltage and current data:
+   - Response functions generated directly from voltage and current data:
    
       - ``RespFn``: This is the base class for all of the other response 
         function classes. This class will generate a response function 
         based on a DC I-V curve (i.e., DC voltage and current data). Note that 
         this class assumes that you have "pre-processed" the data. This means 
-        that it will use the voltage and current data to generate the 
+        that it will use voltage and current data to generate the
         interpolation directly. Normally, you want to have more data points 
         around curvier regions in order to minimize how much time the 
         interpolation takes. If you haven't done this, it is a good idea to use
@@ -58,9 +25,9 @@ module:
 
       - ``RespFnPerfect``: This class will generate a response function based
         on an ideal DC I-V curve (i.e., the subgap current is exactly zero
-        below the gap voltage and, above the gap, it is exactly equal to the
-        bias voltage, assuming normalized values). This DC I-V curve has an
-        infinitely sharp transition.
+        below the gap voltage and exactly equal to the bias voltage above the
+        gap, assuming normalized values). This DC I-V curve has an infinitely
+        sharp transition.
 
       - ``RespFnPolynomial``: This class will generate a response function 
         based on the polynomial model from Kennedy (1999). This class can be
@@ -71,6 +38,58 @@ module:
         based on the exponential model from Rashid et al. (2016). This model is
         very similar to ``RespFnPolynomial``, except that you can include a 
         constant subgap resistance.
+
+Upon initialization, these classes will:
+
+   1. Load or calculate the DC I-V curve (which is the imagainary part of
+      response function).
+
+   2. Calculate the Kramers-Kronig transform of the DC I-V curve (which is the
+      real part of the response function).
+
+   3. Setup the density of the data points to optimize interpolation.
+
+      - The response function needs enough data points that it can be
+        interpolated accurately, but at the same time, not so many points
+        that the interpolation takes too long.
+
+   4. Calculate cubic spline fits for the I-V curve and the KK transform.
+
+      - Doing this once at the start allows the data to be interpolated very
+        quickly later on.
+
+Once initialized, the classes allow the user to interpolated the DC I-V curve,
+the KK transform, the derivative of the I-V curve, the derivative of the KK
+transform, and the response function (a complex value). These classes are
+optimized to interpolate very quickly.
+
+Examples:
+
+    For a quick example, we will generate a response function using the
+    polynomial model, with polynomial order 50:
+
+    >>> resp = RespFnPolynomial(50, verbose=False)
+
+    You can then interpolate the DC I-V curve and the KK transform:
+
+    >>> bias_voltage = np.array([0.5, 1.0, 2.0])
+    >>> dc_current = resp.idc(bias_voltage)
+    >>> np.around(dc_current, 1)
+    array([0. , 0.5, 2. ])
+    >>> kk_current = resp.ikk(bias_voltage)
+    >>> np.around(kk_current, 1)
+    array([-0.5,  1.1,  0.1])
+
+    You can also interpolate the response function directly, which is a complex
+    array:
+
+    >>> resp = resp.resp(bias_voltage)
+    >>> np.around(resp, 1)
+    array([-0.5+0.j ,  1.1+0.5j,  0.1+2.j ])
+
+    Here, the real part is the KK transform (same as the previous
+    ``kk_current`` results) and the imaginary part is the DC I-V curve (same as
+    the previous ``dc_current`` results).
 
 """
 
@@ -91,7 +110,7 @@ VSTEP = float(VINIT[1] - VINIT[0])
 VINIT.flags.writeable = False
 
 
-# Generate response function -------------------------------------------------
+# Generate response function --------------------------------------------------
 
 class RespFn(object):
     """Generate the response function from pre-processed I-V data.
@@ -125,20 +144,6 @@ class RespFn(object):
         spline_order (int, default is 3): spline order for interpolations
 
     Attributes:
-        f_idc (scipy.interpolate.fitpack2.InterpolatedUnivariateSpline):
-            Instance of the interpolation class for the DC I-V curve. For
-            example, to interpolate the DC I-V curve at a bias voltage of 0.5,
-            you would use ``resp.f_idc(0.5)``, assuming that ``resp`` is an
-            instance of this class.
-        f_ikk (scipy.interpolate.fitpack2.InterpolatedUnivariateSpline):
-            Instance of the interpolation class for the KK transform of the
-            DC I-V curve. Similar to ``f_idc``.
-        f_didc (scipy.interpolate.fitpack2.InterpolatedUnivariateSpline):
-            Instance of the interpolation class for the derivative of the
-            DC I-V curve. Similar to ``f_idc``.
-        f_dikk (scipy.interpolate.fitpack2.InterpolatedUnivariateSpline):
-            Instance of the interpolation class for the derivative of the
-            KK transform of the DC I-V curve. Similar to ``f_idc``.
         voltage (ndarray): The DC bias voltage values.
         current (ndarray): The DC tunneling current values.
         voltage_kk (ndarray): The DC bias voltage values that correspond to
@@ -176,21 +181,25 @@ class RespFn(object):
         # Interpolate
         f_interp = _setup_interpolation(voltage, current, current_kk, **params)
 
-        # Place into attributes
-        self.f_idc = f_interp[0]  # DC I-V curve
-        self.f_ikk = f_interp[1]  # KK transform
-        self.f_didc = f_interp[2]  # Derivative of DC I-V curve
-        self.f_dikk = f_interp[3]  # Derivative of KK transform
-        self.voltage = voltage  # DC I-V: voltage values
-        self.current = current  # DC I-V: current values
-        self.voltage_kk = voltage  # KK: voltage
-        self.current_kk = current_kk  # KK: current
+        # Place interpolation objects into hidden attributes
+        self._f_idc = f_interp[0]
+        self._f_ikk = f_interp[1]
+        self._f_didc = f_interp[2]
+        self._f_dikk = f_interp[3]
+
+        # Save DC I-V curve and KK transform as attributes
+        self.voltage = voltage
+        self.current = current
+        self.voltage_kk = voltage
+        self.current_kk = current_kk
 
     def plot_interpolation(self, fig_name=None, ax=None):  # pragma: no cover
         """Plot the interpolation of the response function.
 
-        Note: If ``fig_name`` is defined, this method will not return the 
-            figure axis.
+        Note: If ``fig_name`` is defined, this method will not return the
+        figure axis. It will instead close the figure, to ensure that there
+        aren't too many figures open at the same time (a common problem when
+        saving many figures at the same time).
 
         Args:
             fig_name (str, default is None): name of figure file name, if you 
@@ -213,16 +222,23 @@ class RespFn(object):
             fig, ax = plt.subplots()
         else:
             fig = ax.get_figure()
+
+        # Plot actual data values
         ax.plot(self.voltage, self.current, 'k--', label=lb1)
-        ax.plot(self.voltage, self.f_idc(self.voltage), 'k-', label=lb2)
         ax.plot(self.voltage_kk, self.current_kk, 'r--', label=lb3)
-        ax.plot(self.voltage_kk, self.f_ikk(self.voltage_kk), 'r-', label=lb4)
+
+        # Plot interpolated values
+        ax.plot(self.voltage, self._f_idc(self.voltage), 'k-', label=lb2)
+        ax.plot(self.voltage_kk, self._f_ikk(self.voltage_kk), 'r-', label=lb4)
+
+        # Plot properties
         ax.set_xlabel(r'Bias Voltage / $V_\mathrm{{gap}}$')
         ax.set_ylabel(r'Current / $I_\mathrm{{gap}}$')
         ax.set_xlim([-2, 2])
         ax.set_ylim([-2, 2])
         ax.legend(loc=0, fontsize=8, frameon=True)
         ax.grid()
+
         if fig_name is not None:
             fig.savefig(fig_name, bbox_inches='tight')
             plt.close(fig)
@@ -254,6 +270,33 @@ class RespFn(object):
 
         return self.plot_interpolation(fig_name, ax)
 
+    def idc(self, vbias):
+        """Interpolate the DC I-V curve at the given bias voltage.
+
+        Args:
+            vbias (ndarray): Bias voltage (normalized)
+
+        Returns:
+            ndarray: DC tunneling current
+
+        """
+
+        return self._f_idc(vbias)
+
+    def ikk(self, vbias):
+        """Interpolate the Kramers-Kronig transform of the DC I-V curve at the
+        given bias voltage.
+
+        Args:
+            vbias (ndarray): Bias voltage (normalized)
+
+        Returns:
+            ndarray: KK transform of the DC I-V curve
+
+        """
+
+        return self._f_ikk(vbias)
+
     def resp(self, vbias):
         """Interpolate the response function current at the given bias voltage.
 
@@ -265,11 +308,21 @@ class RespFn(object):
 
         """
 
-        return self.f_ikk(vbias) + 1j * self.f_idc(vbias)
+        return self._f_ikk(vbias) + 1j * self._f_idc(vbias)
 
     def resp_conj(self, vbias):
-        """Interpolate the complex conjugate of the response function current 
-         at the given bias voltage.
+        """Interpolate the complex conjugate of the response function current
+        at the given bias voltage.
+
+        Note:
+
+            This method is not used by QMix, but it can be useful if you are
+            calculating the tunneling currents using Tucker theory (Tucker and
+            Feldman, 1985).
+
+            This method is included because it might be *slightly* faster than
+            ``np.conj(resp.resp(vb))`` where ``resp`` is an instance of this
+            class.
 
         Args:
             vbias (ndarray): Bias voltage (normalized)
@@ -279,15 +332,21 @@ class RespFn(object):
 
         """
 
-        return self.f_ikk(vbias) - 1j * self.f_idc(vbias)
+        return self._f_ikk(vbias) - 1j * self._f_idc(vbias)
 
     def resp_swap(self, vbias):
         """Interpolate the response function current, with the real and
         imaginary components swapped, at the given bias voltage.
         
-        Note: This method is not used by QMix, but it can be useful if you are
-        calculating the tunneling currents using Tucker theory (Tucker and 
-        Feldman, 1985).
+        Note:
+
+            This method is not used by QMix, but it can be useful if you are
+            calculating the tunneling currents using Tucker theory (Tucker and
+            Feldman, 1985).
+
+            This method is included because it might be *slightly* faster than
+            ``1j * np.conj(resp.resp(vb))`` where ``resp`` is an instance of
+            this class.
 
         Args:
             vbias (ndarray): Bias voltage (normalized)
@@ -297,10 +356,10 @@ class RespFn(object):
 
         """
 
-        return self.f_idc(vbias) + 1j * self.f_ikk(vbias)
+        return self._f_idc(vbias) + 1j * self._f_ikk(vbias)
 
 
-# Generate from I-V data -----------------------------------------------------
+# Generate from I-V data ------------------------------------------------------
 
 class RespFnFromIVData(RespFn):
     """Response function for I-V data.
@@ -353,7 +412,7 @@ class RespFnFromIVData(RespFn):
         RespFn.__init__(self, voltage, current, **params)
 
 
-# Generate from other I-V curve models ---------------------------------------
+# Generate from other I-V curve models ----------------------------------------
 
 class RespFnPolynomial(RespFn):
     """Response function based on the polynomial I-V curve model.
@@ -475,11 +534,13 @@ class RespFnPerfect(RespFn):
             # KK transform
             current_kk = iv.perfect_kk(voltage)
 
-            # Place into attributes
-            self.f_idc = iv.perfect
-            self.f_ikk = iv.perfect_kk
-            self.f_didc = None
-            self.f_dikk = None
+            # Place interpolations into hidden attributes
+            self._f_idc = iv.perfect
+            self._f_ikk = iv.perfect_kk
+            self._f_didc = None
+            self._f_dikk = None
+
+            # Save DC I-V curve and KK transform as attributes
             self.voltage = voltage
             self.current = current
             self.voltage_kk = voltage
@@ -501,7 +562,7 @@ class RespFnPerfect(RespFn):
             RespFn.__init__(self, voltage, current, **params)
 
 
-# Helper functions -----------------------------------------------------------
+# Helper functions ------------------------------------------------------------
 
 def _setup_interpolation(voltage, current, current_kk, **params):
     """Setup interpolation.
