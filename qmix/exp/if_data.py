@@ -297,22 +297,24 @@ def load_if(filename, dc, **kwargs):
         sigma (float): convolve IF data by Gaussian with this std dev
         npts (float): evenly interpolate data to have this many data points
         rseries (float): series resistance of measurement system
+        skip_header: number of rows to skip at the beginning of the file
 
-    Returns: IF data (matrix form)
+    Returns: IF data (in matrix form)
 
     """
 
     # Unpack keyword arguments
-    delim = kwargs.get('delimiter',    ',')
-    v_fmt = kwargs.get('v_fmt',        'mV')
-    usecols = kwargs.get('usecols',      (0, 1))
-    vmax = kwargs.get('ifdata_vmax',  2.25)
+    delim = kwargs.get('delimiter', ',')
+    v_fmt = kwargs.get('v_fmt', 'mV')
+    usecols = kwargs.get('usecols', (0, 1))
+    vmax = kwargs.get('ifdata_vmax', 2.25)
     sigma = kwargs.get('ifdata_sigma', 5)
-    npts = kwargs.get('ifdata_npts',  3000)
+    npts = kwargs.get('ifdata_npts', 3000)
     rseries = kwargs.get('rseries', None)
+    skip_header = kwargs.get('skip_header', 1)
 
     # Import
-    if_data = np.genfromtxt(filename, delimiter=delim, usecols=usecols)
+    if_data = np.genfromtxt(filename, delimiter=delim, usecols=usecols, skip_header=skip_header)
 
     # Clean
     if_data = remove_nans_matrix(if_data)

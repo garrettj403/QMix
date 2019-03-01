@@ -1,21 +1,21 @@
-""" This module contains functions and classes for analyzing experimental data
-from an SIS device.
+""" This module contains classes for importing, filtering and 
+analyzing raw I-V and IF data obtained from SIS mixer experiments.
 
-This module contains functions related to importing, cleaning and analyzing raw
-I-V and IF data obtained from SIS mixer experiments. Two classes (``RawData0``
-and ``RawData``) are provided to help manage the data. ``RawData0`` is 
-intended for data that was collected with no LO present (i.e., unpumped data),
-and ``RawData`` is intended for data that was collected with LO pumping (i.e.,
-pumped data).
+Two classes (``RawData0`` and ``RawData``) are provided to help manage the 
+data. ``RawData0`` is intended for data that was collected with no LO present 
+(i.e., unpumped data), and ``RawData`` is intended for data that was collected
+with LO pumping (i.e., pumped data).
 
 Note:
 
-    - These functions assume that you are importing data that has been
-      stored in a very specific format. Take a look at the data in
-      ``QMix/examples/eg-230-data/`` for an example.
-    
-    - See ``QMix/examples/analyze-experimental-data.ipynb`` for an example of 
-      how to use this module.
+    These functions assume that you are importing I-V data and IF power data 
+    in the form of a CSV file. You can define the delimiter using the keyword
+    argument ``delimiter=','``, the number of rows to skip for the header 
+    using ``skip_header=1``, and which columns to import using 
+    ``usecols=(0,1)``. Take a look at the data in 
+    ``QMix/examples/eg-230-data/`` for an example. Also, take a look at 
+    ``QMix/examples/analyze-experimental-data.ipynb`` for an example of how to
+    use this module.
 
 """
 

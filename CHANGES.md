@@ -5,6 +5,7 @@ New Features
 ------------
 
 - All plotting functions now accept and return Matplotlib axis objects.
+- When importing experimental data, you can now skip any headers that may be present in the CSV files.
 
 Deprecated Features
 -------------------

@@ -184,7 +184,7 @@ def iv_curve(filename, dc, **kwargs):
 
 # Load i-v data -------------------------------------------------------------
 
-def _load_iv(filename, v_fmt='mV', i_fmt='mA', usecols=(0,1), delim=',', **kw):
+def _load_iv(filename, v_fmt='mV', i_fmt='mA', usecols=(0,1), delim=',', skip_header=1, **kw):
     """Import i-v data from CSV file.
 
     Args:
@@ -194,6 +194,7 @@ def _load_iv(filename, v_fmt='mV', i_fmt='mA', usecols=(0,1), delim=',', **kw):
         v_fmt: voltage units ('mV', 'V', etc.)
         i_fmt: current units ('uA', 'mA', etc.)
         usecols: list of columns to use (tuple of length 2)
+        skip_header: number of rows to skip at the beginning of the file
         kw: keywords (not used)
 
     Returns:
@@ -204,7 +205,8 @@ def _load_iv(filename, v_fmt='mV', i_fmt='mA', usecols=(0,1), delim=',', **kw):
 
     v_raw, i_raw = np.genfromtxt(filename,
                                  delimiter=delim,
-                                 usecols=usecols).T
+                                 usecols=usecols,
+                                 skip_header=skip_header).T
 
     volt_v = v_raw * _vfmt_dict[v_fmt]
     curr_a = i_raw * _ifmt_dict[i_fmt]
