@@ -1259,6 +1259,61 @@ curve.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="qmix.respfn.RespFn.didc">
+<code class="descname">didc</code><span class="sig-paren">(</span><em>vbias</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.respfn.RespFn.didc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Interpolate the derivative of the DC I-V curve at the given bias
+voltage.</p>
+<p>This is defined as <code class="docutils literal notranslate"><span class="pre">d(idc)</span> <span class="pre">/</span> <span class="pre">d(vb)</span></code> where <code class="docutils literal notranslate"><span class="pre">idc</span></code> is the DC tunneling
+current and <code class="docutils literal notranslate"><span class="pre">vb</span></code> is the bias voltage.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This method is not used by QMix, but it can be useful if you are
+calculating the tunneling currents using Tucker theory (Tucker and
+Feldman, 1985).</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>vbias</strong> (<em>ndarray</em>) – Bias voltage (normalized)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">derivative of the DC tunneling current</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">ndarray</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="qmix.respfn.RespFn.dikk">
+<code class="descname">dikk</code><span class="sig-paren">(</span><em>vbias</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.respfn.RespFn.dikk" title="Permalink to this definition">¶</a></dt>
+<dd><p>Interpolate the derivative of the Kramers-Kronig transform of the DC
+I-V curve at the given bias voltage.</p>
+<p>This is defined as <code class="docutils literal notranslate"><span class="pre">d(ikk)</span> <span class="pre">/</span> <span class="pre">d(vb)</span></code> where <code class="docutils literal notranslate"><span class="pre">ikk</span></code> is the Kramers-
+Kronig transform of the DC tunneling current and <code class="docutils literal notranslate"><span class="pre">vb</span></code> is the bias
+voltage.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This method is not used by QMix, but it can be useful if you are
+calculating the tunneling currents using Tucker theory (Tucker and
+Feldman, 1985).</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>vbias</strong> (<em>ndarray</em>) – Bias voltage (normalized)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">derivative of the KK transform of the DC I-V curve</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">ndarray</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
 <dt id="qmix.respfn.RespFn.idc">
 <code class="descname">idc</code><span class="sig-paren">(</span><em>vbias</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.respfn.RespFn.idc" title="Permalink to this definition">¶</a></dt>
 <dd><p>Interpolate the DC I-V curve at the given bias voltage.</p>
