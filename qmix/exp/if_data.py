@@ -24,7 +24,18 @@ _vfmt_dict = {'uV': 1e-6, 'mV': 1e-3, 'V': 1}
 # Load IF data and determine noise temperature -------------------------------
 
 DCIFData = namedtuple('DCIFData', ['if_noise', 'corr', 'if_fit', 'shot_slope', 'vmax'])
-"""Struct for DC IF metadata."""
+DCIFData.__doc__ = """\
+Struct for DC IF metadata.
+
+Args:
+    if_noise (float): IF noise in units K, derived from the shot noise.
+    corr (float): The correction required to transform the measured IF power 
+        (measured in arbitrary units, A.U.) to units K.
+    if_fit (bool): Is the estimated IF noise a reasonable value?
+    shot_slope (float): The slope of the line fit to the shot noise.
+    vmax (float): Maximum bias voltage, in units V.
+
+"""
 
 
 def dcif_data(dcif_file, dc, **kwargs):

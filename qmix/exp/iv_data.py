@@ -33,7 +33,28 @@ _ifmt_dict = {'uA': 1e-6, 'mA': 1e-3, 'A': 1}
 DCIVData = namedtuple('DCIVData', ['vraw', 'iraw', 'vnorm', 'inorm', 'vgap',
                                    'igap', 'fgap', 'rn', 'rsg', 'offset',
                                    'vint', 'rseries'])
-"""Struct for DC I-V curve metadata."""
+DCIVData.__doc__ = """\
+Struct for DC I-V curve metadata.
+
+Args:
+    vraw (ndarray): DC bias voltage in units V. This data has filtered and the
+        offset has been corrected.
+    iraw (ndarray): DC tunneling current in units A. This data has filtered 
+        and the offset has been corrected.
+    vnorm (ndarray): DC bias voltage (normalized).
+    inorm (ndarray): DC tunneling current (normalized).
+    vgap (float): Gap voltage in units V.
+    igap (flaot): Gap current in units A.
+    fgap (float): Gap frequency in units Hz.
+    rn (float): Normal-state resistance in units ohms.
+    rsg (float): Sub-gap resistance in units ohms.
+    offset (tuple): Voltage and current offset in the raw measured data.
+    vint (float): If you fit a line to the normal-state resistance (i.e., the
+        DC I-V curve above the gap), the line will intercept the x-axis at
+        ``vint``.
+    rseries (float): The series resistance to remove from the I-V data.
+
+"""
 
 
 def dciv_curve(filename, **kwargs):
