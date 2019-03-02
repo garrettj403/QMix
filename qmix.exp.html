@@ -416,23 +416,22 @@ matrix form (i.e., a matrix with two columns).</p>
 </div>
 <div class="section" id="module-qmix.exp.exp_data">
 <span id="qmix-exp-exp-data-module"></span><h2>2.1.1.3. qmix.exp.exp_data module<a class="headerlink" href="#module-qmix.exp.exp_data" title="Permalink to this headline">¶</a></h2>
-<p>This module contains functions and classes for analyzing experimental data
-from an SIS device.</p>
-<p>This module contains functions related to importing, cleaning and analyzing raw
-I-V and IF data obtained from SIS mixer experiments. Two classes (<code class="docutils literal notranslate"><span class="pre">RawData0</span></code>
-and <code class="docutils literal notranslate"><span class="pre">RawData</span></code>) are provided to help manage the data. <code class="docutils literal notranslate"><span class="pre">RawData0</span></code> is
-intended for data that was collected with no LO present (i.e., unpumped data),
-and <code class="docutils literal notranslate"><span class="pre">RawData</span></code> is intended for data that was collected with LO pumping (i.e.,
-pumped data).</p>
+<p>This module contains classes for importing, filtering and
+analyzing raw I-V and IF data obtained from SIS mixer experiments.</p>
+<p>Two classes (<code class="docutils literal notranslate"><span class="pre">RawData0</span></code> and <code class="docutils literal notranslate"><span class="pre">RawData</span></code>) are provided to help manage the
+data. <code class="docutils literal notranslate"><span class="pre">RawData0</span></code> is intended for data that was collected with no LO present
+(i.e., unpumped data), and <code class="docutils literal notranslate"><span class="pre">RawData</span></code> is intended for data that was collected
+with LO pumping (i.e., pumped data).</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<ul class="last simple">
-<li>These functions assume that you are importing data that has been
-stored in a very specific format. Take a look at the data in
-<code class="docutils literal notranslate"><span class="pre">QMix/examples/eg-230-data/</span></code> for an example.</li>
-<li>See <code class="docutils literal notranslate"><span class="pre">QMix/examples/analyze-experimental-data.ipynb</span></code> for an example of
-how to use this module.</li>
-</ul>
+<p class="last">These functions assume that you are importing I-V data and IF power data
+in the form of a CSV file. You can define the delimiter using the keyword
+argument <code class="docutils literal notranslate"><span class="pre">delimiter=','</span></code>, the number of rows to skip for the header
+using <code class="docutils literal notranslate"><span class="pre">skip_header=1</span></code>, and which columns to import using
+<code class="docutils literal notranslate"><span class="pre">usecols=(0,1)</span></code>. Take a look at the data in
+<code class="docutils literal notranslate"><span class="pre">QMix/examples/eg-230-data/</span></code> for an example. Also, take a look at
+<code class="docutils literal notranslate"><span class="pre">QMix/examples/analyze-experimental-data.ipynb</span></code> for an example of how to
+use this module.</p>
 </div>
 <dl class="class">
 <dt id="qmix.exp.exp_data.RawData">
@@ -1017,9 +1016,25 @@ experimental IF power measurements.</p>
 <p>The “IF data” is the IF output power from the SIS device versus bias voltage.</p>
 <dl class="class">
 <dt id="qmix.exp.if_data.DCIFData">
-<em class="property">class </em><code class="descclassname">qmix.exp.if_data.</code><code class="descname">DCIFData</code><span class="sig-paren">(</span><em>if_noise</em>, <em>corr</em>, <em>if_fit</em>, <em>shot_slope</em>, <em>vmax</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.exp.if_data.DCIFData" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">qmix.exp.if_data.</code><code class="descname">DCIFData</code><a class="headerlink" href="#qmix.exp.if_data.DCIFData" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></p>
 <p>Struct for DC IF metadata.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>if_noise</strong> (<em>float</em>) – IF noise in units K, derived from the shot noise.</li>
+<li><strong>corr</strong> (<em>float</em>) – The correction required to transform the measured IF power
+(measured in arbitrary units, A.U.) to units K.</li>
+<li><strong>if_fit</strong> (<em>bool</em>) – Is the estimated IF noise a reasonable value?</li>
+<li><strong>shot_slope</strong> (<em>float</em>) – The slope of the line fit to the shot noise.</li>
+<li><strong>vmax</strong> (<em>float</em>) – Maximum bias voltage, in units V.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
 <dl class="attribute">
 <dt id="qmix.exp.if_data.DCIFData.corr">
 <code class="descname">corr</code><a class="headerlink" href="#qmix.exp.if_data.DCIFData.corr" title="Permalink to this definition">¶</a></dt>
@@ -1147,12 +1162,13 @@ Shot noise slope</p>
 <li><strong>sigma</strong> (<em>float</em>) – convolve IF data by Gaussian with this std dev</li>
 <li><strong>npts</strong> (<em>float</em>) – evenly interpolate data to have this many data points</li>
 <li><strong>rseries</strong> (<em>float</em>) – series resistance of measurement system</li>
+<li><strong>skip_header</strong> – number of rows to skip at the beginning of the file</li>
 </ul>
 </td>
 </tr>
 </tbody>
 </table>
-<p>Returns: IF data (matrix form)</p>
+<p>Returns: IF data (in matrix form)</p>
 </dd></dl>
 
 </div>
@@ -1166,9 +1182,35 @@ that is collected with no LO present, and “I-V data” for I-V data that is
 collected with the LO present (also known as the “pumped I-V curve”).</p>
 <dl class="class">
 <dt id="qmix.exp.iv_data.DCIVData">
-<em class="property">class </em><code class="descclassname">qmix.exp.iv_data.</code><code class="descname">DCIVData</code><span class="sig-paren">(</span><em>vraw</em>, <em>iraw</em>, <em>vnorm</em>, <em>inorm</em>, <em>vgap</em>, <em>igap</em>, <em>fgap</em>, <em>rn</em>, <em>rsg</em>, <em>offset</em>, <em>vint</em>, <em>rseries</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.exp.iv_data.DCIVData" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">qmix.exp.iv_data.</code><code class="descname">DCIVData</code><a class="headerlink" href="#qmix.exp.iv_data.DCIVData" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></p>
 <p>Struct for DC I-V curve metadata.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>vraw</strong> (<em>ndarray</em>) – DC bias voltage in units V. This data has filtered and the
+offset has been corrected.</li>
+<li><strong>iraw</strong> (<em>ndarray</em>) – DC tunneling current in units A. This data has filtered
+and the offset has been corrected.</li>
+<li><strong>vnorm</strong> (<em>ndarray</em>) – DC bias voltage (normalized).</li>
+<li><strong>inorm</strong> (<em>ndarray</em>) – DC tunneling current (normalized).</li>
+<li><strong>vgap</strong> (<em>float</em>) – Gap voltage in units V.</li>
+<li><strong>igap</strong> (<em>flaot</em>) – Gap current in units A.</li>
+<li><strong>fgap</strong> (<em>float</em>) – Gap frequency in units Hz.</li>
+<li><strong>rn</strong> (<em>float</em>) – Normal-state resistance in units ohms.</li>
+<li><strong>rsg</strong> (<em>float</em>) – Sub-gap resistance in units ohms.</li>
+<li><strong>offset</strong> (<em>tuple</em>) – Voltage and current offset in the raw measured data.</li>
+<li><strong>vint</strong> (<em>float</em>) – If you fit a line to the normal-state resistance (i.e., the
+DC I-V curve above the gap), the line will intercept the x-axis at
+<code class="docutils literal notranslate"><span class="pre">vint</span></code>.</li>
+<li><strong>rseries</strong> (<em>float</em>) – The series resistance to remove from the I-V data.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
 <dl class="attribute">
 <dt id="qmix.exp.iv_data.DCIVData.fgap">
 <code class="descname">fgap</code><a class="headerlink" href="#qmix.exp.iv_data.DCIVData.fgap" title="Permalink to this definition">¶</a></dt>
@@ -1333,180 +1375,182 @@ collected with the LO present (also known as the “pumped I-V curve”).</p>
 <div class="section" id="module-qmix.exp.parameters">
 <span id="qmix-exp-parameters-module"></span><h2>2.1.1.6. qmix.exp.parameters module<a class="headerlink" href="#module-qmix.exp.parameters" title="Permalink to this headline">¶</a></h2>
 <p>This module contains a dictionary of parameters that are used by
-qmix.exp.exp_data.py.</p>
-<dl class="docutils">
-<dt><strong>Parameters:</strong></dt>
-<dd><ul class="first last simple">
+qmix.exp.exp_data.py to load and analyze experimental data.</p>
+<p><strong>Parameters:</strong></p>
+<blockquote>
+<div><ul class="simple">
 <li><dl class="first docutils">
-<dt>File I/O</dt>
+<dt>CSV Files:</dt>
 <dd><ul class="first last">
-<li><code class="docutils literal notranslate"><span class="pre">delimiter</span> <span class="pre">=</span> <span class="pre">&quot;,&quot;</span></code> : delimiter used in IV/IF data files</li>
-<li><code class="docutils literal notranslate"><span class="pre">usecols</span> <span class="pre">=</span> <span class="pre">(0,1)</span></code> : columns for voltage and current data</li>
+<li>The <code class="docutils literal notranslate"><span class="pre">qmix.exp.RawData</span></code> and <code class="docutils literal notranslate"><span class="pre">qmix.exp.RawData0</span></code> classes read in experimental data from CSV files. These parameters control how these files are loaded.</li>
+<li><code class="docutils literal notranslate"><span class="pre">delimiter</span> <span class="pre">=</span> <span class="pre">&quot;,&quot;</span></code> : The delimiter used in IV/IF CSV data files.</li>
+<li><code class="docutils literal notranslate"><span class="pre">usecols</span> <span class="pre">=</span> <span class="pre">(0,1)</span></code> : Columns for voltage and current data in the IV/IF CSV data files.</li>
+<li><code class="docutils literal notranslate"><span class="pre">skip_header</span> <span class="pre">=</span> <span class="pre">1</span></code> : Number of rows to skip at the beginning of IV/IF CSV data files.</li>
 </ul>
 </dd>
 </dl>
 </li>
 <li><dl class="first docutils">
-<dt>Units</dt>
+<dt>Units:</dt>
 <dd><ul class="first last">
-<li><code class="docutils literal notranslate"><span class="pre">v_fmt</span> <span class="pre">=</span> <span class="pre">&quot;mv&quot;</span></code> : units for voltage data (one of uV/mV/V)</li>
-<li><code class="docutils literal notranslate"><span class="pre">i_fmt</span> <span class="pre">=</span> <span class="pre">&quot;mA&quot;</span></code> : units for current data (one of uA/mA/A)</li>
+<li><code class="docutils literal notranslate"><span class="pre">v_fmt</span> <span class="pre">=</span> <span class="pre">&quot;mv&quot;</span></code> : Units for voltage data (one of uV/mV/V).</li>
+<li><code class="docutils literal notranslate"><span class="pre">i_fmt</span> <span class="pre">=</span> <span class="pre">&quot;mA&quot;</span></code> : Units for current data (one of uA/mA/A).</li>
 </ul>
 </dd>
 </dl>
 </li>
 <li><dl class="first docutils">
-<dt>Importing I-V data</dt>
+<dt>Importing I-V data:</dt>
 <dd><ul class="first last">
-<li><code class="docutils literal notranslate"><span class="pre">vmax</span> <span class="pre">=</span> <span class="pre">6e-3</span></code> : maximum voltage to import (in case of saturation)</li>
-<li><code class="docutils literal notranslate"><span class="pre">npts</span> <span class="pre">=</span> <span class="pre">6001</span></code> : number of points to use in IV data interpolation</li>
+<li><code class="docutils literal notranslate"><span class="pre">vmax</span> <span class="pre">=</span> <span class="pre">6e-3</span></code> : Maximum voltage to import (in case the current is saturated beyond some bias voltage).</li>
+<li><code class="docutils literal notranslate"><span class="pre">npts</span> <span class="pre">=</span> <span class="pre">6001</span></code> : Number of points to use in IV data interpolation.</li>
 </ul>
 </dd>
 </dl>
 </li>
 <li><dl class="first docutils">
-<dt>Correct voltage/current offsets</dt>
+<dt>Correct voltage/current offsets:</dt>
 <dd><ul class="first last">
-<li><code class="docutils literal notranslate"><span class="pre">ioffset</span> <span class="pre">=</span> <span class="pre">None</span></code> : correct for current offset, in units A</li>
-<li><code class="docutils literal notranslate"><span class="pre">voffset</span> <span class="pre">=</span> <span class="pre">None</span></code> : correct for voltage offset, in units V</li>
-<li><code class="docutils literal notranslate"><span class="pre">voffset_range</span> <span class="pre">=</span> <span class="pre">3e-4</span></code> : voltage range over which to look for the voltage offset, in units V</li>
-<li><code class="docutils literal notranslate"><span class="pre">voffset_sigma</span> <span class="pre">=</span> <span class="pre">1e-5</span></code> : when finding voltage offset, assume this Gaussian width to find origin, in units V</li>
+<li><code class="docutils literal notranslate"><span class="pre">ioffset</span> <span class="pre">=</span> <span class="pre">None</span></code> : Offset in DC tunneling current data, in units A.</li>
+<li><code class="docutils literal notranslate"><span class="pre">voffset</span> <span class="pre">=</span> <span class="pre">None</span></code> : Offset in DC bias voltage, in units V.</li>
+<li><code class="docutils literal notranslate"><span class="pre">voffset_range</span> <span class="pre">=</span> <span class="pre">3e-4</span></code> : Voltage range over which to look for the voltage offset, in units V.</li>
+<li><code class="docutils literal notranslate"><span class="pre">voffset_sigma</span> <span class="pre">=</span> <span class="pre">1e-5</span></code> : When finding voltage offset, assume this Gaussian width to find origin, in units V.</li>
 </ul>
 </dd>
 </dl>
 </li>
 <li><dl class="first docutils">
-<dt>Correct experimental I-V data</dt>
+<dt>Correct experimental I-V data:</dt>
 <dd><ul class="first last">
-<li><code class="docutils literal notranslate"><span class="pre">rseries</span> <span class="pre">=</span> <span class="pre">None</span></code> : correct for a series resistance, in units ohms</li>
-<li><code class="docutils literal notranslate"><span class="pre">iv_multiplier</span> <span class="pre">=</span> <span class="pre">1.</span></code> : multiply the imported current by this number</li>
+<li><code class="docutils literal notranslate"><span class="pre">rseries</span> <span class="pre">=</span> <span class="pre">None</span></code> : Correct for a series resistance using this resistance, in units ohms. Leave as <code class="docutils literal notranslate"><span class="pre">None</span></code> if there is no series resistance.</li>
+<li><code class="docutils literal notranslate"><span class="pre">iv_multiplier</span> <span class="pre">=</span> <span class="pre">1.</span></code> : Multiply the imported tunneling current by this number.</li>
 </ul>
 </dd>
 </dl>
 </li>
 <li><dl class="first docutils">
-<dt>Importing IF data</dt>
+<dt>Importing IF data:</dt>
 <dd><ul class="first last">
-<li><code class="docutils literal notranslate"><span class="pre">ifdata_vmax</span> <span class="pre">=</span> <span class="pre">2.25</span></code> : max IF voltage to import (normalized to vgap)</li>
-<li><code class="docutils literal notranslate"><span class="pre">ifdata_npts</span> <span class="pre">=</span> <span class="pre">3000</span></code> : number of points to use when interpolating IF data</li>
+<li><code class="docutils literal notranslate"><span class="pre">ifdata_vmax</span> <span class="pre">=</span> <span class="pre">2.25</span></code> : Maximum IF voltage to import (normalized to vgap).</li>
+<li><code class="docutils literal notranslate"><span class="pre">ifdata_npts</span> <span class="pre">=</span> <span class="pre">3000</span></code> : Number of points to use when interpolating IF data.</li>
 </ul>
 </dd>
 </dl>
 </li>
 <li><dl class="first docutils">
-<dt>Filtering I-V data</dt>
+<dt>Filtering I-V data:</dt>
 <dd><ul class="first last">
-<li><code class="docutils literal notranslate"><span class="pre">filter_data</span> <span class="pre">=</span> <span class="pre">True</span></code> : filter I-V data using Savitzky-Golay filter</li>
-<li><code class="docutils literal notranslate"><span class="pre">vgap_guess</span> <span class="pre">=</span> <span class="pre">2.7e-3</span></code> : normalize voltage by this value before rotating</li>
-<li><code class="docutils literal notranslate"><span class="pre">igap_guess</span> <span class="pre">=</span> <span class="pre">2e-4</span></code> : normalize current by this value before rotating</li>
-<li><code class="docutils literal notranslate"><span class="pre">filter_theta</span> <span class="pre">=</span> <span class="pre">0.785</span></code> : angle by which to rotate I-V curve before filtering (in radians)</li>
-<li><code class="docutils literal notranslate"><span class="pre">filter_nwind</span> <span class="pre">=</span> <span class="pre">21</span></code> : width of Savitzky-Golay filter</li>
-<li><code class="docutils literal notranslate"><span class="pre">filter_npoly</span> <span class="pre">=</span> <span class="pre">3</span></code> : order of Savitzky-Golay filter</li>
+<li>When I-V data is loaded, it is temporarily normalized to some arbitrary values. The DC I-V curve is then rotated 45 degrees, filtered using a Savitzky-Golay filter, and then rotated back.</li>
+<li><code class="docutils literal notranslate"><span class="pre">filter_data</span> <span class="pre">=</span> <span class="pre">True</span></code> : Filter I-V data using Savitzky-Golay filter?</li>
+<li><code class="docutils literal notranslate"><span class="pre">vgap_guess</span> <span class="pre">=</span> <span class="pre">2.7e-3</span></code> : Normalize bias voltage to this value before rotating.</li>
+<li><code class="docutils literal notranslate"><span class="pre">igap_guess</span> <span class="pre">=</span> <span class="pre">2e-4</span></code> : Normalize DC tunneling current to this value before rotating.</li>
+<li><code class="docutils literal notranslate"><span class="pre">filter_theta</span> <span class="pre">=</span> <span class="pre">0.785</span></code> : Angle by which to rotate DC I-V curve before filtering (in radians).</li>
+<li><code class="docutils literal notranslate"><span class="pre">filter_nwind</span> <span class="pre">=</span> <span class="pre">21</span></code> : Width of Savitzky-Golay filter.</li>
+<li><code class="docutils literal notranslate"><span class="pre">filter_npoly</span> <span class="pre">=</span> <span class="pre">3</span></code> : Order of Savitzky-Golay filter.</li>
 </ul>
 </dd>
 </dl>
 </li>
 <li><dl class="first docutils">
-<dt>Filtering IF data</dt>
+<dt>Filtering IF data:</dt>
 <dd><ul class="first last">
-<li><code class="docutils literal notranslate"><span class="pre">ifdata_sigma</span> <span class="pre">=</span> <span class="pre">5</span></code> : smooth IF data by convolving a Gaussian function of this width, in units npts (default is 5)</li>
+<li><code class="docutils literal notranslate"><span class="pre">ifdata_sigma</span> <span class="pre">=</span> <span class="pre">5</span></code> : Smooth IF data by convolving a Gaussian function of this width, in units npts (default is 5).</li>
 </ul>
 </dd>
 </dl>
 </li>
 <li><dl class="first docutils">
-<dt>Analyze data</dt>
+<dt>Analyze data:</dt>
 <dd><ul class="first last">
-<li><code class="docutils literal notranslate"><span class="pre">analyze_iv</span> <span class="pre">=</span> <span class="pre">True</span></code> : analyze the IV data (i.e., recover embedding impedance)</li>
-<li><code class="docutils literal notranslate"><span class="pre">analyze_if</span> <span class="pre">=</span> <span class="pre">True</span></code> : analyze the IF data (i.e., calculate noise temp/gain)</li>
-<li><code class="docutils literal notranslate"><span class="pre">analyze</span> <span class="pre">=</span> <span class="pre">True</span></code> : turn on/off both analyze_iv and analyze_if (deprecated)</li>
+<li><code class="docutils literal notranslate"><span class="pre">analyze_iv</span> <span class="pre">=</span> <span class="pre">True</span></code> : Analyze the IV data? (i.e., recover embedding impedance).</li>
+<li><code class="docutils literal notranslate"><span class="pre">analyze_if</span> <span class="pre">=</span> <span class="pre">True</span></code> : Analyze the IF data? (i.e., calculate noise temp/gain).</li>
+<li><code class="docutils literal notranslate"><span class="pre">analyze</span> <span class="pre">=</span> <span class="pre">True</span></code> : Turn on/off both <code class="docutils literal notranslate"><span class="pre">analyze_iv</span></code> and <code class="docutils literal notranslate"><span class="pre">analyze_if</span></code> (deprecated).</li>
 </ul>
 </dd>
 </dl>
 </li>
 <li><dl class="first docutils">
-<dt>Junction properties</dt>
+<dt>Junction properties:</dt>
 <dd><ul class="first last">
-<li><code class="docutils literal notranslate"><span class="pre">area</span> <span class="pre">=</span> <span class="pre">1.5</span></code> : area of junction in um^2 (default is 1.5)</li>
-<li><code class="docutils literal notranslate"><span class="pre">freq</span> <span class="pre">=</span> <span class="pre">None</span></code> : frequency, in GHz (default is None)</li>
+<li><code class="docutils literal notranslate"><span class="pre">area</span> <span class="pre">=</span> <span class="pre">1.5</span></code> : Area of junction in um^2.</li>
+<li><code class="docutils literal notranslate"><span class="pre">freq</span> <span class="pre">=</span> <span class="pre">None</span></code> : Frequency of local-oscillator, in GHz.</li>
 </ul>
 </dd>
 </dl>
 </li>
 <li><dl class="first docutils">
-<dt>Parameters for analyzing DC I-V curve</dt>
+<dt>Parameters for analyzing DC I-V curve:</dt>
 <dd><ul class="first last">
-<li><code class="docutils literal notranslate"><span class="pre">vgap_threshold</span> <span class="pre">=</span> <span class="pre">105e-6</span></code> : current at which to measure the gap voltage, in units A</li>
-<li><code class="docutils literal notranslate"><span class="pre">rn_vmin</span> <span class="pre">=</span> <span class="pre">3.5e-3</span></code> : lower range over which to calculate normal resistance, in units V</li>
-<li><code class="docutils literal notranslate"><span class="pre">rn_vmax</span> <span class="pre">=</span> <span class="pre">4.5e-3</span></code> : upper range over which to calculate normal resistance, in units V</li>
-<li><code class="docutils literal notranslate"><span class="pre">vrsg</span> <span class="pre">=</span> <span class="pre">2e-3</span></code> : voltage at which to measure the subgap resistance, in units V</li>
-<li><code class="docutils literal notranslate"><span class="pre">vleak</span> <span class="pre">=</span> <span class="pre">2e-3</span></code> : voltage at which to measure the leakage current, in units V</li>
+<li><code class="docutils literal notranslate"><span class="pre">vgap_threshold</span> <span class="pre">=</span> <span class="pre">105e-6</span></code> : Threshold current at which to measure the gap voltage, in units A.</li>
+<li><code class="docutils literal notranslate"><span class="pre">rn_vmin</span> <span class="pre">=</span> <span class="pre">3.5e-3</span></code> : Lower range over which to calculate normal resistance, in units V.</li>
+<li><code class="docutils literal notranslate"><span class="pre">rn_vmax</span> <span class="pre">=</span> <span class="pre">4.5e-3</span></code> : Upper range over which to calculate normal resistance, in units V.</li>
+<li><code class="docutils literal notranslate"><span class="pre">vrsg</span> <span class="pre">=</span> <span class="pre">2e-3</span></code> : Voltage at which to measure the subgap resistance, in units V.</li>
+<li><code class="docutils literal notranslate"><span class="pre">vleak</span> <span class="pre">=</span> <span class="pre">2e-3</span></code> : Voltage at which to measure the leakage current, in units V.</li>
 </ul>
 </dd>
 </dl>
 </li>
 <li><dl class="first docutils">
-<dt>Parameters for analyzing DC IF data</dt>
+<dt>Parameters for analyzing DC IF data:</dt>
 <dd><ul class="first last">
-<li><code class="docutils literal notranslate"><span class="pre">vshot</span> <span class="pre">=</span> <span class="pre">None</span></code> : range of voltages over which to fit shot noise slope, list of lists, in units V</li>
+<li><code class="docutils literal notranslate"><span class="pre">vshot</span> <span class="pre">=</span> <span class="pre">None</span></code> : Range of voltages over which to fit shot noise slope, list of lists, in units V.</li>
 </ul>
 </dd>
 </dl>
 </li>
 <li><dl class="first docutils">
-<dt>Parameters for analyzing pumped I-V data (i.e., impedance recovery)</dt>
+<dt>Parameters for analyzing pumped I-V data (i.e., impedance recovery):</dt>
 <dd><ul class="first last">
-<li><code class="docutils literal notranslate"><span class="pre">cut_low</span> <span class="pre">=</span> <span class="pre">0.25</span></code> : fit interval, lower end, normalized to photon step width</li>
-<li><code class="docutils literal notranslate"><span class="pre">cut_high</span> <span class="pre">=</span> <span class="pre">0.2</span></code> : fit interval, upper end, normalized to photon step width</li>
-<li><code class="docutils literal notranslate"><span class="pre">remb_range</span> <span class="pre">=</span> <span class="pre">(0,</span> <span class="pre">1)</span></code> : range of embedding resistances to test, normalized to normal resistance</li>
-<li><code class="docutils literal notranslate"><span class="pre">xemb_range</span> <span class="pre">=</span> <span class="pre">(-1,</span> <span class="pre">1)</span></code> : range of embedding reactances to test, normalized to normal resistance</li>
-<li><code class="docutils literal notranslate"><span class="pre">alpha_max</span> <span class="pre">=</span> <span class="pre">1.5</span></code> : max alpha for initial guess</li>
-<li><code class="docutils literal notranslate"><span class="pre">num_b</span> <span class="pre">=</span> <span class="pre">20</span></code> : max Bessel function to include when calculating tunneling currents</li>
+<li><code class="docutils literal notranslate"><span class="pre">cut_low</span> <span class="pre">=</span> <span class="pre">0.25</span></code> : Fit interval for impedance recovery, lower end, normalized to photon step width.</li>
+<li><code class="docutils literal notranslate"><span class="pre">cut_high</span> <span class="pre">=</span> <span class="pre">0.2</span></code> : Fit interval for impedance recovery, upper end, normalized to photon step width.</li>
+<li><code class="docutils literal notranslate"><span class="pre">remb_range</span> <span class="pre">=</span> <span class="pre">(0,</span> <span class="pre">1)</span></code> : Range of embedding resistances to test, normalized to normal resistance.</li>
+<li><code class="docutils literal notranslate"><span class="pre">xemb_range</span> <span class="pre">=</span> <span class="pre">(-1,</span> <span class="pre">1)</span></code> : Range of embedding reactances to test, normalized to normal resistance.</li>
+<li><code class="docutils literal notranslate"><span class="pre">alpha_max</span> <span class="pre">=</span> <span class="pre">1.5</span></code> : Maximum drive level (alpha) for initial guess during impedance recovery.</li>
+<li><code class="docutils literal notranslate"><span class="pre">num_b</span> <span class="pre">=</span> <span class="pre">20</span></code> : Maximum number of Bessel functions to include when calculating tunneling currents.</li>
 </ul>
 </dd>
 </dl>
 </li>
 <li><dl class="first docutils">
-<dt>Parameters for analyzing pumped IF data (i.e., noise temperature analysis)</dt>
+<dt>Parameters for analyzing pumped IF data (i.e., noise temperature analysis):</dt>
 <dd><ul class="first last">
-<li><code class="docutils literal notranslate"><span class="pre">t_cold</span> <span class="pre">=</span> <span class="pre">80.</span></code> : temperature of cold load (likely liquid nitrogen), in units K</li>
-<li><code class="docutils literal notranslate"><span class="pre">t_hot</span> <span class="pre">=</span> <span class="pre">293.</span></code> : temperature of hot load (likely room temperature), in units K</li>
-<li><code class="docutils literal notranslate"><span class="pre">vbest</span> <span class="pre">=</span> <span class="pre">None</span></code> : bias voltage at which to calculate the best noise temperature value, will find automatically if set to None</li>
+<li><code class="docutils literal notranslate"><span class="pre">t_cold</span> <span class="pre">=</span> <span class="pre">80.</span></code> : Temperature of cold load (likely liquid nitrogen), in units K.</li>
+<li><code class="docutils literal notranslate"><span class="pre">t_hot</span> <span class="pre">=</span> <span class="pre">293.</span></code> : Temperature of hot load (likely room temperature), in units K.</li>
+<li><code class="docutils literal notranslate"><span class="pre">vbest</span> <span class="pre">=</span> <span class="pre">None</span></code> : Bias voltage at which to calculate the best noise temperature value, will determine automatically if set to <code class="docutils literal notranslate"><span class="pre">None</span></code>.</li>
 </ul>
 </dd>
 </dl>
 </li>
 <li><dl class="first docutils">
-<dt>Response function</dt>
+<dt>Response function:</dt>
 <dd><ul class="first last">
-<li><code class="docutils literal notranslate"><span class="pre">v_smear</span> <span class="pre">=</span> <span class="pre">0.020</span></code> : voltage smear of the smeared response function</li>
+<li><code class="docutils literal notranslate"><span class="pre">v_smear</span> <span class="pre">=</span> <span class="pre">0.020</span></code> : Voltage smear of the “smeared” response function.</li>
 </ul>
 </dd>
 </dl>
 </li>
 <li><dl class="first docutils">
-<dt>Plotting parameters</dt>
+<dt>Plotting parameters:</dt>
 <dd><ul class="first last">
-<li><code class="docutils literal notranslate"><span class="pre">vmax_plot</span> <span class="pre">=</span> <span class="pre">4.0</span></code> : max bias voltage for plots, in units mV</li>
+<li><code class="docutils literal notranslate"><span class="pre">vmax_plot</span> <span class="pre">=</span> <span class="pre">4.0</span></code> : Maximum bias voltage for plots, in units mV.</li>
 </ul>
 </dd>
 </dl>
 </li>
 <li><dl class="first docutils">
-<dt>Miscellaneous</dt>
+<dt>Miscellaneous:</dt>
 <dd><ul class="first last">
-<li><code class="docutils literal notranslate"><span class="pre">comment</span> <span class="pre">=</span> <span class="pre">&quot;&quot;</span></code> : add a comment to instance</li>
-<li><code class="docutils literal notranslate"><span class="pre">verbose</span> <span class="pre">=</span> <span class="pre">True</span></code> : print to terminal</li>
+<li><code class="docutils literal notranslate"><span class="pre">comment</span> <span class="pre">=</span> <span class="pre">&quot;&quot;</span></code> : Add a comment to describe this instance.</li>
+<li><code class="docutils literal notranslate"><span class="pre">verbose</span> <span class="pre">=</span> <span class="pre">True</span></code> : Print information to the terminal?</li>
 </ul>
 </dd>
 </dl>
 </li>
 </ul>
-</dd>
-</dl>
+</div></blockquote>
 <dl class="data">
 <dt id="qmix.exp.parameters.params">
-<code class="descclassname">qmix.exp.parameters.</code><code class="descname">params</code><em class="property"> = {'alpha_max': 1.5, 'analyze': None, 'analyze_if': True, 'analyze_iv': True, 'area': 1.5, 'comment': '', 'cut_high': 0.2, 'cut_low': 0.25, 'delimiter': ',', 'filter_data': True, 'filter_npoly': 3, 'filter_nwind': 21, 'filter_theta': 0.785, 'freq': None, 'i_fmt': 'mA', 'ifdata_npts': 3000, 'ifdata_sigma': 5, 'ifdata_vmax': 2.25, 'igap_guess': 0.0002, 'ioffset': None, 'iv_multiplier': 1.0, 'npts': 6001, 'num_b': 20, 'remb_range': (0, 1), 'rn_vmax': 0.0045, 'rn_vmin': 0.0035, 'rseries': None, 't_cold': 80.0, 't_hot': 293.0, 'usecols': (0, 1), 'v_fmt': 'mV', 'v_smear': 0.02, 'vbest': None, 'verbose': True, 'vgap_guess': 0.0027, 'vgap_threshold': 0.000105, 'vleak': 0.002, 'vmax': 0.006, 'vmax_plot': 4.0, 'voffset': None, 'voffset_range': 0.0003, 'voffset_sigma': 1e-05, 'vrsg': 0.002, 'vshot': None, 'xemb_range': (-1, 1)}</em><a class="headerlink" href="#qmix.exp.parameters.params" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">qmix.exp.parameters.</code><code class="descname">params</code><em class="property"> = {'alpha_max': 1.5, 'analyze': None, 'analyze_if': True, 'analyze_iv': True, 'area': 1.5, 'comment': '', 'cut_high': 0.2, 'cut_low': 0.25, 'delimiter': ',', 'filter_data': True, 'filter_npoly': 3, 'filter_nwind': 21, 'filter_theta': 0.785, 'freq': None, 'i_fmt': 'mA', 'ifdata_npts': 3000, 'ifdata_sigma': 5, 'ifdata_vmax': 2.25, 'igap_guess': 0.0002, 'ioffset': None, 'iv_multiplier': 1.0, 'npts': 6001, 'num_b': 20, 'remb_range': (0, 1), 'rn_vmax': 0.0045, 'rn_vmin': 0.0035, 'rseries': None, 'skip_header': 1, 't_cold': 80.0, 't_hot': 293.0, 'usecols': (0, 1), 'v_fmt': 'mV', 'v_smear': 0.02, 'vbest': None, 'verbose': True, 'vgap_guess': 0.0027, 'vgap_threshold': 0.000105, 'vleak': 0.002, 'vmax': 0.006, 'vmax_plot': 4.0, 'voffset': None, 'voffset_range': 0.0003, 'voffset_sigma': 1e-05, 'vrsg': 0.002, 'vshot': None, 'xemb_range': (-1, 1)}</em><a class="headerlink" href="#qmix.exp.parameters.params" title="Permalink to this definition">¶</a></dt>
 <dd><p>Default parameters used when importing experimental data.</p>
 </dd></dl>
 
