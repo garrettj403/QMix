@@ -384,8 +384,8 @@ div.rendered_html tbody tr:hover {
 </style>
 <div class="section" id="Example-#3:-Analyzing-experimental-data">
 <h1>5. Example #3: Analyzing experimental data<a class="headerlink" href="#Example-#3:-Analyzing-experimental-data" title="Permalink to this headline">¶</a></h1>
-<p>This notebook will show a brief example of how QMix can be used to analyze experimental data. Note that a wide range of parameters can be passed to these functions in order to import data that has been stored in different formats.</p>
-<p>For the purposes of this notebook, example data has been included in a directory called <code class="docutils literal notranslate"><span class="pre">eg-230-data/</span></code>.</p>
+<p>This notebook will show a brief example of how QMix can be used to analyze experimental data. Note that a wide range of parameters can be passed to these functions in order to import data that has been stored in different formats. Please see <code class="docutils literal notranslate"><span class="pre">params</span></code> in <code class="docutils literal notranslate"><span class="pre">qmix/exp/parameters.py</span></code> for a full list.</p>
+<p>For the purposes of this notebook, example data has been included in a directory called <code class="docutils literal notranslate"><span class="pre">eg-230-data/</span></code>. This is experimental data that was taken from an SIS device illuminated by a local-oscillator (LO) at 230 GHz.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
@@ -399,16 +399,77 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 </div>
-<p>There are two main classes that can be used to analyze experimental data: - <code class="docutils literal notranslate"><span class="pre">qmix.exp.RawData0</span></code> which is used for DC data (no LO pumping), and - <code class="docutils literal notranslate"><span class="pre">qmix.exp.RawData</span></code> which is used to analyze pumped data.</p>
+<p>There are two main classes that can be used to analyze experimental data:</p>
+<ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">qmix.exp.RawData0</span></code>, which is used for DC data (no LO pumping), and</li>
+<li><code class="docutils literal notranslate"><span class="pre">qmix.exp.RawData</span></code>, which is used to analyze pumped data (with LO illumination).</li>
+</ul>
 <div class="section" id="Import-DC-I-V-data">
 <h2>5.1. Import DC I-V data<a class="headerlink" href="#Import-DC-I-V-data" title="Permalink to this headline">¶</a></h2>
-<p>This class will automatically load, filter, and analyze the DC I-V data. It will also automatically correct any offsets in the current or voltage data, and calculate the IF noise.</p>
+<p>The DC experimental data is located in two different files:</p>
 <ul class="simple">
-<li><code class="docutils literal notranslate"><span class="pre">dciv.csv</span></code> is the DC current vs. bias voltage (no LO pumping)</li>
-<li><code class="docutils literal notranslate"><span class="pre">dcif.csv</span></code> is the IF power vs. bias voltage (no LO pumping)</li>
+<li><code class="docutils literal notranslate"><span class="pre">dciv.csv</span></code>: DC current vs. bias voltage (no LO pumping)</li>
+<li><code class="docutils literal notranslate"><span class="pre">dcif.csv</span></code>: IF power vs. bias voltage (no LO pumping)</li>
 </ul>
+<p>Both files are CSV files with one column for voltage and one column for current or IF power.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-bash notranslate"><div class="highlight"><pre>
+<span></span>%%bash
+head eg-230-data/dciv.csv
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+DC Bias Voltage (mV), DC Tunneling Current (mA)
+0.016102, 0.007249
+0.017391, 0.007265
+0.019324, 0.007361
+0.021257, 0.007378
+0.023512, 0.007426
+0.026090, 0.007474
+0.028345, 0.007587
+0.030600, 0.007619
+0.032856, 0.007668
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-bash notranslate"><div class="highlight"><pre>
+<span></span>%%bash
+head eg-230-data/dcif.csv
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+DC Bias Voltage (mV), IF Power (A.U.)
+0.015780, 0.009150
+0.017713, 0.009069
+0.019968, 0.009101
+0.021579, 0.009069
+0.023512, 0.009037
+0.026412, 0.009005
+0.028667, 0.008956
+0.030600, 0.009005
+0.032856, 0.008988
+</pre></div></div>
+</div>
+<p>We will now use the <code class="docutils literal notranslate"><span class="pre">RawData0</span></code> class to load, filter, and analyze the DC data. It will also automatically correct any offsets in the current or voltage data, and calculate the IF noise based on the DC shot noise.</p>
+<p>Note that by passing additional keyword arguments to <code class="docutils literal notranslate"><span class="pre">RawData0</span></code>, you can control how the CSV files are imported (i.e., changing which columns are imported, how large the header is, and what kind of delimited is used). Please see the documentation for <code class="docutils literal notranslate"><span class="pre">RawData0</span></code> for more information.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -442,47 +503,14 @@ DC I-V data:</span>
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span><span class="mi">5</span><span class="p">))</span>
-<span class="n">dciv</span><span class="o">.</span><span class="n">plot_dciv</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">);</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="_images/analyze-experimental-data_5_0.png" src="_images/analyze-experimental-data_5_0.png" />
-</div>
-</div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span><span class="mi">5</span><span class="p">))</span>
-<span class="n">dciv</span><span class="o">.</span><span class="n">plot_offset</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">);</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="_images/analyze-experimental-data_6_0.png" src="_images/analyze-experimental-data_6_0.png" />
-</div>
-</div>
-<p>This plot shows the DC tunnelling current at the origin. This plot can be used to ensure that the offsets in the x- and y-direction have been corrected properly.</p>
-<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span><span class="mi">10</span><span class="p">))</span>
-<span class="n">dciv</span><span class="o">.</span><span class="n">plot_if_noise</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">);</span>
+<span></span><span class="c1"># Plot the DC I-V curve</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span><span class="mi">5</span><span class="p">))</span>
+<span class="n">dciv</span><span class="o">.</span><span class="n">plot_dciv</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
@@ -493,13 +521,59 @@ DC I-V data:</span>
 <img alt="_images/analyze-experimental-data_8_0.png" src="_images/analyze-experimental-data_8_0.png" />
 </div>
 </div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># Plot the origin of the DC I-V curve</span>
+<span class="c1"># to ensure that all offsets were corrected properly</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span><span class="mi">5</span><span class="p">))</span>
+<span class="n">dciv</span><span class="o">.</span><span class="n">plot_offset</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="_images/analyze-experimental-data_9_0.png" src="_images/analyze-experimental-data_9_0.png" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># Plot the shot noise</span>
+<span class="c1"># (which is also used to calculate the IF noise, see Woody (1985))</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span><span class="mi">10</span><span class="p">))</span>
+<span class="n">dciv</span><span class="o">.</span><span class="n">plot_if_noise</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="_images/analyze-experimental-data_10_0.png" src="_images/analyze-experimental-data_10_0.png" />
+</div>
+</div>
 </div>
 <div class="section" id="Import-Data-at-230-GHz">
 <h2>5.2. Import Data at 230 GHz<a class="headerlink" href="#Import-Data-at-230-GHz" title="Permalink to this headline">¶</a></h2>
-<p>This class will load data collected at a given frequency. - <code class="docutils literal notranslate"><span class="pre">f230.2_iv.csv</span></code> is the pumped I-V curve - <code class="docutils literal notranslate"><span class="pre">f230.2_if-hot.csv</span></code> is the IF power measured with the hot load - <code class="docutils literal notranslate"><span class="pre">f230.2_if-cold.csv</span></code> is the IF power measured with the cold load</p>
+<p>We will now use the <code class="docutils literal notranslate"><span class="pre">RawData</span></code> class to import I-V and IF data from the device when it is illuminated by an LO at 230 GHz.</p>
+<p>The experimental files are:</p>
+<ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">f230.2_iv.csv</span></code>: the pumped I-V curve</li>
+<li><code class="docutils literal notranslate"><span class="pre">f230.2_if-hot.csv</span></code>: the IF power measured with a hot blackbody load</li>
+<li><code class="docutils literal notranslate"><span class="pre">f230.2_if-cold.csv</span></code>: the IF power measured with a cold blackbody load</li>
+</ul>
 <p>This class will automatically load, filter and analyze the data. This includes calculating the noise temperature and the properties of the embedding circuit.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -537,11 +611,13 @@ DC I-V data:</span>
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax1</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span><span class="mi">5</span><span class="p">))</span>
+<span></span><span class="c1"># Plot the I-V curve and the IF powers</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax1</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span><span class="mi">5</span><span class="p">))</span>
 <span class="n">ax2</span> <span class="o">=</span> <span class="n">ax1</span><span class="o">.</span><span class="n">twinx</span><span class="p">()</span>
 <span class="n">pump</span><span class="o">.</span><span class="n">plot_ivif</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="p">(</span><span class="n">ax1</span><span class="p">,</span><span class="n">ax2</span><span class="p">));</span>
 </pre></div>
@@ -551,36 +627,19 @@ DC I-V data:</span>
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="_images/analyze-experimental-data_11_0.png" src="_images/analyze-experimental-data_11_0.png" />
+<img alt="_images/analyze-experimental-data_13_0.png" src="_images/analyze-experimental-data_13_0.png" />
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax1</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span><span class="mi">5</span><span class="p">))</span>
+<span></span><span class="c1"># Plot the noise temperature and gain</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax1</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span><span class="mi">5</span><span class="p">))</span>
 <span class="n">ax2</span> <span class="o">=</span> <span class="n">ax1</span><span class="o">.</span><span class="n">twinx</span><span class="p">()</span>
 <span class="n">pump</span><span class="o">.</span><span class="n">plot_gain_noise_temp</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="p">(</span><span class="n">ax1</span><span class="p">,</span><span class="n">ax2</span><span class="p">));</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="_images/analyze-experimental-data_12_0.png" src="_images/analyze-experimental-data_12_0.png" />
-</div>
-</div>
-<div class="section" id="Plot-embedding-impedance">
-<h3>5.2.1. Plot embedding impedance<a class="headerlink" href="#Plot-embedding-impedance" title="Permalink to this headline">¶</a></h3>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span><span class="mi">5</span><span class="p">))</span>
-<span class="n">pump</span><span class="o">.</span><span class="n">plot_error_surface</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
@@ -591,12 +650,38 @@ DC I-V data:</span>
 <img alt="_images/analyze-experimental-data_14_0.png" src="_images/analyze-experimental-data_14_0.png" />
 </div>
 </div>
+<div class="section" id="Plot-embedding-impedance">
+<h3>5.2.1. Plot embedding impedance<a class="headerlink" href="#Plot-embedding-impedance" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">RawData</span></code> class also recovers the embedding circuit using the technique described by Skalare (1989) and Withington <em>et al.</em> (1995).</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span><span class="mi">5</span><span class="p">))</span>
+<span></span><span class="c1"># Plot the error surface</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span><span class="mi">5</span><span class="p">))</span>
+<span class="n">pump</span><span class="o">.</span><span class="n">plot_error_surface</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="_images/analyze-experimental-data_16_0.png" src="_images/analyze-experimental-data_16_0.png" />
+</div>
+</div>
+<p>This plot was calculated using the error function from Withington <em>et al.</em> (1995).</p>
+<p>The minimum error represents the best impedance estimation.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># Plot a simulated I-V curve using the recovered impedance</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span><span class="mi">5</span><span class="p">))</span>
 <span class="n">pump</span><span class="o">.</span><span class="n">plot_simulated</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">);</span>
 </pre></div>
 </div>
@@ -605,7 +690,7 @@ DC I-V data:</span>
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="_images/analyze-experimental-data_15_0.png" src="_images/analyze-experimental-data_15_0.png" />
+<img alt="_images/analyze-experimental-data_18_0.png" src="_images/analyze-experimental-data_18_0.png" />
 </div>
 </div>
 </div>

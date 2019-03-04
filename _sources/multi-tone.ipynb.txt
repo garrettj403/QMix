@@ -10,7 +10,7 @@
     "    - The input consists of 3 signals\n",
     "        - a strong local-osciallator at 230 GHz\n",
     "        - a weak RF signal at 232 GHz \n",
-    "        - an IF signal\n",
+    "        - an IF output at 2 GHz\n",
     "    - The embedding circuit is included\n",
     "    - The response function is generated from an experimental I-V curve\n",
     "\n",
@@ -52,7 +52,7 @@
    "outputs": [],
    "source": [
     "vgap = 2.7e-3              # gap voltage in [V]\n",
-    "rn = 13.5                  # normal resistance in [ohms]\n",
+    "rn   = 13.5                # normal resistance in [ohms]\n",
     "igap = vgap / rn           # gap current in [A]\n",
     "fgap = sc.e * vgap / sc.h  # gap frequency in [Hz]"
    ]
@@ -306,7 +306,6 @@
     "# Convert normalized values to given units\n",
     "vmv = vgap / sc.milli \n",
     "ima = igap / sc.milli \n",
-    "iua = igap / sc.micro\n",
     "iua = igap / sc.micro"
    ]
   },
@@ -355,8 +354,8 @@
     "pusb = cct.available_power(2)\n",
     "\n",
     "# Power delivered to load\n",
-    "rload = cct.zt[3,1].real*rn\n",
-    "pload = 0.5 * np.abs(iif*igap) ** 2 * rload\n",
+    "rload = cct.zt[3,1].real * rn\n",
+    "pload = 0.5 * np.abs(iif * igap)**2 * rload\n",
     "\n",
     "# Gain\n",
     "gain = pload / pusb"

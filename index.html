@@ -178,53 +178,19 @@
 </style>
 <div class="section" id="qmix-quantum-mixing-software">
 <h1>QMix: Quantum Mixing Software<a class="headerlink" href="#qmix-quantum-mixing-software" title="Permalink to this headline">¶</a></h1>
-<p>QMix is a software package for simulating the quasiparticle tunneling currents in Superconductor/Insulator/Superconductor (SIS) junctions. These junctions are commonly used for heterodyne mixing at millimeter and submillimeter wavelengths. QMix can be used to simulate the performance of SIS mixers, investigate their experimental results and optimize their operation.</p>
-<p>In order to calculate the quasiparticle tunneling currents, QMix uses <em>multi-tone spectral domain analysis</em> (see references for more information). This makes QMix ideal for simulating higher-order harmonics, power saturation, sub-harmonic pumping and frequency multiplication.</p>
+<p>QMix is a software package for simulating the quasiparticle tunneling currents in Superconductor/Insulator/Superconductor (SIS) junctions. These junctions are commonly used for heterodyne mixing at millimeter and submillimeter wavelengths. QMix can be used to simulate their performance, investigate their experimental results and optimize their operation.</p>
+<p>In order to calculate the quasiparticle tunneling currents, QMix uses <em>multi-tone spectral domain analysis</em> (see <a class="reference internal" href="references.html#references"><span class="std std-ref">References</span></a> for more information). Among other applications, this makes QMix ideal for simulating power saturation, higher-order harmonics, sub-harmonic pumping and frequency multiplication.</p>
 <p><strong>Repository address:</strong> <a class="reference external" href="https://github.com/garrettj403/QMix/">https://github.com/garrettj403/QMix/</a></p>
 </div>
 <div class="section" id="contents">
 <h1>Contents<a class="headerlink" href="#contents" title="Permalink to this headline">¶</a></h1>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="setup.html">1. Getting Started</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="setup.html#installing-qmix-using-pip">1.1. Installing QMix using pip</a></li>
-<li class="toctree-l2"><a class="reference internal" href="setup.html#downloading-qmix-from-github">1.2. Downloading QMix from GitHub</a></li>
-<li class="toctree-l2"><a class="reference internal" href="setup.html#configuring-python">1.3. Configuring Python</a></li>
-<li class="toctree-l2"><a class="reference internal" href="setup.html#testing-your-installation">1.4. Testing Your Installation</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="qmix.html">2. Package API</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="qmix.html#subpackages">2.1. Subpackages</a></li>
-<li class="toctree-l2"><a class="reference internal" href="qmix.html#submodules">2.2. Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="qmix.html#module-qmix.circuit">2.3. qmix.circuit module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="qmix.html#module-qmix.harmonic_balance">2.4. qmix.harmonic_balance module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="qmix.html#module-qmix.qtcurrent">2.5. qmix.qtcurrent module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="qmix.html#module-qmix.respfn">2.6. qmix.respfn module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="qmix.html#module-qmix">2.7. Module contents</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="single-tone-simple.html">3. Example #1: Creating a simple 1 tone simulation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="single-tone-simple.html#Generate-the-response-function">3.1. Generate the response function</a></li>
-<li class="toctree-l2"><a class="reference internal" href="single-tone-simple.html#Define-embedding-circuit">3.2. Define embedding circuit</a></li>
-<li class="toctree-l2"><a class="reference internal" href="single-tone-simple.html#Calculate-desired-tunnelling-currents">3.3. Calculate desired tunnelling currents</a></li>
-<li class="toctree-l2"><a class="reference internal" href="single-tone-simple.html#Plot-the-pumped-I-V-curve">3.4. Plot the pumped I-V curve</a></li>
-<li class="toctree-l2"><a class="reference internal" href="single-tone-simple.html#Plot-AC-tunneling-currents">3.5. Plot AC tunneling currents</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="multi-tone.html">4. Example #2: Simulating an SIS mixer</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="multi-tone.html#Define-junction-properties">4.1. Define junction properties</a></li>
-<li class="toctree-l2"><a class="reference internal" href="multi-tone.html#Define-embedding-circuit">4.2. Define embedding circuit</a></li>
-<li class="toctree-l2"><a class="reference internal" href="multi-tone.html#Generate-response-function">4.3. Generate response function</a></li>
-<li class="toctree-l2"><a class="reference internal" href="multi-tone.html#Perform-harmonic-balance">4.4. Perform harmonic balance</a></li>
-<li class="toctree-l2"><a class="reference internal" href="multi-tone.html#Calculate-tunnelling-currents">4.5. Calculate tunnelling currents</a></li>
-<li class="toctree-l2"><a class="reference internal" href="multi-tone.html#Plot-the-pumped-I-V-curve">4.6. Plot the pumped I-V curve</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="analyze-experimental-data.html">5. Example #3: Analyzing experimental data</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="analyze-experimental-data.html#Import-DC-I-V-data">5.1. Import DC I-V data</a></li>
-<li class="toctree-l2"><a class="reference internal" href="analyze-experimental-data.html#Import-Data-at-230-GHz">5.2. Import Data at 230 GHz</a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="setup.html">1. Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="qmix.html">2. Package API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="single-tone-simple.html">3. Example #1: Creating a simple 1 tone simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multi-tone.html">4. Example #2: Simulating an SIS mixer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analyze-experimental-data.html">5. Example #3: Analyzing experimental data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="references.html">6. References</a></li>
 </ul>
 </div>

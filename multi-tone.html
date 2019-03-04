@@ -393,7 +393,7 @@ div.rendered_html tbody tr:hover {
 <li>The input consists of 3 signals<ul>
 <li>a strong local-osciallator at 230 GHz</li>
 <li>a weak RF signal at 232 GHz</li>
-<li>an IF signal</li>
+<li>an IF output at 2 GHz</li>
 </ul>
 </li>
 <li>The embedding circuit is included</li>
@@ -435,7 +435,7 @@ div.rendered_html tbody tr:hover {
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="n">vgap</span> <span class="o">=</span> <span class="mf">2.7e-3</span>              <span class="c1"># gap voltage in [V]</span>
-<span class="n">rn</span> <span class="o">=</span> <span class="mf">13.5</span>                  <span class="c1"># normal resistance in [ohms]</span>
+<span class="n">rn</span>   <span class="o">=</span> <span class="mf">13.5</span>                <span class="c1"># normal resistance in [ohms]</span>
 <span class="n">igap</span> <span class="o">=</span> <span class="n">vgap</span> <span class="o">/</span> <span class="n">rn</span>           <span class="c1"># gap current in [A]</span>
 <span class="n">fgap</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="n">e</span> <span class="o">*</span> <span class="n">vgap</span> <span class="o">/</span> <span class="n">sc</span><span class="o">.</span><span class="n">h</span>  <span class="c1"># gap frequency in [Hz]</span>
 </pre></div>
@@ -675,7 +675,6 @@ Done: Minimum error target was achieved.
 <span class="n">vmv</span> <span class="o">=</span> <span class="n">vgap</span> <span class="o">/</span> <span class="n">sc</span><span class="o">.</span><span class="n">milli</span>
 <span class="n">ima</span> <span class="o">=</span> <span class="n">igap</span> <span class="o">/</span> <span class="n">sc</span><span class="o">.</span><span class="n">milli</span>
 <span class="n">iua</span> <span class="o">=</span> <span class="n">igap</span> <span class="o">/</span> <span class="n">sc</span><span class="o">.</span><span class="n">micro</span>
-<span class="n">iua</span> <span class="o">=</span> <span class="n">igap</span> <span class="o">/</span> <span class="n">sc</span><span class="o">.</span><span class="n">micro</span>
 </pre></div>
 </div>
 </div>
@@ -712,8 +711,8 @@ Done: Minimum error target was achieved.
 <span class="n">pusb</span> <span class="o">=</span> <span class="n">cct</span><span class="o">.</span><span class="n">available_power</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
 
 <span class="c1"># Power delivered to load</span>
-<span class="n">rload</span> <span class="o">=</span> <span class="n">cct</span><span class="o">.</span><span class="n">zt</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">real</span><span class="o">*</span><span class="n">rn</span>
-<span class="n">pload</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">iif</span><span class="o">*</span><span class="n">igap</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">rload</span>
+<span class="n">rload</span> <span class="o">=</span> <span class="n">cct</span><span class="o">.</span><span class="n">zt</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">real</span> <span class="o">*</span> <span class="n">rn</span>
+<span class="n">pload</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">iif</span> <span class="o">*</span> <span class="n">igap</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="n">rload</span>
 
 <span class="c1"># Gain</span>
 <span class="n">gain</span> <span class="o">=</span> <span class="n">pload</span> <span class="o">/</span> <span class="n">pusb</span>

@@ -6,9 +6,9 @@
    "source": [
     "# Example #3: Analyzing experimental data\n",
     "\n",
-    "This notebook will show a brief example of how QMix can be used to analyze experimental data. Note that a wide range of parameters can be passed to these functions in order to import data that has been stored in different formats.\n",
+    "This notebook will show a brief example of how QMix can be used to analyze experimental data. Note that a wide range of parameters can be passed to these functions in order to import data that has been stored in different formats. Please see ``params`` in ``qmix/exp/parameters.py`` for a full list.\n",
     "\n",
-    "For the purposes of this notebook, example data has been included in a directory called ``eg-230-data/``."
+    "For the purposes of this notebook, example data has been included in a directory called ``eg-230-data/``. This is experimental data that was taken from an SIS device illuminated by a local-oscillator (LO) at 230 GHz."
    ]
   },
   {
@@ -29,8 +29,9 @@
    "metadata": {},
    "source": [
     "There are two main classes that can be used to analyze experimental data:\n",
-    "- ``qmix.exp.RawData0`` which is used for DC data (no LO pumping), and\n",
-    "- ``qmix.exp.RawData`` which is used to analyze pumped data."
+    "\n",
+    "   - ``qmix.exp.RawData0``, which is used for DC data (no LO pumping), and\n",
+    "   - ``qmix.exp.RawData``, which is used to analyze pumped data (with LO illumination)."
    ]
   },
   {
@@ -39,15 +40,80 @@
    "source": [
     "## Import DC I-V data\n",
     "\n",
-    "This class will automatically load, filter, and analyze the DC I-V data. It will also automatically correct any offsets in the current or voltage data, and calculate the IF noise.\n",
+    "The DC experimental data is located in two different files:\n",
     "\n",
-    "- ``dciv.csv`` is the DC current vs. bias voltage (no LO pumping)\n",
-    "- ``dcif.csv`` is the IF power vs. bias voltage (no LO pumping)"
+    "   - ``dciv.csv``: DC current vs. bias voltage (no LO pumping)\n",
+    "   - ``dcif.csv``: IF power vs. bias voltage (no LO pumping)\n",
+    "   \n",
+    "Both files are CSV files with one column for voltage and one column for current or IF power."
    ]
   },
   {
    "cell_type": "code",
    "execution_count": 2,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "DC Bias Voltage (mV), DC Tunneling Current (mA)\r\n",
+      "0.016102, 0.007249\r\n",
+      "0.017391, 0.007265\r\n",
+      "0.019324, 0.007361\r\n",
+      "0.021257, 0.007378\r\n",
+      "0.023512, 0.007426\r\n",
+      "0.026090, 0.007474\r\n",
+      "0.028345, 0.007587\r\n",
+      "0.030600, 0.007619\r\n",
+      "0.032856, 0.007668\r\n"
+     ]
+    }
+   ],
+   "source": [
+    "%%bash\n",
+    "head eg-230-data/dciv.csv"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "DC Bias Voltage (mV), IF Power (A.U.)\r\n",
+      "0.015780, 0.009150\r\n",
+      "0.017713, 0.009069\r\n",
+      "0.019968, 0.009101\r\n",
+      "0.021579, 0.009069\r\n",
+      "0.023512, 0.009037\r\n",
+      "0.026412, 0.009005\r\n",
+      "0.028667, 0.008956\r\n",
+      "0.030600, 0.009005\r\n",
+      "0.032856, 0.008988\r\n"
+     ]
+    }
+   ],
+   "source": [
+    "%%bash\n",
+    "head eg-230-data/dcif.csv"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "We will now use the ``RawData0`` class to load, filter, and analyze the DC data. It will also automatically correct any offsets in the current or voltage data, and calculate the IF noise based on the DC shot noise.\n",
+    "\n",
+    "Note that by passing additional keyword arguments to ``RawData0``, you can control how the CSV files are imported (i.e., changing which columns are imported, how large the header is, and what kind of delimited is used). Please see the documentation for ``RawData0`` for more information."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
    "metadata": {},
    "outputs": [
     {
@@ -81,7 +147,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 3,
+   "execution_count": 5,
    "metadata": {},
    "outputs": [
     {
@@ -98,13 +164,15 @@
     }
    ],
    "source": [
+    "# Plot the DC I-V curve\n",
+    "\n",
     "fig, ax = plt.subplots(figsize=(7,5))\n",
     "dciv.plot_dciv(ax=ax);"
    ]
   },
   {
    "cell_type": "code",
-   "execution_count": 4,
+   "execution_count": 6,
    "metadata": {},
    "outputs": [
     {
@@ -121,20 +189,16 @@
     }
    ],
    "source": [
+    "# Plot the origin of the DC I-V curve\n",
+    "# to ensure that all offsets were corrected properly\n",
+    "\n",
     "fig, ax = plt.subplots(figsize=(7,5))\n",
     "dciv.plot_offset(ax=ax);"
    ]
   },
   {
-   "cell_type": "markdown",
-   "metadata": {},
-   "source": [
-    "This plot shows the DC tunnelling current at the origin. This plot can be used to ensure that the offsets in the x- and y-direction have been corrected properly."
-   ]
-  },
-  {
    "cell_type": "code",
-   "execution_count": 5,
+   "execution_count": 7,
    "metadata": {},
    "outputs": [
     {
@@ -151,6 +215,9 @@
     }
    ],
    "source": [
+    "# Plot the shot noise\n",
+    "# (which is also used to calculate the IF noise, see Woody (1985))\n",
+    "\n",
     "fig, ax = plt.subplots(2, figsize=(7,10))\n",
     "dciv.plot_if_noise(ax=ax);"
    ]
@@ -161,17 +228,20 @@
    "source": [
     "## Import Data at 230 GHz\n",
     "\n",
-    "This class will load data collected at a given frequency.\n",
-    "- ``f230.2_iv.csv`` is the pumped I-V curve\n",
-    "- ``f230.2_if-hot.csv`` is the IF power measured with the hot load\n",
-    "- ``f230.2_if-cold.csv`` is the IF power measured with the cold load\n",
+    "We will now use the ``RawData`` class to import I-V and IF data from the device when it is illuminated by an LO at 230 GHz.\n",
+    "\n",
+    "The experimental files are:\n",
+    "\n",
+    "- ``f230.2_iv.csv``: the pumped I-V curve\n",
+    "- ``f230.2_if-hot.csv``: the IF power measured with a hot blackbody load\n",
+    "- ``f230.2_if-cold.csv``: the IF power measured with a cold blackbody load\n",
     "\n",
     "This class will automatically load, filter and analyze the data. This includes calculating the noise temperature and the properties of the embedding circuit."
    ]
   },
   {
    "cell_type": "code",
-   "execution_count": 6,
+   "execution_count": 8,
    "metadata": {},
    "outputs": [
     {
@@ -209,7 +279,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 7,
+   "execution_count": 9,
    "metadata": {},
    "outputs": [
     {
@@ -226,6 +296,8 @@
     }
    ],
    "source": [
+    "# Plot the I-V curve and the IF powers \n",
+    "\n",
     "fig, ax1 = plt.subplots(figsize=(7,5))\n",
     "ax2 = ax1.twinx()\n",
     "pump.plot_ivif(ax=(ax1,ax2));"
@@ -233,7 +305,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 8,
+   "execution_count": 10,
    "metadata": {},
    "outputs": [
     {
@@ -250,6 +322,8 @@
     }
    ],
    "source": [
+    "# Plot the noise temperature and gain\n",
+    "\n",
     "fig, ax1 = plt.subplots(figsize=(7,5))\n",
     "ax2 = ax1.twinx()\n",
     "pump.plot_gain_noise_temp(ax=(ax1,ax2));"
@@ -259,12 +333,14 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "### Plot embedding impedance"
+    "### Plot embedding impedance\n",
+    "\n",
+    "The ``RawData`` class also recovers the embedding circuit using the technique described by Skalare (1989) and Withington *et al.* (1995)."
    ]
   },
   {
    "cell_type": "code",
-   "execution_count": 9,
+   "execution_count": 11,
    "metadata": {},
    "outputs": [
     {
@@ -281,13 +357,24 @@
     }
    ],
    "source": [
+    "# Plot the error surface\n",
+    "\n",
     "fig, ax = plt.subplots(figsize=(7,5))\n",
     "pump.plot_error_surface(ax=ax);"
    ]
   },
   {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "This plot was calculated using the error function from Withington *et al.* (1995).\n",
+    "\n",
+    "The minimum error represents the best impedance estimation."
+   ]
+  },
+  {
    "cell_type": "code",
-   "execution_count": 10,
+   "execution_count": 12,
    "metadata": {},
    "outputs": [
     {
@@ -304,6 +391,8 @@
     }
    ],
    "source": [
+    "# Plot a simulated I-V curve using the recovered impedance\n",
+    "\n",
     "fig, ax = plt.subplots(figsize=(7,5))\n",
     "pump.plot_simulated(ax=ax);"
    ]
