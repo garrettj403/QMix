@@ -6,7 +6,7 @@ Installing QMix using pip
 
 The easiest way to install QMix is using ``pip``:
 
-.. code-block:: bash
+.. code-block:: console
 
    pip install QMix
 
@@ -21,13 +21,13 @@ If you want the latest version, you can download QMix from `GitHub`_.
 
 In order to clone the repository, open a terminal window, navigate to the directory in which you would like to put QMix, and then run:
 
-.. code-block:: bash
+.. code-block:: console
    
    git clone https://github.com/garrettj403/QMix.git QMix
 
 This will download QMix into a new directory called ``QMix/``. You then need to add the ``QMix/`` directory to your ``PYTHONPATH`` environment variable. If you are on a macOS system, open your bash profile (normally located in ``~/.bash_profile`` or ``~/.profile``) and add the following:
 
-.. code-block:: bash
+.. code-block:: console
 
    export PYTHONPATH="<path-to-qmix>:$PYTHONPATH"
 
@@ -38,13 +38,13 @@ Configuring Python
 
 QMix is written using Python version 3.7. If you don't want to change your Python installation or in case you are missing any packages, I have included a virtual environment file that contains all of the necessary packages. If you are using the Anaconda package manager, you can run:
 
-.. code-block:: bash
+.. code-block:: console
 
    conda env create -f environment-qmix.yaml
 
 This may take a few minutes. You can then activate the virtual environment using:
 
-.. code-block:: bash
+.. code-block:: console
 
    conda activate qmix
 
