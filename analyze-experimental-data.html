@@ -215,18 +215,18 @@ div.nblast {
 
 /* input prompt */
 div.nbinput div.prompt pre {
-    color: #307FC1;
+    color: #303F9F;
 }
 
 /* output prompt */
 div.nboutput div.prompt pre {
-    color: #BF5B3D;
+    color: #D84315;
 }
 
 /* all prompts */
 div.nbinput div.prompt,
 div.nboutput div.prompt {
-    min-width: 5ex;
+    min-width: 8ex;
     padding-top: 0.4em;
     padding-right: 0.4em;
     text-align: right;
@@ -266,9 +266,9 @@ div.nboutput div.output_area {
 
 /* input area */
 div.nbinput div.input_area {
-    border: 1px solid #e0e0e0;
+    border: 1px solid #cfcfcf;
     border-radius: 2px;
-    background: #f5f5f5;
+    background: #f7f7f7;
 }
 
 /* override MathJax center alignment in output cells */
@@ -276,7 +276,7 @@ div.nboutput div[class*=MathJax] {
     text-align: left !important;
 }
 
-/* override sphinx.ext.imgmath center alignment in output cells */
+/* override sphinx.ext.pngmath center alignment in output cells */
 div.nboutput div.math p {
     text-align: left;
 }
@@ -326,40 +326,6 @@ div.nboutput div.output_area.stderr {
 .ansi-bold { font-weight: bold; }
 .ansi-underline { text-decoration: underline; }
 
-/* Some additional styling taken form the Jupyter notebook CSS */
-div.rendered_html table {
-  border: none;
-  border-collapse: collapse;
-  border-spacing: 0;
-  color: black;
-  font-size: 12px;
-  table-layout: fixed;
-}
-div.rendered_html thead {
-  border-bottom: 1px solid black;
-  vertical-align: bottom;
-}
-div.rendered_html tr,
-div.rendered_html th,
-div.rendered_html td {
-  text-align: right;
-  vertical-align: middle;
-  padding: 0.5em 0.5em;
-  line-height: normal;
-  white-space: normal;
-  max-width: none;
-  border: none;
-}
-div.rendered_html th {
-  font-weight: bold;
-}
-div.rendered_html tbody tr:nth-child(odd) {
-  background: #f5f5f5;
-}
-div.rendered_html tbody tr:hover {
-  background: rgba(66, 165, 245, 0.2);
-}
-
 /* CSS overrides for sphinx_rtd_theme */
 
 /* 24px margin */
@@ -376,18 +342,21 @@ div.rendered_html tbody tr:hover {
 .admonition > p:before {
     margin-right: 4px;  /* make room for the exclamation icon */
 }
-
-/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
-.math {
-    text-align: unset;
-}
 </style>
 <div class="section" id="Example-#3:-Analyzing-experimental-data">
 <h1>5. Example #3: Analyzing experimental data<a class="headerlink" href="#Example-#3:-Analyzing-experimental-data" title="Permalink to this headline">¶</a></h1>
-<p>This notebook will show a brief example of how QMix can be used to analyze experimental data. Note that a wide range of parameters can be passed to these functions in order to import data that has been stored in different formats. Please see <code class="docutils literal notranslate"><span class="pre">params</span></code> in <code class="docutils literal notranslate"><span class="pre">qmix/exp/parameters.py</span></code> for a full list.</p>
-<p>For the purposes of this notebook, example data has been included in a directory called <code class="docutils literal notranslate"><span class="pre">eg-230-data/</span></code>. This is experimental data that was taken from an SIS device illuminated by a local-oscillator (LO) at 230 GHz.</p>
+<p>This notebook will show a brief example of how QMix can be used to
+analyze experimental data. Note that a wide range of parameters can be
+passed to these functions in order to import data that has been stored
+in different formats. Please see <code class="docutils literal notranslate"><span class="pre">params</span></code> in
+<code class="docutils literal notranslate"><span class="pre">qmix/exp/parameters.py</span></code> for a full list.</p>
+<p>For the purposes of this notebook, example data has been included in a
+directory called <code class="docutils literal notranslate"><span class="pre">eg-230-data/</span></code>. This is experimental data that was
+taken from an SIS device illuminated by a local-oscillator (LO) at 230
+GHz.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
+<span></span>In [1]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -399,10 +368,12 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 </div>
-<p>There are two main classes that can be used to analyze experimental data:</p>
+<p>There are two main classes that can be used to analyze experimental
+data:</p>
 <ul class="simple">
 <li><code class="docutils literal notranslate"><span class="pre">qmix.exp.RawData0</span></code>, which is used for DC data (no LO pumping), and</li>
-<li><code class="docutils literal notranslate"><span class="pre">qmix.exp.RawData</span></code>, which is used to analyze pumped data (with LO illumination).</li>
+<li><code class="docutils literal notranslate"><span class="pre">qmix.exp.RawData</span></code>, which is used to analyze pumped data (with LO
+illumination).</li>
 </ul>
 <div class="section" id="Import-DC-I-V-data">
 <h2>5.1. Import DC I-V data<a class="headerlink" href="#Import-DC-I-V-data" title="Permalink to this headline">¶</a></h2>
@@ -411,9 +382,11 @@ div.rendered_html tbody tr:hover {
 <li><code class="docutils literal notranslate"><span class="pre">dciv.csv</span></code>: DC current vs. bias voltage (no LO pumping)</li>
 <li><code class="docutils literal notranslate"><span class="pre">dcif.csv</span></code>: IF power vs. bias voltage (no LO pumping)</li>
 </ul>
-<p>Both files are CSV files with one column for voltage and one column for current or IF power.</p>
+<p>Both files are CSV files with one column for voltage and one column for
+current or IF power.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
+<span></span>In [2]:
 </pre></div>
 </div>
 <div class="input_area highlight-bash notranslate"><div class="highlight"><pre>
@@ -440,7 +413,8 @@ DC Bias Voltage (mV), DC Tunneling Current (mA)
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
+<span></span>In [3]:
 </pre></div>
 </div>
 <div class="input_area highlight-bash notranslate"><div class="highlight"><pre>
@@ -466,10 +440,17 @@ DC Bias Voltage (mV), IF Power (A.U.)
 0.032856, 0.008988
 </pre></div></div>
 </div>
-<p>We will now use the <code class="docutils literal notranslate"><span class="pre">RawData0</span></code> class to load, filter, and analyze the DC data. It will also automatically correct any offsets in the current or voltage data, and calculate the IF noise based on the DC shot noise.</p>
-<p>Note that by passing additional keyword arguments to <code class="docutils literal notranslate"><span class="pre">RawData0</span></code>, you can control how the CSV files are imported (i.e., changing which columns are imported, how large the header is, and what kind of delimited is used). Please see the documentation for <code class="docutils literal notranslate"><span class="pre">RawData0</span></code> for more information.</p>
+<p>We will now use the <code class="docutils literal notranslate"><span class="pre">RawData0</span></code> class to load, filter, and analyze the
+DC data. It will also automatically correct any offsets in the current
+or voltage data, and calculate the IF noise based on the DC shot noise.</p>
+<p>Note that by passing additional keyword arguments to <code class="docutils literal notranslate"><span class="pre">RawData0</span></code>, you
+can control how the CSV files are imported (i.e., changing which columns
+are imported, how large the header is, and what kind of delimited is
+used). Please see the documentation for <code class="docutils literal notranslate"><span class="pre">RawData0</span></code> for more
+information.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
+<span></span>In [4]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -503,7 +484,8 @@ DC I-V data:</span>
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
+<span></span>In [5]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -522,7 +504,8 @@ DC I-V data:</span>
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
+<span></span>In [6]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -542,7 +525,8 @@ DC I-V data:</span>
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
+<span></span>In [7]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -564,16 +548,22 @@ DC I-V data:</span>
 </div>
 <div class="section" id="Import-Data-at-230-GHz">
 <h2>5.2. Import Data at 230 GHz<a class="headerlink" href="#Import-Data-at-230-GHz" title="Permalink to this headline">¶</a></h2>
-<p>We will now use the <code class="docutils literal notranslate"><span class="pre">RawData</span></code> class to import I-V and IF data from the device when it is illuminated by an LO at 230 GHz.</p>
+<p>We will now use the <code class="docutils literal notranslate"><span class="pre">RawData</span></code> class to import I-V and IF data from the
+device when it is illuminated by an LO at 230 GHz.</p>
 <p>The experimental files are:</p>
 <ul class="simple">
 <li><code class="docutils literal notranslate"><span class="pre">f230.2_iv.csv</span></code>: the pumped I-V curve</li>
-<li><code class="docutils literal notranslate"><span class="pre">f230.2_if-hot.csv</span></code>: the IF power measured with a hot blackbody load</li>
-<li><code class="docutils literal notranslate"><span class="pre">f230.2_if-cold.csv</span></code>: the IF power measured with a cold blackbody load</li>
+<li><code class="docutils literal notranslate"><span class="pre">f230.2_if-hot.csv</span></code>: the IF power measured with a hot blackbody
+load</li>
+<li><code class="docutils literal notranslate"><span class="pre">f230.2_if-cold.csv</span></code>: the IF power measured with a cold blackbody
+load</li>
 </ul>
-<p>This class will automatically load, filter and analyze the data. This includes calculating the noise temperature and the properties of the embedding circuit.</p>
+<p>This class will automatically load, filter and analyze the data. This
+includes calculating the noise temperature and the properties of the
+embedding circuit.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
+<span></span>In [8]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -611,7 +601,8 @@ DC I-V data:</span>
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
+<span></span>In [9]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -631,7 +622,8 @@ DC I-V data:</span>
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
+<span></span>In [10]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -652,9 +644,11 @@ DC I-V data:</span>
 </div>
 <div class="section" id="Plot-embedding-impedance">
 <h3>5.2.1. Plot embedding impedance<a class="headerlink" href="#Plot-embedding-impedance" title="Permalink to this headline">¶</a></h3>
-<p>The <code class="docutils literal notranslate"><span class="pre">RawData</span></code> class also recovers the embedding circuit using the technique described by Skalare (1989) and Withington <em>et al.</em> (1995).</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">RawData</span></code> class also recovers the embedding circuit using the
+technique described by Skalare (1989) and Withington <em>et al.</em> (1995).</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
+<span></span>In [11]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -672,10 +666,12 @@ DC I-V data:</span>
 <img alt="_images/analyze-experimental-data_16_0.png" src="_images/analyze-experimental-data_16_0.png" />
 </div>
 </div>
-<p>This plot was calculated using the error function from Withington <em>et al.</em> (1995).</p>
+<p>This plot was calculated using the error function from Withington <em>et
+al.</em> (1995).</p>
 <p>The minimum error represents the best impedance estimation.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
+<span></span>In [12]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -738,10 +734,21 @@ DC I-V data:</span>
 
     
     
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'./',
+              VERSION:'latest',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
         <script type="text/javascript" src="_static/jquery.js"></script>
         <script type="text/javascript" src="_static/underscore.js"></script>
         <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
 
   

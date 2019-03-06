@@ -28,7 +28,7 @@
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Getting Started" href="setup.html" /> 
+    <link rel="next" title="1. Getting Started" href="setup.html" /> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -82,10 +82,10 @@
             
             
               <ul>
-<li class="toctree-l1"><a class="reference internal" href="setup.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="setup.html">1. Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="qmix.html">2. Package API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="single-tone-simple.html">3. Example #1: Creating a simple 1 tone simulation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="multi-tone.html">Example #2: Simulating an SIS mixer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multi-tone.html">4. Example #2: Simulating an SIS mixer</a></li>
 <li class="toctree-l1"><a class="reference internal" href="analyze-experimental-data.html">5. Example #3: Analyzing experimental data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="references.html">6. References</a></li>
 </ul>
@@ -170,11 +170,6 @@
 .admonition > p:before {
     margin-right: 4px;  /* make room for the exclamation icon */
 }
-
-/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
-.math {
-    text-align: unset;
-}
 </style>
 <div class="section" id="qmix-quantum-mixing-software">
 <h1>QMix: Quantum Mixing Software<a class="headerlink" href="#qmix-quantum-mixing-software" title="Permalink to this headline">¶</a></h1>
@@ -186,11 +181,56 @@
 <h1>Contents<a class="headerlink" href="#contents" title="Permalink to this headline">¶</a></h1>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="setup.html">Getting Started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="qmix.html">2. Package API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="single-tone-simple.html">3. Example #1: Creating a simple 1 tone simulation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="multi-tone.html">Example #2: Simulating an SIS mixer</a></li>
-<li class="toctree-l1"><a class="reference internal" href="analyze-experimental-data.html">5. Example #3: Analyzing experimental data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="setup.html">1. Getting Started</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="setup.html#installing-qmix-using-pip">1.1. Installing QMix using pip</a></li>
+<li class="toctree-l2"><a class="reference internal" href="setup.html#downloading-qmix-from-github">1.2. Downloading QMix from GitHub</a></li>
+<li class="toctree-l2"><a class="reference internal" href="setup.html#configuring-python">1.3. Configuring Python</a></li>
+<li class="toctree-l2"><a class="reference internal" href="setup.html#testing-your-installation">1.4. Testing Your Installation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="qmix.html">2. Package API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="qmix.html#subpackages">2.1. Subpackages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="qmix.exp.html">2.1.1. qmix.exp package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qmix.mathfn.html">2.1.2. qmix.mathfn package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qmix.misc.html">2.1.3. qmix.misc package</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="qmix.html#submodules">2.2. Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="qmix.html#module-qmix.circuit">2.3. qmix.circuit module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="qmix.html#module-qmix.harmonic_balance">2.4. qmix.harmonic_balance module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="qmix.html#module-qmix.qtcurrent">2.5. qmix.qtcurrent module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="qmix.html#module-qmix.respfn">2.6. qmix.respfn module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="qmix.html#module-qmix">2.7. Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="single-tone-simple.html">3. Example #1: Creating a simple 1 tone simulation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="single-tone-simple.html#Generate-the-response-function">3.1. Generate the response function</a></li>
+<li class="toctree-l2"><a class="reference internal" href="single-tone-simple.html#Define-embedding-circuit">3.2. Define embedding circuit</a></li>
+<li class="toctree-l2"><a class="reference internal" href="single-tone-simple.html#Calculate-desired-tunnelling-currents">3.3. Calculate desired tunnelling currents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="single-tone-simple.html#Plot-the-pumped-I-V-curve">3.4. Plot the pumped I-V curve</a></li>
+<li class="toctree-l2"><a class="reference internal" href="single-tone-simple.html#Plot-the-AC-tunneling-currents">3.5. Plot the AC tunneling currents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="multi-tone.html">4. Example #2: Simulating an SIS mixer</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="multi-tone.html#Define-the-junction-properties">4.1. Define the junction properties</a></li>
+<li class="toctree-l2"><a class="reference internal" href="multi-tone.html#Define-the-embedding-circuit">4.2. Define the embedding circuit</a></li>
+<li class="toctree-l2"><a class="reference internal" href="multi-tone.html#Generate-the-response-function">4.3. Generate the response function</a></li>
+<li class="toctree-l2"><a class="reference internal" href="multi-tone.html#Perform-harmonic-balance">4.4. Perform harmonic balance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="multi-tone.html#Calculate-tunnelling-currents">4.5. Calculate tunnelling currents</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="multi-tone.html#Calculate-mixer-gain">4.5.1. Calculate mixer gain</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="multi-tone.html#Plot-Results">4.6. Plot Results</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="analyze-experimental-data.html">5. Example #3: Analyzing experimental data</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="analyze-experimental-data.html#Import-DC-I-V-data">5.1. Import DC I-V data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="analyze-experimental-data.html#Import-Data-at-230-GHz">5.2. Import Data at 230 GHz</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="analyze-experimental-data.html#Plot-embedding-impedance">5.2.1. Plot embedding impedance</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="references.html">6. References</a></li>
 </ul>
 </div>
@@ -211,7 +251,7 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="setup.html" class="btn btn-neutral float-right" title="Getting Started" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="setup.html" class="btn btn-neutral float-right" title="1. Getting Started" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
     </div>
@@ -242,10 +282,21 @@
 
     
     
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'./',
+              VERSION:'latest',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
         <script type="text/javascript" src="_static/jquery.js"></script>
         <script type="text/javascript" src="_static/underscore.js"></script>
         <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
 
   

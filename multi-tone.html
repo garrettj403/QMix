@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Example #2: Simulating an SIS mixer &mdash; QMix latest documentation</title>
+  <title>4. Example #2: Simulating an SIS mixer &mdash; QMix latest documentation</title>
   
 
   
@@ -83,10 +83,21 @@
             
             
               <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="setup.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="setup.html">1. Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="qmix.html">2. Package API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="single-tone-simple.html">3. Example #1: Creating a simple 1 tone simulation</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Example #2: Simulating an SIS mixer</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">4. Example #2: Simulating an SIS mixer</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#Define-the-junction-properties">4.1. Define the junction properties</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Define-the-embedding-circuit">4.2. Define the embedding circuit</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Generate-the-response-function">4.3. Generate the response function</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Perform-harmonic-balance">4.4. Perform harmonic balance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Calculate-tunnelling-currents">4.5. Calculate tunnelling currents</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Calculate-mixer-gain">4.5.1. Calculate mixer gain</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#Plot-Results">4.6. Plot Results</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="analyze-experimental-data.html">5. Example #3: Analyzing experimental data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="references.html">6. References</a></li>
 </ul>
@@ -134,7 +145,7 @@
     
       <li><a href="index.html">Docs</a> &raquo;</li>
         
-      <li>Example #2: Simulating an SIS mixer</li>
+      <li>4. Example #2: Simulating an SIS mixer</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -208,18 +219,18 @@ div.nblast {
 
 /* input prompt */
 div.nbinput div.prompt pre {
-    color: #307FC1;
+    color: #303F9F;
 }
 
 /* output prompt */
 div.nboutput div.prompt pre {
-    color: #BF5B3D;
+    color: #D84315;
 }
 
 /* all prompts */
 div.nbinput div.prompt,
 div.nboutput div.prompt {
-    min-width: 5ex;
+    min-width: 8ex;
     padding-top: 0.4em;
     padding-right: 0.4em;
     text-align: right;
@@ -259,9 +270,9 @@ div.nboutput div.output_area {
 
 /* input area */
 div.nbinput div.input_area {
-    border: 1px solid #e0e0e0;
+    border: 1px solid #cfcfcf;
     border-radius: 2px;
-    background: #f5f5f5;
+    background: #f7f7f7;
 }
 
 /* override MathJax center alignment in output cells */
@@ -269,7 +280,7 @@ div.nboutput div[class*=MathJax] {
     text-align: left !important;
 }
 
-/* override sphinx.ext.imgmath center alignment in output cells */
+/* override sphinx.ext.pngmath center alignment in output cells */
 div.nboutput div.math p {
     text-align: left;
 }
@@ -319,40 +330,6 @@ div.nboutput div.output_area.stderr {
 .ansi-bold { font-weight: bold; }
 .ansi-underline { text-decoration: underline; }
 
-/* Some additional styling taken form the Jupyter notebook CSS */
-div.rendered_html table {
-  border: none;
-  border-collapse: collapse;
-  border-spacing: 0;
-  color: black;
-  font-size: 12px;
-  table-layout: fixed;
-}
-div.rendered_html thead {
-  border-bottom: 1px solid black;
-  vertical-align: bottom;
-}
-div.rendered_html tr,
-div.rendered_html th,
-div.rendered_html td {
-  text-align: right;
-  vertical-align: middle;
-  padding: 0.5em 0.5em;
-  line-height: normal;
-  white-space: normal;
-  max-width: none;
-  border: none;
-}
-div.rendered_html th {
-  font-weight: bold;
-}
-div.rendered_html tbody tr:nth-child(odd) {
-  background: #f5f5f5;
-}
-div.rendered_html tbody tr:hover {
-  background: rgba(66, 165, 245, 0.2);
-}
-
 /* CSS overrides for sphinx_rtd_theme */
 
 /* 24px margin */
@@ -369,14 +346,9 @@ div.rendered_html tbody tr:hover {
 .admonition > p:before {
     margin-right: 4px;  /* make room for the exclamation icon */
 }
-
-/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
-.math {
-    text-align: unset;
-}
 </style>
 <div class="section" id="Example-#2:-Simulating-an-SIS-mixer">
-<h1>Example #2: Simulating an SIS mixer<a class="headerlink" href="#Example-#2:-Simulating-an-SIS-mixer" title="Permalink to this headline">¶</a></h1>
+<h1>4. Example #2: Simulating an SIS mixer<a class="headerlink" href="#Example-#2:-Simulating-an-SIS-mixer" title="Permalink to this headline">¶</a></h1>
 <ul class="simple">
 <li>This example will simulate a simple SIS mixer.</li>
 <li>The input will consists of 3 signals:<ul>
@@ -385,7 +357,8 @@ div.rendered_html tbody tr:hover {
 <li>an IF output at 2 GHz.</li>
 </ul>
 </li>
-<li>An arbitrary embedding circuit is included (therefore, harmonic balance is required).</li>
+<li>An arbitrary embedding circuit is included (therefore, harmonic
+balance is required).</li>
 <li>The response function is generated from an experimental DC I-V curve.</li>
 <li>This simulation will calculate:<ul>
 <li>the pumped I-V curve, and</li>
@@ -394,7 +367,8 @@ div.rendered_html tbody tr:hover {
 </li>
 </ul>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
+<span></span>In [1]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -410,12 +384,16 @@ div.rendered_html tbody tr:hover {
 </div>
 </div>
 <div class="section" id="Define-the-junction-properties">
-<h2>Define the junction properties<a class="headerlink" href="#Define-the-junction-properties" title="Permalink to this headline">¶</a></h2>
+<h2>4.1. Define the junction properties<a class="headerlink" href="#Define-the-junction-properties" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li>These are common parameters that describe the electrical properties of SIS junctions. QMix only uses normalized values, so these values will be used to de-normalize whatever voltages, currents and frequencies that QMix calculates.</li>
+<li>These are common parameters that describe the electrical properties
+of SIS junctions. QMix only uses normalized values, so these values
+will be used to de-normalize whatever voltages, currents and
+frequencies that QMix calculates.</li>
 </ul>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
+<span></span>In [2]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -428,9 +406,12 @@ div.rendered_html tbody tr:hover {
 </div>
 </div>
 <div class="section" id="Define-the-embedding-circuit">
-<h2>Define the embedding circuit<a class="headerlink" href="#Define-the-embedding-circuit" title="Permalink to this headline">¶</a></h2>
+<h2>4.2. Define the embedding circuit<a class="headerlink" href="#Define-the-embedding-circuit" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li>We will load the <code class="docutils literal notranslate"><span class="pre">EmbeddingCircuit</span></code> class with all of the information about the embedding circuit. This includes the Thevenin voltage, the Thevenin impedance, and the frequency of each signal that is applied to the junction.</li>
+<li>We will load the <code class="docutils literal notranslate"><span class="pre">EmbeddingCircuit</span></code> class with all of the
+information about the embedding circuit. This includes the Thevenin
+voltage, the Thevenin impedance, and the frequency of each signal
+that is applied to the junction.</li>
 <li>Note:</li>
 <li>All of the circuit properties are normalized:<ul>
 <li>voltages are normalized to the gap voltage (<code class="docutils literal notranslate"><span class="pre">vgap</span></code>),</li>
@@ -439,16 +420,19 @@ div.rendered_html tbody tr:hover {
 <li>frequencies to the gap frequency (<code class="docutils literal notranslate"><span class="pre">fgap</span></code>).</li>
 </ul>
 </li>
-<li>This example includes the embedding circuit. Each tone/harmonic requires:<ul>
+<li>This example includes the embedding circuit. Each tone/harmonic
+requires:<ul>
 <li>the Thevenin voltage (normalized to <code class="docutils literal notranslate"><span class="pre">vgap</span></code>)</li>
 <li>the Thevenin impedance (normalized to <code class="docutils literal notranslate"><span class="pre">rn</span></code>)</li>
 <li>the frequency (normalized to <code class="docutils literal notranslate"><span class="pre">fgap</span></code>).</li>
 </ul>
 </li>
-<li>The normalized frequency is the same thing as the normalized photon voltage.</li>
+<li>The normalized frequency is the same thing as the normalized photon
+voltage.</li>
 </ul>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
+<span></span>In [3]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -525,12 +509,14 @@ Embedding circuit (Tones:3, Harmonics:1)
 </div>
 </div>
 <div class="section" id="Generate-the-response-function">
-<h2>Generate the response function<a class="headerlink" href="#Generate-the-response-function" title="Permalink to this headline">¶</a></h2>
+<h2>4.3. Generate the response function<a class="headerlink" href="#Generate-the-response-function" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li>Here, the response function is generated from an experimental DC I-V curve.</li>
+<li>Here, the response function is generated from an experimental DC I-V
+curve.</li>
 </ul>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
+<span></span>In [4]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -567,7 +553,8 @@ DC I-V data:</span>
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
+<span></span>In [5]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -586,12 +573,14 @@ DC I-V data:</span>
 </div>
 </div>
 <div class="section" id="Perform-harmonic-balance">
-<h2>Perform harmonic balance<a class="headerlink" href="#Perform-harmonic-balance" title="Permalink to this headline">¶</a></h2>
+<h2>4.4. Perform harmonic balance<a class="headerlink" href="#Perform-harmonic-balance" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li>Calculate the voltage drop across the junction for each tone/harmonic using harmonic balance.</li>
+<li>Calculate the voltage drop across the junction for each tone/harmonic
+using harmonic balance.</li>
 </ul>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
+<span></span>In [6]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -647,14 +636,15 @@ Done: Minimum error target was achieved.
 </div>
 </div>
 <div class="section" id="Calculate-tunnelling-currents">
-<h2>Calculate tunnelling currents<a class="headerlink" href="#Calculate-tunnelling-currents" title="Permalink to this headline">¶</a></h2>
+<h2>4.5. Calculate tunnelling currents<a class="headerlink" href="#Calculate-tunnelling-currents" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><code class="docutils literal notranslate"><span class="pre">idc</span></code> is the DC tunneling current</li>
 <li><code class="docutils literal notranslate"><span class="pre">ilo</span></code> is the AC tunneling current at the LO frequency</li>
 <li><code class="docutils literal notranslate"><span class="pre">iif</span></code> is the AC tunneling current at the IF frequency</li>
 </ul>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
+<span></span>In [7]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -663,9 +653,10 @@ Done: Minimum error target was achieved.
 </div>
 </div>
 <div class="section" id="Calculate-mixer-gain">
-<h3>Calculate mixer gain<a class="headerlink" href="#Calculate-mixer-gain" title="Permalink to this headline">¶</a></h3>
+<h3>4.5.1. Calculate mixer gain<a class="headerlink" href="#Calculate-mixer-gain" title="Permalink to this headline">¶</a></h3>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
+<span></span>In [8]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -684,9 +675,10 @@ Done: Minimum error target was achieved.
 </div>
 </div>
 <div class="section" id="Plot-Results">
-<h2>Plot Results<a class="headerlink" href="#Plot-Results" title="Permalink to this headline">¶</a></h2>
+<h2>4.6. Plot Results<a class="headerlink" href="#Plot-Results" title="Permalink to this headline">¶</a></h2>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
+<span></span>In [9]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -697,7 +689,8 @@ Done: Minimum error target was achieved.
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
+<span></span>In [10]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -787,10 +780,21 @@ Done: Minimum error target was achieved.
 
     
     
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'./',
+              VERSION:'latest',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
         <script type="text/javascript" src="_static/jquery.js"></script>
         <script type="text/javascript" src="_static/underscore.js"></script>
         <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
 
   
