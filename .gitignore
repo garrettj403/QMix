@@ -1,5 +1,6 @@
 .cache
 .coverage
+.coveralls.yml
 .DS_Store
 .idea
 .ipynb_checkpoints

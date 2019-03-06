@@ -1,3 +1,5 @@
+.. _references:
+
 References
 ==========
 
@@ -22,3 +24,5 @@ Tucker, J. R., & Feldman, M. J. (1985). `Quantum detection at millimeter wavelen
 Withington, S., Isaak, K. G., Kovtonyuk, S. A., Panhuyzen, R. A., & Klapwijk, T. M. (1995). `Direct detection at submillimetre wavelengths using superconducting tunnel junctions. <http://linkinghub.elsevier.com/retrieve/pii/1350449595000585>`_ Infrared Phys. Technol., 36(7), 1059–1075.
 
 Withington, S., Kittara, P., & Yassin, G. (2003). `Multitone quantum simulations of saturating tunnel junction mixers. <http://aip.scitation.org/doi/10.1063/1.1576515>`_ Journal of Applied Physics, 93(12), 9812–9822.
+
+Woody, D. P., Miller, R. E., & Wengler, M. J. (1985). `85--115-GHz Receivers for Radio Astronomy. <https://ieeexplore.ieee.org/abstract/document/1132955>`_ IEEE Trans. Microw. Theory Tech., 33(2), 90–95.
