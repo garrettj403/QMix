@@ -291,7 +291,7 @@ equivalently, the normalized frequencies):</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">cct1</span><span class="o">.</span><span class="n">vph</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.32</span>  <span class="c1"># second tone</span>
 </pre></div>
 </div>
-<p>Then, you have to set all of the voltages and impdeances for all of the
+<p>Then, you have to set the voltages and impedances for all of the
 different signals. For example, for the 1st harmonic of the 1st tone:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">cct1</span><span class="o">.</span><span class="n">vt</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.5</span>             <span class="c1"># Thevenin voltage</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">cct1</span><span class="o">.</span><span class="n">zt</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.3</span> <span class="o">+</span> <span class="mi">1</span><span class="n">j</span> <span class="o">*</span> <span class="mf">0.1</span>  <span class="c1"># Thevenin impedance</span>
