@@ -11,6 +11,7 @@ collected with the LO present (also known as the "pumped I-V curve").
 from collections import namedtuple
 from warnings import filterwarnings
 
+import matplotlib.pyplot as plt
 import numpy as np
 import scipy.constants as sc
 from scipy.signal import savgol_filter
@@ -94,29 +95,54 @@ def dciv_curve(filename, **kwargs):
     rseries = kwargs.get('rseries', None)
     vmax = kwargs.get('vmax', 6e-3)
     npts = kwargs.get('npts', 6001)
-    iv_multiplier = kwargs.get('iv_multiplier', 1)
+    v_multiplier = kwargs.get('v_multiplier', 1.)
+    i_multiplier = kwargs.get('i_multiplier', 1.)
+    debug = kwargs.get('debug', False)
 
     # Import and do some basic cleaning (V in V, I in A)
     volt_v, curr_a = _load_iv(filename, **kwargs)
-    curr_a *= iv_multiplier
 
-    # # Debug
-    # import matplotlib.pyplot as plt
-    # plt.figure()
-    # plt.plot(volt_v, curr_a)
-    # plt.show()
+    if debug:
+        plt.figure()
+        plt.plot(volt_v, curr_a)
+        plt.title('Initial import')
+        plt.show()
+
+    # Correct for DC gain errors in exp. system (if needed)
+    volt_v *= v_multiplier
+    curr_a *= i_multiplier
 
     # Filter data
     volt_v, curr_a = _filter_iv_data(volt_v, curr_a, **kwargs)
 
+    if debug:
+        plt.figure()
+        plt.plot(volt_v, curr_a)
+        plt.title('After filtering')
+        plt.show()
+
     # Correct I/V offset
     volt_v, curr_a, offset = _correct_offset(volt_v, curr_a, **kwargs)
+
+    if debug:
+        plt.figure()
+        plt.plot(volt_v, curr_a)
+        plt.grid()
+        plt.title('After correcting for the offset')
+        plt.show()
 
     # Save uncorrected data
     vraw, iraw = volt_v.copy(), curr_a.copy()
 
     # Fix errors in DC biasing system
     volt_v, curr_a = _correct_series_resistance(volt_v, curr_a, **kwargs)
+
+    if debug:
+        plt.figure()
+        plt.plot(volt_v, curr_a)
+        plt.grid()
+        plt.title('After fixing the series resistance')
+        plt.show()
 
     # Analyze dc I-V curve
     rn, vint = _find_normal_resistance(volt_v, curr_a, **kwargs)
@@ -169,13 +195,24 @@ def iv_curve(filename, dc, **kwargs):
 
     vmax = kwargs.get('vmax', 6e-3)
     npts = kwargs.get('npts', 6001)
-    iv_multiplier = kwargs.get('iv_multiplier', 1.)
     voffset = kwargs.get('voffset', None)
     ioffset = kwargs.get('ioffset', None)
+    v_multiplier = kwargs.get('v_multiplier', 1.)
+    i_multiplier = kwargs.get('i_multiplier', 1.)
+    debug = kwargs.get('debug', False)
 
     # Import and do some basic cleaning
     volt_v, curr_a = _load_iv(filename, **kwargs)
-    curr_a *= iv_multiplier
+
+    if debug:
+        plt.figure()
+        plt.plot(volt_v, curr_a)
+        plt.title('Initial import')
+        plt.show()
+
+    # Correct for DC gain errors in exp. system (if needed)
+    volt_v *= v_multiplier
+    curr_a *= i_multiplier
 
     # Correct offset
     if voffset is not None and ioffset is not None:
@@ -185,11 +222,30 @@ def iv_curve(filename, dc, **kwargs):
         volt_v -= dc.offset[0]
         curr_a -= dc.offset[1]
 
+    if debug:
+        plt.figure()
+        plt.plot(volt_v, curr_a)
+        plt.title('After correcting offset')
+        plt.show()
+
     # Filter
     volt_v, curr_a = _filter_iv_data(volt_v, curr_a, **kwargs)
 
+    if debug:
+        plt.figure()
+        plt.plot(volt_v, curr_a)
+        plt.title('After filtering')
+        plt.show()
+
     # Fix errors in DC biasing system
     volt_v, curr_a = _correct_series_resistance(volt_v, curr_a, **kwargs)
+
+    if debug:
+        plt.figure()
+        plt.plot(volt_v, curr_a)
+        plt.grid()
+        plt.title('After fixing the series resistance')
+        plt.show()
 
     # Normalize
     voltage = volt_v / dc.vgap
