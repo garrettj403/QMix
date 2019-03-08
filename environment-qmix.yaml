@@ -11,11 +11,13 @@ dependencies:
   - scipy
   # for generating documentation
   - ipython
+  - ipykernel
   - jupyter
   - nbconvert
-  - nbsphinx
   - pandoc
-  - sphinx
+  - sphinx>=1.6
   - sphinx_rtd_theme
+  - pip:
+    - nbsphinx
   # for testing
   - pytest>=3.0
