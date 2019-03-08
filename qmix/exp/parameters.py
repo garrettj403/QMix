@@ -1,70 +1,153 @@
-""" This module contains a dictionary of parameters that are used by 
-qmix.exp.exp_data.py to load and analyze experimental data.
+""" This module contains a dictionary of parameters (i.e., ``params``) that is
+used by the ``qmix.exp.RawData`` and ``qmix.exp.RawData0`` classes to control
+how experimental data is loaded and analyzed.
+
+Note:
+
+    This dictionary just contains the default values. You can overwrite these 
+    values by passing keyword arguments to ``RawData`` or ``RawData0``. For 
+    example, the default value for voltage units is ``"mV"``.
+    You can change this parameter to be ``"uV"`` by passing 
+    ``v_fmt="uV"`` to the ``RawData`` or ``RawData0`` class.
+
+All of the different parameters are described below along with their default 
+values.
 
 **Parameters:**
 
-    - CSV Files:
-        - The ``qmix.exp.RawData`` and ``qmix.exp.RawData0`` classes read in experimental data from CSV files. These parameters control how these files are loaded.
-        - ``delimiter = ","`` : The delimiter used in IV/IF CSV data files.
-        - ``usecols = (0,1)`` : Columns for voltage and current data in the IV/IF CSV data files.
-        - ``skip_header = 1`` : Number of rows to skip at the beginning of IV/IF CSV data files.
+    - CSV files:
+        - **Note:** All of the experimental data is expected to be stored in
+          CSV data files. These parameters control how the data is read in 
+          from these files.
+        - ``delimiter = ","`` : The delimiter used by the CSV data files.
+        - ``usecols = (0,1)`` : Which columns to import from the CSV data 
+          files.
+        - ``skip_header = 1`` : Number of rows to skip at the beginning CSV 
+          data files. Used to skip the header.
     - Units:
-        - ``v_fmt = "mv"`` : Units for voltage data (one of uV/mV/V).
-        - ``i_fmt = "mA"`` : Units for current data (one of uA/mA/A).
+        - ``v_fmt = "mV"`` : Units for imported voltage data. The options 
+          are: ``"uV"``, ``"mV"`` and ``"V"``.
+        - ``i_fmt = "mA"`` : Units for imported current data. The options
+          are: ``"uA"``, ``"mA"`` and ``"A"``.
     - Importing I-V data:
-        - ``vmax = 6e-3`` : Maximum voltage to import (in case the current is saturated beyond some bias voltage).
-        - ``npts = 6001`` : Number of points to use in IV data interpolation.
-    - Correct voltage/current offsets:
-        - ``ioffset = None`` : Offset in DC tunneling current data, in units A.
-        - ``voffset = None`` : Offset in DC bias voltage, in units V.
-        - ``voffset_range = 3e-4`` : Voltage range over which to look for the voltage offset, in units V.
-        - ``voffset_sigma = 1e-5`` : When finding voltage offset, assume this Gaussian width to find origin, in units V.
-    - Correct experimental I-V data:
-        - ``rseries = None`` : Correct for a series resistance using this resistance, in units ohms. Leave as ``None`` if there is no series resistance.
-        - ``iv_multiplier = 1.`` : Multiply the imported tunneling current by this number.
-    - Importing IF data:
-        - ``ifdata_vmax = 2.25`` : Maximum IF voltage to import (normalized to vgap).
-        - ``ifdata_npts = 3000`` : Number of points to use when interpolating IF data.
+        - ``vmax = 6e-3`` : Maximum voltage to import in units [V]. Used in
+          case the current is saturated beyond some bias voltage.
+        - ``npts = 6001`` : Number of points to use in the I-V data 
+          interpolation.
+        - ``debug = False`` : If set to ``True``, this will plot each step of
+          the I-V data loading and analysis procedure. Note: This will 
+          display 4 individual plots for each I-V curve that is loaded.
+    - Correcting voltage/current offsets:
+        - **Note:** Sometimes there is an offset in the I-V data. The 
+          parameters below can be used to correct this. If you know the 
+          current and voltage offset, you can define ``ioffset`` and 
+          ``voffset``, respectively. Otherwise, ``RawData0`` will attempt to
+          find the offset on its own. This is done by taking the derivative
+          of the DC I-V curve, and then finding the maximum derivative value 
+          between ``-voffset_range`` and ``+voffset_range``.
+        - ``ioffset = None`` : Offset in DC tunneling current data in units 
+          [A].
+        - ``voffset = None`` : Offset in DC bias voltage data in units [V].
+        - ``voffset_range = 3e-4`` : Voltage range over which to look for the 
+          voltage offset in units [V]. The ``RawData0`` class will look from 
+          ``-voffset_range`` to ``+voffset_range`` for the voltage offset.
+        - ``voffset_sigma = 1e-5`` : When looking for the voltage offset, 
+          smooth the derivative of the DC I-V curve by convolving data with a 
+          Gaussian distribution with this standard deviation.
+    - Correcting experimental I-V data:
+        - ``rseries = None`` : Correct for a series resistance in the DC 
+          measurement system using this resistance in units [ohms]. Leave as 
+          ``None`` if there is no series resistance.
+        - ``i_multiplier = 1.`` : Multiply the imported I-V current by this 
+          number. Used to correct for errors in the I-V readout.
+        - ``v_multiplier = 1.`` : Multiply the imported I-V voltage by this 
+          number. Used to correct for errors in the I-V readout.
     - Filtering I-V data:
-        - When I-V data is loaded, it is temporarily normalized to some arbitrary values. The DC I-V curve is then rotated 45 degrees, filtered using a Savitzky-Golay filter, and then rotated back.
-        - ``filter_data = True`` : Filter I-V data using Savitzky-Golay filter?
-        - ``vgap_guess = 2.7e-3`` : Normalize bias voltage to this value before rotating.
-        - ``igap_guess = 2e-4`` : Normalize DC tunneling current to this value before rotating.
-        - ``filter_theta = 0.785`` : Angle by which to rotate DC I-V curve before filtering (in radians).
-        - ``filter_nwind = 21`` : Width of Savitzky-Golay filter.
-        - ``filter_npoly = 3`` : Order of Savitzky-Golay filter.
+        - **Note:** When I-V data is loaded, it is temporarily normalized
+          using ``vgap_guess`` and ``igap_guess``. The DC I-V curve is then 
+          rotated 45 degrees, filtered using a Savitzky-Golay filter, and 
+          then rotated back. (The rotation allows for good filtering 
+          without smearing the transition.) The parameters below control this
+          process.
+        - ``filter_data = True`` : Filter the I-V data?
+        - ``vgap_guess = 2.7e-3`` : Normalize the bias voltage to this value 
+          before rotating.
+        - ``igap_guess = 2e-4`` : Normalize the DC tunneling current to this 
+          value before rotating.
+        - ``filter_theta = 0.785`` : Angle by which to rotate the DC I-V curve
+          before filtering (in radians).
+        - ``filter_nwind = 21`` : Width of the Savitzky-Golay filter.
+        - ``filter_npoly = 3`` : Order of the Savitzky-Golay filter.
+    - Analyzing the DC I-V curve:
+        - ``vgap_threshold = 105e-6`` : Threshold current at which to measure
+          the gap voltage, in units [A]. (Note: the gap voltage is defined 
+          here as the voltage at which the DC I-V curve crosses this current 
+          value.)
+        - ``rn_vmin = 3.5e-3`` : Lower range over which to calculate normal 
+          resistance, in units [V].
+        - ``rn_vmax = 4.5e-3`` : Upper range over which to calculate normal 
+          resistance, in units [V].
+        - ``vrsg = 2e-3`` : Voltage at which to measure the subgap resistance,
+          in units [V].
+        - ``vleak = 2e-3`` : Voltage at which to measure the leakage current,
+          in units [V].
+    - Analyzing pumped I-V data:
+        - ``analyze_iv = True`` : Analyze the pumped I-V data? This involves 
+          a procedure to recover the embedding circuit.
+        - ``cut_low = 0.25`` : Fit interval for impedance recovery, lower end,
+          normalized to photon step width.
+        - ``cut_high = 0.2`` : Fit interval for impedance recovery, upper end,
+          normalized to photon step width.
+        - ``remb_range = (0, 1)`` : Range of embedding resistances to test, 
+          normalized to normal resistance.
+        - ``xemb_range = (-1, 1)`` : Range of embedding reactances to test, 
+          normalized to normal resistance.
+        - ``alpha_max = 1.5`` : Maximum drive level (alpha) for initial guess 
+          during impedance recovery.
+        - ``num_b = 20`` : Maximum number of Bessel functions to include when 
+          calculating tunneling currents.
+    - Importing IF data:
+        - ``ifdata_vmax = 2.25`` : Maximum IF voltage to import (normalized to
+          vgap). Used in case the IF data is saturated beyond a certain bias 
+          voltage.
+        - ``ifdata_npts = 3000`` : Number of points to use when interpolating 
+          IF data.
     - Filtering IF data:
-        - ``ifdata_sigma = 5`` : Smooth IF data by convolving a Gaussian function of this width, in units npts (default is 5).
-    - Analyze data:
-        - ``analyze_iv = True`` : Analyze the IV data? (i.e., recover embedding impedance).
-        - ``analyze_if = True`` : Analyze the IF data? (i.e., calculate noise temp/gain).
-        - ``analyze = True`` : Turn on/off both ``analyze_iv`` and ``analyze_if`` (deprecated).
-    - Junction properties:
-        - ``area = 1.5`` : Area of junction in um^2.
-        - ``freq = None`` : Frequency of local-oscillator, in GHz.
-    - Parameters for analyzing DC I-V curve:
-        - ``vgap_threshold = 105e-6`` : Threshold current at which to measure the gap voltage, in units A.
-        - ``rn_vmin = 3.5e-3`` : Lower range over which to calculate normal resistance, in units V.
-        - ``rn_vmax = 4.5e-3`` : Upper range over which to calculate normal resistance, in units V.
-        - ``vrsg = 2e-3`` : Voltage at which to measure the subgap resistance, in units V.
-        - ``vleak = 2e-3`` : Voltage at which to measure the leakage current, in units V.
-    - Parameters for analyzing DC IF data:
-        - ``vshot = None`` : Range of voltages over which to fit shot noise slope, list of lists, in units V.
-    - Parameters for analyzing pumped I-V data (i.e., impedance recovery):
-        - ``cut_low = 0.25`` : Fit interval for impedance recovery, lower end, normalized to photon step width.
-        - ``cut_high = 0.2`` : Fit interval for impedance recovery, upper end, normalized to photon step width.
-        - ``remb_range = (0, 1)`` : Range of embedding resistances to test, normalized to normal resistance.
-        - ``xemb_range = (-1, 1)`` : Range of embedding reactances to test, normalized to normal resistance.
-        - ``alpha_max = 1.5`` : Maximum drive level (alpha) for initial guess during impedance recovery.
-        - ``num_b = 20`` : Maximum number of Bessel functions to include when calculating tunneling currents.
-    - Parameters for analyzing pumped IF data (i.e., noise temperature analysis):
-        - ``t_cold = 80.`` : Temperature of cold load (likely liquid nitrogen), in units K.
-        - ``t_hot = 293.`` : Temperature of hot load (likely room temperature), in units K.
-        - ``vbest = None`` : Bias voltage at which to calculate the best noise temperature value, will determine automatically if set to ``None``.
+        - ``ifdata_sigma = 5`` : Smooth the measured IF power data by 
+          convolving it with a Gaussian distribution. This is the standard 
+          deviation, in number of data points.
+    - Analyzing the DC IF data:
+        - ``vshot = None`` : Range of voltages over which to fit a linear 
+          trend line to the shot noise. This is a list of lists, in units [V].
+          For example, to fit the shot noise slope from 4-5 mV and from 
+          6-7 mV, you would pass ``vshot=((4e-3, 5e-3), (6e-3, 7e-3))``. You
+          can break it up this way in case there are Josephson effects present
+          in the IF power data.
+    - Analyzing pumped IF data (noise temperature analysis):
+        - ``analyze_if = True`` : Analyze the IF data? This involves 
+          calculating the noise temperature and gain.
+        - ``t_cold = 80.`` : Temperature of the cold load (likely liquid 
+          nitrogen), in units [K].
+        - ``t_hot = 293.`` : Temperature of the hot load (likely room 
+          temperature), in units [K].
+        - ``vbest = None`` : Bias voltage at which to calculate the best noise
+          temperature value. If this value is set to ``None``, the ``RawData``
+          class will determine the best bias voltage automatically.
     - Response function:
-        - ``v_smear = 0.020`` : Voltage smear of the "smeared" response function.
+        - **Note:** The ``RawData0`` class generates a response function
+          based on the imported DC I-V data (using ``qmix.respfn.RespFn``).
+          It also generates a second response function that is smeared 
+          slightly. This smeared response function is useful for simulations
+          because it simulates a small amount of heating.
+        - ``v_smear = 0.020`` : Voltage smear of the "smeared" response 
+          function.
     - Plotting parameters:
-        - ``vmax_plot = 4.0`` : Maximum bias voltage for plots, in units mV.
+        - ``vmax_plot = 4.0`` : Maximum bias voltage for plots, in units [mV].
+    - Junction properties:
+        - ``area = 1.5`` : Area of the SIS junction in units [um^2].
+    - Local-oscillator (LO) signal:
+        - ``freq = None`` : Frequency of the local-oscillator signal in units
+          [GHz].
     - Miscellaneous:
         - ``comment = ""`` : Add a comment to describe this instance.
         - ``verbose = True`` : Print information to the terminal?
@@ -73,67 +156,71 @@ qmix.exp.exp_data.py to load and analyze experimental data.
 
 params = dict(
               # File I/O
-              delimiter =      ',',     # delimiter used in IV/IF data files
-              usecols =        (0, 1),  # columns for voltage and current data
-              skip_header =    1,       # number of rows to skip at the beginning of a IV or IF csv data file
+              delimiter =      ',',
+              usecols =        (0, 1),
+              skip_header =    1,
               # Units
-              v_fmt =          'mV',    # units for voltage data (one of uV/mV/V)
-              i_fmt =          'mA',    # units for current data (one of uA/mA/A)
+              v_fmt =          'mV',
+              i_fmt =          'mA',
               # Importing I-V data
-              vmax =           6e-3,    # maximum voltage to import (in case of saturation)
-              npts =           6001,    # number of points to use in IV data interpolation
+              vmax =           6e-3,
+              npts =           6001,
+              debug =          False,
               # Correct voltage/current offsets
-              ioffset =        None,    # correct for current offset, in units A
-              voffset =        None,    # correct for voltage offset, in units V
-              voffset_range =  3e-4,    # voltage range over which to look for the voltage offset, in units V
-              voffset_sigma =  1e-5,    # when finding voltage offset, assume this Gaussian width to find origin, in units V
+              ioffset =        None,
+              voffset =        None,
+              voffset_range =  3e-4,
+              voffset_sigma =  1e-5,
               # Correct experimental I-V data
-              rseries =        None,    # correct for a series resistance, in units ohms
-              iv_multiplier =  1.,      # multiply the imported current by this number
+              rseries =        None,
+              i_multiplier =   1.,
+              v_multiplier =   1.,
               # Importing IF data
-              ifdata_vmax =    2.25,    # max IF voltage to import (normalized to vgap) # TODO
-              ifdata_npts =    3000,    # number of points to use when interpolating IF data
+              ifdata_vmax =    2.25,
+              ifdata_npts =    3000,
               # Filtering I-V data
-              filter_data =    True,    # filter I-V data using Savitzky-Golay filter
-              vgap_guess =     2.7e-3,  # normalize voltage by this value before rotating
-              igap_guess =     2e-4,    # normalize current by this value before rotating
-              filter_theta =   0.785,   # angle by which to rotate I-V curve before filtering (in radians)
-              filter_nwind =   21,      # width of Savitzky-Golay filter
-              filter_npoly =   3,       # order of Savitzky-Golay filter
+              filter_data =    True,
+              vgap_guess =     2.7e-3,
+              igap_guess =     2e-4,
+              filter_theta =   0.785,
+              filter_nwind =   21,
+              filter_npoly =   3,
               # Filtering IF data
-              ifdata_sigma =   5,       # smooth IF data by convolving a Gaussian function of this width, in units npts
+              ifdata_sigma =   5,
               # Analyze data
-              analyze_iv =     True,    # analyze the IV data (i.e., recover embedding impedance)
-              analyze_if =     True,    # analyze the IF data (i.e., calculate noise temp/gain)
-              analyze =        None,    # turn on/off both analyze_iv and analyze_if (deprecated)
+              analyze_iv =     True,
+              analyze_if =     True,
+              analyze =        None,  # (deprecated)
               # Junction properties
-              area =           1.5,     # area of junction in um^2
-              freq =           None,    # frequency, in GHz
+              area =           1.5,
+              freq =           None,
               # Parameters for analyzing DC I-V curve
-              vgap_threshold = 105e-6,  # current at which to measure the gap voltage, in units A
-              rn_vmin =        3.5e-3,  # lower range over which to calculate normal resistance, in units V
-              rn_vmax =        4.5e-3,  # upper range over which to calculate normal resistance, in units V
-              vrsg =           2e-3,    # voltage at which to measure the subgap resistance, in units V
-              vleak =          2e-3,    # voltage at which to measure the leakage current, in units V
+              vgap_threshold = 105e-6,
+              rn_vmin =        3.5e-3,
+              rn_vmax =        4.5e-3,
+              vrsg =           2e-3,
+              vleak =          2e-3,
               # Parameters for analyzing DC IF data
-              vshot =          None,    # range of voltages over which to fit shot noise slope, list of lists, in units V
-              # Parameters for analyzing pumped I-V data (i.e., impedance recovery)
-              cut_low =        0.25,    # fit interval, lower end, normalized to photon step width
-              cut_high =       0.2,     # fit interval, upper end, normalized to photon step width
-              remb_range =     (0, 1),  # range of embedding resistances to test, normalized to normal resistance # TODO
-              xemb_range =     (-1, 1), # range of embedding reactances to test, normalized to normal resistance  # TODO
-              alpha_max =      1.5,     # max alpha for initial guess
-              num_b =          20,      # max Bessel function to include when calculating tunneling currents
-              # Parameters for analyzing pumped IF data (i.e., noise tempearture analysis)
-              t_cold =         80.,     # temperature of cold load (likely liquid nitrogen), in units K
-              t_hot =          293.,    # temperature of hot load (likely room temperature), in units K
-              vbest =          None,    # bias voltage at which to calculate the best noise temperature value, will find automatically if set to None
+              vshot =          None,
+              # Parameters for analyzing pumped I-V data 
+              # i.e., impedance recovery
+              cut_low =        0.25,
+              cut_high =       0.2,
+              remb_range =     (0, 1),
+              xemb_range =     (-1, 1),
+              alpha_max =      1.5,
+              num_b =          20,
+              # Parameters for analyzing pumped IF data 
+              # i.e., noise tempearture analysis
+              t_cold =         80.,
+              t_hot =          293.,
+              vbest =          None,
               # Response function
-              v_smear =        0.020,   # voltage smear of the smeared response function
+              v_smear =        0.020,
               # Plotting parameters
-              vmax_plot =      4.0,     # max bias voltage for plots, in units mV
+              vmax_plot =      4.0,
               # Miscellaneous
-              comment =        '',      # add a comment to instance
-              verbose =        True,    # print to terminal
+              comment =        '',
+              verbose =        True,
              )
-"""Default parameters used when importing experimental data."""
+"""Default parameters for importing experimental data."""
