@@ -179,8 +179,8 @@ def _find_tn_gain(if_data_hot, if_data_cold, dc, freq=None, t_hot=295., t_cold=8
     if verbose:
         tn_best = tn[idx_out]
         gain_best = 10 * np.log10(gain[idx_out])
-        print("     - noise temp:         {0:.1f} K".format(tn_best))
-        print("     - gain:              {0:.2f} dB".format(gain_best))
+        print("\t- noise temp:\t{0:6.1f} K".format(tn_best))
+        print("\t- gain:\t\t{0:+6.2f} dB".format(gain_best))
 
     return tn, gain, idx_out
 

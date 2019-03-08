@@ -76,7 +76,7 @@ class EmbeddingCircuit(object):
         >>> cct1.vph[1] = 0.30  # first tone
         >>> cct1.vph[2] = 0.32  # second tone
 
-        Then, you have to set all of the voltages and impdeances for all of the
+        Then, you have to set the voltages and impedances for all of the
         different signals. For example, for the 1st harmonic of the 1st tone:
 
         >>> cct1.vt[1,1] = 0.5             # Thevenin voltage

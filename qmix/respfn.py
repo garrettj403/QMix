@@ -1,8 +1,7 @@
 """ This module contains classes to represent the response function of the 
 SIS junction.
 
-There are several different response function classes contained within this
-module:
+There are several different types of response function classes:
 
    - Response functions generated directly from voltage and current data:
    
