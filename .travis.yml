@@ -10,8 +10,12 @@ python:
 install:
   - pip install -r requirements.txt
   - pip install .
+  - pip install pytest
+  - pip install pytest-cov
+  - pip install python-coveralls
 # command to run tests
-script: pytest
+script: 
+  - py.test ./tests/ --verbose --doctest-modules --color=yes --cov=./qmix/ --cov-report=term-missing
 # for coveralls.io
 after_success:
   - coveralls
