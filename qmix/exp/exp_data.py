@@ -189,7 +189,7 @@ class RawData0(object):
         message += "\tIleak: \t\t{:6.2f}\tuA\n".format(self.ileak * 1e6)
         message += "\n"
         message += "\tOffset:\t\t{:6.2f}\tmV\n".format(self.offset[0] * 1e3)
-        message += "\t       \t\t{:6.2f}\tuV\n".format(self.offset[1] * 1e6)
+        message += "\t       \t\t{:6.2f}\tuA\n".format(self.offset[1] * 1e6)
         message += "\n"
         message += "\tVint:  \t\t{:6.2f}\tmV\n".format(self.vint * 1e3)
 
@@ -214,8 +214,10 @@ class RawData0(object):
         resistance, subgap resistance, gap voltage, and gap current.
         
         Note: If ``fig_name`` is provided, this method will save the plot 
-        to the specified folder. If ``ax`` is provided, this method will return
-        the Matplotlib axis. **Do not define both.** 
+        to the specified folder and then close the plot. This means
+        that the Matplotlib axis object will not be returned in this
+        case. This is done to prevent too many plots from being open 
+        at the time.
         
         Args:
             fig_name (str): figure filename
@@ -289,8 +291,10 @@ class RawData0(object):
         """Plot DC I-V curve at the origin to see if there is an offset.
 
         Note: If ``fig_name`` is provided, this method will save the plot 
-        to the specified folder. If ``ax`` is provided, this method will return
-        the Matplotlib axis. **Do not define both.**
+        to the specified folder and then close the plot. This means
+        that the Matplotlib axis object will not be returned in this
+        case. This is done to prevent too many plots from being open 
+        at the time.
         
         Args:
             fig_name (str): figure filename
@@ -336,8 +340,10 @@ class RawData0(object):
         get resistance.
 
         Note: If ``fig_name`` is provided, this method will save the plot 
-        to the specified folder. If ``ax`` is provided, this method will return
-        the Matplotlib axis. **Do not define both.**
+        to the specified folder and then close the plot. This means
+        that the Matplotlib axis object will not be returned in this
+        case. This is done to prevent too many plots from being open 
+        at the time.
         
         Args:
             fig_name: figure filename
@@ -380,8 +386,10 @@ class RawData0(object):
         The static resistance is the DC voltage divided by the DC current.
 
         Note: If ``fig_name`` is provided, this method will save the plot 
-        to the specified folder. If ``ax`` is provided, this method will return
-        the Matplotlib axis. **Do not define both.**
+        to the specified folder and then close the plot. This means
+        that the Matplotlib axis object will not be returned in this
+        case. This is done to prevent too many plots from being open 
+        at the time.
         
         Args:
             fig_name: figure filename
@@ -429,8 +437,10 @@ class RawData0(object):
         The IF noise is calculated from the slope of the shot noise.
 
         Note: If ``fig_name`` is provided, this method will save the plot 
-        to the specified folder. If ``ax`` is provided, this method will return
-        the Matplotlib axis. **Do not define both.**
+        to the specified folder and then close the plot. This means
+        that the Matplotlib axis object will not be returned in this
+        case. This is done to prevent too many plots from being open 
+        at the time.
         
         Args:
             fig_name: figure filename
@@ -765,14 +775,17 @@ class RawData(object):
         else:
             cprint('\t- bad fit', 'WARNING')
         print("\t- embedding circuit:")
-        print("\t\t- voltage:      {:+6.2f}  x Vgap".format(vt_best))
-        print("\t\t- impedance:    {:+12.2f}  x Rn".format(zt_best))
+        print("\t\t- voltage:     \t{:+6.2f}\t\t* Vgap".format(vt_best))
+        print("\t\t- impedance:   \t{:+12.2f}\t* Rn".format(zt_best))
         with np.errstate(divide='ignore', invalid='ignore'):
             power_avail = np.abs(vt_best * vgap)**2 / 8 / np.real(zt_best * rn)
-        print("\t\t- avail. power: {:+6.2f}  nW".format(power_avail / 1e-9))
+        print("\t\t- avail. power:\t{:+7.2f}\t\tnW".format(power_avail / 1e-9))
         print("\t- junction:")
-        print("\t\t- alpha:        {:+6.2f}".format(alpha[idx_middle]))
-        print("\t\t- impedance:    {:+12.2f}  norm.".format(zw))
+        print("\t\t- drive level:\t{:+6.2f}".format(alpha[idx_middle]))
+        print("\t\t- impedance:\t{:+12.2f}\t* Rn".format(zw))
+        with np.errstate(divide='ignore', invalid='ignore'):
+            power_delivered = np.abs(ac_voltage[idx_middle] * vgap)**2 / 2 / np.real(zw * rn)
+        print("\t\t- deliv. power:\t{:+7.2f}\t\tnW".format(power_delivered / 1e-9))
 
         # Save values as attributes
         self.zt = zt_best
@@ -787,8 +800,10 @@ class RawData(object):
         """Plot pumped I-V curve.
 
         Note: If ``fig_name`` is provided, this method will save the plot 
-        to the specified folder. If ``ax`` is provided, this method will return
-        the Matplotlib axis. **Do not define both.**
+        to the specified folder and then close the plot. This means
+        that the Matplotlib axis object will not be returned in this
+        case. This is done to prevent too many plots from being open 
+        at the time.
         
         Args:
             fig_name: figure filename
@@ -833,8 +848,10 @@ class RawData(object):
         """Plot IF power from hot and cold loads.
 
         Note: If ``fig_name`` is provided, this method will save the plot 
-        to the specified folder. If ``ax`` is provided, this method will return
-        the Matplotlib axis. **Do not define both.**
+        to the specified folder and then close the plot. This means
+        that the Matplotlib axis object will not be returned in this
+        case. This is done to prevent too many plots from being open 
+        at the time.
         
         Args:
             fig_name: figure filename
@@ -877,8 +894,10 @@ class RawData(object):
         """Plot IV and IF data on same plot.
 
         Note: If ``fig_name`` is provided, this method will save the plot 
-        to the specified folder. If ``ax`` is provided, this method will return
-        the Matplotlib axis. **Do not define both.**
+        to the specified folder and then close the plot. This means
+        that the Matplotlib axis object will not be returned in this
+        case. This is done to prevent too many plots from being open 
+        at the time.
         
         Args:
             fig_name: figure filename
@@ -937,8 +956,10 @@ class RawData(object):
         """Plot Shapiro steps.
 
         Note: If ``fig_name`` is provided, this method will save the plot 
-        to the specified folder. If ``ax`` is provided, this method will return
-        the Matplotlib axis. **Do not define both.**
+        to the specified folder and then close the plot. This means
+        that the Matplotlib axis object will not be returned in this
+        case. This is done to prevent too many plots from being open 
+        at the time.
         
         Args:
             fig_name: figure filename
@@ -982,8 +1003,10 @@ class RawData(object):
         """Plot IF noise.
 
         Note: If ``fig_name`` is provided, this method will save the plot 
-        to the specified folder. If ``ax`` is provided, this method will return
-        the Matplotlib axis. **Do not define both.**
+        to the specified folder and then close the plot. This means
+        that the Matplotlib axis object will not be returned in this
+        case. This is done to prevent too many plots from being open 
+        at the time.
         
         Args:
             fig_name: figure filename
@@ -1044,8 +1067,10 @@ class RawData(object):
         """Plot noise temperature.
 
         Note: If ``fig_name`` is provided, this method will save the plot 
-        to the specified folder. If ``ax`` is provided, this method will return
-        the Matplotlib axis. **Do not define both.**
+        to the specified folder and then close the plot. This means
+        that the Matplotlib axis object will not be returned in this
+        case. This is done to prevent too many plots from being open 
+        at the time.
         
         Args:
             fig_name: figure filename
@@ -1106,8 +1131,10 @@ class RawData(object):
         """Plot Y-factor and noise temperature.
 
         Note: If ``fig_name`` is provided, this method will save the plot 
-        to the specified folder. If ``ax`` is provided, this method will return
-        the Matplotlib axis. **Do not define both.**
+        to the specified folder and then close the plot. This means
+        that the Matplotlib axis object will not be returned in this
+        case. This is done to prevent too many plots from being open 
+        at the time.
         
         Args:
             fig_name: figure filename
@@ -1170,8 +1197,10 @@ class RawData(object):
         """Plot gain and noise temperature.
 
         Note: If ``fig_name`` is provided, this method will save the plot 
-        to the specified folder. If ``ax`` is provided, this method will return
-        the Matplotlib axis. **Do not define both.**
+        to the specified folder and then close the plot. This means
+        that the Matplotlib axis object will not be returned in this
+        case. This is done to prevent too many plots from being open 
+        at the time.
         
         Args:
             fig_name: figure filename
@@ -1240,8 +1269,10 @@ class RawData(object):
         """Plot dynamic resistance.
 
         Note: If ``fig_name`` is provided, this method will save the plot 
-        to the specified folder. If ``ax`` is provided, this method will return
-        the Matplotlib axis. **Do not define both.**
+        to the specified folder and then close the plot. This means
+        that the Matplotlib axis object will not be returned in this
+        case. This is done to prevent too many plots from being open 
+        at the time.
         
         Args:
             fig_name: figure filename
@@ -1297,8 +1328,10 @@ class RawData(object):
         """Plot gain.
 
         Note: If ``fig_name`` is provided, this method will save the plot 
-        to the specified folder. If ``ax`` is provided, this method will return
-        the Matplotlib axis. **Do not define both.**
+        to the specified folder and then close the plot. This means
+        that the Matplotlib axis object will not be returned in this
+        case. This is done to prevent too many plots from being open 
+        at the time.
         
         Args:
             fig_name: figure filename
@@ -1334,8 +1367,10 @@ class RawData(object):
         """Plot error surface (from impedance recovery).
 
         Note: If ``fig_name`` is provided, this method will save the plot 
-        to the specified folder. If ``ax`` is provided, this method will return
-        the Matplotlib axis. **Do not define both.**
+        to the specified folder and then close the plot. This means
+        that the Matplotlib axis object will not be returned in this
+        case. This is done to prevent too many plots from being open 
+        at the time.
         
         Args:
             fig_name: figure filename
@@ -1418,8 +1453,10 @@ class RawData(object):
         """Plot simulated I-V curve (from impedance recovery).
 
         Note: If ``fig_name`` is provided, this method will save the plot 
-        to the specified folder. If ``ax`` is provided, this method will return
-        the Matplotlib axis. **Do not define both.**
+        to the specified folder and then close the plot. This means
+        that the Matplotlib axis object will not be returned in this
+        case. This is done to prevent too many plots from being open 
+        at the time.
         
         Args:
             fig_name: figure filename
