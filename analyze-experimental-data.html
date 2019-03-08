@@ -504,6 +504,9 @@ filtered:</p>
 </pre></div>
 </div>
 </div>
+<p><strong>Note:</strong> For a full list of keyword arguments, please see the
+documentation for
+<a class="reference external" href="https://garrettj403.github.io/QMix/qmix.exp.html#module-qmix.exp.parameters">qmix.exp.parameters</a>.</p>
 </div>
 <div class="section" id="Importing-DC-data">
 <h3>5.1.2. Importing DC data<a class="headerlink" href="#Importing-DC-data" title="Permalink to this headline">¶</a></h3>
@@ -511,9 +514,6 @@ filtered:</p>
 DC data. It will also automatically correct any offsets in the current
 or voltage data, calculate the properties of the DC I-V curve, and
 calculate the IF noise based on the DC shot noise.</p>
-<p><strong>Note:</strong> For a full list of keyword arguments, please see the
-documentation for
-<a class="reference external" href="https://garrettj403.github.io/QMix/qmix.exp.html#module-qmix.exp.parameters">qmix.exp.parameters</a>.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre>
 <span></span>In [8]:
@@ -542,7 +542,7 @@ DC I-V data:</span>
         Ileak:            8.69  uA
 
         Offset:           0.10  mV
-                          9.68  uV
+                          9.68  uA
 
         Vint:             0.45  mV
         IF noise:         8.71  K
@@ -565,7 +565,7 @@ DC I-V data:</span>
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="_images/analyze-experimental-data_14_0.png" src="_images/analyze-experimental-data_14_0.png" />
+<img alt="_images/analyze-experimental-data_15_0.png" src="_images/analyze-experimental-data_15_0.png" />
 </div>
 </div>
 <div class="nbinput docutils container">
@@ -585,7 +585,7 @@ DC I-V data:</span>
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="_images/analyze-experimental-data_15_0.png" src="_images/analyze-experimental-data_15_0.png" />
+<img alt="_images/analyze-experimental-data_16_0.png" src="_images/analyze-experimental-data_16_0.png" />
 </div>
 </div>
 <div class="nbinput docutils container">
@@ -607,7 +607,7 @@ DC I-V data:</span>
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="_images/analyze-experimental-data_16_0.png" src="_images/analyze-experimental-data_16_0.png" />
+<img alt="_images/analyze-experimental-data_17_0.png" src="_images/analyze-experimental-data_17_0.png" />
 </div>
 </div>
 </div>
@@ -635,8 +635,7 @@ embedding circuit.</p>
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">pump</span> <span class="o">=</span> <span class="n">qmix</span><span class="o">.</span><span class="n">exp</span><span class="o">.</span><span class="n">RawData</span><span class="p">(</span><span class="s1">&#39;eg-230-data/f230.2_iv.csv&#39;</span><span class="p">,</span>
-                        <span class="n">dciv</span><span class="p">,</span>
+<span></span><span class="n">pump</span> <span class="o">=</span> <span class="n">qmix</span><span class="o">.</span><span class="n">exp</span><span class="o">.</span><span class="n">RawData</span><span class="p">(</span><span class="s1">&#39;eg-230-data/f230.2_iv.csv&#39;</span><span class="p">,</span> <span class="n">dciv</span><span class="p">,</span>
                         <span class="n">if_hot_file</span><span class="o">=</span><span class="s1">&#39;eg-230-data/f230.2_if-hot.csv&#39;</span><span class="p">,</span>
                         <span class="n">if_cold_file</span><span class="o">=</span><span class="s1">&#39;eg-230-data/f230.2_if-cold.csv&#39;</span><span class="p">,</span>
                         <span class="n">freq</span> <span class="o">=</span> <span class="mf">230.2</span><span class="p">,</span>  <span class="c1"># LO frequency in [GHz]</span>
@@ -658,15 +657,16 @@ embedding circuit.</p>
 <span class="ansi-magenta-intense-fg"> -&gt; Impedance recovery:</span>
 <span class="ansi-green-intense-fg">    - good fit</span>
         - embedding circuit:
-                - voltage:       +0.53  x Vgap
-                - impedance:     +0.47-0.30j  x Rn
-                - avail. power: +41.42  nW
+                - voltage:       +0.53          * Vgap
+                - impedance:     +0.47-0.30j    * Rn
+                - avail. power:  +41.42         nW
         - junction:
-                - alpha:         +0.93
-                - impedance:     +0.75+0.08j  norm.
+                - drive level:   +0.93
+                - impedance:     +0.75+0.08j    * Rn
+                - deliv. power:  +38.53         nW
 <span class="ansi-magenta-intense-fg"> -&gt; Analyze IF data:</span>
-     - noise temp:         34.5 K
-     - gain:              -1.07 dB
+        - noise temp:     34.5 K
+        - gain:          -1.07 dB
 
 </pre></div></div>
 </div>
@@ -687,7 +687,7 @@ embedding circuit.</p>
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="_images/analyze-experimental-data_19_0.png" src="_images/analyze-experimental-data_19_0.png" />
+<img alt="_images/analyze-experimental-data_20_0.png" src="_images/analyze-experimental-data_20_0.png" />
 </div>
 </div>
 <div class="nbinput docutils container">
@@ -707,7 +707,7 @@ embedding circuit.</p>
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="_images/analyze-experimental-data_20_0.png" src="_images/analyze-experimental-data_20_0.png" />
+<img alt="_images/analyze-experimental-data_21_0.png" src="_images/analyze-experimental-data_21_0.png" />
 </div>
 </div>
 </div>
@@ -731,7 +731,7 @@ technique described by Skalare (1989) and Withington <em>et al.</em> (1995).</p>
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="_images/analyze-experimental-data_22_0.png" src="_images/analyze-experimental-data_22_0.png" />
+<img alt="_images/analyze-experimental-data_23_0.png" src="_images/analyze-experimental-data_23_0.png" />
 </div>
 </div>
 <p>This plot was calculated using the error function from Withington <em>et
@@ -752,7 +752,7 @@ al.</em> (1995). The minimum error represents the best impedance estimation.</p>
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="_images/analyze-experimental-data_24_0.png" src="_images/analyze-experimental-data_24_0.png" />
+<img alt="_images/analyze-experimental-data_25_0.png" src="_images/analyze-experimental-data_25_0.png" />
 </div>
 </div>
 </div>

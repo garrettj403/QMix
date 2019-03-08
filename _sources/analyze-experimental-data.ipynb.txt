@@ -170,11 +170,16 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
+    "**Note:** For a full list of keyword arguments, please see the documentation for [qmix.exp.parameters](https://garrettj403.github.io/QMix/qmix.exp.html#module-qmix.exp.parameters)."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
     "### Importing DC data\n",
     "\n",
-    "We will now use the ``RawData0`` class to load, filter, and analyze the DC data. It will also automatically correct any offsets in the current or voltage data, calculate the properties of the DC I-V curve, and calculate the IF noise based on the DC shot noise.\n",
-    "\n",
-    "**Note:** For a full list of keyword arguments, please see the documentation for [qmix.exp.parameters](https://garrettj403.github.io/QMix/qmix.exp.html#module-qmix.exp.parameters)."
+    "We will now use the ``RawData0`` class to load, filter, and analyze the DC data. It will also automatically correct any offsets in the current or voltage data, calculate the properties of the DC I-V curve, and calculate the IF noise based on the DC shot noise."
    ]
   },
   {
@@ -199,7 +204,7 @@
       "\tIleak: \t\t  8.69\tuA\n",
       "\n",
       "\tOffset:\t\t  0.10\tmV\n",
-      "\t       \t\t  9.68\tuV\n",
+      "\t       \t\t  9.68\tuA\n",
       "\n",
       "\tVint:  \t\t  0.45\tmV\n",
       "\tIF noise:\t  8.71\tK\n",
@@ -318,22 +323,22 @@
       "\u001b[95m -> Impedance recovery:\u001b[0m\n",
       "\u001b[92m\t- good fit\u001b[0m\n",
       "\t- embedding circuit:\n",
-      "\t\t- voltage:       +0.53  x Vgap\n",
-      "\t\t- impedance:     +0.47-0.30j  x Rn\n",
-      "\t\t- avail. power: +41.42  nW\n",
+      "\t\t- voltage:     \t +0.53\t\t* Vgap\n",
+      "\t\t- impedance:   \t +0.47-0.30j\t* Rn\n",
+      "\t\t- avail. power:\t +41.42\t\tnW\n",
       "\t- junction:\n",
-      "\t\t- alpha:         +0.93\n",
-      "\t\t- impedance:     +0.75+0.08j  norm.\n",
+      "\t\t- drive level:\t +0.93\n",
+      "\t\t- impedance:\t +0.75+0.08j\t* Rn\n",
+      "\t\t- deliv. power:\t +38.53\t\tnW\n",
       "\u001b[95m -> Analyze IF data:\u001b[0m\n",
-      "     - noise temp:         34.5 K\n",
-      "     - gain:              -1.07 dB\n",
+      "\t- noise temp:\t  34.5 K\n",
+      "\t- gain:\t\t -1.07 dB\n",
       "\n"
      ]
     }
    ],
    "source": [
-    "pump = qmix.exp.RawData('eg-230-data/f230.2_iv.csv',\n",
-    "                        dciv,\n",
+    "pump = qmix.exp.RawData('eg-230-data/f230.2_iv.csv', dciv,\n",
     "                        if_hot_file='eg-230-data/f230.2_if-hot.csv',\n",
     "                        if_cold_file='eg-230-data/f230.2_if-cold.csv',\n",
     "                        freq = 230.2,  # LO frequency in [GHz]\n",
