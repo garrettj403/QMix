@@ -21,3 +21,6 @@ dependencies:
     - nbsphinx
   # for testing
   - pytest>=3.0
+  - pip:
+    - pytest-cov==2.5.0
+    - python-coveralls

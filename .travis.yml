@@ -10,8 +10,8 @@ python:
 install:
   - pip install -r requirements.txt
   - pip install .
-  - pip install pytest
-  - pip install pytest-cov
+  - pip install pytest>=3.0
+  - pip install pytest-cov==2.5.0
   - pip install python-coveralls
 # command to run tests
 script: 
