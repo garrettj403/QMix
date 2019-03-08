@@ -196,6 +196,11 @@
 .admonition > p:before {
     margin-right: 4px;  /* make room for the exclamation icon */
 }
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
 </style>
 <div class="section" id="qmix-exp-package">
 <h1>2.1.1. qmix.exp package<a class="headerlink" href="#qmix-exp-package" title="Permalink to this headline">¶</a></h1>
@@ -435,7 +440,11 @@ use this module.</p>
 <p>Class for importing and analyzing experimental pumped data (LO present).</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">See <code class="docutils literal notranslate"><span class="pre">qmix.exp.parameters.params</span></code> for all possible keyword arguments.</p>
+<p class="last">This class assumes that the experimental data is stored in CSV data
+files. These files should have two columns: the first for voltage and
+the second for current or IF power. Some of the properties of the CSV
+files can be set through the keyword arguments. See
+<code class="docutils literal notranslate"><span class="pre">qmix.exp.parameters.params</span></code> for all possible keyword arguments.</p>
 </div>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -784,7 +793,11 @@ at the time.</p>
 <p>Class for importing and analyzing experimental DC data (with no LO).</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">See <code class="docutils literal notranslate"><span class="pre">qmix.exp.parameters.params</span></code> for all possible keyword arguments.</p>
+<p class="last">This class assumes that the experimental data is stored in CSV data
+files. These files should have two columns: the first for voltage and
+the second for current or IF power. Some of the properties of the CSV
+files can be set through the keyword arguments. See
+<code class="docutils literal notranslate"><span class="pre">qmix.exp.parameters.params</span></code> for all possible keyword arguments.</p>
 </div>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1714,21 +1727,10 @@ experimental data.</p>
 
     
     
-      <script type="text/javascript">
-          var DOCUMENTATION_OPTIONS = {
-              URL_ROOT:'./',
-              VERSION:'latest',
-              LANGUAGE:'None',
-              COLLAPSE_INDEX:false,
-              FILE_SUFFIX:'.html',
-              HAS_SOURCE:  true,
-              SOURCELINK_SUFFIX: '.txt'
-          };
-      </script>
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
         <script type="text/javascript" src="_static/jquery.js"></script>
         <script type="text/javascript" src="_static/underscore.js"></script>
         <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
 
   
