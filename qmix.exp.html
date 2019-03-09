@@ -440,11 +440,12 @@ use this module.</p>
 <p>Class for importing and analyzing experimental pumped data (LO present).</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">This class assumes that the experimental data is stored in CSV data
+<p>This class assumes that the experimental data is stored in CSV data
 files. These files should have two columns: the first for voltage and
 the second for current or IF power. Some of the properties of the CSV
-files can be set through the keyword arguments. See
-<code class="docutils literal notranslate"><span class="pre">qmix.exp.parameters.params</span></code> for all possible keyword arguments.</p>
+files can be set through the keyword arguments.</p>
+<p class="last">See <code class="docutils literal notranslate"><span class="pre">qmix.exp.parameters.params</span></code> for all possible keyword arguments.
+These parameters control how the data is imported and analyzed.</p>
 </div>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -793,11 +794,12 @@ at the time.</p>
 <p>Class for importing and analyzing experimental DC data (with no LO).</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">This class assumes that the experimental data is stored in CSV data
+<p>This class assumes that the experimental data is stored in CSV data
 files. These files should have two columns: the first for voltage and
 the second for current or IF power. Some of the properties of the CSV
-files can be set through the keyword arguments. See
-<code class="docutils literal notranslate"><span class="pre">qmix.exp.parameters.params</span></code> for all possible keyword arguments.</p>
+files can be set through the keyword arguments.</p>
+<p class="last">See <code class="docutils literal notranslate"><span class="pre">qmix.exp.parameters.params</span></code> for all possible keyword arguments.
+These parameters control how the data is imported and analyzed.</p>
 </div>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -813,15 +815,21 @@ files can be set through the keyword arguments. See
 <li><strong>comment</strong> (<em>str</em>) – add comment to this instance (default is ‘’)</li>
 <li><strong>filter_data</strong> (<em>bool</em>) – smooth the I-V data (default is True)</li>
 <li><strong>i_fmt</strong> (<em>str</em>) – units for current: ‘uA’, ‘mA’, etc. (default is ‘mA’)</li>
-<li><strong>igap_guess</strong> (<em>float</em>) – Gap current estimate, used to temporarily normalize the input data while filtering (default is 2e-4 A)</li>
+<li><strong>igap_guess</strong> (<em>float</em>) – Gap current estimate, used to temporarily
+normalize the input data while filtering (default is 2e-4 A)</li>
 <li><strong>ioffset</strong> (<em>float</em>) – current offset (default is None)</li>
-<li><strong>rseries</strong> (<em>float</em>) – Remove influence of a series resistance (default is None)</li>
+<li><strong>rseries</strong> (<em>float</em>) – Remove influence of a series resistance (default is
+None)</li>
 <li><strong>v_fmt</strong> (<em>str</em>) – units for voltage: ‘mV’, ‘V’, etc. (default is ‘mV’)</li>
-<li><strong>v_smear</strong> (<em>float</em>) – smear DC I-V by this amount when generating smeared response function (default is 0.020)</li>
-<li><strong>vgap_guess</strong> (<em>float</em>) – Gap voltage estimate, used to temporarily normalize the input data while filtering (default is 2.7e-3 V)</li>
+<li><strong>v_smear</strong> (<em>float</em>) – smear DC I-V by this amount when generating smeared
+response function (default is 0.020)</li>
+<li><strong>vgap_guess</strong> (<em>float</em>) – Gap voltage estimate, used to temporarily
+normalize the input data while filtering (default is 2.7e-3 V)</li>
 <li><strong>voffset</strong> (<em>float</em>) – voltage offset (default is None)</li>
-<li><strong>vmax</strong> (<em>float</em>) – maximum voltage value to import, used in case the I-V curve saturates at some point</li>
-<li><strong>vrsg</strong> (<em>float</em>) – The voltage at which to calculate the subgap resistance (default is 2e-3 V)</li>
+<li><strong>vmax</strong> (<em>float</em>) – maximum voltage value to import, used in case the I-V
+curve saturates at some point</li>
+<li><strong>vrsg</strong> (<em>float</em>) – The voltage at which to calculate the subgap resistance
+(default is 2e-3 V)</li>
 </ul>
 </td>
 </tr>
@@ -986,6 +994,8 @@ at the time.</p>
 <dt id="qmix.exp.exp_data.RawData0.print_info">
 <code class="descname">print_info</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qmix.exp.exp_data.RawData0.print_info" title="Permalink to this definition">¶</a></dt>
 <dd><p>Print information about the DC I-V curve.</p>
+<p>This method is deprecated. Just use <code class="docutils literal notranslate"><span class="pre">print(dciv)</span></code> instead, assuming
+that <code class="docutils literal notranslate"><span class="pre">dciv</span></code> is an instance of this class.</p>
 </dd></dl>
 
 </dd></dl>
@@ -1009,11 +1019,6 @@ at the time.</p>
 <dt id="qmix.exp.exp_data.plot_if_spectrum">
 <code class="descclassname">qmix.exp.exp_data.</code><code class="descname">plot_if_spectrum</code><span class="sig-paren">(</span><em>data_folder</em>, <em>fig_folder=None</em>, <em>figsize=None</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.exp.exp_data.plot_if_spectrum" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plot all IF spectra within data_folder.</p>
-<dl class="docutils">
-<dt>Note: If <code class="docutils literal notranslate"><span class="pre">fig_name</span></code> is provided, this method will save the plot</dt>
-<dd>to the specified folder. If <code class="docutils literal notranslate"><span class="pre">ax</span></code> is provided, this method will return
-the Matplotlib axis. <strong>Do not define both.</strong></dd>
-</dl>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -1032,9 +1037,10 @@ the Matplotlib axis. <strong>Do not define both.</strong></dd>
 <dl class="function">
 <dt id="qmix.exp.exp_data.plot_overall_results">
 <code class="descclassname">qmix.exp.exp_data.</code><code class="descname">plot_overall_results</code><span class="sig-paren">(</span><em>dciv</em>, <em>data_list</em>, <em>fig_folder</em>, <em>vmax_plot=4.0</em>, <em>figsize=None</em>, <em>tn_max=None</em>, <em>f_range=None</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.exp.exp_data.plot_overall_results" title="Permalink to this definition">¶</a></dt>
-<dd><p>Plot overall results.</p>
+<dd><p>Plot all results.</p>
 <p>This function is somewhat messy, but it will take in a list of RawData
-class instances, and plot the overall figures of merit.</p>
+class instances, and plot the overall figures of merit (e.g., noise
+temperature vs LO frequency).</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -1416,7 +1422,7 @@ DC I-V curve above the gap), the line will intercept the x-axis at
 </div>
 <div class="section" id="module-qmix.exp.parameters">
 <span id="qmix-exp-parameters-module"></span><h2>2.1.1.6. qmix.exp.parameters module<a class="headerlink" href="#module-qmix.exp.parameters" title="Permalink to this headline">¶</a></h2>
-<p>This module contains a dictionary of parameters (i.e., <code class="docutils literal notranslate"><span class="pre">params</span></code>) that is
+<p>This module contains a dictionary of parameters (<code class="docutils literal notranslate"><span class="pre">params</span></code>) that is
 used by the <code class="docutils literal notranslate"><span class="pre">qmix.exp.RawData</span></code> and <code class="docutils literal notranslate"><span class="pre">qmix.exp.RawData0</span></code> classes to control
 how experimental data is loaded and analyzed.</p>
 <div class="admonition note">

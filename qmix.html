@@ -283,7 +283,7 @@ this.</p>
 </div>
 <p class="rubric">Example</p>
 <p>Here we will create an instance of the embedding circuit class with
-2 tones and 3 harmonices:</p>
+2 tones and 3 harmonics:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">cct1</span> <span class="o">=</span> <span class="n">EmbeddingCircuit</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;Test 1&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">cct1</span><span class="p">)</span>
 <span class="go">Embedding circuit (Tones:2, Harmonics:3): Test 1</span>
@@ -370,7 +370,7 @@ are applied to the junction. The photon voltage is defined as
 frequency of the fundamental tone, and <code class="docutils literal notranslate"><span class="pre">e</span></code> is the charge of an
 electron. However, since this value is normalized to the gap
 voltage, the photon voltage is also equal to the normalized
-frequency: <code class="docutils literal notranslate"><span class="pre">f/fgap</span></code>, where <code class="docutils literal notranslate"><span class="pre">fgap</span></code> is the gap frequency. Note
+frequency, <code class="docutils literal notranslate"><span class="pre">f/fgap</span></code>, where <code class="docutils literal notranslate"><span class="pre">fgap</span></code> is the gap frequency. Note
 that this array is 1-based, meaning that the photon voltage of the
 1st tone is located in <code class="docutils literal notranslate"><span class="pre">.vph[1]</span></code>. (The index represents the tone
 number.) <strong>This attribute must be set after initialization!</strong></p>
@@ -590,7 +590,7 @@ done after the initialization of the EmbeddingCircuit class.</p>
 <dl class="method">
 <dt id="qmix.circuit.EmbeddingCircuit.available_power">
 <code class="descname">available_power</code><span class="sig-paren">(</span><em>f=1</em>, <em>p=1</em>, <em>units='W'</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.circuit.EmbeddingCircuit.available_power" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return available power of tone of and harmonic p.</p>
+<dd><p>Return available power of tone <code class="docutils literal notranslate"><span class="pre">f</span></code> and harmonic <code class="docutils literal notranslate"><span class="pre">p</span></code>.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">Gap voltage and normal resistance must be set prior to using this
@@ -626,9 +626,8 @@ method. If they are not, an error will be raised.</p>
 voltage across the junction). Strictly speaking, <code class="docutils literal notranslate"><span class="pre">vj</span></code> shouldn’t be
 saved within this class, but it is okay for this class to initialize
 <code class="docutils literal notranslate"><span class="pre">vj</span></code> since it has all the data about what the matrix sizes should be.</p>
-<p>This function is useful when the embedding impedances aren’t included,
-and you want to set the voltage across the junction manually (skipping
-harmonic balance).</p>
+<p>This function is useful when you want to set the voltage across the
+junction directly (skipping the harmonic balance procedure).</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -659,11 +658,13 @@ change the values of the Numpy arrays while they are locked.</p>
 <dt id="qmix.circuit.EmbeddingCircuit.save_info">
 <code class="descname">save_info</code><span class="sig-paren">(</span><em>filename='embedding-circuit.txt'</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.circuit.EmbeddingCircuit.save_info" title="Permalink to this definition">¶</a></dt>
 <dd><p>Save this embedding circuit to a text file.</p>
+<p>This text file can then be read in by <code class="docutils literal notranslate"><span class="pre">read_circuit</span></code> in order to
+regenerate the embedding circuit.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>filename</strong> (<em>string</em>) – Filename for information file</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>filename</strong> (<em>string</em>) – Filename for embedding circuit file</td>
 </tr>
 </tbody>
 </table>
@@ -703,6 +704,8 @@ value will depend on frequency and pump level.</li>
 <dt id="qmix.circuit.EmbeddingCircuit.set_available_power">
 <code class="descname">set_available_power</code><span class="sig-paren">(</span><em>power</em>, <em>f=1</em>, <em>p=1</em>, <em>units='W'</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.circuit.EmbeddingCircuit.set_available_power" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set available power of tone <code class="docutils literal notranslate"><span class="pre">f</span></code> and harmonic <code class="docutils literal notranslate"><span class="pre">p</span></code>.</p>
+<p>This method will set the Thevenin voltage in order to provide the
+correct power level.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">The gap voltage, normal resistance and Thevenin impedance must be
@@ -750,7 +753,7 @@ of the different signals.</p>
 <dl class="method">
 <dt id="qmix.circuit.EmbeddingCircuit.set_vph">
 <code class="descname">set_vph</code><span class="sig-paren">(</span><em>value</em>, <em>f=1</em>, <em>units='Hz'</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.circuit.EmbeddingCircuit.set_vph" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set photon voltage of tone <code class="docutils literal notranslate"><span class="pre">f</span></code>.</p>
+<dd><p>Set the photon voltage of tone <code class="docutils literal notranslate"><span class="pre">f</span></code>.</p>
 <p>Normally, this can be done by setting the value of the attribute
 directly. E.g.:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">cct</span> <span class="o">=</span> <span class="n">EmbeddingCircuit</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">vgap</span><span class="o">=</span><span class="mf">2.8e-3</span><span class="p">,</span> <span class="n">rn</span><span class="o">=</span><span class="mf">14.</span><span class="p">)</span>
@@ -800,15 +803,15 @@ frequency. SI prefixes can also be included: ‘MHz’, ‘GHz’,
 <dl class="function">
 <dt id="qmix.circuit.read_circuit">
 <code class="descclassname">qmix.circuit.</code><code class="descname">read_circuit</code><span class="sig-paren">(</span><em>filename</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.circuit.read_circuit" title="Permalink to this definition">¶</a></dt>
-<dd><p>Build embedding circuit from an embedding circuit file.</p>
-<p>This function will build an instance of the EmbeddingCircuit class
+<dd><p>Build an embedding circuit from an embedding circuit file.</p>
+<p>This function will build an instance of the <code class="docutils literal notranslate"><span class="pre">EmbeddingCircuit</span></code> class
 based on a file previously generated by the
-<code class="docutils literal notranslate"><span class="pre">EmbeddingCircuit.save_info()</span></code> method.</p>
+<code class="docutils literal notranslate"><span class="pre">EmbeddingCircuit.save_info</span></code> method.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>filename</strong> (<em>str</em>) – filename</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>filename</strong> (<em>str</em>) – filename of the embedding circuit file</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">instance of the embedding circuit class</td>
 </tr>
@@ -1065,14 +1068,14 @@ SIS junction.</p>
 <p>There are several different types of response function classes:</p>
 <blockquote>
 <div><ul>
-<li><p class="first">Response functions generated directly from voltage and current data:</p>
+<li><p class="first">Response functions generated directly from I-V data:</p>
 <blockquote>
 <div><ul class="simple">
 <li><code class="docutils literal notranslate"><span class="pre">RespFn</span></code>: This is the base class for all of the other response
 function classes. This class will generate a response function
 based on a DC I-V curve (i.e., DC voltage and current data). Note that
 this class assumes that you have “pre-processed” the data. This means
-that it will use voltage and current data to generate the
+that it will use the voltage and current data to generate the
 interpolation directly. Normally, you want to have more data points
 around curvier regions in order to minimize how much time the
 interpolation takes. If you haven’t done this, it is a good idea to use
@@ -1084,18 +1087,22 @@ optimize the interpolation.</li>
 </ul>
 </div></blockquote>
 </li>
-<li><p class="first">Response functions generated from mathematical models:</p>
+<li><p class="first">Response functions generated from I-V curve models:</p>
 <blockquote>
 <div><ul class="simple">
 <li><code class="docutils literal notranslate"><span class="pre">RespFnPerfect</span></code>: This class will generate a response function based
 on an ideal DC I-V curve (i.e., the subgap current is exactly zero
 below the gap voltage and exactly equal to the bias voltage above the
 gap, assuming normalized values). This DC I-V curve has an infinitely
-sharp transition.</li>
+sharp transition. Note however that you can smear the transition using
+the <code class="docutils literal notranslate"><span class="pre">v_smear</span></code> argument. This will convolve the ideal reasponse
+function with a Gaussian distribution, allowing you to control the
+sharpness of the transition.</li>
 <li><code class="docutils literal notranslate"><span class="pre">RespFnPolynomial</span></code>: This class will generate a response function
-based on the polynomial model from Kennedy (1999). This class can be
-used to simulate the effect of the transition’s sharpness (i.e., how do
-the results change when the gap is more or less sharp).</li>
+based on the polynomial model from Kennedy (1999). The order of the
+polynomial controls how sharp the transition is, so this class can be
+used to simulate the effect of the transition’s sharpness (i.e., how
+do the results change when the gap is more or less sharp).</li>
 <li><code class="docutils literal notranslate"><span class="pre">RespFnExponential</span></code>: This class will generate a response function
 based on the exponential model from Rashid et al. (2016). This model is
 very similar to <code class="docutils literal notranslate"><span class="pre">RespFnPolynomial</span></code>, except that you can include a
@@ -1279,8 +1286,7 @@ you are calculating the tunneling currents using Tucker theory
 <dl class="method">
 <dt id="qmix.respfn.RespFn.dikk">
 <code class="descname">dikk</code><span class="sig-paren">(</span><em>vbias</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.respfn.RespFn.dikk" title="Permalink to this definition">¶</a></dt>
-<dd><p>Interpolate the derivative of the Kramers-Kronig transform of the DC
-I-V curve at the given bias voltage.</p>
+<dd><p>Interpolate the derivative of the Kramers-Kronig transform.</p>
 <p>This is defined as <code class="docutils literal notranslate"><span class="pre">d(ikk)</span> <span class="pre">/</span> <span class="pre">d(vb)</span></code> where <code class="docutils literal notranslate"><span class="pre">ikk</span></code> is the Kramers-
 Kronig transform of the DC tunneling current and <code class="docutils literal notranslate"><span class="pre">vb</span></code> is the bias
 voltage.</p>
@@ -1307,8 +1313,10 @@ you are calculating the tunneling currents using Tucker theory
 <dl class="method">
 <dt id="qmix.respfn.RespFn.idc">
 <code class="descname">idc</code><span class="sig-paren">(</span><em>vbias</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.respfn.RespFn.idc" title="Permalink to this definition">¶</a></dt>
-<dd><p>Interpolate the DC I-V curve at the given bias voltage.</p>
-<p>This is the imaginary component of the respones function.</p>
+<dd><p>Interpolate the DC I-V curve.</p>
+<p>This is the imaginary component of the respones function, and it is
+used to calculate the quasiparticle tunneling currents in
+<code class="docutils literal notranslate"><span class="pre">qmix.qtcurrent.qtcurrent</span></code>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -1328,7 +1336,9 @@ you are calculating the tunneling currents using Tucker theory
 <code class="descname">ikk</code><span class="sig-paren">(</span><em>vbias</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.respfn.RespFn.ikk" title="Permalink to this definition">¶</a></dt>
 <dd><p>Interpolate the Kramers-Kronig transform of the DC I-V curve at the
 given bias voltage.</p>
-<p>This is the real component of the response function.</p>
+<p>This is the real component of the response function, and it is
+used to calculate the quasiparticle tunneling currents in
+<code class="docutils literal notranslate"><span class="pre">qmix.qtcurrent.qtcurrent</span></code>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -1347,10 +1357,11 @@ given bias voltage.</p>
 <dt id="qmix.respfn.RespFn.plot_interpolation">
 <code class="descname">plot_interpolation</code><span class="sig-paren">(</span><em>fig_name=None</em>, <em>ax=None</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.respfn.RespFn.plot_interpolation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plot the interpolation of the response function.</p>
-<p>Note: If <code class="docutils literal notranslate"><span class="pre">fig_name</span></code> is defined, this method will not return the
-figure axis. It will instead close the figure, to ensure that there
-aren’t too many figures open at the same time (a common problem when
-saving many figures at the same time).</p>
+<p>Note: If <code class="docutils literal notranslate"><span class="pre">fig_name</span></code> is provided, this method will save the plot
+to the specified folder and then close the plot. This means
+that the Matplotlib axis object will not be returned in this
+case. This is done to prevent too many plots from being open
+at the time.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -1376,14 +1387,14 @@ would like to add to an existing figure</li>
 <dl class="method">
 <dt id="qmix.respfn.RespFn.resp">
 <code class="descname">resp</code><span class="sig-paren">(</span><em>vbias</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.respfn.RespFn.resp" title="Permalink to this definition">¶</a></dt>
-<dd><p>Interpolate the response function current at the given bias voltage.</p>
+<dd><p>Interpolate the response function.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>vbias</strong> (<em>ndarray</em>) – Bias voltage (normalized)</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Response function current (complex value)</td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Response function (a complex value)</td>
 </tr>
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">ndarray</td>
 </tr>
@@ -1394,36 +1405,32 @@ would like to add to an existing figure</li>
 <dl class="method">
 <dt id="qmix.respfn.RespFn.resp_conj">
 <code class="descname">resp_conj</code><span class="sig-paren">(</span><em>vbias</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.respfn.RespFn.resp_conj" title="Permalink to this definition">¶</a></dt>
-<dd><p>Interpolate the complex conjugate of the response function current
-at the given bias voltage.</p>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p>This method is not used directly by QMix, but it can be useful if
+<dd><p>Interpolate the complex conjugate of the response function
+.</p>
+<blockquote>
+<div><p>Note:</p>
+<blockquote>
+<div><p>This method is not used directly by QMix, but it can be useful if
 you are calculating the tunneling currents using Tucker theory
 (Tucker and Feldman, 1985).</p>
-<p class="last">This method is included because it might be <em>slightly</em> faster than
+<p>This method is included because it might be <em>slightly</em> faster than
 <code class="docutils literal notranslate"><span class="pre">np.conj(resp.resp(vb))</span></code> where <code class="docutils literal notranslate"><span class="pre">resp</span></code> is an instance of this
 class.</p>
-</div>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>vbias</strong> (<em>ndarray</em>) – Bias voltage (normalized)</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Conjugate of the response function current</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">ndarray</td>
-</tr>
-</tbody>
-</table>
+</div></blockquote>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>vbias (ndarray): Bias voltage (normalized)</dd>
+<dt>Returns:</dt>
+<dd>ndarray: Complex conjugate of the response function</dd>
+</dl>
+</div></blockquote>
 </dd></dl>
 
 <dl class="method">
 <dt id="qmix.respfn.RespFn.resp_swap">
 <code class="descname">resp_swap</code><span class="sig-paren">(</span><em>vbias</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.respfn.RespFn.resp_swap" title="Permalink to this definition">¶</a></dt>
-<dd><p>Interpolate the response function current, with the real and
-imaginary components swapped, at the given bias voltage.</p>
+<dd><p>Interpolate the response function, with the real and imaginary
+components swapped,.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p>This method is not used directly by QMix, but it can be useful if
@@ -1440,7 +1447,11 @@ and imaginary components).</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>vbias</strong> (<em>ndarray</em>) – Bias voltage (normalized)</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Response function current with real and imaginary swapped</td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="docutils">
+<dt>Response function with the real and imaginary components</dt>
+<dd>swapped</dd>
+</dl>
+</td>
 </tr>
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">ndarray</td>
 </tr>
@@ -1452,11 +1463,11 @@ and imaginary components).</p>
 <dt id="qmix.respfn.RespFn.show_current">
 <code class="descname">show_current</code><span class="sig-paren">(</span><em>fig_name=None</em>, <em>ax=None</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.respfn.RespFn.show_current" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plot the interpolation of the response function.</p>
-<p>This method can be used to check the interpolation of the response
-function.</p>
-<p>Note: If <code class="docutils literal notranslate"><span class="pre">fig_name</span></code> is defined, this method will save the figure
-in the specified file. Otherwise, this method will return the
-Matplotlib axis.</p>
+<p>Note: If <code class="docutils literal notranslate"><span class="pre">fig_name</span></code> is provided, this method will save the plot
+to the specified folder and then close the plot. This means
+that the Matplotlib axis object will not be returned in this
+case. This is done to prevent too many plots from being open
+at the time.</p>
 <div class="admonition warning">
 <p class="first admonition-title">Warning</p>
 <p class="last">This function is deprecated. Please use <code class="docutils literal notranslate"><span class="pre">plot_interpolation</span></code>
@@ -1485,7 +1496,7 @@ the QMix package.</p>
 <dd><p>Bases: <a class="reference internal" href="#qmix.respfn.RespFn" title="qmix.respfn.RespFn"><code class="xref py py-class docutils literal notranslate"><span class="pre">qmix.respfn.RespFn</span></code></a></p>
 <p>Response function based on the exponential I-V curve model.</p>
 <p>Class to contain, interpolate and plot the response function.</p>
-<p>Ref:</p>
+<p>Reference:</p>
 <blockquote>
 <div>H. Rashid, et al., “Harmonic and reactive behavior of the
 quasiparticle tunnel current in SIS junctions,” AIP Advances,
