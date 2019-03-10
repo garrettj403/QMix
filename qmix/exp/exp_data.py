@@ -2,14 +2,18 @@
 analyzing raw I-V and IF data obtained from SIS mixer experiments.
 
 Two classes (``RawData0`` and ``RawData``) are provided to help manage the 
-data. ``RawData0`` is intended for data that was collected with no LO present 
-(i.e., unpumped data), and ``RawData`` is intended for data that was collected
-with LO pumping (i.e., pumped data).
+data. ``RawData0`` is intended for data that was collected with no LO 
+injection (i.e., unpumped data), and ``RawData`` is intended for data that was 
+collected with LO injection (i.e., pumped data).
 
 Note:
 
-    These functions assume that you are importing I-V data and IF power data 
-    in the form of a CSV file. You can define the delimiter using the keyword
+    Experimental data can be passed to these classes either in the form of CSV
+    data files or Numpy arrays. In both bases, the data should have two
+    columns: the first for voltage, and the second for current or IF power,
+    depending on the file type.
+    
+    For CSV files, you can define the delimiter using the keyword
     argument ``delimiter=','``, the number of rows to skip for the header 
     using ``skip_header=1``, and which columns to import using 
     ``usecols=(0,1)``. Take a look at the data in 
@@ -32,7 +36,7 @@ from scipy.interpolate import UnivariateSpline
 import qmix
 from qmix.exp.if_data import dcif_data, if_data
 from qmix.exp.iv_data import dciv_curve, iv_curve
-from qmix.exp.parameters import params
+from qmix.exp.parameters import params as PARAMS
 from qmix.harmonic_balance import harmonic_balance
 from qmix.mathfn.filters import gauss_conv
 from qmix.mathfn.misc import slope_span_n
@@ -49,8 +53,8 @@ _blue = '#1f77b4'
 _dark_blue = '#1f77b4'
 
 # Impedance recovery parameters
-GOOD_ERROR = 7e-7
-STEP = 1e-5
+_good_error = 7e-7
+_step = 1e-5
 
 # Parameters for saving figures
 _plot_params = {'dpi': 500, 'bbox_inches': 'tight'}
@@ -58,12 +62,9 @@ _plot_params = {'dpi': 500, 'bbox_inches': 'tight'}
 # Note: All plotting functions are excluded from coverage tests 
 # by using:  "# pragma: no cover"
 
-# TODO: Fix docstrings (esp. keyword args)
 
+# FILE HIERARCHY -------------------------------------------------------------
 
-# FILE HIERARCHY --------------------------------------------------------------
-
-"""Default file hierarchy to use when plotting experimental data."""
 _file_structure = {'DC IV data':          '01_dciv/',
                    'Pumped IV data':      '02_iv_curves/',
                    'IF data':             '03_if_data/',
@@ -73,6 +74,7 @@ _file_structure = {'DC IV data':          '01_dciv/',
                    'IF spectrum':         '07_spectrum/',
                    'Overall performance': '08_overall_performance/',
                    'CSV data':            '09_csv_data/'}
+"""Default file hierarchy to use when plotting experimental data."""
 
 
 # CLASSES FOR RAW DATA -------------------------------------------------------
@@ -82,33 +84,84 @@ class RawData0(object):
 
     Note:
 
+        Experimental data can be passed to this class either in the form of 
+        CSV data files or Numpy arrays. In both cases, the data should have 
+        two columns: the first for voltage, and the second for current or IF 
+        power, depending on the file type.
+        
+        For CSV files, you can define the delimiter using the keyword
+        argument ``delimiter=','``, the number of rows to skip for the header 
+        using ``skip_header=1``, and which columns to import using 
+        ``usecols=(0,1)``. Take a look at the data in 
+        ``QMix/examples/eg-230-data/`` for an example. Also, take a look at 
+        ``QMix/examples/analyze-experimental-data.ipynb`` for an example of 
+        how to use this module.
+        
         See ``qmix.exp.parameters.params`` for all possible keyword arguments.
-
+        These parameters control how the data is imported and analyzed.
+    
     Args:
-        dciv_file: file path for unpumped I-V curve
+        dciv: DC I-V curve. Either a CSV data file or a Numpy array. The data
+            should have two columns: the first for voltage, and the second
+            for current. To pass a Numpy array, set the ``input_type`` keyword
+            argument to ``"numpy"``. To pass a CSV data file, set the 
+            ``input_type`` keyword argument to ``"csv"``. The properties of 
+            the CSV file can be set through additional keyword arguments.
+            (See below).
+        dcif: DC IF data. Either a CSV data file or a Numpy array. The 
+            data should have two columns: the first for voltage, and the 
+            second for IF power.
 
     Keyword arguments:
-        dcif_file (str): file path for unpumped IF data (default is None)
-        area (float): area of the junction in um^2 (default is 1.5)
-        comment (str): add comment to this instance (default is '')
-        filter_data (bool): smooth the I-V data (default is True)
-        i_fmt (str): units for current: 'uA', 'mA', etc. (default is 'mA')
-        igap_guess (float): Gap current estimate, used to temporarily normalize the input data while filtering (default is 2e-4 A)
-        ioffset (float): current offset (default is None)
-        rseries (float): Remove influence of a series resistance (default is None)
-        v_fmt (str): units for voltage: 'mV', 'V', etc. (default is 'mV')
-        v_smear (float): smear DC I-V by this amount when generating smeared response function (default is 0.020)
-        vgap_guess (float): Gap voltage estimate, used to temporarily normalize the input data while filtering (default is 2.7e-3 V)
-        voffset (float): voltage offset (default is None)
-        vmax (float): maximum voltage value to import, used in case the I-V curve saturates at some point
-        vrsg (float): The voltage at which to calculate the subgap resistance (default is 2e-3 V)
-
+        input_type (str): Input type ('csv' or 'numpy').
+        delimiter (str): Delimiter for CSV files.
+        usecols (tuple): List of columns to import (tuple of length 2).
+        skip_header (int): Number of rows to skip, used to skip the header.
+        v_fmt (str): Units for voltage ('uV', 'mV', or 'V').
+        i_fmt (str): Units for current ('uA', 'mA', or 'A').
+        vmax (float): Maximum voltage to import in units [V].
+        npts (int): Number of points to have in I-V interpolation.
+        debug (bool): Plot each step of the I-V processing procedure.
+        voffset (float): Voltage offset, in units [V].
+        ioffset (float): Current offset, in units [A].
+        voffset_range (float): Voltage range over which to search for offset,
+            in units [V].
+        voffset_sigma (float): Standard deviation of Gaussian filter when 
+            searching for offset.
+        rseries (float): Series resistance in experimental measurement 
+            system, in units [ohms].
+        i_multiplier (float): Multiply the imported current by this value.
+        v_multiplier (float): Multiply the imported voltage by this value.
+        ifdata_vmax (float): Maximum IF voltage to import.
+        ifdata_npts (int): Number of points for interpolation.
+        filter_data (bool): Filter data
+        vgap_guess (float): Guess of gap voltage. Used to temporarily
+            normalize while filtering. Given in units [V].
+        igap_guess (float): Guess of gap current. Used to temporarily
+            normalize while filtering. Given in units [A].
+        filter_theta (float): Angle by which to the rotate data while 
+            filtering. Given in radians.
+        filter_nwind (int): Window size for Savitsky-Golay filter.
+        filter_npoly (int): Order of Savitsky-Golay filter.
+        ifdata_sigma (float): Std. dev. of Gaussian used for filtering.
+        area (float): Area of the junction in um^2.
+        vgap_threshold (float): The current to measure the gap voltage at.
+        rn_vmin (float): Lower voltage range to determine the normal resistance
+        rn_vmax (float): Upper voltage range to determine the normal resistance
+        vrsg (float): The voltage at which to calculate the subgap 
+            resistance.
+        vleak (float): The voltage at which to calculate the subgap leakage
+            current.
+        vshot (list): Range of voltages for fitting shot noise slope.
+        comment (str): Comment to describe this instance.
+        verbose (bool): Print to terminal.
+        
     """
 
-    def __init__(self, dciv_file, dcif_file=None, **kw):
+    def __init__(self, dciv, dcif=None, **kw):
 
         # Import keyword arguments
-        tmp = deepcopy(params)
+        tmp = deepcopy(PARAMS)
         tmp.update(kw)
         kw = tmp
 
@@ -120,12 +173,18 @@ class RawData0(object):
         verbose = kw['verbose']
 
         self.kwargs    = kw
-        self.file_path = dciv_file
         self.comment   = comment
         self.vleak     = vleak
 
+        if kw['input_type'].lower() == 'csv':
+            self.file_path = dciv
+        elif kw['input_type'].lower() == 'numpy':
+            self.file_path = 'Numpy array'
+        else:
+            raise ValueError('Input type not recognized.')
+
         # Get DC I-V data
-        self.voltage, self.current, self.dc = dciv_curve(dciv_file, **kw)
+        self.voltage, self.current, self.dc = dciv_curve(dciv, **kw)
         
         # Unpack DC I-V metadata
         self.vgap   = self.dc.vgap
@@ -153,9 +212,9 @@ class RawData0(object):
                                            v_smear=v_smear)
 
         # Import DC IF data (if it exists)
-        if dcif_file is not None:
+        if dcif is not None:
             # Import
-            self.if_data, dcif = dcif_data(dcif_file, self.dc, **kw)
+            self.if_data, dcif = dcif_data(dcif, self.dc, **kw)
             # Unpack DC IF metadata
             self.dcif       = dcif
             self.if_noise   = dcif.if_noise
@@ -200,10 +259,17 @@ class RawData0(object):
 
     def __repr__(self):  # pragma: no cover
 
-        return self.__str__()
+        msg = "DC I-V curve: Vgap = {:.2f} mV, Rn = {:.2f} ohms"
+
+        return msg.format(self.vgap / 1e-3, self.rn)
 
     def print_info(self):  # pragma: no cover
-        """Print information about the DC I-V curve."""
+        """Print information about the DC I-V curve.
+
+        This method is deprecated. Just use ``print(dciv)`` instead, assuming
+        that ``dciv`` is an instance of this class.
+
+        """
 
         print(self)
 
@@ -555,28 +621,86 @@ class RawData(object):
 
     Note:
 
+        Experimental data can be passed to this class either in the form of 
+        CSV data files or Numpy arrays. In both bases, the data should have 
+        two columns: the first for voltage, and the second for current or IF 
+        power, depending on the file type.
+        
+        For CSV files, you can define the delimiter using the keyword
+        argument ``delimiter=','``, the number of rows to skip for the header 
+        using ``skip_header=1``, and which columns to import using 
+        ``usecols=(0,1)``. Take a look at the data in 
+        ``QMix/examples/eg-230-data/`` for an example. Also, take a look at 
+        ``QMix/examples/analyze-experimental-data.ipynb`` for an example of 
+        how to use this module.
+        
         See ``qmix.exp.parameters.params`` for all possible keyword arguments.
+        These parameters control how the data is imported and analyzed.
 
     Args:
-        iv_file (str): file path to pumped I-V data
+        ivdata: I-V data. Either a CSV data file or a Numpy array. The data
+            should have two columns: the first for voltage, and the second
+            for current.
         dciv (qmix.exp.iv_data.DCIVData): DC I-V metadata
 
-    Keyword Args:
-        if_hot_file (str): file path to hot IF data
-        if_cold_file (str): file path to cold IF data
-        comment (str): description of this data (optional)
-        freq (float): frequency of LO, in units [GHz]
-        analyze (bool): analyze data?
-        analyze_if (bool): analyze IF data?
-        analyze_iv (bool): analyze I-V data?
-        verbose (bool): print to terminal?
+    Keyword arguments:
+        input_type (str): Input type ('csv' or 'numpy').
+        delimiter (str): Delimiter for CSV files.
+        usecols (tuple): List of columns to import (tuple of length 2).
+        skip_header (int): Number of rows to skip, used to skip the header.
+        v_fmt (str): Units for voltage ('uV', 'mV', or 'V').
+        i_fmt (str): Units for current ('uA', 'mA', or 'A').
+        vmax (float): Maximum voltage to import in units [V].
+        npts (int): Number of points to have in I-V interpolation.
+        debug (bool): Plot each step of the I-V processing procedure.
+        voffset (float): Voltage offset, in units [V].
+        ioffset (float): Current offset, in units [A].
+        voffset_range (float): Voltage range over which to search for offset,
+            in units [V].
+        voffset_sigma (float): Standard deviation of Gaussian filter when 
+            searching for offset.
+        rseries (float): Series resistance in experimental measurement 
+            system, in units [ohms].
+        i_multiplier (float): Multiply the imported current by this value.
+        v_multiplier (float): Multiply the imported voltage by this value.
+        ifdata_vmax (float): Maximum IF voltage to import.
+        ifdata_npts (int): Number of points for interpolation.
+        filter_data (bool): Filter data
+        vgap_guess (float): Guess of gap voltage. Used to temporarily
+            normalize while filtering. Given in units [V].
+        igap_guess (float): Guess of gap current. Used to temporarily
+            normalize while filtering. Given in units [A].
+        filter_theta (float): Angle by which to the rotate data while 
+            filtering. Given in radians.
+        filter_nwind (int): Window size for Savitsky-Golay filter.
+        filter_npoly (int): Order of Savitsky-Golay filter.
+        ifdata_sigma (float): Std. dev. of Gaussian used for filtering.
+        analyze_iv (bool): Analyze I-V data?
+        analyze_if (bool): Analyze IF data?
+        area (float): Area of the junction in um^2.
+        freq (float): Frequency of LO signal.
+        cut_low (float): only fit over first photon step,
+            start at Vgap - vph + vph * cut_low
+        cut_high: only fit over first photon step,
+            finish at Vgap - vph * cut_high
+        remb_range (tuple): range of embedding resistances to check,
+            normalized to the normal-state resistance
+        xemb_range (tuple): range of embedding reactances to check,
+            normalized to the normal-state resistance
+        alpha_max (float): Maximum drive level.
+        num_b (int): Summation limits for Bessel functions.
+        t_cold (float): Temperature of cold blackbody load.
+        t_hot (float): Temperature of hot blackbody load.
+        vmax_plot (float): Maximum bias voltage for plots.
+        comment (str): Comment to describe this instance.
+        verbose (bool): Print to terminal.
 
     """
 
-    def __init__(self, iv_file, dciv, if_hot_file=None, if_cold_file=None, **kw):
+    def __init__(self, ivdata, dciv, if_hot=None, if_cold=None, **kw):
 
         # Import keyword arguments
-        tmp = deepcopy(params)
+        tmp = deepcopy(PARAMS)
         tmp.update(kw)
         kw = tmp
         self.kwargs = kw
@@ -589,15 +713,34 @@ class RawData(object):
         analyze_iv = kw['analyze_iv']
         verbose    = kw['verbose']
 
-        # Analyze data? (i.e., calculate noise temp./gain/etc.)
-        if analyze is not None:
+        # Analyze data? (deprecated, set individually)
+        if analyze is not None:  # pragma: no cover
             analyze_iv = analyze
             analyze_if = analyze
 
-        # I-V data file path
-        self.iv_file = iv_file
-        self.directory = os.path.dirname(iv_file)
-        self.iv_filename = os.path.basename(iv_file)
+        # Sort out file paths
+        if kw['input_type'].lower() == 'csv':
+            self.iv_file = ivdata
+            self.directory = os.path.dirname(ivdata)
+            self.iv_filename = os.path.basename(ivdata)
+            if if_hot is not None and if_cold is not None:
+                self.filename_hot = os.path.basename(if_hot)
+                self.filename_cold = os.path.basename(if_cold)
+            else:
+                self.filename_hot = None
+                self.filename_cold = None
+        elif kw['input_type'].lower() == 'numpy':
+            self.iv_file = 'Numpy array'
+            self.directory = 'Numpy array'
+            self.iv_filename = 'Numpy array'
+            if if_hot is not None and if_cold is not None:
+                self.filename_hot = 'Numpy array'
+                self.filename_cold = 'Numpy array'
+            else:
+                self.filename_hot = None
+                self.filename_cold = None
+        else:
+            raise ValueError("Input type not recognized.")
 
         # Unpack DC I-V metadata
         self.dciv       = dciv
@@ -611,8 +754,12 @@ class RawData(object):
         self.voltage_dc = dciv.voltage
         self.current_dc = dciv.current
 
-        # Frequency
-        self.freq, self.freq_str = _get_freq(freq, iv_file)
+        # Get LO frequency
+        if kw['input_type'] == 'numpy' and freq is None:
+            str1 = 'If input_type is set to \'numpy\', '
+            str2 = 'you must define the frequency of the LO signal.'
+            raise ValueError(str1 + str2)
+        self.freq, self.freq_str = _get_freq(freq, ivdata)
         kw['freq'] = self.freq
         self.vph = self.freq / self.fgap * 1e9  # photon voltage
 
@@ -620,15 +767,17 @@ class RawData(object):
         if verbose:
             cprint('Importing: {}'.format(comment), 'HEADER')
             print(" -> Files:")
-            print("\tI-V file:    \t{}".format(iv_file))
-            print("\tIF hot file: \t{}".format(if_hot_file))
-            print("\tIF cold file:\t{}".format(if_cold_file))
+            print("\tI-V file:    \t{}".format(self.iv_file))
+            if self.filename_hot is not None:
+                print("\tIF hot file: \t{}".format(self.filename_hot))
+            if self.filename_cold is not None:
+                print("\tIF cold file:\t{}".format(self.filename_cold))
             print(" -> Frequency: {:.1f} GHz".format(self.freq))
 
         # Import pumped I-V curve
-        self.voltage, self.current = iv_curve(iv_file, self.dc, **kw)
+        self.voltage, self.current = iv_curve(ivdata, self.dc, **kw)
 
-        # Dynamic resistance
+        # Dynamic resistance of I-V curve
         self.rdyn = slope_span_n(self.current, self.voltage, 21)
 
         # Impedance recovery
@@ -643,15 +792,11 @@ class RawData(object):
 
         # Import and analyze IF data from hot/cold loads
         self.good_if_noise_fit = True
-        if if_hot_file is not None and if_cold_file is not None and analyze_if:
-
-            self.filename_hot  = os.path.basename(if_hot_file)
-            self.filename_cold = os.path.basename(if_cold_file)
+        if if_hot is not None and if_cold is not None and analyze_if:
 
             # Import and analyze IF data
-            results, self.idx_best, dcif = if_data(if_hot_file, if_cold_file,
-                                                   self.dc, dcif=dciv.dcif,
-                                                   **kw)
+            results, self.idx_best, dcif = if_data(if_hot, if_cold, self.dc,
+                                                   dcif=dciv.dcif, **kw)
 
             # Unpack results
             self.if_hot  = results[:, :2]
@@ -767,7 +912,7 @@ class RawData(object):
         err_best = err_surf[ibest, jbest]
 
         # Determine whether or not it was a good fit
-        good_fit = err_best <= GOOD_ERROR
+        good_fit = err_best <= _good_error
 
         # Print to terminal
         if good_fit:
@@ -1596,20 +1741,28 @@ class RawData(object):
         self.plot_gain_noise_temp(fig6, **kw)
 
 
-# ANALYZE IF SPECTRUM DATA ----------------------------------------------------
+# ANALYZE IF SPECTRUM DATA ---------------------------------------------------
 
-def _if_spectrum(filename, t_hot=293., t_cold=78.5):
+def _if_spectrum(filename, **kw):
         """Get noise temperature from hot/cold spectrum measurements.
         
         Args:
             filename: filename
-            t_hot: hot load temperature
-            t_cold: cold load tempearture
+            
+        Keyword Args:
+            t_hot: hot blackbody load temperature
+            t_cold: cold blackbody load temperature
 
-        Returns: frequency, noise temp, hot power, cold power
+        Returns: 
+            ndarray: frequency, noise temp, hot power, cold power
 
         """
 
+        # Unpack keyword arguments
+        t_hot = kw.get('t_hot', PARAMS['t_hot'])
+        t_cold = kw.get('t_cold', PARAMS['t_cold'])
+
+        # Import data
         freq, p_hot_db, p_cold_db = np.genfromtxt(filename).T
 
         y_fac = _db_to_lin(p_hot_db) / _db_to_lin(p_cold_db)
@@ -1630,10 +1783,6 @@ def _db_to_lin(db):
 
 def plot_if_spectrum(data_folder, fig_folder=None, figsize=None):  # pragma: no cover
     """Plot all IF spectra within data_folder.
-
-    Note: If ``fig_name`` is provided, this method will save the plot 
-        to the specified folder. If ``ax`` is provided, this method will return
-        the Matplotlib axis. **Do not define both.**
         
     Args:
         data_folder: data folder
@@ -1695,13 +1844,15 @@ def plot_if_spectrum(data_folder, fig_folder=None, figsize=None):  # pragma: no 
     print("")
 
 
-# Plot overall results --------------------------------------------------------
+# Plot overall results -------------------------------------------------------
 
-def plot_overall_results(dciv, data_list, fig_folder, vmax_plot=4., figsize=None, tn_max=None, f_range=None):  # pragma: no cover
-    """Plot overall results.
+def plot_overall_results(dciv, data_list, fig_folder, vmax_plot=4.,
+                         figsize=None, tn_max=None, f_range=None):  # pragma: no cover
+    """Plot all results.
     
     This function is somewhat messy, but it will take in a list of RawData 
-    class instances, and plot the overall figures of merit.
+    class instances, and plot the overall figures of merit (e.g., noise 
+    temperature vs LO frequency).
 
     Args:
         dciv: DC I-V data (instance of RawData0)
@@ -1756,7 +1907,7 @@ def plot_overall_results(dciv, data_list, fig_folder, vmax_plot=4., figsize=None
     ua = dciv.igap * 1e6 
     imax_plot = np.interp(vmax_plot, dciv.voltage * mv, dciv.current * ua)
 
-    # Save data in text format ------------------------------------------------
+    # Save data in text format -----------------------------------------------
 
     # Save DC I-V curve as csv
     output_text = np.vstack((dciv.voltage, dciv.current)).T
@@ -1812,7 +1963,7 @@ def plot_overall_results(dciv, data_list, fig_folder, vmax_plot=4., figsize=None
             string = ', '.join([str(item) for item in _list])
             fout.write(string + '\n')
             
-    # Plot all pumped iv curves -----------------------------------------------
+    # Plot all pumped iv curves ----------------------------------------------
 
     fig, ax = plt.subplots(figsize=figsize)
     ax.plot(dciv.voltage * mv, dciv.current * ua, 'k')
@@ -1830,7 +1981,7 @@ def plot_overall_results(dciv, data_list, fig_folder, vmax_plot=4., figsize=None
     fig.savefig(os.path.join(fig_folder, 'iv_curves.png'), dpi=500)
     plt.close(fig)
 
-    # Plot dynamic resistance -------------------------------------------------
+    # Plot dynamic resistance ------------------------------------------------
 
     fig, ax = plt.subplots(figsize=figsize)
     ax.plot(freq, rdyn, **plotparam)
@@ -1842,7 +1993,7 @@ def plot_overall_results(dciv, data_list, fig_folder, vmax_plot=4., figsize=None
     fig.savefig(os.path.join(fig_folder, 'rdyn.png'), dpi=500)
     plt.close(fig)
 
-    # Plot noise temperature results ------------------------------------------
+    # Plot noise temperature results -----------------------------------------
 
     fig, ax = plt.subplots(figsize=figsize)
     ax.plot(freq, t_n, color=_blue, **plotparam)
@@ -1858,7 +2009,7 @@ def plot_overall_results(dciv, data_list, fig_folder, vmax_plot=4., figsize=None
     fig.savefig(os.path.join(fig_folder, 'noise_temperature.png'), dpi=500)
     plt.close(fig)
 
-    # Plot noise temperature with spline fit ----------------------------------
+    # Plot noise temperature with spline fit ---------------------------------
 
     fig, ax = plt.subplots(figsize=figsize)
     freq_t = np.linspace(np.min(freq), np.max(freq), 1001)
@@ -1878,7 +2029,7 @@ def plot_overall_results(dciv, data_list, fig_folder, vmax_plot=4., figsize=None
     fig.savefig(fname, dpi=500)
     plt.close(fig)
 
-    # Plot noise temperature and gain -----------------------------------------
+    # Plot noise temperature and gain ----------------------------------------
 
     fig, ax1 = plt.subplots(figsize=figsize)
     ax1.plot(freq, t_n, c=_pale_red, **plotparam)
@@ -1900,7 +2051,7 @@ def plot_overall_results(dciv, data_list, fig_folder, vmax_plot=4., figsize=None
     fig.savefig(os.path.join(fig_folder, 'noise_temperature_and_gain.png'), dpi=500)
     plt.close(fig)
 
-    # Plot IF noise contribution results --------------------------------------
+    # Plot IF noise contribution results -------------------------------------
 
     fig, ax = plt.subplots(figsize=figsize)
     ax.plot(if_noise_f, if_noise, 'o--', color=_pale_red)
@@ -1913,7 +2064,7 @@ def plot_overall_results(dciv, data_list, fig_folder, vmax_plot=4., figsize=None
     fig.savefig(fname, dpi=500)
     plt.close(fig)
 
-    # Plot embedding impedance results ----------------------------------------
+    # Plot embedding impedance results ---------------------------------------
 
     fig, ax = plt.subplots(figsize=figsize)
     ax.plot(f_z, z.real, c=_pale_blue, label='Real', **plotparam)
@@ -1927,7 +2078,7 @@ def plot_overall_results(dciv, data_list, fig_folder, vmax_plot=4., figsize=None
     fig.savefig(os.path.join(fig_folder, 'embedding_impedance.png'), dpi=500)
     plt.close(fig)
 
-    # Plot embedding impedance results ----------------------------------------
+    # Plot embedding impedance results ---------------------------------------
 
     fig, ax = plt.subplots(figsize=figsize)
     ax.plot(f_z, v * 1e3, c=_pale_green, ls='--', marker='o')
@@ -1940,7 +2091,7 @@ def plot_overall_results(dciv, data_list, fig_folder, vmax_plot=4., figsize=None
     fig.savefig(os.path.join(fig_folder, 'embedding_voltage.png'), dpi=500)
     plt.close(fig)
 
-    # Plot embedding impedance results ----------------------------------------
+    # Plot embedding impedance results ---------------------------------------
 
     fig, ax = plt.subplots(figsize=figsize)
     ax.plot(freq, aj, c=_pale_green, **plotparam)
@@ -1954,7 +2105,7 @@ def plot_overall_results(dciv, data_list, fig_folder, vmax_plot=4., figsize=None
     fig.savefig(os.path.join(fig_folder, 'drive_level.png'), dpi=500)
     plt.close(fig)
 
-    # Plot the impedance of the SIS junction ----------------------------------
+    # Plot the impedance of the SIS junction ---------------------------------
     
     fig, ax1 = plt.subplots(figsize=figsize)
     zj = np.array(zj) * dciv.rn
@@ -1973,7 +2124,7 @@ def plot_overall_results(dciv, data_list, fig_folder, vmax_plot=4., figsize=None
     print(" -> Done\n")
 
 
-# IMPEDANCE RECOVERY HELPER FUNCTIONS (PRIVATE) -------------------------------
+# IMPEDANCE RECOVERY HELPER FUNCTIONS (PRIVATE) ------------------------------
 
 def _error_function(vwi, zwi, zs):
 
@@ -2045,7 +2196,7 @@ def _find_alpha(dciv, vdc_exp, idc_exp, vph, alpha_max=1.5, num_b=20):
     return np.array(alpha)
 
 
-# FILE MANAGEMENT -------------------------------------------------------------
+# FILE MANAGEMENT ------------------------------------------------------------
 
 def initialize_dir(fig_folder):  # pragma: no cover
     """Initialize a new directory for storing results.
@@ -2067,7 +2218,7 @@ def initialize_dir(fig_folder):  # pragma: no cover
     print(" ")
 
 
-# FILE HELPER FUNCTIONS -------------------------------------------------------
+# FILE HELPER FUNCTIONS ------------------------------------------------------
 
 def _get_freq_from_filename(file_path):
     """Get frequency from filename.

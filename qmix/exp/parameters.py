@@ -1,4 +1,4 @@
-""" This module contains a dictionary of parameters (i.e., ``params``) that is
+""" This module contains a dictionary of parameters (``params``) that is
 used by the ``qmix.exp.RawData`` and ``qmix.exp.RawData0`` classes to control
 how experimental data is loaded and analyzed.
 
@@ -15,6 +15,13 @@ values.
 
 **Parameters:**
 
+    - Experimental data data:
+        - **Note:** Experimental data can be passed to ``RawData0`` and 
+          ``RawData`` either as CSV data files or as Numpy arrays. The CSV
+          files should have two columns: one for voltage and one for current
+          or IF power. The Numpy arrays should also have two columns.
+        - ``input_type == "csv"`` : Input type. Either ``"csv"`` or 
+          ``"numpy"``.
     - CSV files:
         - **Note:** All of the experimental data is expected to be stored in
           CSV data files. These parameters control how the data is read in 
@@ -155,7 +162,9 @@ values.
 """
 
 params = dict(
-              # File I/O
+              # Experimental data data
+              input_type = 'csv',
+              # CSV files
               delimiter =      ',',
               usecols =        (0, 1),
               skip_header =    1,
@@ -166,12 +175,12 @@ params = dict(
               vmax =           6e-3,
               npts =           6001,
               debug =          False,
-              # Correct voltage/current offsets
+              # Correcting voltage/current offsets
               ioffset =        None,
               voffset =        None,
               voffset_range =  3e-4,
               voffset_sigma =  1e-5,
-              # Correct experimental I-V data
+              # Correcting experimental I-V data
               rseries =        None,
               i_multiplier =   1.,
               v_multiplier =   1.,
@@ -187,31 +196,29 @@ params = dict(
               filter_npoly =   3,
               # Filtering IF data
               ifdata_sigma =   5,
-              # Analyze data
+              # Analyzing data
               analyze_iv =     True,
               analyze_if =     True,
               analyze =        None,  # (deprecated)
               # Junction properties
               area =           1.5,
               freq =           None,
-              # Parameters for analyzing DC I-V curve
+              # Analyzing DC I-V curve
               vgap_threshold = 105e-6,
               rn_vmin =        3.5e-3,
               rn_vmax =        4.5e-3,
               vrsg =           2e-3,
               vleak =          2e-3,
-              # Parameters for analyzing DC IF data
+              # Analyzing DC IF data
               vshot =          None,
-              # Parameters for analyzing pumped I-V data 
-              # i.e., impedance recovery
+              # Analyzing pumped I-V data (i.e., impedance recovery)
               cut_low =        0.25,
               cut_high =       0.2,
               remb_range =     (0, 1),
               xemb_range =     (-1, 1),
               alpha_max =      1.5,
               num_b =          20,
-              # Parameters for analyzing pumped IF data 
-              # i.e., noise tempearture analysis
+              # Analyzing pumped IF data (i.e., noise temperature analysis)
               t_cold =         80.,
               t_hot =          293.,
               vbest =          None,

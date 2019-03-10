@@ -2,7 +2,15 @@
 experimental IF power measurements.
 
 The "IF data" is the IF output power from the SIS device versus bias voltage.
+The term "DC IF data" is used for IF power with no LO injection, and "IF data"
+is used for IF power with LO injection.
 
+Note:
+    
+    The IF data is expected either in the form of a CSV file or a Numpy 
+    array. Either way the data should have two columns: the first for voltage 
+    and the second for current.
+    
 """
 
 from collections import namedtuple
@@ -13,12 +21,11 @@ from scipy.signal import savgol_filter
 import scipy.constants as sc
 
 from qmix.exp.clean_data import remove_doubles_matrix, remove_nans_matrix
+from qmix.exp.parameters import params as PARAMS
 from qmix.mathfn import slope_span_n
 from qmix.mathfn.filters import gauss_conv
 
-
-# Voltage units
-_vfmt_dict = {'uV': 1e-6, 'mV': 1e-3, 'V': 1}
+_vfmt_dict = {'uV': 1e-6, 'mV': 1e-3, 'V': 1}  # Voltage units
 
 
 # Load IF data and determine noise temperature -------------------------------
@@ -38,58 +45,93 @@ Args:
 """
 
 
-def dcif_data(dcif_file, dc, **kwargs):
+def dcif_data(ifdata, dc, **kwargs):
     """Analyze DC IF measurements.
 
     This is the IF data that is measured with no LO present. This data is
     used to analyze the shot noise, which can then be used to convert the IF 
     data into units 'K' and estimate the IF noise component.
-
+            
     Args:
-        dcif_file (str): DC IF filename (no LO present)
-        dc (qmix.exp.iv_data.DCIVData): DC I-V data structure
-        **kwargs: keyword arguments
+        ifdata: IF data. Either a CSV data file or a Numpy array. The data
+            should have two columns: the first for voltage, and the second
+            for IF power. To pass a Numpy array, set the ``input_type`` 
+            keyword argument to ``"numpy"``. To pass a CSV data file, set the 
+            ``input_type`` keyword argument to ``"csv"``. The properties of 
+            the CSV file can be set through additional keyword arguments.
+            (See below).
+        dc (qmix.exp.iv_data.DCIVData): DC I-V metadata.
 
-    Keyword arguments:
-        v_fmt (str): voltage units ('mV', 'V', etc.)
-        vmax (str): maximum voltage (in case the data is saturated above some
-            value)
+    Keyword Args:
+        input_type (str): Input type ('csv' or 'numpy').
+        delimiter (str): Delimiter for CSV files.
+        usecols (tuple): List of columns to import (tuple of length 2).
+        skip_header (int): Number of rows to skip, used to skip the header.
+        v_fmt (str): Units for voltage ('uV', 'mV', or 'V').
+        i_fmt (str): Units for current ('uA', 'mA', or 'A').
+        rseries (float): Series resistance in experimental measurement 
+            system, in units [ohms].
+        v_multiplier (float): Multiply the imported voltage by this value.
+        ifdata_vmax (float): Maximum IF voltage to import.
+        ifdata_npts (int): Number of points for interpolation.
+        ifdata_sigma (float): Std. dev. of Gaussian used for filtering.
+        vshot (list): Range of voltages for fitting shot noise slope.
+        verbose (bool): Print to terminal.
 
     Returns:
         tuple: DC IF data, IF noise contribution, A.U. to K correction factor,
-        shot noise slope data, good fit to IF noise?
+            shot noise slope data, good fit to IF noise?
 
     """
 
-    if_data = load_if(dcif_file, dc, **kwargs)
-    if_noise, corr, i_slope, if_fit = _find_if_noise(if_data, dc, **kwargs)
-    if_data[:, 1] *= corr
+    ifdata = _load_if(ifdata, dc, **kwargs)
+    if_noise, corr, i_slope, if_fit = _find_if_noise(ifdata, dc, **kwargs)
+    ifdata[:, 1] *= corr
+    vmax = ifdata[:, 0].max() * dc.vgap
 
-    shot_noise = np.vstack((if_data[:, 0], i_slope)).T
+    shot_noise = np.vstack((ifdata[:, 0], i_slope)).T
 
     dcif = DCIFData(if_noise=if_noise, corr=corr, if_fit=if_fit,
-                    shot_slope=shot_noise, vmax=if_data[:, 0].max() * dc.vgap)
+                    shot_slope=shot_noise, vmax=vmax)
 
-    return if_data, dcif
+    return ifdata, dcif
 
 
-def if_data(hot_filename, cold_filename, dc, **kwargs):
+def if_data(if_hot, if_cold, dc, **kwargs):
     """Analyze IF measurements from a hot/cold load experiment.
 
     Args:
-        hot_filename (str): Hot load IF measurement filename
-        cold_filename (str): Cold load IF measurement filename
-        dc (qmix.exp.iv_data.DCIVData): DC I-V data structure
-        **kwargs: Keyword arguments
+        if_hot: Hot IF data. Either a CSV data file or a Numpy array. The data
+            should have two columns: the first for voltage, and the second
+            for IF power.
+        if_cold: Cold IF data. Either a CSV data file or a Numpy array. The 
+            data should have two columns: the first for voltage, and the 
+            second for IF power.
+        dc (qmix.exp.iv_data.DCIVData): DC I-V metadata.
 
-    Keyword arguments:
-        freq: Frequency in units GHz
-        dcif (qmix.exp.if_data.DCIFData): DC IF data structure
+    Keyword Args:
+        input_type (str): Input type ('csv' or 'numpy').
+        delimiter (str): Delimiter for CSV files.
+        usecols (tuple): List of columns to import (tuple of length 2).
+        skip_header (int): Number of rows to skip, used to skip the header.
+        v_fmt (str): Units for voltage ('uV', 'mV', or 'V').
+        i_fmt (str): Units for current ('uA', 'mA', or 'A').
+        rseries (float): Series resistance in experimental measurement 
+            system, in units [ohms].
+        v_multiplier (float): Multiply the imported voltage by this value.
+        ifdata_max (float): Maximum IF voltage to import.
+        ifdata_npts (int): Number of points for interpolation.
+        ifdata_sigma (float): Std. dev. of Gaussian used for filtering.
+        t_cold (float): Temperature of cold blackbody load.
+        t_hot (float): Temperature of hot blackbody load.
+        vbest (float): Bias voltage for best results (best temperature and
+            gain).
+        verbose (bool): Print to terminal.
 
     Returns:
         tuple: Hot IF data, Cold IF data, Noise temperature, Gain, Index of 
-        best noise temperature, IF noise contribution, Good fit to IF noise?, 
-        Shot noise slope
+            best noise temperature, IF noise contribution, Good fit to IF 
+            noise?, shot noise slope
 
     """
 
@@ -98,8 +140,8 @@ def if_data(hot_filename, cold_filename, dc, **kwargs):
     dcif = kwargs.get('dcif', None)
 
     # Load IF data
-    if_hot = load_if(hot_filename, dc, **kwargs)
-    if_cold = load_if(cold_filename, dc, **kwargs)
+    if_hot = _load_if(if_hot, dc, **kwargs)
+    if_cold = _load_if(if_cold, dc, **kwargs)
 
     # Correct data based on shot noise slope
     if dcif is None or dcif.corr is None:
@@ -116,46 +158,57 @@ def if_data(hot_filename, cold_filename, dc, **kwargs):
 
     # Calculate noise temperature + gain
     tn, gain, idx_best = _find_tn_gain(if_hot, if_cold, dc, **kwargs)
-    results = np.vstack((if_hot[:, 0], if_hot[:, 1], if_cold[:, 1], tn, gain)).T
+    results = np.vstack((if_hot[:,0], if_hot[:,1], if_cold[:,1], tn, gain)).T
 
-    dcif_out = DCIFData(if_noise=if_noise,
-                        corr=corr,
-                        if_fit=if_fit,
-                        shot_slope=shot_slope,
-                        vmax=if_hot[:, 0].max() * dc.vgap)
+    vmax = if_hot[:,0].max() * dc.vgap
+    dcif_out = DCIFData(if_noise=if_noise, corr=corr, if_fit=if_fit,
+                        shot_slope=shot_slope, vmax=vmax)
 
     return results, idx_best, dcif_out
 
 
 # Calculate noise temperature ------------------------------------------------
 
-def _find_tn_gain(if_data_hot, if_data_cold, dc, freq=None, t_hot=295., t_cold=80., verbose=True, vbest=None, **kw):
+def _find_tn_gain(if_data_hot, if_data_cold, dc, **kw):
     """Find the noise temperature and gain from IF data.
 
     This function will search for the best noise temperature, but it makes an
     effort to not take noise temperatures that are found in narrow dips.
 
     Note: IF data must be corrected using Woody's method (i.e., using the shot
-          noise slope) prior to being used in this function.
+    noise slope) prior to being used in this function.
 
     Args:
         if_data_hot: Hot IF data
         if_data_cold: Cold IF data
+        dc: DC I-V metadata
+        
+    Keyword Args:
         freq: Frequency in GHz
         t_hot (float): hot load temperature
         t_cold (float): cold load temperature
+        verbose (bool): print to terminal
+        vbest (float): Bias voltage with best results (best noise temperature
+            and gain)
 
     Returns:
-
+        tuple: noise temperature, gain, and best index
 
     """
+
+    # Unpack keyword arguments
+    freq = kw.get('freq', PARAMS['freq'])
+    t_hot = kw.get('t_hot', PARAMS['t_hot'])
+    t_cold = kw.get('t_cold', PARAMS['t_cold'])
+    verbose = kw.get('verbose', PARAMS['verbose'])
+    vbest = kw.get('vbest', PARAMS['vbest'])
 
     # Unpack
     vnorm = if_data_hot[:, 0]
     p_hot = if_data_hot[:, 1]
     p_cold = if_data_cold[:, 1]
 
-    # CW
+    # Callen-Welton
     t_hot  = _temp_cw(freq*1e9, t_hot)
     t_cold = _temp_cw(freq*1e9, t_cold)
 
@@ -186,6 +239,7 @@ def _find_tn_gain(if_data_hot, if_data_cold, dc, freq=None, t_hot=295., t_cold=8
 
 
 def _temp_cw(freq, tphys):
+    """Callen-Welton equations. Uses Planck distribution with half photon."""
 
     freq  = float(freq)
     tphys = float(tphys)
@@ -195,18 +249,25 @@ def _temp_cw(freq, tphys):
 
 # Determine if noise ---------------------------------------------------------
 
-def _find_if_noise(if_data, dc, vshot=None, **kw):
+def _find_if_noise(if_data, dc, **kw):
     """Determine IF noise from shot noise slope.
 
-    Woody's method (Woody 1985).
+    Uses Woody's method (Woody 1985).
 
     Args:
         if_data: IF data, 2-column numpy array: voltage x power
-        dc: DC data structure
+        dc: DC I-V metadata
 
-    Returns: IF noise, correction factor, linear fit
+    Keyword Args:
+        vshot (list): Range of voltage for fitting shot noise.
+        
+    Returns: 
+        tuple: IF noise, correction factor, linear fit
 
     """
+
+    # Unpack keyword arguments
+    vshot = kw.get('vshot', PARAMS['vshot'])
 
     # This is relatively tricky to automate
     # It still makes mistakes occasionally, make sure to check/plot your data
@@ -293,81 +354,96 @@ def _find_if_noise(if_data, dc, vshot=None, **kw):
 
 # Import IF data -------------------------------------------------------------
 
-def load_if(filename, dc, **kwargs):
-    """Import IF measurement data.
+def _load_if(ifdata, dc, **kwargs):
+    """Import IF data.
 
     Args:
-        filename (str): filename
-        dc (qmix.exp.iv_data.DCIVData): DC data structure 
-        **kwargs: Keyword arguments
+        ifdata: IF data. Either a CSV data file or a Numpy array. The data
+            should have two columns: the first for voltage, and the second
+            for IF power. To pass a Numpy array, set the ``input_type`` 
+            keyword argument to ``"numpy"``. To pass a CSV data file, set the 
+            ``input_type`` keyword argument to ``"csv"``. The properties of 
+            the CSV file can be set through additional keyword arguments.
+            (See below).
+        dc (qmix.exp.iv_data.DCIVData): DC I-V metadata. 
 
     Keyword arguments:
-        delim (str): delimiter used in data files
+        delimiter (str): delimiter used in data files
         v_fmt (str): units for voltage ('V', 'mV', 'uV')
         usecols (tuple): columns for voltage and current (e.g., ``(0,1)``)
-        sigma (float): convolve IF data by Gaussian with this std dev
-        npts (float): evenly interpolate data to have this many data points
+        ifdata_vmax (float): maximum IF voltage to import
+        ifdata_sigma (float): convolve IF data by Gaussian with this std dev
+        ifdata_npts (float): evenly interpolate data to have this many data 
+            points
         rseries (float): series resistance of measurement system
         skip_header: number of rows to skip at the beginning of the file
+        input_type (str):
 
     Returns: IF data (in matrix form)
 
     """
 
     # Unpack keyword arguments
-    delim = kwargs.get('delimiter', ',')
-    v_fmt = kwargs.get('v_fmt', 'mV')
-    usecols = kwargs.get('usecols', (0, 1))
-    vmax = kwargs.get('ifdata_vmax', 2.25)
-    sigma = kwargs.get('ifdata_sigma', 5)
-    npts = kwargs.get('ifdata_npts', 3000)
-    rseries = kwargs.get('rseries', None)
-    skip_header = kwargs.get('skip_header', 1)
+    v_multiplier = kwargs.get('v_multiplier', PARAMS['v_multiplier'])
+    skip_header = kwargs.get('skip_header', PARAMS['skip_header'])
+    input_type = kwargs.get('input_type', PARAMS['input_type'])
+    sigma = kwargs.get('ifdata_sigma', PARAMS['ifdata_sigma'])
+    vmax = kwargs.get('ifdata_vmax', PARAMS['ifdata_vmax'])
+    npts = kwargs.get('ifdata_npts', PARAMS['ifdata_npts'])
+    delim = kwargs.get('delimiter', PARAMS['delimiter'])
+    usecols = kwargs.get('usecols', PARAMS['usecols'])
+    rseries = kwargs.get('rseries', PARAMS['rseries'])
+    v_fmt = kwargs.get('v_fmt', PARAMS['v_fmt'])
 
-    # Import
-    if_data = np.genfromtxt(filename, delimiter=delim, usecols=usecols, skip_header=skip_header)
+    # Import raw IF data
+    if input_type.lower() == 'csv':
+        ifdata = np.genfromtxt(ifdata, delimiter=delim, usecols=usecols,
+                               skip_header=skip_header)
+    elif input_type.lower() == 'numpy':
+        assert isinstance(ifdata, np.ndarray), \
+            'I-V data should be a Numpy array.'
+        assert ifdata.ndim == 2, 'I-V data should be 2-dimensional.'
+        assert ifdata.shape[1] == 2, 'I-V data should have 2 columns.'
+    else:
+        raise ValueError("Input type not recognized.")
 
     # Clean
-    if_data = remove_nans_matrix(if_data)
-    if_data[:, 0] *= _vfmt_dict[v_fmt]
-    if_data = if_data[np.argsort(if_data[:, 0])]
-    if_data = remove_doubles_matrix(if_data)
+    ifdata = remove_nans_matrix(ifdata)
+    ifdata[:, 0] *= _vfmt_dict[v_fmt]
+    ifdata = ifdata[np.argsort(ifdata[:, 0])]
+    ifdata = remove_doubles_matrix(ifdata)
 
     # Correct for offset
-    if_data[:, 0] = if_data[:, 0] - dc.offset[0]
+    ifdata[:, 0] = ifdata[:, 0] - dc.offset[0]
+
+    # Correct errors in experimental system
+    ifdata[:, 0] *= v_multiplier
 
     # Correct for series resistance
     if rseries is not None:
-        v = if_data[:, 0]
-        i = if_data[:, 0]
+        v = ifdata[:, 0]
         rstatic = dc.vraw / dc.iraw
         rstatic[rstatic < 0] = 0.
         rstatic = np.interp(v, dc.vraw, rstatic)
         iraw = np.interp(v, dc.vraw, dc.iraw)
-        # mask = np.invert(np.isnan(rstatic))
         rj = rstatic - rseries
         v0 = iraw * rj
-        if_data[:, 0] = v0
+        ifdata[:, 0] = v0
         
     # Normalize voltage to gap voltage
-    if_data[:, 0] /= dc.vgap
+    ifdata[:, 0] /= dc.vgap
 
     # Set to common voltage (so that data can be stacked)
-    v, p = if_data[:, 0], if_data[:, 1]
-    assert v.max() > vmax, 'vmax ({0}) outside data range ({1})'.format(vmax, v.max())
+    v, p = ifdata[:, 0], ifdata[:, 1]
+    assert v.max() > vmax, \
+        'vmax ({0}) outside data range ({1})'.format(vmax, v.max())
     assert v.min() < 0., '0 outside data range'
     v_out = np.linspace(0, vmax, npts)
     p_out = np.interp(v_out, v, p)
-    if_data = np.vstack((v_out, p_out)).T
+    ifdata = np.vstack((v_out, p_out)).T
 
-    # Smooth
+    # Smooth IF data
     if sigma is not None:
-        if_data[:, 1] = gauss_conv(if_data[:, 1], sigma)
+        ifdata[:, 1] = gauss_conv(ifdata[:, 1], sigma)
 
-    # # DEBUG
-    # import matplotlib.pyplot as plt
-    # plt.figure()
-    # plt.plot(if_data[:, 0], if_data[:, 1])
-    # plt.show()
-
-    return if_data
+    return ifdata

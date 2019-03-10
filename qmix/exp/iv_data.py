@@ -1,10 +1,17 @@
-""" This sub-module contains functions for importing and analyzing 
-experimental I-V data measurements.
+"""This sub-module contains functions for importing and analyzing 
+experimental current-voltage (I-V) data.
 
 "I-V data" is the DC tunneling current versus DC bias voltage that is measured
-from the SIS device. In general, I use the term "DC I-V data" for I-V data
-that is collected with no LO present, and "I-V data" for I-V data that is
-collected with the LO present (also known as the "pumped I-V curve").
+from an SIS junction. In general, the term "DC I-V data" is used for I-V data
+that is collected with no local-oscillator (LO) injection, and "I-V data" is
+used for I-V data that is collected with LO injection (also known as the 
+"pumped I-V curve").
+
+Note:
+    
+    The I-V data is expected either in the form of a CSV file or a Numpy 
+    array. Either way the data should have two columns: the first for voltage 
+    and the second for current.
 
 """
 
@@ -17,19 +24,17 @@ import scipy.constants as sc
 from scipy.signal import savgol_filter
 
 from .clean_data import remove_doubles_xy, remove_nans_xy, sort_xy
+from qmix.exp.parameters import params as PARAMS
 from qmix.mathfn.filters import gauss_conv
 from qmix.mathfn.misc import slope
 
 filterwarnings(action="ignore", module="scipy", message="^internal gelsd")
 
-# Voltage units
-_vfmt_dict = {'uV': 1e-6, 'mV': 1e-3, 'V': 1}
-
-# Current units
-_ifmt_dict = {'uA': 1e-6, 'mA': 1e-3, 'A': 1}
+_vfmt_dict = {'uV': 1e-6, 'mV': 1e-3, 'V': 1}  # Voltage units
+_ifmt_dict = {'uA': 1e-6, 'mA': 1e-3, 'A': 1}  # Current units
 
 
-# Import and analyze i-v data ------------------------------------------------
+# Import and analyze I-V data ------------------------------------------------
 
 DCIVData = namedtuple('DCIVData', ['vraw', 'iraw', 'vnorm', 'inorm', 'vgap',
                                    'igap', 'fgap', 'rn', 'rsg', 'offset',
@@ -38,53 +43,76 @@ DCIVData.__doc__ = """\
 Struct for DC I-V curve metadata.
 
 Args:
-    vraw (ndarray): DC bias voltage in units V. This data has filtered and the
-        offset has been corrected.
-    iraw (ndarray): DC tunneling current in units A. This data has filtered 
+    vraw (ndarray): DC bias voltage in units [V]. This data has been filtered 
         and the offset has been corrected.
-    vnorm (ndarray): DC bias voltage (normalized).
-    inorm (ndarray): DC tunneling current (normalized).
-    vgap (float): Gap voltage in units V.
-    igap (flaot): Gap current in units A.
-    fgap (float): Gap frequency in units Hz.
-    rn (float): Normal-state resistance in units ohms.
-    rsg (float): Sub-gap resistance in units ohms.
-    offset (tuple): Voltage and current offset in the raw measured data.
+    iraw (ndarray): DC tunneling current in units [A]. This data has been 
+        filtered and the offset has been corrected.
+    vnorm (ndarray): DC bias voltage, normalized to the gap voltage.
+    inorm (ndarray): DC tunneling current, normalized to the gap current.
+    vgap (float): Gap voltage in units [V].
+    igap (flaot): Gap current in units [A].
+    fgap (float): Gap frequency in units [Hz].
+    rn (float): Normal-state resistance in units [ohms].
+    rsg (float): Sub-gap resistance in units [ohms].
+    offset (tuple): Voltage and current offset in the raw measured data, in
+        units [V] and [A], respectively.
     vint (float): If you fit a line to the normal-state resistance (i.e., the
         DC I-V curve above the gap), the line will intercept the x-axis at
-        ``vint``.
-    rseries (float): The series resistance to remove from the I-V data.
+        ``vint``. This is given in units [V].
+    rseries (float): The series resistance to remove from the I-V data. Given
+        in units [ohms].
 
 """
 
 
-def dciv_curve(filename, **kwargs):
-    """Import and analyze DC I-V data (i.e., the unpumped I-V curve).
+def dciv_curve(ivdata, **kwargs):
+    """Import and analyze DC I-V data (a.k.a., the unpumped I-V curve).
 
     Args:
-        filename (str): DC I-V curve filename
-        **kwargs: keyword arguments
+        ivdata: DC I-V data. Either a CSV data file or a Numpy array. The data
+            should have two columns: the first for voltage, and the second
+            for current. To pass a Numpy array, set the ``input_type`` keyword
+            argument to ``"numpy"``. To pass a CSV data file, set the 
+            ``input_type`` keyword argument to ``"csv"``. The properties of 
+            the CSV file can be set through additional keyword arguments.
+            (See below).
 
     Keyword Args:
-        v_fmt (str): units for voltage ('uV', 'mV', 'V')
-        i_fmt (str): units for current ('uA', 'mA', 'A')
-        usecols (tuple): list of columns to import (tuple of length 2)
-        filter_data (bool): filter data?
-        vgap_guess (float): guess of gap voltage
-        igap_guess (float): guess of gap current
-        filter_nwind (int): SG filter window size
-        filter_npoly (int): SG filter order
-        filter_theta (float): angle to rotate data by during filtering
-        npts (int): number of points to output
-        voffset (float): voltage offset, in V
-        ioffset (float): current offset, in A
-        voffset_range (float): voltage range to search for offset, in V
-        voffset_sigma (float): std dev of Gaussian filter when searching for offset
-        rn_vmin (float): lower voltage range to determine the normal resistance
-        rn_vmax (float): upper voltage range to determine the normal resistance
-        current_threshold (float): the current at the gap voltage
-        vrsg (float): the voltage to calculate the subgap resistance at
-        rseries (float): series resistance, in ohms
+        input_type (str): Input type ('csv' or 'numpy').
+        delimiter (str): Delimiter for CSV files.
+        usecols (tuple): List of columns to import (tuple of length 2).
+        skip_header (int): Number of rows to skip, used to skip the header.
+        v_fmt (str): Units for voltage ('uV', 'mV', or 'V').
+        i_fmt (str): Units for current ('uA', 'mA', or 'A').
+        vmax (float): Maximum voltage to import in units [V].
+        npts (int): Number of points to have in I-V interpolation.
+        debug (bool): Plot each step of the I-V processing procedure.
+        voffset (float): Voltage offset, in units [V].
+        ioffset (float): Current offset, in units [A].
+        voffset_range (float): Voltage range over which to search for offset,
+            in units [V].
+        voffset_sigma (float): Standard deviation of Gaussian filter when 
+            searching for offset.
+        rseries (float): Series resistance in experimental measurement 
+            system, in units [ohms].
+        i_multiplier (float): Multiply the imported current by this value.
+        v_multiplier (float): Multiply the imported voltage by this value.
+        filter_data (bool): Filter data
+        vgap_guess (float): Guess of gap voltage. Used to temporarily
+            normalize while filtering. Given in units [V].
+        igap_guess (float): Guess of gap current. Used to temporarily
+            normalize while filtering. Given in units [A].
+        filter_theta (float): Angle by which to the rotate data while 
+            filtering. Given in radians.
+        filter_nwind (int): Window size for Savitsky-Golay filter.
+        filter_npoly (int): Order of Savitsky-Golay filter.
+        vgap_threshold (float): The current to measure the gap voltage at.
+        rn_vmin (float): Lower voltage range to determine the normal resistance
+        rn_vmax (float): Upper voltage range to determine the normal resistance
+        vrsg (float): The voltage at which to calculate the subgap 
+            resistance.
+        vleak (float): The voltage at which to calculate the subgap leakage
+            current.
 
     Returns:
         tuple: normalized voltage, normalized current, DC I-V metadata
@@ -92,39 +120,40 @@ def dciv_curve(filename, **kwargs):
     """
 
     # Unpack keyword arguments
-    rseries = kwargs.get('rseries', None)
-    vmax = kwargs.get('vmax', 6e-3)
-    npts = kwargs.get('npts', 6001)
-    v_multiplier = kwargs.get('v_multiplier', 1.)
-    i_multiplier = kwargs.get('i_multiplier', 1.)
-    debug = kwargs.get('debug', False)
+    # Use default values from qmix.exp.parameters if they aren't provided
+    v_multiplier = kwargs.get('v_multiplier', PARAMS['v_multiplier'])
+    i_multiplier = kwargs.get('i_multiplier', PARAMS['i_multiplier'])
+    rseries = kwargs.get('rseries', PARAMS['rseries'])
+    debug = kwargs.get('debug', PARAMS['debug'])
+    vmax = kwargs.get('vmax', PARAMS['vmax'])
+    npts = kwargs.get('npts', PARAMS['npts'])
 
-    # Import and do some basic cleaning (V in V, I in A)
-    volt_v, curr_a = _load_iv(filename, **kwargs)
+    # Import and do some basic cleaning (voltage in V, current in A)
+    volt_v, curr_a = _load_iv(ivdata, **kwargs)
 
-    if debug:
+    if debug:  # pragma: no cover
         plt.figure()
         plt.plot(volt_v, curr_a)
         plt.title('Initial import')
         plt.show()
 
-    # Correct for DC gain errors in exp. system (if needed)
+    # Correct for DC gain errors in experimental system (if needed)
     volt_v *= v_multiplier
     curr_a *= i_multiplier
 
-    # Filter data
+    # Filter I-V data
     volt_v, curr_a = _filter_iv_data(volt_v, curr_a, **kwargs)
 
-    if debug:
+    if debug:  # pragma: no cover
         plt.figure()
         plt.plot(volt_v, curr_a)
         plt.title('After filtering')
         plt.show()
 
-    # Correct I/V offset
+    # Correct offsets in I-V data
     volt_v, curr_a, offset = _correct_offset(volt_v, curr_a, **kwargs)
 
-    if debug:
+    if debug:  # pragma: no cover
         plt.figure()
         plt.plot(volt_v, curr_a)
         plt.grid()
@@ -134,32 +163,33 @@ def dciv_curve(filename, **kwargs):
     # Save uncorrected data
     vraw, iraw = volt_v.copy(), curr_a.copy()
 
-    # Fix errors in DC biasing system
+    # Correct for series resistances in DC biasing system
     volt_v, curr_a = _correct_series_resistance(volt_v, curr_a, **kwargs)
 
-    if debug:
+    if debug:  # pragma: no cover
         plt.figure()
         plt.plot(volt_v, curr_a)
         plt.grid()
         plt.title('After fixing the series resistance')
         plt.show()
 
-    # Analyze dc I-V curve
+    # Analyze properties of DC I-V curve
     rn, vint = _find_normal_resistance(volt_v, curr_a, **kwargs)
     rsg = _find_subgap_resistance(volt_v, curr_a, **kwargs)
     vgap = _find_gap_voltage(volt_v, curr_a, **kwargs)
     fgap = sc.e * vgap / sc.h
     igap = vgap / rn
 
-    # Normalize
+    # Normalize I-V curve
     voltage = volt_v / vgap
     current = curr_a / igap
 
-    # Resample
-    vtmp = np.linspace(-vmax / vgap, vmax / vgap, npts)
-    current = np.interp(vtmp, voltage, current)
-    voltage = vtmp
+    # Resample I-V curve
+    v_temp = np.linspace(-vmax, vmax, npts) / vgap
+    current = np.interp(v_temp, voltage, current)
+    voltage = v_temp
 
+    # Save DC I-V curve metadata
     dc = DCIVData(vraw=vraw,     iraw=iraw,
                   vnorm=voltage, inorm=current,
                   vgap=vgap,     igap=igap,
@@ -170,47 +200,74 @@ def dciv_curve(filename, **kwargs):
     return voltage, current, dc
 
 
-def iv_curve(filename, dc, **kwargs):
+def iv_curve(ivdata, dc, **kwargs):
     """Load and analyze pumped I-V curve data.
 
     Args:
-        filename (str): I-V filename
-        dc (qmix.exp.iv_data.DCIVData): DC data structure
-        **kwargs: keyword arguments
+        ivdata: I-V data. Either a CSV data file or a Numpy array. The data
+            should have two columns: the first for voltage, and the second
+            for current. To pass a Numpy array, set the ``input_type`` keyword
+            argument to ``"numpy"``. To pass a CSV data file, set the 
+            ``input_type`` keyword argument to ``"csv"``. The properties of 
+            the CSV file can be set through additional keyword arguments.
+            (See below).
+        dc (qmix.exp.iv_data.DCIVData): DC I-V data metadata. Generated 
+            previously by ``dciv_curve``.
 
     Keyword Args:
-        v_fmt (str): units for voltage ('uV', 'mV', 'V')
-        i_fmt (str): units for current ('uA', 'mA', 'A')
-        usecols (tuple): list of columns to import (tuple of length 2)
-        filter_data (bool): filter data?
-        filter_nwind (int): SG filter window size
-        filter_npoly (int): SG filter order
-        filter_theta (float): angle to rotate data by during filtering
-        npts (int): number of points to output
+        input_type (str): Input type ('csv' or 'numpy').
+        delimiter (str): Delimiter for CSV files.
+        usecols (tuple): List of columns to import (tuple of length 2).
+        skip_header (int): Number of rows to skip, used to skip the header.
+        v_fmt (str): Units for voltage ('uV', 'mV', or 'V').
+        i_fmt (str): Units for current ('uA', 'mA', or 'A').
+        vmax (float): Maximum voltage to import in units [V].
+        npts (int): Number of points to have in I-V interpolation.
+        debug (bool): Plot each step of the I-V processing procedure.
+        voffset (float): Voltage offset, in units [V].
+        ioffset (float): Current offset, in units [A].
+        voffset_range (float): Voltage range over which to search for offset,
+            in units [V].
+        voffset_sigma (float): Standard deviation of Gaussian filter when 
+            searching for offset.
+        rseries (float): Series resistance in experimental measurement 
+            system, in units [ohms].
+        i_multiplier (float): Multiply the imported current by this value.
+        v_multiplier (float): Multiply the imported voltage by this value.
+        filter_data (bool): Filter data
+        vgap_guess (float): Guess of gap voltage. Used to temporarily
+            normalize while filtering. Given in units [V].
+        igap_guess (float): Guess of gap current. Used to temporarily
+            normalize while filtering. Given in units [A].
+        filter_theta (float): Angle by which to the rotate data while 
+            filtering. Given in radians.
+        filter_nwind (int): Window size for Savitsky-Golay filter.
+        filter_npoly (int): Order of Savitsky-Golay filter.
 
     Returns:
         tuple: normalized voltage, normalized current
 
     """
 
-    vmax = kwargs.get('vmax', 6e-3)
-    npts = kwargs.get('npts', 6001)
-    voffset = kwargs.get('voffset', None)
-    ioffset = kwargs.get('ioffset', None)
-    v_multiplier = kwargs.get('v_multiplier', 1.)
-    i_multiplier = kwargs.get('i_multiplier', 1.)
-    debug = kwargs.get('debug', False)
+    # Unpack keyword arguments
+    v_multiplier = kwargs.get('v_multiplier', PARAMS['v_multiplier'])
+    i_multiplier = kwargs.get('i_multiplier', PARAMS['i_multiplier'])
+    voffset = kwargs.get('voffset', PARAMS['voffset'])
+    ioffset = kwargs.get('ioffset', PARAMS['ioffset'])
+    debug = kwargs.get('debug', PARAMS['debug'])
+    vmax = kwargs.get('vmax', PARAMS['vmax'])
+    npts = kwargs.get('npts', PARAMS['npts'])
 
     # Import and do some basic cleaning
-    volt_v, curr_a = _load_iv(filename, **kwargs)
+    volt_v, curr_a = _load_iv(ivdata, **kwargs)
 
-    if debug:
+    if debug:  # pragma: no cover
         plt.figure()
         plt.plot(volt_v, curr_a)
         plt.title('Initial import')
         plt.show()
 
-    # Correct for DC gain errors in exp. system (if needed)
+    # Correct for DC gain errors in experimental system (if needed)
     volt_v *= v_multiplier
     curr_a *= i_multiplier
 
@@ -222,25 +279,25 @@ def iv_curve(filename, dc, **kwargs):
         volt_v -= dc.offset[0]
         curr_a -= dc.offset[1]
 
-    if debug:
+    if debug:  # pragma: no cover
         plt.figure()
         plt.plot(volt_v, curr_a)
         plt.title('After correcting offset')
         plt.show()
 
-    # Filter
+    # Filter I-V data
     volt_v, curr_a = _filter_iv_data(volt_v, curr_a, **kwargs)
 
-    if debug:
+    if debug:  # pragma: no cover
         plt.figure()
         plt.plot(volt_v, curr_a)
         plt.title('After filtering')
         plt.show()
 
-    # Fix errors in DC biasing system
+    # Correct for series resistances in DC biasing system
     volt_v, curr_a = _correct_series_resistance(volt_v, curr_a, **kwargs)
 
-    if debug:
+    if debug:  # pragma: no cover
         plt.figure()
         plt.plot(volt_v, curr_a)
         plt.grid()
@@ -251,43 +308,63 @@ def iv_curve(filename, dc, **kwargs):
     voltage = volt_v / dc.vgap
     current = curr_a / dc.igap
 
-    # Resample
-    vtmp = np.linspace(-vmax / dc.vgap, vmax / dc.vgap, npts)
-    current = np.interp(vtmp, voltage, current)
-    voltage = vtmp
+    # Resample I-V curve
+    v_temp = np.linspace(-vmax, vmax, npts) / dc.vgap
+    current = np.interp(v_temp, voltage, current)
+    voltage = v_temp
 
     return voltage, current
 
 
-# Load i-v data -------------------------------------------------------------
+# Load I-V data -------------------------------------------------------------
 
-def _load_iv(filename, v_fmt='mV', i_fmt='mA', usecols=(0,1), delim=',', skip_header=1, **kw):
-    """Import i-v data from CSV file.
+def _load_iv(ivdata, **kw):
+    """Import I-V data and do some basic cleaning.
 
     Args:
-        filename: I-V filename (csv, 2 columns, no header)
+        ivdata: I-V data. Either a CSV data file or a Numpy array. The data
+            should have two columns: the first for voltage, and the second
+            for current.
 
     Keyword Arguments:
-        v_fmt: voltage units ('mV', 'V', etc.)
-        i_fmt: current units ('uA', 'mA', etc.)
+        input_type: input type ('csv' or 'numpy')
+        v_fmt: voltage units ('uV', 'mV', 'V')
+        i_fmt: current units ('uA', 'mA', 'A')
         usecols: list of columns to use (tuple of length 2)
         skip_header: number of rows to skip at the beginning of the file
-        kw: keywords (not used)
+        delimiter: delimiter for CSV files
 
     Returns:
-        ndarray: voltage in V
-        ndarray: current in A
+        tuple: voltage in units V, current in units A
 
     """
 
-    v_raw, i_raw = np.genfromtxt(filename,
-                                 delimiter=delim,
-                                 usecols=usecols,
-                                 skip_header=skip_header).T
+    # Unpack keyword arguments
+    skip_header = kw.get('skip_header', PARAMS['skip_header'])
+    input_type = kw.get('input_type', PARAMS['input_type'])
+    delimiter = kw.get('delimiter', PARAMS['delimiter'])
+    usecols = kw.get('usecols', PARAMS['usecols'])
+    v_fmt = kw.get('v_fmt', PARAMS['v_fmt'])
+    i_fmt = kw.get('i_fmt', PARAMS['i_fmt'])
 
-    volt_v = v_raw * _vfmt_dict[v_fmt]
-    curr_a = i_raw * _ifmt_dict[i_fmt]
+    # Import raw I-V data
+    if input_type.lower() == 'csv':
+        vraw, iraw = np.genfromtxt(ivdata, delimiter=delimiter,
+                                   usecols=usecols, skip_header=skip_header).T
+    elif input_type.lower() == 'numpy':
+        assert isinstance(ivdata, np.ndarray), \
+            'I-V data should be a Numpy array.'
+        assert ivdata.ndim == 2, 'I-V data should be 2-dimensional.'
+        assert ivdata.shape[1] == 2, 'I-V data should have 2 columns.'
+        vraw, iraw = ivdata.T
+    else:
+        raise ValueError("Input type not recognized.")
 
+    # Set units
+    volt_v = vraw * _vfmt_dict[v_fmt]
+    curr_a = iraw * _ifmt_dict[i_fmt]
+
+    # Basic cleaning
     volt_v, curr_a = remove_nans_xy(volt_v, curr_a)
     volt_v, curr_a = _take_one_pass(volt_v, curr_a)
     volt_v, curr_a = sort_xy(volt_v, curr_a)
@@ -296,22 +373,19 @@ def _load_iv(filename, v_fmt='mV', i_fmt='mA', usecols=(0,1), delim=',', skip_he
     return volt_v, curr_a
 
 
-# Filter i-v data ------------------------------------------------------------
+# Filter I-V data ------------------------------------------------------------
 
-def _filter_iv_data(volt_v, curr_a, filter_data=True, vgap_guess=2.7e-3,
-                    igap_guess=2 - 4, filter_nwind=21, filter_npoly=3,
-                    filter_theta=0.785, npts=6001, **kw):
-    """Filter i-v data.
+def _filter_iv_data(volt_v, curr_a, **kw):
+    """Filter I-V data.
 
-    Rotate by 45 degrees then use Savitzky-Golay (SG) filter.
+    Rotate, use Savitzky-Golay (SG) filter, then rotate back.
 
     Args:
-        volt_v (ndarray): voltage, in V
-        curr_a (ndarray): current, in A
-        kw: keywords (not used)
+        volt_v (ndarray): voltage in units V
+        curr_a (ndarray): current in units A
 
     Keyword Args:
-        filter_data: filter data?
+        filter_data: filter data
         vgap_guess: guess of gap voltage (used to temporarily normalize)
         igap_guess: guess of gap current (used to temporarily normalize)
         filter_nwind: SG filter window size
@@ -320,39 +394,51 @@ def _filter_iv_data(volt_v, curr_a, filter_data=True, vgap_guess=2.7e-3,
         npts: number of points to output
 
     Returns:
-        ndarray: filtered voltage
-        ndarray: filtered current
+        tuple: filtered voltage, filtered current
 
     """
+
+    # Unpack keyword arguments
+    filter_nwind = kw.get('filter_nwind', PARAMS['filter_nwind'])
+    filter_npoly = kw.get('filter_npoly', PARAMS['filter_npoly'])
+    filter_theta = kw.get('filter_theta', PARAMS['filter_theta'])
+    filter_data = kw.get('filter_data', PARAMS['filter_data'])
+    vgap_guess = kw.get('vgap_guess', PARAMS['vgap_guess'])
+    igap_guess = kw.get('igap_guess', PARAMS['igap_guess'])
+    npts = kw.get('npts', PARAMS['npts'])
 
     if not filter_data:  # pragma: no cover
         return volt_v, curr_a
 
+    # Normalize (temporary)
     vnorm, inorm = volt_v / vgap_guess, curr_a / igap_guess
 
+    # Rotate I-V curve
     x, y = _rotate(vnorm, inorm, -filter_theta)
 
+    # Resample rotated curve
     x_resampled = np.linspace(x.min(), x.max(), np.alen(x))
     y_resampled = np.interp(x_resampled, x, y)
 
+    # Filter using Savitsky-Golay filter
     y_filtered = savgol_filter(y_resampled, filter_nwind, filter_npoly)
 
+    # Rotate back to starting position
     x, y = _rotate(x_resampled, y_filtered, filter_theta)
 
+    # Resample
     xtmp = np.linspace(x.min(), x.max(), npts)
-
     y = np.interp(xtmp, x, y)
     x = xtmp
 
+    # Go back to units [V] and [A]
     volt_v, curr_a = x * vgap_guess, y * igap_guess
 
     return volt_v, curr_a
 
 
 def _rotate(x, y, theta):
-    """Rotate x/y data by angle theta (in radians).
-
-    """
+    """Rotate x/y data by angle theta (in radians)."""
 
     x_out = np.cos(theta) * x - np.sin(theta) * y
     y_out = np.sin(theta) * x + np.cos(theta) * y
@@ -379,10 +465,11 @@ def _take_one_pass(v, i):
         i (ndarray): current
 
     Returns:
-        ndarray: voltage
-        ndarray: current
+        tuple: voltage, current
 
     """
+
+    # TODO: Update -- make more general
 
     idx_imin, idx_imax = i.argmin(), i.argmax()
 
@@ -407,8 +494,7 @@ def _take_one_pass(v, i):
         return xout, yout
 
 
-def _correct_offset(volt_v, curr_a, voffset=None, ioffset=None,
-                    voffset_range=3e-4, voffset_sigma=1e-5, **kw):
+def _correct_offset(volt_v, curr_a, **kw):
     """Find and correct any I/V offset.
 
     The experimental data often has an offset in both V and I. This can be
@@ -418,7 +504,6 @@ def _correct_offset(volt_v, curr_a, voffset=None, ioffset=None,
     Args:
         volt_v (ndarray): voltage, in V
         curr_a (ndarray): current, in A
-        kw: keywords (not used)
 
     Keyword Args:
         voffset: voltage offset, in V
@@ -427,11 +512,15 @@ def _correct_offset(volt_v, curr_a, voffset=None, ioffset=None,
         voffset_sigma: std dev of Gaussian filter when searching for offset
 
     Returns:
-        ndarray: corrected voltage
-        ndarray: corrected current
-        tuple: I/V offset (voltage, current)
+        tuple: corrected voltage, corrected current, I/V offset
 
     """
+
+    # Unpack keyword arguments
+    voffset_range = kw.get('voffset_range', PARAMS['voffset_range'])
+    voffset_sigma = kw.get('voffset_sigma', PARAMS['voffset_sigma'])
+    voffset = kw.get('voffset', PARAMS['voffset'])
+    ioffset = kw.get('ioffset', PARAMS['ioffset'])
 
     if voffset is None:  # Find voffset and ioffset
 
@@ -467,29 +556,32 @@ def _correct_offset(volt_v, curr_a, voffset=None, ioffset=None,
     return volt_v, curr_a, (voffset, ioffset)
 
 
-def _find_normal_resistance(volt_v, curr_a, rn_vmin=3.5e-3, rn_vmax=4.5e-3, **kw):
+def _find_normal_resistance(volt_v, curr_a, **kw):
     """Determine the normal resistance of the DC I-V curve.
 
     Args:
         volt_v (ndarray): voltage, in V
         curr_a (ndarray): current, in A
-        kw: keywords arguments (not used)
 
     Keyword Args:
         rn_vmin: lower voltage range to determine the normal resistance
         rn_vmax: upper voltage range to determine the normal resistance
 
     Returns:
-        float: normal resistance
-        float: intercept voltage
+        tuple: normal resistance, intercept voltage
 
     """
 
+    # Unpack keyword arguments
+    rn_vmin = kw.get('rn_vmin', PARAMS['rn_vmin'])
+    rn_vmax = kw.get('rn_vmax', PARAMS['rn_vmax'])
+
+    # Range over which to fit normal resistance
     mask = (rn_vmin < volt_v) & (volt_v < rn_vmax)
     v, i = volt_v[mask], curr_a[mask]
 
+    # Fit normal-state resistance
     p = np.polyfit(v, i, 1)
-
     rnslope = p[0]
     rn = 1 / rnslope
     vint = -p[1] / rnslope
@@ -497,45 +589,46 @@ def _find_normal_resistance(volt_v, curr_a, rn_vmin=3.5e-3, rn_vmax=4.5e-3, **kw
     return rn, vint
 
 
-def _find_gap_voltage(volt_v, curr_a, vgap_threshold=None, **kw):
-    """Calculate gap voltage.
+def _find_gap_voltage(volt_v, curr_a, **kw):
+    """Find gap voltage.
 
     Args:
         volt_v (ndarray): voltage, in V
         curr_a (ndarray): current, in A
-        kw: keywords arguments (not used)
 
     Keyword Args:
-        current_threshold (float): the current at the gap voltage
+        vgap_threshold (float): the current at the gap voltage
 
     Returns:
         float: gap voltage
 
     """
 
+    # Unpack keyword arguments
+    vgap_threshold = kw.get('vgap_threshold', PARAMS['vgap_threshold'])
+
     # Method 1: current threshold
     if vgap_threshold is not None:
         idx = np.abs(curr_a - vgap_threshold).argmin()
-        v_g = volt_v[idx]
-        return v_g
+        vgap = volt_v[idx]
+        return vgap
 
     # Method 2: max derivative
     vstep = volt_v[1] - volt_v[0]
     mask = (1.5e-3 < volt_v) & (volt_v < 3.5e-3)
     der = slope(volt_v[mask], curr_a[mask])
     der = gauss_conv(der, sigma=0.2e-3 / vstep)
-    v_g = volt_v[mask][der.argmax()]
+    vgap = volt_v[mask][der.argmax()]
 
-    return v_g
+    return vgap
 
 
-def _find_subgap_resistance(volt_v, curr_a, vrsg=2.e-3, **kw):
+def _find_subgap_resistance(volt_v, curr_a, **kw):
     """Find subgap resistance of DC I-V curve.
 
     Args:
         volt_v (ndarray): voltage, in V
         curr_a (ndarray): current, in A
-        kw: keywords arguments (not used)
 
     Keyword Args:
         vrsg: the voltage to calculate the subgap resistance at
@@ -545,19 +638,21 @@ def _find_subgap_resistance(volt_v, curr_a, vrsg=2.e-3, **kw):
 
     """
 
+    # Unpack keyword arguments
+    vrsg = kw.get('vrsg', PARAMS['vrsg'])
+
     mask = (vrsg - 1e-4 < volt_v) & (volt_v < vrsg + 1e-4)
     p = np.polyfit(volt_v[mask], curr_a[mask], 1)
 
     return 1 / p[0]
 
 
-def _correct_series_resistance(vmeas, imeas, rseries=None, **kw):
+def _correct_series_resistance(vmeas, imeas, **kw):
     """Remove series resistance from exp data.
 
     Args:
         vmeas (ndarray): measured voltage, in V
         imeas (ndarray): measured current, in A
-        kw: keywords arguments (not used)
 
     Keyword Args:
         rseries (float): series resistance, in ohms
@@ -567,6 +662,9 @@ def _correct_series_resistance(vmeas, imeas, rseries=None, **kw):
         ndarray: corrected current, in A
 
     """
+
+    # Unpack keyword arguments
+    rseries = kw.get('rseries', PARAMS['rseries'])
 
     if rseries is None:
         return vmeas, imeas

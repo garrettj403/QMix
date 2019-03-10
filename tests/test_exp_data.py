@@ -19,7 +19,8 @@ def test_importing_exp_data(directory='tests/exp-data/'):
 
     # Import DC data (no LO pumping)
     dciv = qe.RawData0(directory+'dciv-data.csv', 
-                       directory+'dcif-data.csv')
+                       directory+'dcif-data.csv',
+                       input_type='csv')
 
     # Check some of the attributes
     # Note: I calculated these by hand
@@ -29,11 +30,23 @@ def test_importing_exp_data(directory='tests/exp-data/'):
     assert np.abs(dciv.offset[1] - 9.68e-6) < 0.1e-6
 
     # Import data at 230 GHz
-    pump = qe.RawData(directory+'f230_0_iv.csv', dciv, 
-                      directory+'f230_0_hot.csv', 
-                      directory+'f230_0_cold.csv')
+    # Import into Numpy arrays and then pass the arrays to RawData
+    csv = dict(delimiter=',', usecols=(0,1), skip_header=1)
+    ivdata = np.genfromtxt(directory+'f230_0_iv.csv', **csv)
+    hotdata = np.genfromtxt(directory+'f230_0_hot.csv', **csv)
+    colddata = np.genfromtxt(directory+'f230_0_cold.csv', **csv)
+    pump = qe.RawData(ivdata, dciv, hotdata, colddata, freq=230.2, input_type='numpy')
+    assert pump.freq == 230.2, "Wrong frequency."
 
     # Check some of the attributes
     # Note: I calculated these by hand
-    assert 33. < pump.tn_best < 37.
-    assert -1.2 < pump.g_db < -1.0
+    assert 33. < pump.tn_best < 37., "Wrong noise temperature."
+    assert -1.2 < pump.g_db < -1.0, "Wrong conversion gain."
+
+    # Check automatic frequency determination
+    pump = qe.RawData(directory+'f230_0_iv.csv', dciv, analyze_iv=False, input_type='csv')
+    assert pump.freq == 230.0, "Wrong frequency."
+
+    # Try importing the wrong data type
+    with pytest.raises(ValueError):
+        qe.RawData(directory+'f230_0_iv.csv', dciv, analyze_iv=False, input_type='pandas')
