@@ -1,15 +1,15 @@
-""" This module contains classes to represent the response function of the 
+"""This module contains classes to represent the response function of the
 SIS junction.
 
 There are several different types of response function classes:
 
-   - Response functions generated directly from voltage and current data:
+   - Response functions generated directly from I-V data:
    
       - ``RespFn``: This is the base class for all of the other response 
         function classes. This class will generate a response function 
         based on a DC I-V curve (i.e., DC voltage and current data). Note that 
         this class assumes that you have "pre-processed" the data. This means 
-        that it will use voltage and current data to generate the
+        that it will use the voltage and current data to generate the
         interpolation directly. Normally, you want to have more data points 
         around curvier regions in order to minimize how much time the 
         interpolation takes. If you haven't done this, it is a good idea to use
@@ -20,18 +20,22 @@ There are several different types of response function classes:
         ``RespFn``, this class will resample the response function in order to
         optimize the interpolation.
 
-   - Response functions generated from mathematical models:
+   - Response functions generated from I-V curve models:
 
       - ``RespFnPerfect``: This class will generate a response function based
         on an ideal DC I-V curve (i.e., the subgap current is exactly zero
         below the gap voltage and exactly equal to the bias voltage above the
         gap, assuming normalized values). This DC I-V curve has an infinitely
-        sharp transition.
+        sharp transition. Note however that you can smear the transition using
+        the ``v_smear`` argument. This will convolve the ideal reasponse 
+        function with a Gaussian distribution, allowing you to control the 
+        sharpness of the transition.
 
       - ``RespFnPolynomial``: This class will generate a response function 
-        based on the polynomial model from Kennedy (1999). This class can be
-        used to simulate the effect of the transition's sharpness (i.e., how do
-        the results change when the gap is more or less sharp).
+        based on the polynomial model from Kennedy (1999). The order of the
+        polynomial controls how sharp the transition is, so this class can be
+        used to simulate the effect of the transition's sharpness (i.e., how 
+        do the results change when the gap is more or less sharp).
         
       - ``RespFnExponential``: This class will generate a response function 
         based on the exponential model from Rashid et al. (2016). This model is
@@ -188,10 +192,11 @@ class RespFn(object):
     def plot_interpolation(self, fig_name=None, ax=None):  # pragma: no cover
         """Plot the interpolation of the response function.
 
-        Note: If ``fig_name`` is defined, this method will not return the
-        figure axis. It will instead close the figure, to ensure that there
-        aren't too many figures open at the same time (a common problem when
-        saving many figures at the same time).
+        Note: If ``fig_name`` is provided, this method will save the plot 
+        to the specified folder and then close the plot. This means
+        that the Matplotlib axis object will not be returned in this
+        case. This is done to prevent too many plots from being open 
+        at the time.
 
         Args:
             fig_name (str, default is None): name of figure file name, if you 
@@ -241,12 +246,11 @@ class RespFn(object):
     def show_current(self, fig_name=None, ax=None):  # pragma: no cover
         """Plot the interpolation of the response function.
 
-        This method can be used to check the interpolation of the response 
-        function.
-
-        Note: If ``fig_name`` is defined, this method will save the figure
-        in the specified file. Otherwise, this method will return the 
-        Matplotlib axis.
+        Note: If ``fig_name`` is provided, this method will save the plot 
+        to the specified folder and then close the plot. This means
+        that the Matplotlib axis object will not be returned in this
+        case. This is done to prevent too many plots from being open 
+        at the time.
 
         Warning: 
 
@@ -263,9 +267,11 @@ class RespFn(object):
         return self.plot_interpolation(fig_name, ax)
 
     def idc(self, vbias):
-        """Interpolate the DC I-V curve at the given bias voltage.
+        """Interpolate the DC I-V curve.
 
-        This is the imaginary component of the respones function.
+        This is the imaginary component of the respones function, and it is
+        used to calculate the quasiparticle tunneling currents in
+        ``qmix.qtcurrent.qtcurrent``.
 
         Args:
             vbias (ndarray): Bias voltage (normalized)
@@ -281,7 +287,9 @@ class RespFn(object):
         """Interpolate the Kramers-Kronig transform of the DC I-V curve at the
         given bias voltage.
 
-        This is the real component of the response function.
+        This is the real component of the response function, and it is
+        used to calculate the quasiparticle tunneling currents in
+        ``qmix.qtcurrent.qtcurrent``.
 
         Args:
             vbias (ndarray): Bias voltage (normalized)
@@ -302,9 +310,9 @@ class RespFn(object):
 
         Note:
 
-            This method is not used by QMix, but it can be useful if you are
-            calculating the tunneling currents using Tucker theory (Tucker and
-            Feldman, 1985).
+            This method is not used directly by QMix, but it can be useful if
+            you are calculating the tunneling currents using Tucker theory
+            (Tucker and Feldman, 1985).
 
         Args:
             vbias (ndarray): Bias voltage (normalized)
@@ -317,8 +325,7 @@ class RespFn(object):
         return self._f_didc(vbias)
 
     def dikk(self, vbias):
-        """Interpolate the derivative of the Kramers-Kronig transform of the DC
-        I-V curve at the given bias voltage.
+        """Interpolate the derivative of the Kramers-Kronig transform.
 
         This is defined as ``d(ikk) / d(vb)`` where ``ikk`` is the Kramers-
         Kronig transform of the DC tunneling current and ``vb`` is the bias
@@ -326,9 +333,9 @@ class RespFn(object):
 
         Note:
 
-            This method is not used by QMix, but it can be useful if you are
-            calculating the tunneling currents using Tucker theory (Tucker and
-            Feldman, 1985).
+            This method is not used directly by QMix, but it can be useful if
+            you are calculating the tunneling currents using Tucker theory
+            (Tucker and Feldman, 1985).
 
         Args:
             vbias (ndarray): Bias voltage (normalized)
@@ -341,27 +348,27 @@ class RespFn(object):
         return self._f_dikk(vbias)
 
     def resp(self, vbias):
-        """Interpolate the response function current at the given bias voltage.
+        """Interpolate the response function.
 
         Args:
             vbias (ndarray): Bias voltage (normalized)
 
         Returns:
-            ndarray: Response function current (complex value)
+            ndarray: Response function (a complex value)
 
         """
 
         return self._f_ikk(vbias) + 1j * self._f_idc(vbias)
 
     def resp_conj(self, vbias):
-        """Interpolate the complex conjugate of the response function current
-        at the given bias voltage.
+        """Interpolate the complex conjugate of the response function
+       .
 
         Note:
 
-            This method is not used by QMix, but it can be useful if you are
-            calculating the tunneling currents using Tucker theory (Tucker and
-            Feldman, 1985).
+            This method is not used directly by QMix, but it can be useful if
+            you are calculating the tunneling currents using Tucker theory
+            (Tucker and Feldman, 1985).
 
             This method is included because it might be *slightly* faster than
             ``np.conj(resp.resp(vb))`` where ``resp`` is an instance of this
@@ -371,21 +378,21 @@ class RespFn(object):
             vbias (ndarray): Bias voltage (normalized)
 
         Returns:
-            ndarray: Conjugate of the response function current
+            ndarray: Complex conjugate of the response function
 
         """
 
         return self._f_ikk(vbias) - 1j * self._f_idc(vbias)
 
     def resp_swap(self, vbias):
-        """Interpolate the response function current, with the real and
-        imaginary components swapped, at the given bias voltage.
+        """Interpolate the response function, with the real and imaginary 
+        components swapped,.
         
         Note:
 
-            This method is not used by QMix, but it can be useful if you are
-            calculating the tunneling currents using Tucker theory (Tucker and
-            Feldman, 1985).
+            This method is not used directly by QMix, but it can be useful if
+            you are calculating the tunneling currents using Tucker theory
+            (Tucker and Feldman, 1985).
 
             This method is included because it might be *slightly* faster than
             ``1j * np.conj(resp.resp(vb))`` where ``resp`` is an instance of
@@ -396,7 +403,8 @@ class RespFn(object):
             vbias (ndarray): Bias voltage (normalized)
 
         Returns:
-            ndarray: Response function current with real and imaginary swapped
+            ndarray: Response function with the real and imaginary components 
+                swapped
 
         """
 
@@ -505,7 +513,7 @@ class RespFnExponential(RespFn):
 
     Class to contain, interpolate and plot the response function.
 
-    Ref:
+    Reference:
 
         H. Rashid, et al., "Harmonic and reactive behavior of the
         quasiparticle tunnel current in SIS junctions," AIP Advances,
