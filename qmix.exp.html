@@ -419,9 +419,9 @@ matrix form (i.e., a matrix with two columns).</p>
 <p>This module contains classes for importing, filtering and
 analyzing raw I-V and IF data obtained from SIS mixer experiments.</p>
 <p>Two classes (<code class="docutils literal notranslate"><span class="pre">RawData0</span></code> and <code class="docutils literal notranslate"><span class="pre">RawData</span></code>) are provided to help manage the
-data. <code class="docutils literal notranslate"><span class="pre">RawData0</span></code> is intended for data that was collected with no LO present
-(i.e., unpumped data), and <code class="docutils literal notranslate"><span class="pre">RawData</span></code> is intended for data that was collected
-with LO pumping (i.e., pumped data).</p>
+data. <code class="docutils literal notranslate"><span class="pre">RawData0</span></code> is intended for data that was collected with no LO
+injection (i.e., unpumped data), and <code class="docutils literal notranslate"><span class="pre">RawData</span></code> is intended for data that was
+collected with LO injection (i.e., pumped data).</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p>Experimental data can be passed to these classes either in the form of CSV
@@ -464,25 +464,64 @@ These parameters control how the data is imported and analyzed.</p>
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>ivdata</strong> – I-V data. Either a CSV data file or a Numpy array. The data
 should have two columns: the first for voltage, and the second
-for current.</li>
+for current. If you are using CSV files, the properties of
+the CSV file can be set through additional keyword arguments
+(see below).</li>
 <li><strong>dciv</strong> (<a class="reference internal" href="#qmix.exp.iv_data.DCIVData" title="qmix.exp.iv_data.DCIVData"><em>qmix.exp.iv_data.DCIVData</em></a>) – DC I-V metadata</li>
 </ul>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
 <tr class="field-even field"><td>&#160;</td><td class="field-body"><ul class="first last simple">
-<li><strong>if_hot</strong> – Hot IF data. Either a CSV data file or a Numpy array. The data
-should have two columns: the first for voltage, and the second
-for IF power.</li>
-<li><strong>if_hot</strong> – Cold IF data. Either a CSV data file or a Numpy array. The
-data should have two columns: the first for voltage, and the
-second for IF power.</li>
-<li><strong>comment</strong> (<em>str</em>) – description of this data (optional)</li>
-<li><strong>freq</strong> (<em>float</em>) – frequency of LO signal, in units [GHz]</li>
-<li><strong>analyze</strong> (<em>bool</em>) – analyze data?</li>
-<li><strong>analyze_if</strong> (<em>bool</em>) – analyze IF data?</li>
-<li><strong>analyze_iv</strong> (<em>bool</em>) – analyze I-V data?</li>
-<li><strong>verbose</strong> (<em>bool</em>) – print to terminal?</li>
+<li><strong>delimiter</strong> (<em>str</em>) – Delimiter for CSV files.</li>
+<li><strong>usecols</strong> (<em>tuple</em>) – List of columns to import (tuple of length 2).</li>
+<li><strong>skip_header</strong> (<em>int</em>) – Number of rows to skip, used to skip the header.</li>
+<li><strong>v_fmt</strong> (<em>str</em>) – Units for voltage (‘uV’, ‘mV’, or ‘V’).</li>
+<li><strong>i_fmt</strong> (<em>str</em>) – Units for current (‘uA’, ‘mA’, or ‘A’).</li>
+<li><strong>vmax</strong> (<em>float</em>) – Maximum voltage to import in units [V].</li>
+<li><strong>npts</strong> (<em>int</em>) – Number of points to have in I-V interpolation.</li>
+<li><strong>debug</strong> (<em>bool</em>) – Plot each step of the I-V processing procedure.</li>
+<li><strong>voffset</strong> (<em>float</em>) – Voltage offset, in units [V].</li>
+<li><strong>ioffset</strong> (<em>float</em>) – Current offset, in units [A].</li>
+<li><strong>voffset_range</strong> (<em>float</em>) – Voltage range over which to search for offset,
+in units [V].</li>
+<li><strong>voffset_sigma</strong> (<em>float</em>) – Standard deviation of Gaussian filter when
+searching for offset.</li>
+<li><strong>rseries</strong> (<em>float</em>) – Series resistance in experimental measurement
+system, in units [ohms].</li>
+<li><strong>i_multiplier</strong> (<em>float</em>) – Multiply the imported current by this value.</li>
+<li><strong>v_multiplier</strong> (<em>float</em>) – Multiply the imported voltage by this value.</li>
+<li><strong>ifdata_vmax</strong> (<em>float</em>) – Maximum IF voltage to import.</li>
+<li><strong>ifdata_npts</strong> (<em>int</em>) – Number of points for interpolation.</li>
+<li><strong>filter_data</strong> (<em>bool</em>) – Filter data</li>
+<li><strong>vgap_guess</strong> (<em>float</em>) – Guess of gap voltage. Used to temporarily
+normalize while filtering. Given in units [V].</li>
+<li><strong>igap_guess</strong> (<em>float</em>) – Guess of gap current. Used to temporarily
+normalize while filtering. Given in units [A].</li>
+<li><strong>filter_theta</strong> (<em>float</em>) – Angle by which to the rotate data while
+filtering. Given in radians.</li>
+<li><strong>filter_nwind</strong> (<em>int</em>) – Window size for Savitsky-Golay filter.</li>
+<li><strong>filter_npoly</strong> (<em>int</em>) – Order of Savitsky-Golay filter.</li>
+<li><strong>ifdata_sigma</strong> (<em>float</em>) – Std. dev. of Gaussian used for filtering.</li>
+<li><strong>analyze_iv</strong> (<em>bool</em>) – Analyze I-V data?</li>
+<li><strong>analyze_if</strong> (<em>bool</em>) – Analyze IF data?</li>
+<li><strong>area</strong> (<em>float</em>) – Area of the junction in um^2.</li>
+<li><strong>freq</strong> (<em>float</em>) – Frequency of LO signal.</li>
+<li><strong>cut_low</strong> (<em>float</em>) – only fit over first photon step,
+start at Vgap - vph + vph * cut_low</li>
+<li><strong>cut_high</strong> – only fit over first photon step,
+finish at Vgap - vph * cut_high</li>
+<li><strong>remb_range</strong> (<em>tuple</em>) – range of embedding resistances to check,
+normalized to the normal-state resistance</li>
+<li><strong>xemb_range</strong> (<em>tuple</em>) – range of embedding reactances to check,
+normalized to the normal-state resistance</li>
+<li><strong>alpha_max</strong> (<em>float</em>) – Maximum drive level.</li>
+<li><strong>num_b</strong> (<em>int</em>) – Summation limits for Bessel functions.</li>
+<li><strong>t_cold</strong> (<em>float</em>) – Temperature of cold blackbody load.</li>
+<li><strong>t_hot</strong> (<em>float</em>) – Temperature of hot blackbody load.</li>
+<li><strong>vmax_plot</strong> (<em>float</em>) – Maximum bias voltage for plots.</li>
+<li><strong>comment</strong> (<em>str</em>) – Comment to describe this instance.</li>
+<li><strong>verbose</strong> (<em>bool</em>) – Print to terminal.</li>
 </ul>
 </td>
 </tr>
@@ -811,7 +850,7 @@ at the time.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p>Experimental data can be passed to this class either in the form of
-CSV data files or Numpy arrays. In both bases, the data should have
+CSV data files or Numpy arrays. In both cases, the data should have
 two columns: the first for voltage, and the second for current or IF
 power, depending on the file type.</p>
 <p>For CSV files, you can define the delimiter using the keyword
@@ -828,35 +867,63 @@ These parameters control how the data is imported and analyzed.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>dciv</strong> – DC I-V data. Either a CSV data file or a Numpy array. The
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>dciv</strong> – DC I-V curve. Either a CSV data file or a Numpy array. The data
+should have two columns: the first for voltage, and the second
+for current. If you are using CSV files, the properties of
+the CSV file can be set through additional keyword arguments
+(see below).</li>
+<li><strong>dcif</strong> – DC IF data. Either a CSV data file or a Numpy array. The
 data should have two columns: the first for voltage, and the
-second for current.</p>
+second for IF power. If you are using CSV files, the properties of
+the CSV file can be set through additional keyword arguments
+(see below).</li>
+</ul>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
 <tr class="field-even field"><td>&#160;</td><td class="field-body"><ul class="first last simple">
-<li><strong>dcif</strong> – DC IF data. Either a CSV data file or a Numpy array. The
-data should have two columns: the first for voltage, and the
-second for IF power.</li>
-<li><strong>area</strong> (<em>float</em>) – area of the junction in um^2 (default is 1.5)</li>
-<li><strong>comment</strong> (<em>str</em>) – add comment to this instance (default is ‘’)</li>
-<li><strong>filter_data</strong> (<em>bool</em>) – smooth the I-V data (default is True)</li>
-<li><strong>i_fmt</strong> (<em>str</em>) – units for current: ‘uA’, ‘mA’, etc. (default is ‘mA’)</li>
-<li><strong>igap_guess</strong> (<em>float</em>) – Gap current estimate, used to temporarily
-normalize the input data while filtering (default is 2e-4 A)</li>
-<li><strong>ioffset</strong> (<em>float</em>) – current offset (default is None)</li>
-<li><strong>rseries</strong> (<em>float</em>) – Remove influence of a series resistance (default is
-None)</li>
-<li><strong>v_fmt</strong> (<em>str</em>) – units for voltage: ‘mV’, ‘V’, etc. (default is ‘mV’)</li>
-<li><strong>v_smear</strong> (<em>float</em>) – smear DC I-V by this amount when generating smeared
-response function (default is 0.020)</li>
-<li><strong>vgap_guess</strong> (<em>float</em>) – Gap voltage estimate, used to temporarily
-normalize the input data while filtering (default is 2.7e-3 V)</li>
-<li><strong>voffset</strong> (<em>float</em>) – voltage offset (default is None)</li>
-<li><strong>vmax</strong> (<em>float</em>) – maximum voltage value to import, used in case the I-V
-curve saturates at some point</li>
-<li><strong>vrsg</strong> (<em>float</em>) – The voltage at which to calculate the subgap resistance
-(default is 2e-3 V)</li>
+<li><strong>delimiter</strong> (<em>str</em>) – Delimiter for CSV files.</li>
+<li><strong>usecols</strong> (<em>tuple</em>) – List of columns to import (tuple of length 2).</li>
+<li><strong>skip_header</strong> (<em>int</em>) – Number of rows to skip, used to skip the header.</li>
+<li><strong>v_fmt</strong> (<em>str</em>) – Units for voltage (‘uV’, ‘mV’, or ‘V’).</li>
+<li><strong>i_fmt</strong> (<em>str</em>) – Units for current (‘uA’, ‘mA’, or ‘A’).</li>
+<li><strong>vmax</strong> (<em>float</em>) – Maximum voltage to import in units [V].</li>
+<li><strong>npts</strong> (<em>int</em>) – Number of points to have in I-V interpolation.</li>
+<li><strong>debug</strong> (<em>bool</em>) – Plot each step of the I-V processing procedure.</li>
+<li><strong>voffset</strong> (<em>float</em>) – Voltage offset, in units [V].</li>
+<li><strong>ioffset</strong> (<em>float</em>) – Current offset, in units [A].</li>
+<li><strong>voffset_range</strong> (<em>float</em>) – Voltage range over which to search for offset,
+in units [V].</li>
+<li><strong>voffset_sigma</strong> (<em>float</em>) – Standard deviation of Gaussian filter when
+searching for offset.</li>
+<li><strong>rseries</strong> (<em>float</em>) – Series resistance in experimental measurement
+system, in units [ohms].</li>
+<li><strong>i_multiplier</strong> (<em>float</em>) – Multiply the imported current by this value.</li>
+<li><strong>v_multiplier</strong> (<em>float</em>) – Multiply the imported voltage by this value.</li>
+<li><strong>ifdata_vmax</strong> (<em>float</em>) – Maximum IF voltage to import.</li>
+<li><strong>ifdata_npts</strong> (<em>int</em>) – Number of points for interpolation.</li>
+<li><strong>filter_data</strong> (<em>bool</em>) – Filter data</li>
+<li><strong>vgap_guess</strong> (<em>float</em>) – Guess of gap voltage. Used to temporarily
+normalize while filtering. Given in units [V].</li>
+<li><strong>igap_guess</strong> (<em>float</em>) – Guess of gap current. Used to temporarily
+normalize while filtering. Given in units [A].</li>
+<li><strong>filter_theta</strong> (<em>float</em>) – Angle by which to the rotate data while
+filtering. Given in radians.</li>
+<li><strong>filter_nwind</strong> (<em>int</em>) – Window size for Savitsky-Golay filter.</li>
+<li><strong>filter_npoly</strong> (<em>int</em>) – Order of Savitsky-Golay filter.</li>
+<li><strong>ifdata_sigma</strong> (<em>float</em>) – Std. dev. of Gaussian used for filtering.</li>
+<li><strong>area</strong> (<em>float</em>) – Area of the junction in um^2.</li>
+<li><strong>vgap_threshold</strong> (<em>float</em>) – The current to measure the gap voltage at.</li>
+<li><strong>rn_vmin</strong> (<em>float</em>) – Lower voltage range to determine the normal resistance</li>
+<li><strong>rn_vmax</strong> (<em>float</em>) – Upper voltage range to determine the normal resistance</li>
+<li><strong>vrsg</strong> (<em>float</em>) – The voltage at which to calculate the subgap
+resistance.</li>
+<li><strong>vleak</strong> (<em>float</em>) – The voltage at which to calculate the subgap leakage
+current.</li>
+<li><strong>vshot</strong> (<em>list</em>) – Range of voltages for fitting shot noise slope.</li>
+<li><strong>comment</strong> (<em>str</em>) – Comment to describe this instance.</li>
+<li><strong>verbose</strong> (<em>bool</em>) – Print to terminal.</li>
 </ul>
 </td>
 </tr>
@@ -1088,7 +1155,15 @@ temperature vs LO frequency).</p>
 <span id="qmix-exp-if-data-module"></span><h2>2.1.1.4. qmix.exp.if_data module<a class="headerlink" href="#module-qmix.exp.if_data" title="Permalink to this headline">¶</a></h2>
 <p>This sub-module contains functions for importing and analyzing
 experimental IF power measurements.</p>
-<p>The “IF data” is the IF output power from the SIS device versus bias voltage.</p>
+<p>The “IF data” is the IF output power from the SIS device versus bias voltage.
+The term “DC IF data” is used for IF power with no LO injection, and “IF data”
+is used for IF power with LO injection.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The IF data is expected either in the form of a CSV file or a Numpy
+array. Either way the data should have two columns: the first for voltage
+and the second for current.</p>
+</div>
 <dl class="class">
 <dt id="qmix.exp.if_data.DCIFData">
 <em class="property">class </em><code class="descclassname">qmix.exp.if_data.</code><code class="descname">DCIFData</code><a class="headerlink" href="#qmix.exp.if_data.DCIFData" title="Permalink to this definition">¶</a></dt>
@@ -1156,22 +1231,37 @@ data into units ‘K’ and estimate the IF noise component.</p>
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>ifdata</strong> – IF data. Either a CSV data file or a Numpy array. The data
 should have two columns: the first for voltage, and the second
-for IF power.</li>
-<li><strong>dc</strong> (<a class="reference internal" href="#qmix.exp.iv_data.DCIVData" title="qmix.exp.iv_data.DCIVData"><em>qmix.exp.iv_data.DCIVData</em></a>) – DC I-V data structure</li>
-<li><strong>**kwargs</strong> – keyword arguments</li>
+for IF power. If you are passing a CSV file, the properties of
+the CSV file can be set through additional keyword arguments
+(see below).</li>
+<li><strong>dc</strong> (<a class="reference internal" href="#qmix.exp.iv_data.DCIVData" title="qmix.exp.iv_data.DCIVData"><em>qmix.exp.iv_data.DCIVData</em></a>) – DC I-V metadata.</li>
 </ul>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
 <tr class="field-even field"><td>&#160;</td><td class="field-body"><ul class="first simple">
-<li><strong>v_fmt</strong> (<em>str</em>) – voltage units (‘mV’, ‘V’, etc.)</li>
-<li><strong>vmax</strong> (<em>str</em>) – maximum voltage (in case the data is saturated above some
-value)</li>
+<li><strong>delimiter</strong> (<em>str</em>) – Delimiter for CSV files.</li>
+<li><strong>usecols</strong> (<em>tuple</em>) – List of columns to import (tuple of length 2).</li>
+<li><strong>skip_header</strong> (<em>int</em>) – Number of rows to skip, used to skip the header.</li>
+<li><strong>v_fmt</strong> (<em>str</em>) – Units for voltage (‘uV’, ‘mV’, or ‘V’).</li>
+<li><strong>i_fmt</strong> (<em>str</em>) – Units for current (‘uA’, ‘mA’, or ‘A’).</li>
+<li><strong>rseries</strong> (<em>float</em>) – Series resistance in experimental measurement
+system, in units [ohms].</li>
+<li><strong>v_multiplier</strong> (<em>float</em>) – Multiply the imported voltage by this value.</li>
+<li><strong>ifdata_vmax</strong> (<em>float</em>) – Maximum IF voltage to import.</li>
+<li><strong>ifdata_npts</strong> (<em>int</em>) – Number of points for interpolation.</li>
+<li><strong>ifdata_sigma</strong> (<em>float</em>) – Std. dev. of Gaussian used for filtering.</li>
+<li><strong>vshot</strong> (<em>list</em>) – Range of voltages for fitting shot noise slope.</li>
+<li><strong>verbose</strong> (<em>bool</em>) – Print to terminal.</li>
 </ul>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">DC IF data, IF noise contribution, A.U. to K correction factor,
-shot noise slope data, good fit to IF noise?</p>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><dl class="docutils">
+<dt>DC IF data, IF noise contribution, A.U. to K correction factor,</dt>
+<dd><p class="first last">shot noise slope data, good fit to IF noise?</p>
+</dd>
+</dl>
+</p>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">tuple</p>
@@ -1196,21 +1286,38 @@ for IF power.</li>
 <li><strong>if_cold</strong> – Cold IF data. Either a CSV data file or a Numpy array. The
 data should have two columns: the first for voltage, and the
 second for IF power.</li>
-<li><strong>dc</strong> (<a class="reference internal" href="#qmix.exp.iv_data.DCIVData" title="qmix.exp.iv_data.DCIVData"><em>qmix.exp.iv_data.DCIVData</em></a>) – DC I-V data structure</li>
-<li><strong>**kwargs</strong> – Keyword arguments</li>
+<li><strong>dc</strong> (<a class="reference internal" href="#qmix.exp.iv_data.DCIVData" title="qmix.exp.iv_data.DCIVData"><em>qmix.exp.iv_data.DCIVData</em></a>) – DC I-V metadata.</li>
 </ul>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
 <tr class="field-even field"><td>&#160;</td><td class="field-body"><ul class="first simple">
-<li><strong>freq</strong> – Frequency in units GHz</li>
-<li><strong>dcif</strong> (<a class="reference internal" href="#qmix.exp.if_data.DCIFData" title="qmix.exp.if_data.DCIFData"><em>qmix.exp.if_data.DCIFData</em></a>) – DC IF data structure</li>
+<li><strong>delimiter</strong> (<em>str</em>) – Delimiter for CSV files.</li>
+<li><strong>usecols</strong> (<em>tuple</em>) – List of columns to import (tuple of length 2).</li>
+<li><strong>skip_header</strong> (<em>int</em>) – Number of rows to skip, used to skip the header.</li>
+<li><strong>v_fmt</strong> (<em>str</em>) – Units for voltage (‘uV’, ‘mV’, or ‘V’).</li>
+<li><strong>i_fmt</strong> (<em>str</em>) – Units for current (‘uA’, ‘mA’, or ‘A’).</li>
+<li><strong>rseries</strong> (<em>float</em>) – Series resistance in experimental measurement
+system, in units [ohms].</li>
+<li><strong>v_multiplier</strong> (<em>float</em>) – Multiply the imported voltage by this value.</li>
+<li><strong>ifdata_max</strong> (<em>float</em>) – Maximum IF voltage to import.</li>
+<li><strong>ifdata_npts</strong> (<em>int</em>) – Number of points for interpolation.</li>
+<li><strong>ifdata_sigma</strong> (<em>float</em>) – Std. dev. of Gaussian used for filtering.</li>
+<li><strong>t_cold</strong> (<em>float</em>) – Temperature of cold blackbody load.</li>
+<li><strong>t_hot</strong> (<em>float</em>) – Temperature of hot blackbody load.</li>
+<li><strong>vbest</strong> (<em>float</em>) – Bias voltage for best results (best temperature and
+gain).</li>
+<li><strong>verbose</strong> (<em>bool</em>) – Print to terminal.</li>
 </ul>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Hot IF data, Cold IF data, Noise temperature, Gain, Index of
-best noise temperature, IF noise contribution, Good fit to IF noise?,
-Shot noise slope</p>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><dl class="docutils">
+<dt>Hot IF data, Cold IF data, Noise temperature, Gain, Index of</dt>
+<dd><p class="first last">best noise temperature, IF noise contribution, Good fit to IF
+noise?, shot noise slope</p>
+</dd>
+</dl>
+</p>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">tuple</p>
@@ -1224,11 +1331,18 @@ Shot noise slope</p>
 <div class="section" id="module-qmix.exp.iv_data">
 <span id="qmix-exp-iv-data-module"></span><h2>2.1.1.5. qmix.exp.iv_data module<a class="headerlink" href="#module-qmix.exp.iv_data" title="Permalink to this headline">¶</a></h2>
 <p>This sub-module contains functions for importing and analyzing
-experimental I-V data measurements.</p>
+experimental current-voltage (I-V) data.</p>
 <p>“I-V data” is the DC tunneling current versus DC bias voltage that is measured
-from the SIS device. In general, I use the term “DC I-V data” for I-V data
-that is collected with no LO present, and “I-V data” for I-V data that is
-collected with the LO present (also known as the “pumped I-V curve”).</p>
+from an SIS junction. In general, the term “DC I-V data” is used for I-V data
+that is collected with no local-oscillator (LO) injection, and “I-V data” is
+used for I-V data that is collected with LO injection (also known as the
+“pumped I-V curve”).</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The I-V data is expected either in the form of a CSV file or a Numpy
+array. Either way the data should have two columns: the first for voltage
+and the second for current.</p>
+</div>
 <dl class="class">
 <dt id="qmix.exp.iv_data.DCIVData">
 <em class="property">class </em><code class="descclassname">qmix.exp.iv_data.</code><code class="descname">DCIVData</code><a class="headerlink" href="#qmix.exp.iv_data.DCIVData" title="Permalink to this definition">¶</a></dt>
@@ -1239,22 +1353,24 @@ collected with the LO present (also known as the “pumped I-V curve”).</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>vraw</strong> (<em>ndarray</em>) – DC bias voltage in units V. This data has filtered and the
-offset has been corrected.</li>
-<li><strong>iraw</strong> (<em>ndarray</em>) – DC tunneling current in units A. This data has filtered
+<li><strong>vraw</strong> (<em>ndarray</em>) – DC bias voltage in units [V]. This data has been filtered
 and the offset has been corrected.</li>
-<li><strong>vnorm</strong> (<em>ndarray</em>) – DC bias voltage (normalized).</li>
-<li><strong>inorm</strong> (<em>ndarray</em>) – DC tunneling current (normalized).</li>
-<li><strong>vgap</strong> (<em>float</em>) – Gap voltage in units V.</li>
-<li><strong>igap</strong> (<em>flaot</em>) – Gap current in units A.</li>
-<li><strong>fgap</strong> (<em>float</em>) – Gap frequency in units Hz.</li>
-<li><strong>rn</strong> (<em>float</em>) – Normal-state resistance in units ohms.</li>
-<li><strong>rsg</strong> (<em>float</em>) – Sub-gap resistance in units ohms.</li>
-<li><strong>offset</strong> (<em>tuple</em>) – Voltage and current offset in the raw measured data.</li>
+<li><strong>iraw</strong> (<em>ndarray</em>) – DC tunneling current in units [A]. This data has been
+filtered and the offset has been corrected.</li>
+<li><strong>vnorm</strong> (<em>ndarray</em>) – DC bias voltage, normalized to the gap voltage.</li>
+<li><strong>inorm</strong> (<em>ndarray</em>) – DC tunneling current, normalized to the gap current.</li>
+<li><strong>vgap</strong> (<em>float</em>) – Gap voltage in units [V].</li>
+<li><strong>igap</strong> (<em>flaot</em>) – Gap current in units [A].</li>
+<li><strong>fgap</strong> (<em>float</em>) – Gap frequency in units [Hz].</li>
+<li><strong>rn</strong> (<em>float</em>) – Normal-state resistance in units [ohms].</li>
+<li><strong>rsg</strong> (<em>float</em>) – Sub-gap resistance in units [ohms].</li>
+<li><strong>offset</strong> (<em>tuple</em>) – Voltage and current offset in the raw measured data, in
+units [V] and [A], respectively.</li>
 <li><strong>vint</strong> (<em>float</em>) – If you fit a line to the normal-state resistance (i.e., the
 DC I-V curve above the gap), the line will intercept the x-axis at
-<code class="docutils literal notranslate"><span class="pre">vint</span></code>.</li>
-<li><strong>rseries</strong> (<em>float</em>) – The series resistance to remove from the I-V data.</li>
+<code class="docutils literal notranslate"><span class="pre">vint</span></code>. This is given in units [V].</li>
+<li><strong>rseries</strong> (<em>float</em>) – The series resistance to remove from the I-V data. Given
+in units [ohms].</li>
 </ul>
 </td>
 </tr>
@@ -1337,38 +1453,54 @@ DC I-V curve above the gap), the line will intercept the x-axis at
 <dl class="function">
 <dt id="qmix.exp.iv_data.dciv_curve">
 <code class="descclassname">qmix.exp.iv_data.</code><code class="descname">dciv_curve</code><span class="sig-paren">(</span><em>ivdata</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.exp.iv_data.dciv_curve" title="Permalink to this definition">¶</a></dt>
-<dd><p>Import and analyze DC I-V data (i.e., the unpumped I-V curve).</p>
+<dd><p>Import and analyze DC I-V data (a.k.a., the unpumped I-V curve).</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>ivdata</strong> – I-V data. Either a CSV data file or a Numpy array. The data
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>ivdata</strong> – DC I-V data. Either a CSV data file or a Numpy array. The data
 should have two columns: the first for voltage, and the second
-for current.</p>
+for current. If you are using CSV files, the properties of
+the CSV file can be set through additional keyword arguments.
+(See below).</p>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
 <tr class="field-even field"><td>&#160;</td><td class="field-body"><ul class="first simple">
-<li><strong>input_type</strong> (<em>str</em>) – input type (‘csv’ or ‘numpy’)</li>
-<li><strong>v_fmt</strong> (<em>str</em>) – units for voltage (‘uV’, ‘mV’, ‘V’)</li>
-<li><strong>i_fmt</strong> (<em>str</em>) – units for current (‘uA’, ‘mA’, ‘A’)</li>
-<li><strong>usecols</strong> (<em>tuple</em>) – list of columns to import (tuple of length 2)</li>
-<li><strong>filter_data</strong> (<em>bool</em>) – filter data?</li>
-<li><strong>vgap_guess</strong> (<em>float</em>) – guess of gap voltage</li>
-<li><strong>igap_guess</strong> (<em>float</em>) – guess of gap current</li>
-<li><strong>filter_nwind</strong> (<em>int</em>) – SG filter window size</li>
-<li><strong>filter_npoly</strong> (<em>int</em>) – SG filter order</li>
-<li><strong>filter_theta</strong> (<em>float</em>) – angle to rotate data by during filtering</li>
-<li><strong>npts</strong> (<em>int</em>) – number of points to output</li>
-<li><strong>voffset</strong> (<em>float</em>) – voltage offset, in V</li>
-<li><strong>ioffset</strong> (<em>float</em>) – current offset, in A</li>
-<li><strong>voffset_range</strong> (<em>float</em>) – voltage range to search for offset, in V</li>
-<li><strong>voffset_sigma</strong> (<em>float</em>) – std dev of Gaussian filter when searching for offset</li>
-<li><strong>rn_vmin</strong> (<em>float</em>) – lower voltage range to determine the normal resistance</li>
-<li><strong>rn_vmax</strong> (<em>float</em>) – upper voltage range to determine the normal resistance</li>
-<li><strong>current_threshold</strong> (<em>float</em>) – the current at the gap voltage</li>
-<li><strong>vrsg</strong> (<em>float</em>) – the voltage to calculate the subgap resistance at</li>
-<li><strong>rseries</strong> (<em>float</em>) – series resistance, in ohms</li>
+<li><strong>delimiter</strong> (<em>str</em>) – Delimiter for CSV files.</li>
+<li><strong>usecols</strong> (<em>tuple</em>) – List of columns to import (tuple of length 2).</li>
+<li><strong>skip_header</strong> (<em>int</em>) – Number of rows to skip, used to skip the header.</li>
+<li><strong>v_fmt</strong> (<em>str</em>) – Units for voltage (‘uV’, ‘mV’, or ‘V’).</li>
+<li><strong>i_fmt</strong> (<em>str</em>) – Units for current (‘uA’, ‘mA’, or ‘A’).</li>
+<li><strong>vmax</strong> (<em>float</em>) – Maximum voltage to import in units [V].</li>
+<li><strong>npts</strong> (<em>int</em>) – Number of points to have in I-V interpolation.</li>
+<li><strong>debug</strong> (<em>bool</em>) – Plot each step of the I-V processing procedure.</li>
+<li><strong>voffset</strong> (<em>float</em>) – Voltage offset, in units [V].</li>
+<li><strong>ioffset</strong> (<em>float</em>) – Current offset, in units [A].</li>
+<li><strong>voffset_range</strong> (<em>float</em>) – Voltage range over which to search for offset,
+in units [V].</li>
+<li><strong>voffset_sigma</strong> (<em>float</em>) – Standard deviation of Gaussian filter when
+searching for offset.</li>
+<li><strong>rseries</strong> (<em>float</em>) – Series resistance in experimental measurement
+system, in units [ohms].</li>
+<li><strong>i_multiplier</strong> (<em>float</em>) – Multiply the imported current by this value.</li>
+<li><strong>v_multiplier</strong> (<em>float</em>) – Multiply the imported voltage by this value.</li>
+<li><strong>filter_data</strong> (<em>bool</em>) – Filter data</li>
+<li><strong>vgap_guess</strong> (<em>float</em>) – Guess of gap voltage. Used to temporarily
+normalize while filtering. Given in units [V].</li>
+<li><strong>igap_guess</strong> (<em>float</em>) – Guess of gap current. Used to temporarily
+normalize while filtering. Given in units [A].</li>
+<li><strong>filter_theta</strong> (<em>float</em>) – Angle by which to the rotate data while
+filtering. Given in radians.</li>
+<li><strong>filter_nwind</strong> (<em>int</em>) – Window size for Savitsky-Golay filter.</li>
+<li><strong>filter_npoly</strong> (<em>int</em>) – Order of Savitsky-Golay filter.</li>
+<li><strong>vgap_threshold</strong> (<em>float</em>) – The current to measure the gap voltage at.</li>
+<li><strong>rn_vmin</strong> (<em>float</em>) – Lower voltage range to determine the normal resistance</li>
+<li><strong>rn_vmax</strong> (<em>float</em>) – Upper voltage range to determine the normal resistance</li>
+<li><strong>vrsg</strong> (<em>float</em>) – The voltage at which to calculate the subgap
+resistance.</li>
+<li><strong>vleak</strong> (<em>float</em>) – The voltage at which to calculate the subgap leakage
+current.</li>
 </ul>
 </td>
 </tr>
@@ -1393,23 +1525,43 @@ for current.</p>
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>ivdata</strong> – I-V data. Either a CSV data file or a Numpy array. The data
 should have two columns: the first for voltage, and the second
-for current.</li>
-<li><strong>dc</strong> (<a class="reference internal" href="#qmix.exp.iv_data.DCIVData" title="qmix.exp.iv_data.DCIVData"><em>qmix.exp.iv_data.DCIVData</em></a>) – DC data structure</li>
-<li><strong>**kwargs</strong> – keyword arguments</li>
+for current. If you are using a CSV file, the properties of
+the CSV file can be set through additional keyword arguments
+(see below).</li>
+<li><strong>dc</strong> (<a class="reference internal" href="#qmix.exp.iv_data.DCIVData" title="qmix.exp.iv_data.DCIVData"><em>qmix.exp.iv_data.DCIVData</em></a>) – DC I-V data metadata. Generated
+previously by <code class="docutils literal notranslate"><span class="pre">dciv_curve</span></code>.</li>
 </ul>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
 <tr class="field-even field"><td>&#160;</td><td class="field-body"><ul class="first simple">
-<li><strong>input_type</strong> (<em>str</em>) – input type (‘csv’ or ‘numpy’)</li>
-<li><strong>v_fmt</strong> (<em>str</em>) – units for voltage (‘uV’, ‘mV’, ‘V’)</li>
-<li><strong>i_fmt</strong> (<em>str</em>) – units for current (‘uA’, ‘mA’, ‘A’)</li>
-<li><strong>usecols</strong> (<em>tuple</em>) – list of columns to import (tuple of length 2)</li>
-<li><strong>filter_data</strong> (<em>bool</em>) – filter data?</li>
-<li><strong>filter_nwind</strong> (<em>int</em>) – SG filter window size</li>
-<li><strong>filter_npoly</strong> (<em>int</em>) – SG filter order</li>
-<li><strong>filter_theta</strong> (<em>float</em>) – angle to rotate data by during filtering</li>
-<li><strong>npts</strong> (<em>int</em>) – number of points to output</li>
+<li><strong>delimiter</strong> (<em>str</em>) – Delimiter for CSV files.</li>
+<li><strong>usecols</strong> (<em>tuple</em>) – List of columns to import (tuple of length 2).</li>
+<li><strong>skip_header</strong> (<em>int</em>) – Number of rows to skip, used to skip the header.</li>
+<li><strong>v_fmt</strong> (<em>str</em>) – Units for voltage (‘uV’, ‘mV’, or ‘V’).</li>
+<li><strong>i_fmt</strong> (<em>str</em>) – Units for current (‘uA’, ‘mA’, or ‘A’).</li>
+<li><strong>vmax</strong> (<em>float</em>) – Maximum voltage to import in units [V].</li>
+<li><strong>npts</strong> (<em>int</em>) – Number of points to have in I-V interpolation.</li>
+<li><strong>debug</strong> (<em>bool</em>) – Plot each step of the I-V processing procedure.</li>
+<li><strong>voffset</strong> (<em>float</em>) – Voltage offset, in units [V].</li>
+<li><strong>ioffset</strong> (<em>float</em>) – Current offset, in units [A].</li>
+<li><strong>voffset_range</strong> (<em>float</em>) – Voltage range over which to search for offset,
+in units [V].</li>
+<li><strong>voffset_sigma</strong> (<em>float</em>) – Standard deviation of Gaussian filter when
+searching for offset.</li>
+<li><strong>rseries</strong> (<em>float</em>) – Series resistance in experimental measurement
+system, in units [ohms].</li>
+<li><strong>i_multiplier</strong> (<em>float</em>) – Multiply the imported current by this value.</li>
+<li><strong>v_multiplier</strong> (<em>float</em>) – Multiply the imported voltage by this value.</li>
+<li><strong>filter_data</strong> (<em>bool</em>) – Filter data</li>
+<li><strong>vgap_guess</strong> (<em>float</em>) – Guess of gap voltage. Used to temporarily
+normalize while filtering. Given in units [V].</li>
+<li><strong>igap_guess</strong> (<em>float</em>) – Guess of gap current. Used to temporarily
+normalize while filtering. Given in units [A].</li>
+<li><strong>filter_theta</strong> (<em>float</em>) – Angle by which to the rotate data while
+filtering. Given in radians.</li>
+<li><strong>filter_nwind</strong> (<em>int</em>) – Window size for Savitsky-Golay filter.</li>
+<li><strong>filter_npoly</strong> (<em>int</em>) – Order of Savitsky-Golay filter.</li>
 </ul>
 </td>
 </tr>
@@ -1449,8 +1601,6 @@ values.</p>
 <code class="docutils literal notranslate"><span class="pre">RawData</span></code> either as CSV data files or as Numpy arrays. The CSV
 files should have two columns: one for voltage and one for current
 or IF power. The Numpy arrays should also have two columns.</li>
-<li><code class="docutils literal notranslate"><span class="pre">input_type</span> <span class="pre">==</span> <span class="pre">&quot;csv&quot;</span></code> : Input type. Either <code class="docutils literal notranslate"><span class="pre">&quot;csv&quot;</span></code> or
-<code class="docutils literal notranslate"><span class="pre">&quot;numpy&quot;</span></code>.</li>
 </ul>
 </dd>
 </dl>
@@ -1697,7 +1847,7 @@ function.</li>
 </div></blockquote>
 <dl class="data">
 <dt id="qmix.exp.parameters.params">
-<code class="descclassname">qmix.exp.parameters.</code><code class="descname">params</code><em class="property"> = {'alpha_max': 1.5, 'analyze': None, 'analyze_if': True, 'analyze_iv': True, 'area': 1.5, 'comment': '', 'cut_high': 0.2, 'cut_low': 0.25, 'debug': False, 'delimiter': ',', 'filter_data': True, 'filter_npoly': 3, 'filter_nwind': 21, 'filter_theta': 0.785, 'freq': None, 'i_fmt': 'mA', 'i_multiplier': 1.0, 'ifdata_npts': 3000, 'ifdata_sigma': 5, 'ifdata_vmax': 2.25, 'igap_guess': 0.0002, 'input_type': 'csv', 'ioffset': None, 'npts': 6001, 'num_b': 20, 'remb_range': (0, 1), 'rn_vmax': 0.0045, 'rn_vmin': 0.0035, 'rseries': None, 'skip_header': 1, 't_cold': 80.0, 't_hot': 293.0, 'usecols': (0, 1), 'v_fmt': 'mV', 'v_multiplier': 1.0, 'v_smear': 0.02, 'vbest': None, 'verbose': True, 'vgap_guess': 0.0027, 'vgap_threshold': 0.000105, 'vleak': 0.002, 'vmax': 0.006, 'vmax_plot': 4.0, 'voffset': None, 'voffset_range': 0.0003, 'voffset_sigma': 1e-05, 'vrsg': 0.002, 'vshot': None, 'xemb_range': (-1, 1)}</em><a class="headerlink" href="#qmix.exp.parameters.params" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">qmix.exp.parameters.</code><code class="descname">params</code><em class="property"> = {'alpha_max': 1.5, 'analyze': None, 'analyze_if': True, 'analyze_iv': True, 'area': 1.5, 'comment': '', 'cut_high': 0.2, 'cut_low': 0.25, 'debug': False, 'delimiter': ',', 'filter_data': True, 'filter_npoly': 3, 'filter_nwind': 21, 'filter_theta': 0.785, 'freq': None, 'i_fmt': 'mA', 'i_multiplier': 1.0, 'ifdata_npts': 3000, 'ifdata_sigma': 5, 'ifdata_vmax': 2.25, 'igap_guess': 0.0002, 'ioffset': None, 'npts': 6001, 'num_b': 20, 'remb_range': (0, 1), 'rn_vmax': 0.0045, 'rn_vmin': 0.0035, 'rseries': None, 'skip_header': 1, 't_cold': 80.0, 't_hot': 293.0, 'usecols': (0, 1), 'v_fmt': 'mV', 'v_multiplier': 1.0, 'v_smear': 0.02, 'vbest': None, 'verbose': True, 'vgap_guess': 0.0027, 'vgap_threshold': 0.000105, 'vleak': 0.002, 'vmax': 0.006, 'vmax_plot': 4.0, 'voffset': None, 'voffset_range': 0.0003, 'voffset_sigma': 1e-05, 'vrsg': 0.002, 'vshot': None, 'xemb_range': (-1, 1)}</em><a class="headerlink" href="#qmix.exp.parameters.params" title="Permalink to this definition">¶</a></dt>
 <dd><p>Default parameters for importing experimental data.</p>
 </dd></dl>
 

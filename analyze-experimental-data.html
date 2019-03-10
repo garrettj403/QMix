@@ -88,14 +88,14 @@
 <li class="toctree-l1"><a class="reference internal" href="single-tone-simple.html">3. Example #1: Creating a simple 1 tone simulation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="multi-tone.html">4. Example #2: Simulating an SIS mixer</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">5. Example #3: Analyzing experimental data</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#DC-data">5.1. DC data</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#Analyzing-DC-data">5.1. Analyzing DC data</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#Properties-of-the-experimental-data">5.1.1. Properties of the experimental data</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#Importing-DC-data">5.1.2. Importing DC data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Importing-the-experimental-DC-data">5.1.2. Importing the experimental DC data</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#Pumped-Data-at-230-GHz">5.2. Pumped Data at 230 GHz</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#Experimental-data">5.2.1. Experimental data</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#Importing-pumped-data">5.2.2. Importing pumped data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Analyzing-pumped-data-at-230-GHz">5.2. Analyzing pumped data at 230 GHz</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Properties-of-the-experimental-data">5.2.1. Properties of the experimental data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Importing-the-experimental-pumped-data">5.2.2. Importing the experimental pumped data</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#Impedance-recovery">5.2.3. Impedance recovery</a></li>
 </ul>
 </li>
@@ -390,13 +390,14 @@ div.rendered_html tbody tr:hover {
 </style>
 <div class="section" id="Example-#3:-Analyzing-experimental-data">
 <h1>5. Example #3: Analyzing experimental data<a class="headerlink" href="#Example-#3:-Analyzing-experimental-data" title="Permalink to this headline">¶</a></h1>
-<p>This notebook will show a brief example of how QMix can be used to analyze experimental data. Note that a wide range of parameters can be passed to these functions in order to import data that has been stored in different formats. Please see <a class="reference external" href="https://garrettj403.github.io/QMix/qmix.exp.html#module-qmix.exp.parameters">qmix.exp.parameters</a> for a full list of optional keyword arguments.</p>
-<p>For the purposes of this notebook, example data has been included in a directory called <code class="docutils literal notranslate"><span class="pre">eg-230-data/</span></code>. This is experimental data that was taken from an SIS device illuminated by a local-oscillator at 230 GHz (Garrett 2018).</p>
-<p>QMix includes two classes that can be used to analyze experimental data:</p>
+<p>This notebook will show a brief example of how QMix can be used to analyze experimental data.</p>
+<p>For the purposes of this notebook, example data has been included in a directory called <code class="docutils literal notranslate"><span class="pre">eg-230-data/</span></code>. This is experimental data that was taken from an SIS device illuminated by a local-oscillator at 230 GHz (see Garrett 2018).</p>
+<p>QMix includes two classes that can be used to analyze this experimental data:</p>
 <ul class="simple">
-<li><a class="reference external" href="https://garrettj403.github.io/QMix/qmix.exp.html#qmix.exp.exp_data.RawData0">qmix.exp.RawData0</a>, which is used for DC data (no LO illumination), and</li>
+<li><a class="reference external" href="https://garrettj403.github.io/QMix/qmix.exp.html#qmix.exp.exp_data.RawData0">qmix.exp.RawData0</a>, which is used to analyze DC data (no LO illumination), and</li>
 <li><a class="reference external" href="https://garrettj403.github.io/QMix/qmix.exp.html#qmix.exp.exp_data.RawData">qmix.exp.RawData</a>, which is used to analyze pumped data (with LO illumination).</li>
 </ul>
+<p>Note that a wide range of parameters can be passed to these classes in order to control how the data is imported and analyzed. Please see <a class="reference external" href="https://garrettj403.github.io/QMix/qmix.exp.html#module-qmix.exp.parameters">qmix.exp.parameters</a> for a full list of optional keyword arguments and their default values.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
@@ -410,11 +411,11 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 </div>
-<div class="section" id="DC-data">
-<h2>5.1. DC data<a class="headerlink" href="#DC-data" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="Analyzing-DC-data">
+<h2>5.1. Analyzing DC data<a class="headerlink" href="#Analyzing-DC-data" title="Permalink to this headline">¶</a></h2>
 <p>This is the data collected from the SIS device with <strong>no local-oscillator (LO) illumination.</strong></p>
 <div class="section" id="Properties-of-the-experimental-data">
-<h3>5.1.1. Properties of the experimental data<a class="headerlink" href="#Properties-of-the-experimental-data" title="Permalink to this headline">¶</a></h3>
+<h3>5.2.1. Properties of the experimental data<a class="headerlink" href="#Properties-of-the-experimental-data" title="Permalink to this headline">¶</a></h3>
 <p>The DC experimental data is located in two different files:</p>
 <ul class="simple">
 <li><code class="docutils literal notranslate"><span class="pre">eg-230-data/dciv.csv</span></code>: DC tunneling current vs.&nbsp;bias voltage</li>
@@ -475,17 +476,17 @@ DC Bias Voltage (mV), IF Power (A.U.)
 0.032856, 0.008988
 </pre></div></div>
 </div>
-<p>In order to import these files properly, we will define the properties of the CSV files (which will be passed on to the <code class="docutils literal notranslate"><span class="pre">RawData0</span></code> and <code class="docutils literal notranslate"><span class="pre">RawData</span></code> classes).</p>
+<p>In order to import these files properly, we will define the properties of the CSV files, which will then be passed on to the <code class="docutils literal notranslate"><span class="pre">RawData0</span></code> class.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">csv_params</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">delimiter</span> <span class="o">=</span> <span class="s1">&#39;,&#39;</span><span class="p">,</span>  <span class="c1"># delimiter used by CSV files</span>
-                  <span class="n">usecols</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span>  <span class="c1"># columns to import</span>
-                  <span class="n">skip_header</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>  <span class="c1"># skip the first row (the header)</span>
-                  <span class="n">v_fmt</span> <span class="o">=</span> <span class="s1">&#39;mV&#39;</span><span class="p">,</span>     <span class="c1"># units for voltage data</span>
-                  <span class="n">i_fmt</span> <span class="o">=</span> <span class="s1">&#39;mA&#39;</span><span class="p">)</span>     <span class="c1"># units for current data</span>
+<span></span><span class="n">csv_params</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">delimiter</span> <span class="o">=</span> <span class="s1">&#39;,&#39;</span><span class="p">,</span>     <span class="c1"># delimiter used by CSV files</span>
+                  <span class="n">usecols</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span>     <span class="c1"># columns to import</span>
+                  <span class="n">skip_header</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>     <span class="c1"># skip the first row (the header)</span>
+                  <span class="n">v_fmt</span> <span class="o">=</span> <span class="s1">&#39;mV&#39;</span><span class="p">,</span>        <span class="c1"># units for voltage data</span>
+                  <span class="n">i_fmt</span> <span class="o">=</span> <span class="s1">&#39;mA&#39;</span><span class="p">)</span>        <span class="c1"># units for current data</span>
 </pre></div>
 </div>
 </div>
@@ -522,11 +523,11 @@ DC Bias Voltage (mV), IF Power (A.U.)
 </pre></div>
 </div>
 </div>
-<p><strong>Note:</strong> For a full list of keyword arguments, please see the documentation for <a class="reference external" href="https://garrettj403.github.io/QMix/qmix.exp.html#module-qmix.exp.parameters">qmix.exp.parameters</a>.</p>
+<p><strong>Note:</strong> For a full list of parameters, please see the documentation for <a class="reference external" href="https://garrettj403.github.io/QMix/qmix.exp.html#module-qmix.exp.parameters">qmix.exp.parameters</a>.</p>
 </div>
-<div class="section" id="Importing-DC-data">
-<h3>5.1.2. Importing DC data<a class="headerlink" href="#Importing-DC-data" title="Permalink to this headline">¶</a></h3>
-<p>We will now use the <code class="docutils literal notranslate"><span class="pre">RawData0</span></code> class to load, filter, and analyze the DC data. It will also automatically correct any offsets in the current or voltage data, calculate the properties of the DC I-V curve, and calculate the IF noise based on the DC shot noise.</p>
+<div class="section" id="Importing-the-experimental-DC-data">
+<h3>5.1.2. Importing the experimental DC data<a class="headerlink" href="#Importing-the-experimental-DC-data" title="Permalink to this headline">¶</a></h3>
+<p>We will now use the <code class="docutils literal notranslate"><span class="pre">RawData0</span></code> class to load, filter, and analyze the DC data. It will also automatically correct any offsets in the current or voltage data, calculate the properties of the DC I-V curve, and calculate the IF noise based on the shot noise.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
@@ -621,17 +622,18 @@ DC I-V data:</span>
 </div>
 </div>
 </div>
-<div class="section" id="Pumped-Data-at-230-GHz">
-<h2>5.2. Pumped Data at 230 GHz<a class="headerlink" href="#Pumped-Data-at-230-GHz" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="Analyzing-pumped-data-at-230-GHz">
+<h2>5.2. Analyzing pumped data at 230 GHz<a class="headerlink" href="#Analyzing-pumped-data-at-230-GHz" title="Permalink to this headline">¶</a></h2>
 <p>We will now use the <code class="docutils literal notranslate"><span class="pre">RawData</span></code> class to import I-V and IF data from the device when it is illuminated by an LO at 230 GHz.</p>
-<div class="section" id="Experimental-data">
-<h3>5.2.1. Experimental data<a class="headerlink" href="#Experimental-data" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="Properties-of-the-experimental-data">
+<h3>5.2.1. Properties of the experimental data<a class="headerlink" href="#Properties-of-the-experimental-data" title="Permalink to this headline">¶</a></h3>
 <p>The experimental files are:</p>
 <ul class="simple">
 <li><code class="docutils literal notranslate"><span class="pre">f230.2_iv.csv</span></code>: the pumped I-V curve</li>
 <li><code class="docutils literal notranslate"><span class="pre">f230.2_if-hot.csv</span></code>: the IF power measured with a hot blackbody load</li>
 <li><code class="docutils literal notranslate"><span class="pre">f230.2_if-cold.csv</span></code>: the IF power measured with a cold blackbody load</li>
 </ul>
+<p>Again, these are all CSV files with two columns.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
@@ -713,7 +715,7 @@ DC Bias Voltage (mV), IF Power (A.U.)
 0.032533, 0.010567
 </pre></div></div>
 </div>
-<p>You can either import the CSV files directly with <code class="docutils literal notranslate"><span class="pre">RawData</span></code> or you can pass Numpy arrays.</p>
+<p>You can either import the CSV files directly with <code class="docutils literal notranslate"><span class="pre">RawData</span></code> or you can pass Numpy arrays. For this example, we will pass them as Numpy arrays.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
 </pre></div>
@@ -727,9 +729,9 @@ DC Bias Voltage (mV), IF Power (A.U.)
 </div>
 </div>
 </div>
-<div class="section" id="Importing-pumped-data">
-<h3>5.2.2. Importing pumped data<a class="headerlink" href="#Importing-pumped-data" title="Permalink to this headline">¶</a></h3>
-<p>This class will automatically load, filter and analyze the data. This includes calculating the noise temperature and the properties of the embedding circuit.</p>
+<div class="section" id="Importing-the-experimental-pumped-data">
+<h3>5.2.2. Importing the experimental pumped data<a class="headerlink" href="#Importing-the-experimental-pumped-data" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">RawData</span></code> class will automatically load, filter and analyze the data. This includes calculating the noise temperature and the properties of the embedding circuit.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
 </pre></div>
@@ -737,7 +739,6 @@ DC Bias Voltage (mV), IF Power (A.U.)
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="n">pump</span> <span class="o">=</span> <span class="n">qmix</span><span class="o">.</span><span class="n">exp</span><span class="o">.</span><span class="n">RawData</span><span class="p">(</span><span class="n">iv_data</span><span class="p">,</span> <span class="n">dciv</span><span class="p">,</span> <span class="n">hot_data</span><span class="p">,</span> <span class="n">cold_data</span><span class="p">,</span>
                         <span class="n">freq</span> <span class="o">=</span> <span class="mf">230.2</span><span class="p">,</span>  <span class="c1"># LO frequency in [GHz]</span>
-                        <span class="n">input_type</span> <span class="o">=</span> <span class="s2">&quot;Numpy&quot;</span><span class="p">,</span>  <span class="c1"># Pass in Numpy arrays</span>
                         <span class="o">**</span><span class="n">params</span><span class="p">)</span>
 </pre></div>
 </div>

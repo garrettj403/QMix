@@ -1405,32 +1405,35 @@ would like to add to an existing figure</li>
 <dl class="method">
 <dt id="qmix.respfn.RespFn.resp_conj">
 <code class="descname">resp_conj</code><span class="sig-paren">(</span><em>vbias</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.respfn.RespFn.resp_conj" title="Permalink to this definition">¶</a></dt>
-<dd><p>Interpolate the complex conjugate of the response function
-.</p>
-<blockquote>
-<div><p>Note:</p>
-<blockquote>
-<div><p>This method is not used directly by QMix, but it can be useful if
+<dd><p>Interpolate the complex conjugate of the response function.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>This method is not used directly by QMix, but it can be useful if
 you are calculating the tunneling currents using Tucker theory
 (Tucker and Feldman, 1985).</p>
-<p>This method is included because it might be <em>slightly</em> faster than
+<p class="last">This method is included because it might be <em>slightly</em> faster than
 <code class="docutils literal notranslate"><span class="pre">np.conj(resp.resp(vb))</span></code> where <code class="docutils literal notranslate"><span class="pre">resp</span></code> is an instance of this
 class.</p>
-</div></blockquote>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd>vbias (ndarray): Bias voltage (normalized)</dd>
-<dt>Returns:</dt>
-<dd>ndarray: Complex conjugate of the response function</dd>
-</dl>
-</div></blockquote>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>vbias</strong> (<em>ndarray</em>) – Bias voltage (normalized)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Complex conjugate of the response function</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">ndarray</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
 <dt id="qmix.respfn.RespFn.resp_swap">
 <code class="descname">resp_swap</code><span class="sig-paren">(</span><em>vbias</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.respfn.RespFn.resp_swap" title="Permalink to this definition">¶</a></dt>
 <dd><p>Interpolate the response function, with the real and imaginary
-components swapped,.</p>
+components swapped.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p>This method is not used directly by QMix, but it can be useful if

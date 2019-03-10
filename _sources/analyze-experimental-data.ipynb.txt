@@ -6,14 +6,16 @@
    "source": [
     "# Example #3: Analyzing experimental data\n",
     "\n",
-    "This notebook will show a brief example of how QMix can be used to analyze experimental data. Note that a wide range of parameters can be passed to these functions in order to import data that has been stored in different formats. Please see [qmix.exp.parameters](https://garrettj403.github.io/QMix/qmix.exp.html#module-qmix.exp.parameters) for a full list of optional keyword arguments.\n",
+    "This notebook will show a brief example of how QMix can be used to analyze experimental data. \n",
     "\n",
-    "For the purposes of this notebook, example data has been included in a directory called ``eg-230-data/``. This is experimental data that was taken from an SIS device illuminated by a local-oscillator at 230 GHz (Garrett 2018).\n",
+    "For the purposes of this notebook, example data has been included in a directory called ``eg-230-data/``. This is experimental data that was taken from an SIS device illuminated by a local-oscillator at 230 GHz (see Garrett 2018).\n",
     "\n",
-    "QMix includes two classes that can be used to analyze experimental data:\n",
+    "QMix includes two classes that can be used to analyze this experimental data:\n",
     "\n",
-    "   - [qmix.exp.RawData0](https://garrettj403.github.io/QMix/qmix.exp.html#qmix.exp.exp_data.RawData0), which is used for DC data (no LO illumination), and\n",
-    "   - [qmix.exp.RawData](https://garrettj403.github.io/QMix/qmix.exp.html#qmix.exp.exp_data.RawData), which is used to analyze pumped data (with LO illumination)."
+    "   - [qmix.exp.RawData0](https://garrettj403.github.io/QMix/qmix.exp.html#qmix.exp.exp_data.RawData0), which is used to analyze DC data (no LO illumination), and\n",
+    "   - [qmix.exp.RawData](https://garrettj403.github.io/QMix/qmix.exp.html#qmix.exp.exp_data.RawData), which is used to analyze pumped data (with LO illumination).\n",
+    "   \n",
+    "Note that a wide range of parameters can be passed to these classes in order to control how the data is imported and analyzed. Please see [qmix.exp.parameters](https://garrettj403.github.io/QMix/qmix.exp.html#module-qmix.exp.parameters) for a full list of optional keyword arguments and their default values."
    ]
   },
   {
@@ -33,7 +35,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "## DC data\n",
+    "## Analyzing DC data\n",
     "\n",
     "This is the data collected from the SIS device with **no local-oscillator (LO) illumination.**\n",
     "\n",
@@ -105,7 +107,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "In order to import these files properly, we will define the properties of the CSV files (which will be passed on to the ``RawData0`` and ``RawData`` classes)."
+    "In order to import these files properly, we will define the properties of the CSV files, which will then be passed on to the ``RawData0`` class."
    ]
   },
   {
@@ -114,11 +116,11 @@
    "metadata": {},
    "outputs": [],
    "source": [
-    "csv_params = dict(delimiter = ',',  # delimiter used by CSV files\n",
-    "                  usecols = (0,1),  # columns to import\n",
-    "                  skip_header = 1,  # skip the first row (the header)\n",
-    "                  v_fmt = 'mV',     # units for voltage data\n",
-    "                  i_fmt = 'mA')     # units for current data"
+    "csv_params = dict(delimiter = ',',     # delimiter used by CSV files\n",
+    "                  usecols = (0,1),     # columns to import\n",
+    "                  skip_header = 1,     # skip the first row (the header)\n",
+    "                  v_fmt = 'mV',        # units for voltage data\n",
+    "                  i_fmt = 'mA')        # units for current data"
    ]
   },
   {
@@ -170,16 +172,16 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "**Note:** For a full list of keyword arguments, please see the documentation for [qmix.exp.parameters](https://garrettj403.github.io/QMix/qmix.exp.html#module-qmix.exp.parameters)."
+    "**Note:** For a full list of parameters, please see the documentation for [qmix.exp.parameters](https://garrettj403.github.io/QMix/qmix.exp.html#module-qmix.exp.parameters)."
    ]
   },
   {
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "### Importing DC data\n",
+    "### Importing the experimental DC data\n",
     "\n",
-    "We will now use the ``RawData0`` class to load, filter, and analyze the DC data. It will also automatically correct any offsets in the current or voltage data, calculate the properties of the DC I-V curve, and calculate the IF noise based on the DC shot noise."
+    "We will now use the ``RawData0`` class to load, filter, and analyze the DC data. It will also automatically correct any offsets in the current or voltage data, calculate the properties of the DC I-V curve, and calculate the IF noise based on the shot noise."
    ]
   },
   {
@@ -296,16 +298,19 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "## Pumped Data at 230 GHz\n",
+    "## Analyzing pumped data at 230 GHz\n",
     "\n",
     "We will now use the ``RawData`` class to import I-V and IF data from the device when it is illuminated by an LO at 230 GHz.\n",
     "\n",
-    "### Experimental data\n",
+    "### Properties of the experimental data\n",
+    "\n",
     "The experimental files are:\n",
     "\n",
     "- ``f230.2_iv.csv``: the pumped I-V curve\n",
     "- ``f230.2_if-hot.csv``: the IF power measured with a hot blackbody load\n",
-    "- ``f230.2_if-cold.csv``: the IF power measured with a cold blackbody load"
+    "- ``f230.2_if-cold.csv``: the IF power measured with a cold blackbody load\n",
+    "\n",
+    "Again, these are all CSV files with two columns."
    ]
   },
   {
@@ -393,7 +398,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "You can either import the CSV files directly with ``RawData`` or you can pass Numpy arrays."
+    "You can either import the CSV files directly with ``RawData`` or you can pass Numpy arrays. For this example, we will pass them as Numpy arrays."
    ]
   },
   {
@@ -412,9 +417,9 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "### Importing pumped data\n",
+    "### Importing the experimental pumped data\n",
     "\n",
-    "This class will automatically load, filter and analyze the data. This includes calculating the noise temperature and the properties of the embedding circuit."
+    "The ``RawData`` class will automatically load, filter and analyze the data. This includes calculating the noise temperature and the properties of the embedding circuit."
    ]
   },
   {
@@ -452,7 +457,6 @@
    "source": [
     "pump = qmix.exp.RawData(iv_data, dciv, hot_data, cold_data,\n",
     "                        freq = 230.2,  # LO frequency in [GHz]\n",
-    "                        input_type = \"Numpy\",  # Pass in Numpy arrays\n",
     "                        **params)"
    ]
   },
