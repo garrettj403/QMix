@@ -103,17 +103,16 @@ class RawData0(object):
     Args:
         dciv: DC I-V curve. Either a CSV data file or a Numpy array. The data
             should have two columns: the first for voltage, and the second
-            for current. To pass a Numpy array, set the ``input_type`` keyword
-            argument to ``"numpy"``. To pass a CSV data file, set the 
-            ``input_type`` keyword argument to ``"csv"``. The properties of 
-            the CSV file can be set through additional keyword arguments.
-            (See below).
+            for current. If you are using CSV files, the properties of 
+            the CSV file can be set through additional keyword arguments
+            (see below).
         dcif: DC IF data. Either a CSV data file or a Numpy array. The 
             data should have two columns: the first for voltage, and the 
-            second for IF power.
+            second for IF power. If you are using CSV files, the properties of 
+            the CSV file can be set through additional keyword arguments
+            (see below).
 
     Keyword arguments:
-        input_type (str): Input type ('csv' or 'numpy').
         delimiter (str): Delimiter for CSV files.
         usecols (tuple): List of columns to import (tuple of length 2).
         skip_header (int): Number of rows to skip, used to skip the header.
@@ -176,12 +175,12 @@ class RawData0(object):
         self.comment   = comment
         self.vleak     = vleak
 
-        if kw['input_type'].lower() == 'csv':
+        if isinstance(dciv, str):  # input type: CSV file
             self.file_path = dciv
-        elif kw['input_type'].lower() == 'numpy':
+        elif isinstance(dciv, np.ndarray):  # input type: Numpy array
             self.file_path = 'Numpy array'
         else:
-            raise ValueError('Input type not recognized.')
+            raise ValueError('Input data type not recognized.')
 
         # Get DC I-V data
         self.voltage, self.current, self.dc = dciv_curve(dciv, **kw)
@@ -640,11 +639,12 @@ class RawData(object):
     Args:
         ivdata: I-V data. Either a CSV data file or a Numpy array. The data
             should have two columns: the first for voltage, and the second
-            for current.
+            for current. If you are using CSV files, the properties of 
+            the CSV file can be set through additional keyword arguments
+            (see below).
         dciv (qmix.exp.iv_data.DCIVData): DC I-V metadata
 
     Keyword arguments:
-        input_type (str): Input type ('csv' or 'numpy').
         delimiter (str): Delimiter for CSV files.
         usecols (tuple): List of columns to import (tuple of length 2).
         skip_header (int): Number of rows to skip, used to skip the header.
@@ -719,7 +719,7 @@ class RawData(object):
             analyze_if = analyze
 
         # Sort out file paths
-        if kw['input_type'].lower() == 'csv':
+        if isinstance(ivdata, str):  # input type: CSV file
             self.iv_file = ivdata
             self.directory = os.path.dirname(ivdata)
             self.iv_filename = os.path.basename(ivdata)
@@ -729,7 +729,7 @@ class RawData(object):
             else:
                 self.filename_hot = None
                 self.filename_cold = None
-        elif kw['input_type'].lower() == 'numpy':
+        elif isinstance(ivdata, np.ndarray):  # input type: Numpy array
             self.iv_file = 'Numpy array'
             self.directory = 'Numpy array'
             self.iv_filename = 'Numpy array'
@@ -740,7 +740,7 @@ class RawData(object):
                 self.filename_hot = None
                 self.filename_cold = None
         else:
-            raise ValueError("Input type not recognized.")
+            raise ValueError("Input data type not recognized.")
 
         # Unpack DC I-V metadata
         self.dciv       = dciv
@@ -755,8 +755,8 @@ class RawData(object):
         self.current_dc = dciv.current
 
         # Get LO frequency
-        if kw['input_type'] == 'numpy' and freq is None:
-            str1 = 'If input_type is set to \'numpy\', '
+        if isinstance(ivdata, np.ndarray) and freq is None:
+            str1 = 'If input data is in the form of Numpy arrays, '
             str2 = 'you must define the frequency of the LO signal.'
             raise ValueError(str1 + str2)
         self.freq, self.freq_str = _get_freq(freq, ivdata)

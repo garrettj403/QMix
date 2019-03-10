@@ -20,8 +20,6 @@ values.
           ``RawData`` either as CSV data files or as Numpy arrays. The CSV
           files should have two columns: one for voltage and one for current
           or IF power. The Numpy arrays should also have two columns.
-        - ``input_type == "csv"`` : Input type. Either ``"csv"`` or 
-          ``"numpy"``.
     - CSV files:
         - **Note:** All of the experimental data is expected to be stored in
           CSV data files. These parameters control how the data is read in 
@@ -162,8 +160,6 @@ values.
 """
 
 params = dict(
-              # Experimental data data
-              input_type = 'csv',
               # CSV files
               delimiter =      ',',
               usecols =        (0, 1),

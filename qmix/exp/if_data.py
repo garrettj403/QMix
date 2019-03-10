@@ -55,15 +55,12 @@ def dcif_data(ifdata, dc, **kwargs):
     Args:
         ifdata: IF data. Either a CSV data file or a Numpy array. The data
             should have two columns: the first for voltage, and the second
-            for IF power. To pass a Numpy array, set the ``input_type`` 
-            keyword argument to ``"numpy"``. To pass a CSV data file, set the 
-            ``input_type`` keyword argument to ``"csv"``. The properties of 
-            the CSV file can be set through additional keyword arguments.
-            (See below).
+            for IF power. If you are passing a CSV file, the properties of 
+            the CSV file can be set through additional keyword arguments
+            (see below).
         dc (qmix.exp.iv_data.DCIVData): DC I-V metadata.
 
     Keyword Args:
-        input_type (str): Input type ('csv' or 'numpy').
         delimiter (str): Delimiter for CSV files.
         usecols (tuple): List of columns to import (tuple of length 2).
         skip_header (int): Number of rows to skip, used to skip the header.
@@ -110,7 +107,6 @@ def if_data(if_hot, if_cold, dc, **kwargs):
         dc (qmix.exp.iv_data.DCIVData): DC I-V metadata.
 
     Keyword Args:
-        input_type (str): Input type ('csv' or 'numpy').
         delimiter (str): Delimiter for CSV files.
         usecols (tuple): List of columns to import (tuple of length 2).
         skip_header (int): Number of rows to skip, used to skip the header.
@@ -360,11 +356,9 @@ def _load_if(ifdata, dc, **kwargs):
     Args:
         ifdata: IF data. Either a CSV data file or a Numpy array. The data
             should have two columns: the first for voltage, and the second
-            for IF power. To pass a Numpy array, set the ``input_type`` 
-            keyword argument to ``"numpy"``. To pass a CSV data file, set the 
-            ``input_type`` keyword argument to ``"csv"``. The properties of 
-            the CSV file can be set through additional keyword arguments.
-            (See below).
+            for IF power. If you are using a CSV file, the properties of 
+            the CSV file can be set through additional keyword arguments
+            (see below).
         dc (qmix.exp.iv_data.DCIVData): DC I-V metadata. 
 
     Keyword arguments:
@@ -377,7 +371,6 @@ def _load_if(ifdata, dc, **kwargs):
             points
         rseries (float): series resistance of measurement system
         skip_header: number of rows to skip at the beginning of the file
-        input_type (str):
 
     Returns: IF data (in matrix form)
 
@@ -386,7 +379,6 @@ def _load_if(ifdata, dc, **kwargs):
     # Unpack keyword arguments
     v_multiplier = kwargs.get('v_multiplier', PARAMS['v_multiplier'])
     skip_header = kwargs.get('skip_header', PARAMS['skip_header'])
-    input_type = kwargs.get('input_type', PARAMS['input_type'])
     sigma = kwargs.get('ifdata_sigma', PARAMS['ifdata_sigma'])
     vmax = kwargs.get('ifdata_vmax', PARAMS['ifdata_vmax'])
     npts = kwargs.get('ifdata_npts', PARAMS['ifdata_npts'])
@@ -396,16 +388,16 @@ def _load_if(ifdata, dc, **kwargs):
     v_fmt = kwargs.get('v_fmt', PARAMS['v_fmt'])
 
     # Import raw IF data
-    if input_type.lower() == 'csv':
+    if isinstance(ifdata, str):  # assume CSV data file
         ifdata = np.genfromtxt(ifdata, delimiter=delim, usecols=usecols,
                                skip_header=skip_header)
-    elif input_type.lower() == 'numpy':
+    elif isinstance(ifdata, np.ndarray):  # Numpy array
         assert isinstance(ifdata, np.ndarray), \
             'I-V data should be a Numpy array.'
         assert ifdata.ndim == 2, 'I-V data should be 2-dimensional.'
         assert ifdata.shape[1] == 2, 'I-V data should have 2 columns.'
     else:
-        raise ValueError("Input type not recognized.")
+        raise ValueError("Input data type not recognized.")
 
     # Clean
     ifdata = remove_nans_matrix(ifdata)
