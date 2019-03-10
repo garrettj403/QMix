@@ -94,8 +94,9 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#Pumped-Data-at-230-GHz">5.2. Pumped Data at 230 GHz</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#Importing-pumped-data">5.2.1. Importing pumped data</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#Impedance-recovery">5.2.2. Impedance recovery</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Experimental-data">5.2.1. Experimental data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Importing-pumped-data">5.2.2. Importing pumped data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Impedance-recovery">5.2.3. Impedance recovery</a></li>
 </ul>
 </li>
 </ul>
@@ -416,8 +417,8 @@ div.rendered_html tbody tr:hover {
 <h3>5.1.1. Properties of the experimental data<a class="headerlink" href="#Properties-of-the-experimental-data" title="Permalink to this headline">¶</a></h3>
 <p>The DC experimental data is located in two different files:</p>
 <ul class="simple">
-<li><code class="docutils literal notranslate"><span class="pre">eg-230-data/dciv.csv</span></code>: DC tunneling current vs. bias voltage</li>
-<li><code class="docutils literal notranslate"><span class="pre">eg-230-data/dcif.csv</span></code>: IF power vs. bias voltage</li>
+<li><code class="docutils literal notranslate"><span class="pre">eg-230-data/dciv.csv</span></code>: DC tunneling current vs.&nbsp;bias voltage</li>
+<li><code class="docutils literal notranslate"><span class="pre">eg-230-data/dcif.csv</span></code>: IF power vs.&nbsp;bias voltage</li>
 </ul>
 <p>Both files are CSV files with one column for voltage and one column for current or IF power:</p>
 <div class="nbinput docutils container">
@@ -623,24 +624,120 @@ DC I-V data:</span>
 <div class="section" id="Pumped-Data-at-230-GHz">
 <h2>5.2. Pumped Data at 230 GHz<a class="headerlink" href="#Pumped-Data-at-230-GHz" title="Permalink to this headline">¶</a></h2>
 <p>We will now use the <code class="docutils literal notranslate"><span class="pre">RawData</span></code> class to import I-V and IF data from the device when it is illuminated by an LO at 230 GHz.</p>
+<div class="section" id="Experimental-data">
+<h3>5.2.1. Experimental data<a class="headerlink" href="#Experimental-data" title="Permalink to this headline">¶</a></h3>
 <p>The experimental files are:</p>
 <ul class="simple">
 <li><code class="docutils literal notranslate"><span class="pre">f230.2_iv.csv</span></code>: the pumped I-V curve</li>
 <li><code class="docutils literal notranslate"><span class="pre">f230.2_if-hot.csv</span></code>: the IF power measured with a hot blackbody load</li>
 <li><code class="docutils literal notranslate"><span class="pre">f230.2_if-cold.csv</span></code>: the IF power measured with a cold blackbody load</li>
 </ul>
-<div class="section" id="Importing-pumped-data">
-<h3>5.2.1. Importing pumped data<a class="headerlink" href="#Importing-pumped-data" title="Permalink to this headline">¶</a></h3>
-<p>This class will automatically load, filter and analyze the data. This includes calculating the noise temperature and the properties of the embedding circuit.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
+<div class="input_area highlight-bash notranslate"><div class="highlight"><pre>
+<span></span>%%bash
+head eg-230-data/f230.2_iv.csv
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+DC Bias Voltage (mV), DC Tunneling Current (mA)
+0.016102, 0.008779
+0.017069, 0.008747
+0.019324, 0.008779
+0.021901, 0.008827
+0.023834, 0.008860
+0.026090, 0.008876
+0.027701, 0.008876
+0.030600, 0.008924
+0.033178, 0.008940
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="input_area highlight-bash notranslate"><div class="highlight"><pre>
+<span></span>%%bash
+head eg-230-data/f230.2_if-hot.csv
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+DC Bias Voltage (mV), IF Power (A.U.)
+0.015780, 0.010599
+0.017391, 0.010599
+0.019646, 0.010535
+0.020613, 0.010616
+0.023834, 0.010599
+0.026090, 0.010583
+0.028989, 0.010551
+0.030600, 0.010583
+0.031889, 0.010616
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="input_area highlight-bash notranslate"><div class="highlight"><pre>
+<span></span>%%bash
+head eg-230-data/f230.2_if-cold.csv
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+DC Bias Voltage (mV), IF Power (A.U.)
+0.015780, 0.010616
+0.017391, 0.010567
+0.018680, 0.010551
+0.021257, 0.010487
+0.023512, 0.010535
+0.025445, 0.010583
+0.028345, 0.010583
+0.029956, 0.010535
+0.032533, 0.010567
+</pre></div></div>
+</div>
+<p>You can either import the CSV files directly with <code class="docutils literal notranslate"><span class="pre">RawData</span></code> or you can pass Numpy arrays.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+</pre></div>
+</div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">pump</span> <span class="o">=</span> <span class="n">qmix</span><span class="o">.</span><span class="n">exp</span><span class="o">.</span><span class="n">RawData</span><span class="p">(</span><span class="s1">&#39;eg-230-data/f230.2_iv.csv&#39;</span><span class="p">,</span> <span class="n">dciv</span><span class="p">,</span>
-                        <span class="n">if_hot_file</span><span class="o">=</span><span class="s1">&#39;eg-230-data/f230.2_if-hot.csv&#39;</span><span class="p">,</span>
-                        <span class="n">if_cold_file</span><span class="o">=</span><span class="s1">&#39;eg-230-data/f230.2_if-cold.csv&#39;</span><span class="p">,</span>
+<span></span><span class="n">csv</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">delimiter</span><span class="o">=</span><span class="s1">&#39;,&#39;</span><span class="p">,</span> <span class="n">usecols</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="n">skip_header</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">iv_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">genfromtxt</span><span class="p">(</span><span class="s1">&#39;eg-230-data/f230.2_iv.csv&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">csv</span><span class="p">)</span>
+<span class="n">hot_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">genfromtxt</span><span class="p">(</span><span class="s1">&#39;eg-230-data/f230.2_if-hot.csv&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">csv</span><span class="p">)</span>
+<span class="n">cold_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">genfromtxt</span><span class="p">(</span><span class="s1">&#39;eg-230-data/f230.2_if-cold.csv&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">csv</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="Importing-pumped-data">
+<h3>5.2.2. Importing pumped data<a class="headerlink" href="#Importing-pumped-data" title="Permalink to this headline">¶</a></h3>
+<p>This class will automatically load, filter and analyze the data. This includes calculating the noise temperature and the properties of the embedding circuit.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">pump</span> <span class="o">=</span> <span class="n">qmix</span><span class="o">.</span><span class="n">exp</span><span class="o">.</span><span class="n">RawData</span><span class="p">(</span><span class="n">iv_data</span><span class="p">,</span> <span class="n">dciv</span><span class="p">,</span> <span class="n">hot_data</span><span class="p">,</span> <span class="n">cold_data</span><span class="p">,</span>
                         <span class="n">freq</span> <span class="o">=</span> <span class="mf">230.2</span><span class="p">,</span>  <span class="c1"># LO frequency in [GHz]</span>
+                        <span class="n">input_type</span> <span class="o">=</span> <span class="s2">&quot;Numpy&quot;</span><span class="p">,</span>  <span class="c1"># Pass in Numpy arrays</span>
                         <span class="o">**</span><span class="n">params</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -652,9 +749,9 @@ DC I-V data:</span>
 <div class="highlight"><pre>
 <span class="ansi-magenta-intense-fg">Importing: </span>
  -&gt; Files:
-        I-V file:       eg-230-data/f230.2_iv.csv
-        IF hot file:    eg-230-data/f230.2_if-hot.csv
-        IF cold file:   eg-230-data/f230.2_if-cold.csv
+        I-V file:       Numpy array
+        IF hot file:    Numpy array
+        IF cold file:   Numpy array
  -&gt; Frequency: 230.2 GHz
 <span class="ansi-magenta-intense-fg"> -&gt; Impedance recovery:</span>
 <span class="ansi-green-intense-fg">    - good fit</span>
@@ -673,7 +770,7 @@ DC I-V data:</span>
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -688,11 +785,11 @@ DC I-V data:</span>
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="_images/analyze-experimental-data_20_0.png" src="_images/analyze-experimental-data_20_0.png" />
+<img alt="_images/analyze-experimental-data_26_0.png" src="_images/analyze-experimental-data_26_0.png" />
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -707,15 +804,15 @@ DC I-V data:</span>
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="_images/analyze-experimental-data_21_0.png" src="_images/analyze-experimental-data_21_0.png" />
+<img alt="_images/analyze-experimental-data_27_0.png" src="_images/analyze-experimental-data_27_0.png" />
 </div>
 </div>
 </div>
 <div class="section" id="Impedance-recovery">
-<h3>5.2.2. Impedance recovery<a class="headerlink" href="#Impedance-recovery" title="Permalink to this headline">¶</a></h3>
+<h3>5.2.3. Impedance recovery<a class="headerlink" href="#Impedance-recovery" title="Permalink to this headline">¶</a></h3>
 <p>The <code class="docutils literal notranslate"><span class="pre">RawData</span></code> class also recovers the embedding circuit using the technique described by Skalare (1989) and Withington <em>et al.</em> (1995).</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -729,12 +826,12 @@ DC I-V data:</span>
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="_images/analyze-experimental-data_23_0.png" src="_images/analyze-experimental-data_23_0.png" />
+<img alt="_images/analyze-experimental-data_29_0.png" src="_images/analyze-experimental-data_29_0.png" />
 </div>
 </div>
 <p>This plot was calculated using the error function from Withington <em>et al.</em> (1995). The minimum error represents the best impedance estimation.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -748,7 +845,7 @@ DC I-V data:</span>
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="_images/analyze-experimental-data_25_0.png" src="_images/analyze-experimental-data_25_0.png" />
+<img alt="_images/analyze-experimental-data_31_0.png" src="_images/analyze-experimental-data_31_0.png" />
 </div>
 </div>
 </div>
@@ -800,6 +897,7 @@ DC I-V data:</span>
         <script type="text/javascript" src="_static/jquery.js"></script>
         <script type="text/javascript" src="_static/underscore.js"></script>
         <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
     
 
   

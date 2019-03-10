@@ -424,8 +424,11 @@ data. <code class="docutils literal notranslate"><span class="pre">RawData0</spa
 with LO pumping (i.e., pumped data).</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">These functions assume that you are importing I-V data and IF power data
-in the form of a CSV file. You can define the delimiter using the keyword
+<p>Experimental data can be passed to these classes either in the form of CSV
+data files or Numpy arrays. In both bases, the data should have two
+columns: the first for voltage, and the second for current or IF power,
+depending on the file type.</p>
+<p class="last">For CSV files, you can define the delimiter using the keyword
 argument <code class="docutils literal notranslate"><span class="pre">delimiter=','</span></code>, the number of rows to skip for the header
 using <code class="docutils literal notranslate"><span class="pre">skip_header=1</span></code>, and which columns to import using
 <code class="docutils literal notranslate"><span class="pre">usecols=(0,1)</span></code>. Take a look at the data in
@@ -435,15 +438,22 @@ use this module.</p>
 </div>
 <dl class="class">
 <dt id="qmix.exp.exp_data.RawData">
-<em class="property">class </em><code class="descclassname">qmix.exp.exp_data.</code><code class="descname">RawData</code><span class="sig-paren">(</span><em>iv_file</em>, <em>dciv</em>, <em>if_hot_file=None</em>, <em>if_cold_file=None</em>, <em>**kw</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.exp.exp_data.RawData" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">qmix.exp.exp_data.</code><code class="descname">RawData</code><span class="sig-paren">(</span><em>ivdata</em>, <em>dciv</em>, <em>if_hot=None</em>, <em>if_cold=None</em>, <em>**kw</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.exp.exp_data.RawData" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Class for importing and analyzing experimental pumped data (LO present).</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p>This class assumes that the experimental data is stored in CSV data
-files. These files should have two columns: the first for voltage and
-the second for current or IF power. Some of the properties of the CSV
-files can be set through the keyword arguments.</p>
+<p>Experimental data can be passed to this class either in the form of
+CSV data files or Numpy arrays. In both bases, the data should have
+two columns: the first for voltage, and the second for current or IF
+power, depending on the file type.</p>
+<p>For CSV files, you can define the delimiter using the keyword
+argument <code class="docutils literal notranslate"><span class="pre">delimiter=','</span></code>, the number of rows to skip for the header
+using <code class="docutils literal notranslate"><span class="pre">skip_header=1</span></code>, and which columns to import using
+<code class="docutils literal notranslate"><span class="pre">usecols=(0,1)</span></code>. Take a look at the data in
+<code class="docutils literal notranslate"><span class="pre">QMix/examples/eg-230-data/</span></code> for an example. Also, take a look at
+<code class="docutils literal notranslate"><span class="pre">QMix/examples/analyze-experimental-data.ipynb</span></code> for an example of
+how to use this module.</p>
 <p class="last">See <code class="docutils literal notranslate"><span class="pre">qmix.exp.parameters.params</span></code> for all possible keyword arguments.
 These parameters control how the data is imported and analyzed.</p>
 </div>
@@ -452,17 +462,23 @@ These parameters control how the data is imported and analyzed.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>iv_file</strong> (<em>str</em>) – file path to pumped I-V data</li>
+<li><strong>ivdata</strong> – I-V data. Either a CSV data file or a Numpy array. The data
+should have two columns: the first for voltage, and the second
+for current.</li>
 <li><strong>dciv</strong> (<a class="reference internal" href="#qmix.exp.iv_data.DCIVData" title="qmix.exp.iv_data.DCIVData"><em>qmix.exp.iv_data.DCIVData</em></a>) – DC I-V metadata</li>
 </ul>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
 <tr class="field-even field"><td>&#160;</td><td class="field-body"><ul class="first last simple">
-<li><strong>if_hot_file</strong> (<em>str</em>) – file path to hot IF data</li>
-<li><strong>if_cold_file</strong> (<em>str</em>) – file path to cold IF data</li>
+<li><strong>if_hot</strong> – Hot IF data. Either a CSV data file or a Numpy array. The data
+should have two columns: the first for voltage, and the second
+for IF power.</li>
+<li><strong>if_hot</strong> – Cold IF data. Either a CSV data file or a Numpy array. The
+data should have two columns: the first for voltage, and the
+second for IF power.</li>
 <li><strong>comment</strong> (<em>str</em>) – description of this data (optional)</li>
-<li><strong>freq</strong> (<em>float</em>) – frequency of LO, in units [GHz]</li>
+<li><strong>freq</strong> (<em>float</em>) – frequency of LO signal, in units [GHz]</li>
 <li><strong>analyze</strong> (<em>bool</em>) – analyze data?</li>
 <li><strong>analyze_if</strong> (<em>bool</em>) – analyze IF data?</li>
 <li><strong>analyze_iv</strong> (<em>bool</em>) – analyze I-V data?</li>
@@ -789,15 +805,22 @@ at the time.</p>
 
 <dl class="class">
 <dt id="qmix.exp.exp_data.RawData0">
-<em class="property">class </em><code class="descclassname">qmix.exp.exp_data.</code><code class="descname">RawData0</code><span class="sig-paren">(</span><em>dciv_file</em>, <em>dcif_file=None</em>, <em>**kw</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.exp.exp_data.RawData0" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">qmix.exp.exp_data.</code><code class="descname">RawData0</code><span class="sig-paren">(</span><em>dciv</em>, <em>dcif=None</em>, <em>**kw</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.exp.exp_data.RawData0" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Class for importing and analyzing experimental DC data (with no LO).</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p>This class assumes that the experimental data is stored in CSV data
-files. These files should have two columns: the first for voltage and
-the second for current or IF power. Some of the properties of the CSV
-files can be set through the keyword arguments.</p>
+<p>Experimental data can be passed to this class either in the form of
+CSV data files or Numpy arrays. In both bases, the data should have
+two columns: the first for voltage, and the second for current or IF
+power, depending on the file type.</p>
+<p>For CSV files, you can define the delimiter using the keyword
+argument <code class="docutils literal notranslate"><span class="pre">delimiter=','</span></code>, the number of rows to skip for the header
+using <code class="docutils literal notranslate"><span class="pre">skip_header=1</span></code>, and which columns to import using
+<code class="docutils literal notranslate"><span class="pre">usecols=(0,1)</span></code>. Take a look at the data in
+<code class="docutils literal notranslate"><span class="pre">QMix/examples/eg-230-data/</span></code> for an example. Also, take a look at
+<code class="docutils literal notranslate"><span class="pre">QMix/examples/analyze-experimental-data.ipynb</span></code> for an example of
+how to use this module.</p>
 <p class="last">See <code class="docutils literal notranslate"><span class="pre">qmix.exp.parameters.params</span></code> for all possible keyword arguments.
 These parameters control how the data is imported and analyzed.</p>
 </div>
@@ -805,12 +828,16 @@ These parameters control how the data is imported and analyzed.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>dciv_file</strong> – file path for unpumped I-V curve</p>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>dciv</strong> – DC I-V data. Either a CSV data file or a Numpy array. The
+data should have two columns: the first for voltage, and the
+second for current.</p>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
 <tr class="field-even field"><td>&#160;</td><td class="field-body"><ul class="first last simple">
-<li><strong>dcif_file</strong> (<em>str</em>) – file path for unpumped IF data (default is None)</li>
+<li><strong>dcif</strong> – DC IF data. Either a CSV data file or a Numpy array. The
+data should have two columns: the first for voltage, and the
+second for IF power.</li>
 <li><strong>area</strong> (<em>float</em>) – area of the junction in um^2 (default is 1.5)</li>
 <li><strong>comment</strong> (<em>str</em>) – add comment to this instance (default is ‘’)</li>
 <li><strong>filter_data</strong> (<em>bool</em>) – smooth the I-V data (default is True)</li>
@@ -1117,7 +1144,7 @@ experimental IF power measurements.</p>
 
 <dl class="function">
 <dt id="qmix.exp.if_data.dcif_data">
-<code class="descclassname">qmix.exp.if_data.</code><code class="descname">dcif_data</code><span class="sig-paren">(</span><em>dcif_file</em>, <em>dc</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.exp.if_data.dcif_data" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">qmix.exp.if_data.</code><code class="descname">dcif_data</code><span class="sig-paren">(</span><em>ifdata</em>, <em>dc</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.exp.if_data.dcif_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Analyze DC IF measurements.</p>
 <p>This is the IF data that is measured with no LO present. This data is
 used to analyze the shot noise, which can then be used to convert the IF
@@ -1127,7 +1154,9 @@ data into units ‘K’ and estimate the IF noise component.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>dcif_file</strong> (<em>str</em>) – DC IF filename (no LO present)</li>
+<li><strong>ifdata</strong> – IF data. Either a CSV data file or a Numpy array. The data
+should have two columns: the first for voltage, and the second
+for IF power.</li>
 <li><strong>dc</strong> (<a class="reference internal" href="#qmix.exp.iv_data.DCIVData" title="qmix.exp.iv_data.DCIVData"><em>qmix.exp.iv_data.DCIVData</em></a>) – DC I-V data structure</li>
 <li><strong>**kwargs</strong> – keyword arguments</li>
 </ul>
@@ -1154,15 +1183,19 @@ shot noise slope data, good fit to IF noise?</p>
 
 <dl class="function">
 <dt id="qmix.exp.if_data.if_data">
-<code class="descclassname">qmix.exp.if_data.</code><code class="descname">if_data</code><span class="sig-paren">(</span><em>hot_filename</em>, <em>cold_filename</em>, <em>dc</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.exp.if_data.if_data" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">qmix.exp.if_data.</code><code class="descname">if_data</code><span class="sig-paren">(</span><em>if_hot</em>, <em>if_cold</em>, <em>dc</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.exp.if_data.if_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Analyze IF measurements from a hot/cold load experiment.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>hot_filename</strong> (<em>str</em>) – Hot load IF measurement filename</li>
-<li><strong>cold_filename</strong> (<em>str</em>) – Cold load IF measurement filename</li>
+<li><strong>if_hot</strong> – Hot IF data. Either a CSV data file or a Numpy array. The data
+should have two columns: the first for voltage, and the second
+for IF power.</li>
+<li><strong>if_cold</strong> – Cold IF data. Either a CSV data file or a Numpy array. The
+data should have two columns: the first for voltage, and the
+second for IF power.</li>
 <li><strong>dc</strong> (<a class="reference internal" href="#qmix.exp.iv_data.DCIVData" title="qmix.exp.iv_data.DCIVData"><em>qmix.exp.iv_data.DCIVData</em></a>) – DC I-V data structure</li>
 <li><strong>**kwargs</strong> – Keyword arguments</li>
 </ul>
@@ -1185,38 +1218,6 @@ Shot noise slope</p>
 </tr>
 </tbody>
 </table>
-</dd></dl>
-
-<dl class="function">
-<dt id="qmix.exp.if_data.load_if">
-<code class="descclassname">qmix.exp.if_data.</code><code class="descname">load_if</code><span class="sig-paren">(</span><em>filename</em>, <em>dc</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.exp.if_data.load_if" title="Permalink to this definition">¶</a></dt>
-<dd><p>Import IF measurement data.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>filename</strong> (<em>str</em>) – filename</li>
-<li><strong>dc</strong> (<a class="reference internal" href="#qmix.exp.iv_data.DCIVData" title="qmix.exp.iv_data.DCIVData"><em>qmix.exp.iv_data.DCIVData</em></a>) – DC data structure</li>
-<li><strong>**kwargs</strong> – Keyword arguments</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
-<tr class="field-even field"><td>&#160;</td><td class="field-body"><ul class="first last simple">
-<li><strong>delim</strong> (<em>str</em>) – delimiter used in data files</li>
-<li><strong>v_fmt</strong> (<em>str</em>) – units for voltage (‘V’, ‘mV’, ‘uV’)</li>
-<li><strong>usecols</strong> (<em>tuple</em>) – columns for voltage and current (e.g., <code class="docutils literal notranslate"><span class="pre">(0,1)</span></code>)</li>
-<li><strong>sigma</strong> (<em>float</em>) – convolve IF data by Gaussian with this std dev</li>
-<li><strong>npts</strong> (<em>float</em>) – evenly interpolate data to have this many data points</li>
-<li><strong>rseries</strong> (<em>float</em>) – series resistance of measurement system</li>
-<li><strong>skip_header</strong> – number of rows to skip at the beginning of the file</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-<p>Returns: IF data (in matrix form)</p>
 </dd></dl>
 
 </div>
@@ -1335,20 +1336,20 @@ DC I-V curve above the gap), the line will intercept the x-axis at
 
 <dl class="function">
 <dt id="qmix.exp.iv_data.dciv_curve">
-<code class="descclassname">qmix.exp.iv_data.</code><code class="descname">dciv_curve</code><span class="sig-paren">(</span><em>filename</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.exp.iv_data.dciv_curve" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">qmix.exp.iv_data.</code><code class="descname">dciv_curve</code><span class="sig-paren">(</span><em>ivdata</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.exp.iv_data.dciv_curve" title="Permalink to this definition">¶</a></dt>
 <dd><p>Import and analyze DC I-V data (i.e., the unpumped I-V curve).</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>filename</strong> (<em>str</em>) – DC I-V curve filename</li>
-<li><strong>**kwargs</strong> – keyword arguments</li>
-</ul>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>ivdata</strong> – I-V data. Either a CSV data file or a Numpy array. The data
+should have two columns: the first for voltage, and the second
+for current.</p>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
 <tr class="field-even field"><td>&#160;</td><td class="field-body"><ul class="first simple">
+<li><strong>input_type</strong> (<em>str</em>) – input type (‘csv’ or ‘numpy’)</li>
 <li><strong>v_fmt</strong> (<em>str</em>) – units for voltage (‘uV’, ‘mV’, ‘V’)</li>
 <li><strong>i_fmt</strong> (<em>str</em>) – units for current (‘uA’, ‘mA’, ‘A’)</li>
 <li><strong>usecols</strong> (<em>tuple</em>) – list of columns to import (tuple of length 2)</li>
@@ -1383,14 +1384,16 @@ DC I-V curve above the gap), the line will intercept the x-axis at
 
 <dl class="function">
 <dt id="qmix.exp.iv_data.iv_curve">
-<code class="descclassname">qmix.exp.iv_data.</code><code class="descname">iv_curve</code><span class="sig-paren">(</span><em>filename</em>, <em>dc</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.exp.iv_data.iv_curve" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">qmix.exp.iv_data.</code><code class="descname">iv_curve</code><span class="sig-paren">(</span><em>ivdata</em>, <em>dc</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.exp.iv_data.iv_curve" title="Permalink to this definition">¶</a></dt>
 <dd><p>Load and analyze pumped I-V curve data.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>filename</strong> (<em>str</em>) – I-V filename</li>
+<li><strong>ivdata</strong> – I-V data. Either a CSV data file or a Numpy array. The data
+should have two columns: the first for voltage, and the second
+for current.</li>
 <li><strong>dc</strong> (<a class="reference internal" href="#qmix.exp.iv_data.DCIVData" title="qmix.exp.iv_data.DCIVData"><em>qmix.exp.iv_data.DCIVData</em></a>) – DC data structure</li>
 <li><strong>**kwargs</strong> – keyword arguments</li>
 </ul>
@@ -1398,6 +1401,7 @@ DC I-V curve above the gap), the line will intercept the x-axis at
 </tr>
 <tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
 <tr class="field-even field"><td>&#160;</td><td class="field-body"><ul class="first simple">
+<li><strong>input_type</strong> (<em>str</em>) – input type (‘csv’ or ‘numpy’)</li>
 <li><strong>v_fmt</strong> (<em>str</em>) – units for voltage (‘uV’, ‘mV’, ‘V’)</li>
 <li><strong>i_fmt</strong> (<em>str</em>) – units for current (‘uA’, ‘mA’, ‘A’)</li>
 <li><strong>usecols</strong> (<em>tuple</em>) – list of columns to import (tuple of length 2)</li>
@@ -1438,6 +1442,19 @@ values.</p>
 <p><strong>Parameters:</strong></p>
 <blockquote>
 <div><ul class="simple">
+<li><dl class="first docutils">
+<dt>Experimental data data:</dt>
+<dd><ul class="first last">
+<li><strong>Note:</strong> Experimental data can be passed to <code class="docutils literal notranslate"><span class="pre">RawData0</span></code> and
+<code class="docutils literal notranslate"><span class="pre">RawData</span></code> either as CSV data files or as Numpy arrays. The CSV
+files should have two columns: one for voltage and one for current
+or IF power. The Numpy arrays should also have two columns.</li>
+<li><code class="docutils literal notranslate"><span class="pre">input_type</span> <span class="pre">==</span> <span class="pre">&quot;csv&quot;</span></code> : Input type. Either <code class="docutils literal notranslate"><span class="pre">&quot;csv&quot;</span></code> or
+<code class="docutils literal notranslate"><span class="pre">&quot;numpy&quot;</span></code>.</li>
+</ul>
+</dd>
+</dl>
+</li>
 <li><dl class="first docutils">
 <dt>CSV files:</dt>
 <dd><ul class="first last">
@@ -1680,7 +1697,7 @@ function.</li>
 </div></blockquote>
 <dl class="data">
 <dt id="qmix.exp.parameters.params">
-<code class="descclassname">qmix.exp.parameters.</code><code class="descname">params</code><em class="property"> = {'alpha_max': 1.5, 'analyze': None, 'analyze_if': True, 'analyze_iv': True, 'area': 1.5, 'comment': '', 'cut_high': 0.2, 'cut_low': 0.25, 'debug': False, 'delimiter': ',', 'filter_data': True, 'filter_npoly': 3, 'filter_nwind': 21, 'filter_theta': 0.785, 'freq': None, 'i_fmt': 'mA', 'i_multiplier': 1.0, 'ifdata_npts': 3000, 'ifdata_sigma': 5, 'ifdata_vmax': 2.25, 'igap_guess': 0.0002, 'ioffset': None, 'npts': 6001, 'num_b': 20, 'remb_range': (0, 1), 'rn_vmax': 0.0045, 'rn_vmin': 0.0035, 'rseries': None, 'skip_header': 1, 't_cold': 80.0, 't_hot': 293.0, 'usecols': (0, 1), 'v_fmt': 'mV', 'v_multiplier': 1.0, 'v_smear': 0.02, 'vbest': None, 'verbose': True, 'vgap_guess': 0.0027, 'vgap_threshold': 0.000105, 'vleak': 0.002, 'vmax': 0.006, 'vmax_plot': 4.0, 'voffset': None, 'voffset_range': 0.0003, 'voffset_sigma': 1e-05, 'vrsg': 0.002, 'vshot': None, 'xemb_range': (-1, 1)}</em><a class="headerlink" href="#qmix.exp.parameters.params" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">qmix.exp.parameters.</code><code class="descname">params</code><em class="property"> = {'alpha_max': 1.5, 'analyze': None, 'analyze_if': True, 'analyze_iv': True, 'area': 1.5, 'comment': '', 'cut_high': 0.2, 'cut_low': 0.25, 'debug': False, 'delimiter': ',', 'filter_data': True, 'filter_npoly': 3, 'filter_nwind': 21, 'filter_theta': 0.785, 'freq': None, 'i_fmt': 'mA', 'i_multiplier': 1.0, 'ifdata_npts': 3000, 'ifdata_sigma': 5, 'ifdata_vmax': 2.25, 'igap_guess': 0.0002, 'input_type': 'csv', 'ioffset': None, 'npts': 6001, 'num_b': 20, 'remb_range': (0, 1), 'rn_vmax': 0.0045, 'rn_vmin': 0.0035, 'rseries': None, 'skip_header': 1, 't_cold': 80.0, 't_hot': 293.0, 'usecols': (0, 1), 'v_fmt': 'mV', 'v_multiplier': 1.0, 'v_smear': 0.02, 'vbest': None, 'verbose': True, 'vgap_guess': 0.0027, 'vgap_threshold': 0.000105, 'vleak': 0.002, 'vmax': 0.006, 'vmax_plot': 4.0, 'voffset': None, 'voffset_range': 0.0003, 'voffset_sigma': 1e-05, 'vrsg': 0.002, 'vshot': None, 'xemb_range': (-1, 1)}</em><a class="headerlink" href="#qmix.exp.parameters.params" title="Permalink to this definition">¶</a></dt>
 <dd><p>Default parameters for importing experimental data.</p>
 </dd></dl>
 
@@ -1737,6 +1754,7 @@ experimental data.</p>
         <script type="text/javascript" src="_static/jquery.js"></script>
         <script type="text/javascript" src="_static/underscore.js"></script>
         <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
     
 
   
