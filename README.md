@@ -3,7 +3,7 @@
 **Quantum Mixing software**
 
 [![GitHub version](https://badge.fury.io/gh/garrettj403%2FQMix.svg)](https://pypi.org/project/QMix/)
-![PyPI - Python Version](https://img.shields.io/pypi/pyversions/QMix.svg)
+[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/QMix.svg)](https://pypi.org/project/QMix/)
 [![Build Status](https://travis-ci.org/garrettj403/QMix.svg?branch=master)](https://travis-ci.org/garrettj403/QMix)
 [![Coverage Status](https://coveralls.io/repos/github/garrettj403/QMix/badge.svg?branch=master)](https://coveralls.io/github/garrettj403/QMix?branch=master)
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://github.com/garrettj403/QMix/blob/master/LICENSE)
@@ -30,8 +30,8 @@ Contributing to QMix
 --------------------
 
 [![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/garrettj403/QMix/blob/master/CONTRIBUTING.md)
-![GitHub commits since latest release](https://img.shields.io/github/commits-since/garrettj403/QMix/latest.svg)
-![GitHub issues](https://img.shields.io/github/issues-raw/garrettj403/QMix.svg)
+[![GitHub commits since latest release](https://img.shields.io/github/commits-since/garrettj403/QMix/latest.svg)](https://github.com/garrettj403/QMix/commits/master)
+[![GitHub issues](https://img.shields.io/github/issues-raw/garrettj403/QMix.svg)](https://github.com/garrettj403/QMix/issues)
 
 If you would like to contribute to the QMix project, please take a look at [``QMix/CONTRIBUTING.md``](https://github.com/garrettj403/QMix/blob/master/CONTRIBUTING.md). This document includes information on reporting bugs, requesting new features, creating pull requests and contributing new code.
 
@@ -51,12 +51,12 @@ If you use QMix, please cite the Zenodo archive:
 
     @article{Garrett2019,
       author       = {J. D. Garrett and G. Yassin},
-      title        = {{garrettj403/QMix  (Version v1.0.1)}},
-      month        = feb,
+      title        = {{garrettj403/QMix  (Version v1.0.2)}},
+      month        = mar,
       year         = 2019,
       publisher    = {Zenodo},
-      doi          = {10.5281/zenodo.2557839},
-      url          = {http://doi.org/10.5281/zenodo.2557839}
+      doi          = {10.5281/zenodo.2590165},
+      url          = {http://doi.org/10.5281/zenodo.2590165}
     }
 
 We have also submitted a paper to the Journal of Open Source Software. Once this paper is accepted, please cite this paper instead of the Zenodo archive (or both!).
