@@ -1,34 +1,34 @@
 """ This module contains a dictionary of parameters (``params``) that is
-used by the ``qmix.exp.RawData`` and ``qmix.exp.RawData0`` classes to control
+used by ``qmix.exp.RawData`` and ``qmix.exp.RawData0`` to control
 how experimental data is loaded and analyzed.
 
 Note:
 
     This dictionary just contains the default values. You can overwrite these 
     values by passing keyword arguments to ``RawData`` or ``RawData0``. For 
-    example, the default value for voltage units is ``"mV"``.
-    You can change this parameter to be ``"uV"`` by passing 
-    ``v_fmt="uV"`` to the ``RawData`` or ``RawData0`` class.
+    example, the default value for voltage units is millivolts (``"mV"``).
+    You can change this parameter to be microvolts (``"uV"``) by passing 
+    ``v_fmt="uV"`` to ``RawData`` or ``RawData0``.
+
+    Also note that experimental data can be passed to ``RawData0`` and 
+    ``RawData`` either as CSV data files or as Numpy arrays. In both
+    cases, the data should have two columns: one for voltage and one 
+    for current or IF power, depending on the file. See Example #3 on the 
+    QMix website for more information.
 
 All of the different parameters are described below along with their default 
 values.
 
 **Parameters:**
 
-    - Experimental data data:
-        - **Note:** Experimental data can be passed to ``RawData0`` and 
-          ``RawData`` either as CSV data files or as Numpy arrays. The CSV
-          files should have two columns: one for voltage and one for current
-          or IF power. The Numpy arrays should also have two columns.
     - CSV files:
-        - **Note:** All of the experimental data is expected to be stored in
-          CSV data files. These parameters control how the data is read in 
-          from these files.
+        - **Note:** If you are using CSV files, these parameters control how 
+          the data is loaded from the CSV files.
         - ``delimiter = ","`` : The delimiter used by the CSV data files.
         - ``usecols = (0,1)`` : Which columns to import from the CSV data 
           files.
         - ``skip_header = 1`` : Number of rows to skip at the beginning CSV 
-          data files. Used to skip the header.
+          data files. (Used to skip the header.)
     - Units:
         - ``v_fmt = "mV"`` : Units for imported voltage data. The options 
           are: ``"uV"``, ``"mV"`` and ``"V"``.
@@ -41,7 +41,8 @@ values.
           interpolation.
         - ``debug = False`` : If set to ``True``, this will plot each step of
           the I-V data loading and analysis procedure. Note: This will 
-          display 4 individual plots for each I-V curve that is loaded.
+          display 4 individual plots for each I-V curve that is loaded, so do
+          not use this if you are looping through multiple files.
     - Correcting voltage/current offsets:
         - **Note:** Sometimes there is an offset in the I-V data. The 
           parameters below can be used to correct this. If you know the 
@@ -50,9 +51,10 @@ values.
           find the offset on its own. This is done by taking the derivative
           of the DC I-V curve, and then finding the maximum derivative value 
           between ``-voffset_range`` and ``+voffset_range``.
-        - ``ioffset = None`` : Offset in DC tunneling current data in units 
-          [A].
-        - ``voffset = None`` : Offset in DC bias voltage data in units [V].
+        - ``ioffset = None`` : Offset of the DC tunneling current data in 
+          units [A].
+        - ``voffset = None`` : Offset of the DC bias voltage data in units 
+          [V].
         - ``voffset_range = 3e-4`` : Voltage range over which to look for the 
           voltage offset in units [V]. The ``RawData0`` class will look from 
           ``-voffset_range`` to ``+voffset_range`` for the voltage offset.
@@ -84,8 +86,8 @@ values.
         - ``filter_nwind = 21`` : Width of the Savitzky-Golay filter.
         - ``filter_npoly = 3`` : Order of the Savitzky-Golay filter.
     - Analyzing the DC I-V curve:
-        - ``vgap_threshold = 105e-6`` : Threshold current at which to measure
-          the gap voltage, in units [A]. (Note: the gap voltage is defined 
+        - ``vgap_threshold = 105e-6`` : Threshold current, in units [A], at 
+          which to measure the gap voltage. (Note: the gap voltage is defined
           here as the voltage at which the DC I-V curve crosses this current 
           value.)
         - ``rn_vmin = 3.5e-3`` : Lower range over which to calculate normal 
@@ -100,17 +102,17 @@ values.
         - ``analyze_iv = True`` : Analyze the pumped I-V data? This involves 
           a procedure to recover the embedding circuit.
         - ``cut_low = 0.25`` : Fit interval for impedance recovery, lower end,
-          normalized to photon step width.
+          normalized to the photon voltage.
         - ``cut_high = 0.2`` : Fit interval for impedance recovery, upper end,
-          normalized to photon step width.
+          normalized to the photon voltage.
         - ``remb_range = (0, 1)`` : Range of embedding resistances to test, 
-          normalized to normal resistance.
+          normalized to the normal resistance.
         - ``xemb_range = (-1, 1)`` : Range of embedding reactances to test, 
-          normalized to normal resistance.
-        - ``alpha_max = 1.5`` : Maximum drive level (alpha) for initial guess 
+          normalized to the normal resistance.
+        - ``alpha_max = 1.5`` : Initial guess for the drive level (alpha)
           during impedance recovery.
         - ``num_b = 20`` : Maximum number of Bessel functions to include when 
-          calculating tunneling currents.
+          calculating the tunneling currents.
     - Importing IF data:
         - ``ifdata_vmax = 2.25`` : Maximum IF voltage to import (normalized to
           vgap). Used in case the IF data is saturated beyond a certain bias 
@@ -122,6 +124,10 @@ values.
           convolving it with a Gaussian distribution. This is the standard 
           deviation, in number of data points.
     - Analyzing the DC IF data:
+        - **Note:** DC IF data (IF power with no LO injection) is used to 
+          measure the IF noise contribution and convert the power units into
+          units of temperature [K]. This is done by fitting a linear trend
+          to the shot noise present in the DC IF data.
         - ``vshot = None`` : Range of voltages over which to fit a linear 
           trend line to the shot noise. This is a list of lists, in units [V].
           For example, to fit the shot noise slope from 4-5 mV and from 
@@ -141,8 +147,8 @@ values.
     - Response function:
         - **Note:** The ``RawData0`` class generates a response function
           based on the imported DC I-V data (using ``qmix.respfn.RespFn``).
-          It also generates a second response function that is smeared 
-          slightly. This smeared response function is useful for simulations
+          It also generates a second response function that is slightly 
+          smeared. This smeared response function is useful for simulations
           because it simulates a small amount of heating.
         - ``v_smear = 0.020`` : Voltage smear of the "smeared" response 
           function.
@@ -155,7 +161,7 @@ values.
           [GHz].
     - Miscellaneous:
         - ``comment = ""`` : Add a comment to describe this instance.
-        - ``verbose = True`` : Print information to the terminal?
+        - ``verbose = True`` : Print information to the terminal.
 
 """
 

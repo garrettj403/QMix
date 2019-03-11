@@ -8,16 +8,16 @@ circuit.
     all of the components in these embedding circuits are **linear**, the 
     embedding circuit can be reduced to a **Thevenin equivalent circuit**, with
     one for **each tone and harmonic.**
-    
+
     To fully describe the embedding circuit, 3 bits of information are needed
     for each signal that is applied to the junction:
-    
+
         1. the frequency of the applied signal,
         2. the Thevenin voltage of the embedding circuit at this freq., and
         3. the Thevenin impedance of the embedding circuit at this freq.
 
-    The main class in this module (``EmbeddingCircuit``) allows the user to 
-    build an embedding circuit in the proper format.
+The main class in this module (``EmbeddingCircuit``) allows the user to 
+build an embedding circuit in the proper format.
     
 """
 
@@ -114,15 +114,15 @@ class EmbeddingCircuit(object):
             (tones) applied to the junction.
         num_p (int, optional, default is 1): Number of harmonics included for
             each tone.
-        vb_min (float, optional, default is 0): Minimum bias voltage for array.
-        vb_max (float, optional, default is 2): Maximum bias voltage for array.
+        vb_min (float, optional, default is 0): Minimum bias voltage.
+        vb_max (float, optional, default is 2): Maximum bias voltage.
         vb_npts (int, optional, default is 201): Number of points in bias
             voltage sweep.
         fgap (float, optional): Gap frequency of the junction in units [Hz].
             This is equal to ``e*Vgap/h``, where ``e`` is the charge of an
             electron, ``Vgap`` is the gap voltage, and ``h`` is the Planck
             constant. ``fgap`` is used to normalize and de-normalize frequency
-            values (that't it).
+            values (that't it!).
         vgap (float, optional): Gap voltage of the junction in units [V]. This is the
             voltage where the sharp non-linearity in the DC I-V curve occurs 
             (a.k.a., the transition voltage).
@@ -135,11 +135,11 @@ class EmbeddingCircuit(object):
     Attributes:
         vph (numpy.ndarray): An array for the photon voltage normalized to the
             gap voltage. This is a 1-dimensional array of real numbers. It
-            contains all of the photon voltages for the fundamental tones that
+            contains photon voltages for all of the fundamental tones that
             are applied to the junction. The photon voltage is defined as
             ``hf/e``, where ``h`` is the Planck constant, ``f`` is the
             frequency of the fundamental tone, and ``e`` is the charge of an
-            electron. However, since this value is normalized to the gap
+            electron. Since this value is normalized to the gap
             voltage, the photon voltage is also equal to the normalized
             frequency, ``f/fgap``, where ``fgap`` is the gap frequency. Note
             that this array is 1-based, meaning that the photon voltage of the
@@ -188,10 +188,12 @@ class EmbeddingCircuit(object):
         vb (numpy.ndarray): Array for the DC bias voltage sweep. This value is
             normalized to the gap voltage.
         vb_npts (int): Number of points in the bias voltage sweep.
+        name (str): A name to describe this instance of the embedding circuit
+            class.
         comment (list): A list of comments to describe the different signals.
             For example, to describe tone 1/harmonic 1 as the local-oscillator
             signal, you might use ``cct.comment[1][1] = "LO"``. This has to be
-            done after the initialization of the EmbeddingCircuit class.
+            set after the initialization of the EmbeddingCircuit class.
 
     """
 

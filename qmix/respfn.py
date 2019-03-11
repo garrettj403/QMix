@@ -33,14 +33,14 @@ There are several different types of response function classes:
 
       - ``RespFnPolynomial``: This class will generate a response function 
         based on the polynomial model from Kennedy (1999). The order of the
-        polynomial controls how sharp the transition is, so this class can be
-        used to simulate the effect of the transition's sharpness (i.e., how 
-        do the results change when the gap is more or less sharp).
+        polynomial controls the sharpness of the transition, so this class can
+        be used to simulate the effect of the transition's sharpness (e.g., 
+        how does the gain change when the gap is more or less sharp?).
         
       - ``RespFnExponential``: This class will generate a response function 
-        based on the exponential model from Rashid et al. (2016). This model is
-        very similar to ``RespFnPolynomial``, except that you can include a 
-        constant subgap resistance.
+        based on the exponential model from Rashid *et al.* (2016). This model
+        is very similar to ``RespFnPolynomial``, except that you can include a
+        leakage current (i.e., a finite subgap resistance).
 
 Upon initialization, these classes will:
 
@@ -118,7 +118,13 @@ VINIT.flags.writeable = False
 class RespFn(object):
     """Generate the response function from pre-processed I-V data.
 
-    This is a class to contain, interpolate and plot the response function.
+    This class expects "pre-processed" I-V data, meaning that there are more
+    data points around the curvier regions of the I-V curve and fewer points
+    in the linear regions. Sampling in this way helps the interpolation run
+    as quick as possible.
+
+    If you have not "pre-processed" your data, please use 
+    ``RespFnFromIVData``.
 
     Args:
         voltage (ndarray): normalized DC bias voltage
@@ -192,6 +198,9 @@ class RespFn(object):
     def plot_interpolation(self, fig_name=None, ax=None):  # pragma: no cover
         """Plot the interpolation of the response function.
 
+        This can be used to check the interpolation of the response function.
+        (Mostly just a sanity check.)
+        
         Note: If ``fig_name`` is provided, this method will save the plot 
         to the specified folder and then close the plot. This means
         that the Matplotlib axis object will not be returned in this
@@ -245,6 +254,9 @@ class RespFn(object):
 
     def show_current(self, fig_name=None, ax=None):  # pragma: no cover
         """Plot the interpolation of the response function.
+
+        This can be used to check the interpolation of the response function.
+        (Mostly just a sanity check.)
 
         Note: If ``fig_name`` is provided, this method will save the plot 
         to the specified folder and then close the plot. This means
@@ -312,7 +324,7 @@ class RespFn(object):
 
             This method is not used directly by QMix, but it can be useful if
             you are calculating the tunneling currents using Tucker theory
-            (Tucker and Feldman, 1985).
+            (see: Tucker and Feldman, 1985).
 
         Args:
             vbias (ndarray): Bias voltage (normalized)
@@ -335,7 +347,7 @@ class RespFn(object):
 
             This method is not used directly by QMix, but it can be useful if
             you are calculating the tunneling currents using Tucker theory
-            (Tucker and Feldman, 1985).
+            (see: Tucker and Feldman, 1985).
 
         Args:
             vbias (ndarray): Bias voltage (normalized)
@@ -361,14 +373,13 @@ class RespFn(object):
         return self._f_ikk(vbias) + 1j * self._f_idc(vbias)
 
     def resp_conj(self, vbias):
-        """Interpolate the complex conjugate of the response function
-       .
+        """Interpolate the complex conjugate of the response function.
 
         Note:
 
             This method is not used directly by QMix, but it can be useful if
             you are calculating the tunneling currents using Tucker theory
-            (Tucker and Feldman, 1985).
+            (see: Tucker and Feldman, 1985).
 
             This method is included because it might be *slightly* faster than
             ``np.conj(resp.resp(vb))`` where ``resp`` is an instance of this
@@ -386,18 +397,18 @@ class RespFn(object):
 
     def resp_swap(self, vbias):
         """Interpolate the response function, with the real and imaginary 
-        components swapped,.
+        components swapped.
         
         Note:
 
             This method is not used directly by QMix, but it can be useful if
             you are calculating the tunneling currents using Tucker theory
-            (Tucker and Feldman, 1985).
+            (see: Tucker and Feldman, 1985).
 
             This method is included because it might be *slightly* faster than
-            ``1j * np.conj(resp.resp(vb))`` where ``resp`` is an instance of
-            this class (which is the normal way that you would swap the real
-            and imaginary components).
+            ``1j*np.conj(resp.resp(vb))`` where ``resp`` is an instance of
+            this class. This is the normal way that you would swap the real
+            and imaginary components.
 
         Args:
             vbias (ndarray): Bias voltage (normalized)
@@ -415,8 +426,6 @@ class RespFn(object):
 
 class RespFnFromIVData(RespFn):
     """Generate the response function from I-V data.
-
-    This is a class to contain, interpolate and plot the response function.
 
     Unlike ``RespFn``, this class will resample the I-V data to optimize the
     interpolation.
@@ -476,7 +485,10 @@ class RespFnFromIVData(RespFn):
 class RespFnPolynomial(RespFn):
     """Response function based on the polynomial I-V curve model.
 
-    Class to contain, interpolate and plot the response function.
+    This model is from Kennedy (1999). The order of the polynomial 
+    (``p_order``) controls the sharpness of the non-linearity.
+
+    See ``qmix.mathfn.ivcurve_models.polynomial`` for the model.
 
     Args:
         p_order (int): Order of the polynomial
@@ -511,13 +523,10 @@ class RespFnPolynomial(RespFn):
 class RespFnExponential(RespFn):
     """Response function based on the exponential I-V curve model.
 
-    Class to contain, interpolate and plot the response function.
+    This model is from Rashid *et al.* (2016). Through this model you can 
+    set the sharpness of the non-linearity *and* the subgap resistance.
 
-    Reference:
-
-        H. Rashid, et al., "Harmonic and reactive behavior of the
-        quasiparticle tunnel current in SIS junctions," AIP Advances,
-        vol. 6, 2016.
+    See ``qmix.mathfn.ivcurve_models.exponential`` for the model.
 
     Args:
         vgap (float): Gap voltage (un-normalized)
@@ -555,7 +564,11 @@ class RespFnExponential(RespFn):
 class RespFnPerfect(RespFn):
     """Response function based on the perfect I-V curve model.
 
-    Class to contain, interpolate and plot the response function.
+    The perfect I-V curve has zero subgap current below the transition, and 
+    a current exactly equal to ``vb * Rn``, where ``vb`` is the bias voltage
+    and ``Rn`` is the normal resistance, above the transition.
+
+    See ``qmix.mathfn.ivcurve_models.perfect`` for the model.
 
     Keyword Args:
         verbose (bool, default is True): print info to terminal?
