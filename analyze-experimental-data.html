@@ -89,13 +89,13 @@
 <li class="toctree-l1"><a class="reference internal" href="multi-tone.html">4. Example #2: Simulating an SIS mixer</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">5. Example #3: Analyzing experimental data</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#Analyzing-DC-data">5.1. Analyzing DC data</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#Properties-of-the-experimental-data">5.1.1. Properties of the experimental data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Properties-of-the-experimental-DC-data">5.1.1. Properties of the experimental DC data</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#Importing-the-experimental-DC-data">5.1.2. Importing the experimental DC data</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#Analyzing-pumped-data-at-230-GHz">5.2. Analyzing pumped data at 230 GHz</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#Properties-of-the-experimental-data">5.2.1. Properties of the experimental data</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#Importing-the-experimental-pumped-data">5.2.2. Importing the experimental pumped data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Importing-the-experimental-data">5.2.2. Importing the experimental data</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#Impedance-recovery">5.2.3. Impedance recovery</a></li>
 </ul>
 </li>
@@ -414,8 +414,8 @@ div.rendered_html tbody tr:hover {
 <div class="section" id="Analyzing-DC-data">
 <h2>5.1. Analyzing DC data<a class="headerlink" href="#Analyzing-DC-data" title="Permalink to this headline">¶</a></h2>
 <p>This is the data collected from the SIS device with <strong>no local-oscillator (LO) illumination.</strong></p>
-<div class="section" id="Properties-of-the-experimental-data">
-<h3>5.2.1. Properties of the experimental data<a class="headerlink" href="#Properties-of-the-experimental-data" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="Properties-of-the-experimental-DC-data">
+<h3>5.1.1. Properties of the experimental DC data<a class="headerlink" href="#Properties-of-the-experimental-DC-data" title="Permalink to this headline">¶</a></h3>
 <p>The DC experimental data is located in two different files:</p>
 <ul class="simple">
 <li><code class="docutils literal notranslate"><span class="pre">eg-230-data/dciv.csv</span></code>: DC tunneling current vs.&nbsp;bias voltage</li>
@@ -729,9 +729,10 @@ DC Bias Voltage (mV), IF Power (A.U.)
 </div>
 </div>
 </div>
-<div class="section" id="Importing-the-experimental-pumped-data">
-<h3>5.2.2. Importing the experimental pumped data<a class="headerlink" href="#Importing-the-experimental-pumped-data" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="Importing-the-experimental-data">
+<h3>5.2.2. Importing the experimental data<a class="headerlink" href="#Importing-the-experimental-data" title="Permalink to this headline">¶</a></h3>
 <p>The <code class="docutils literal notranslate"><span class="pre">RawData</span></code> class will automatically load, filter and analyze the data. This includes calculating the noise temperature and the properties of the embedding circuit.</p>
+<p><strong>Note:</strong> that this experimental data is imported in the form of Numpy arrays. Each array has two columns with one for voltage and one for current or IF power (depending on the file).</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
 </pre></div>

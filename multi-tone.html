@@ -442,7 +442,7 @@ div.rendered_html tbody tr:hover {
 <h2>4.2. Define the embedding circuit<a class="headerlink" href="#Define-the-embedding-circuit" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>We will load the <code class="docutils literal notranslate"><span class="pre">EmbeddingCircuit</span></code> class with all of the information about the embedding circuit. This includes the Thevenin voltage, the Thevenin impedance, and the frequency of each signal that is applied to the junction.</li>
-<li>Note:</li>
+<li>Note:<ul>
 <li>All of the circuit properties are normalized:<ul>
 <li>voltages are normalized to the gap voltage (<code class="docutils literal notranslate"><span class="pre">vgap</span></code>),</li>
 <li>resistances to the normal resistance (<code class="docutils literal notranslate"><span class="pre">rn</span></code>),</li>
@@ -457,6 +457,8 @@ div.rendered_html tbody tr:hover {
 </ul>
 </li>
 <li>The normalized frequency is the same thing as the normalized photon voltage.</li>
+</ul>
+</li>
 </ul>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:

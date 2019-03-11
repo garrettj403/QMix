@@ -39,7 +39,7 @@
     "\n",
     "This is the data collected from the SIS device with **no local-oscillator (LO) illumination.**\n",
     "\n",
-    "### Properties of the experimental data\n",
+    "### Properties of the experimental DC data\n",
     "\n",
     "The DC experimental data is located in two different files:\n",
     "\n",
@@ -417,9 +417,11 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "### Importing the experimental pumped data\n",
+    "### Importing the experimental data\n",
     "\n",
-    "The ``RawData`` class will automatically load, filter and analyze the data. This includes calculating the noise temperature and the properties of the embedding circuit."
+    "The ``RawData`` class will automatically load, filter and analyze the data. This includes calculating the noise temperature and the properties of the embedding circuit.\n",
+    "\n",
+    "**Note:** that this experimental data is imported in the form of Numpy arrays. Each array has two columns with one for voltage and one for current or IF power (depending on the file)."
    ]
   },
   {

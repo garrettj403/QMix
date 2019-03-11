@@ -1583,11 +1583,15 @@ used by the <code class="docutils literal notranslate"><span class="pre">qmix.ex
 how experimental data is loaded and analyzed.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">This dictionary just contains the default values. You can overwrite these
+<p>This dictionary just contains the default values. You can overwrite these
 values by passing keyword arguments to <code class="docutils literal notranslate"><span class="pre">RawData</span></code> or <code class="docutils literal notranslate"><span class="pre">RawData0</span></code>. For
 example, the default value for voltage units is <code class="docutils literal notranslate"><span class="pre">&quot;mV&quot;</span></code>.
 You can change this parameter to be <code class="docutils literal notranslate"><span class="pre">&quot;uV&quot;</span></code> by passing
 <code class="docutils literal notranslate"><span class="pre">v_fmt=&quot;uV&quot;</span></code> to the <code class="docutils literal notranslate"><span class="pre">RawData</span></code> or <code class="docutils literal notranslate"><span class="pre">RawData0</span></code> class.</p>
+<p class="last">Also note that experimental data can be passed to <code class="docutils literal notranslate"><span class="pre">RawData0</span></code> and
+<code class="docutils literal notranslate"><span class="pre">RawData</span></code> either as CSV data files or as Numpy arrays. In both
+cases, the data should have two columns: one for voltage and one
+for current or IF power, depending on the file.</p>
 </div>
 <p>All of the different parameters are described below along with their default
 values.</p>
@@ -1595,27 +1599,15 @@ values.</p>
 <blockquote>
 <div><ul class="simple">
 <li><dl class="first docutils">
-<dt>Experimental data data:</dt>
-<dd><ul class="first last">
-<li><strong>Note:</strong> Experimental data can be passed to <code class="docutils literal notranslate"><span class="pre">RawData0</span></code> and
-<code class="docutils literal notranslate"><span class="pre">RawData</span></code> either as CSV data files or as Numpy arrays. The CSV
-files should have two columns: one for voltage and one for current
-or IF power. The Numpy arrays should also have two columns.</li>
-</ul>
-</dd>
-</dl>
-</li>
-<li><dl class="first docutils">
 <dt>CSV files:</dt>
 <dd><ul class="first last">
-<li><strong>Note:</strong> All of the experimental data is expected to be stored in
-CSV data files. These parameters control how the data is read in
-from these files.</li>
+<li><strong>Note:</strong> If you are using CSV files, these parameters control how
+the data is loaded from the CSV files.</li>
 <li><code class="docutils literal notranslate"><span class="pre">delimiter</span> <span class="pre">=</span> <span class="pre">&quot;,&quot;</span></code> : The delimiter used by the CSV data files.</li>
 <li><code class="docutils literal notranslate"><span class="pre">usecols</span> <span class="pre">=</span> <span class="pre">(0,1)</span></code> : Which columns to import from the CSV data
 files.</li>
 <li><code class="docutils literal notranslate"><span class="pre">skip_header</span> <span class="pre">=</span> <span class="pre">1</span></code> : Number of rows to skip at the beginning CSV
-data files. Used to skip the header.</li>
+data files. (Used to skip the header.)</li>
 </ul>
 </dd>
 </dl>
@@ -1640,7 +1632,8 @@ case the current is saturated beyond some bias voltage.</li>
 interpolation.</li>
 <li><code class="docutils literal notranslate"><span class="pre">debug</span> <span class="pre">=</span> <span class="pre">False</span></code> : If set to <code class="docutils literal notranslate"><span class="pre">True</span></code>, this will plot each step of
 the I-V data loading and analysis procedure. Note: This will
-display 4 individual plots for each I-V curve that is loaded.</li>
+display 4 individual plots for each I-V curve that is loaded, so do
+not use this if you are looping through multiple files.</li>
 </ul>
 </dd>
 </dl>
@@ -1655,9 +1648,10 @@ current and voltage offset, you can define <code class="docutils literal notrans
 find the offset on its own. This is done by taking the derivative
 of the DC I-V curve, and then finding the maximum derivative value
 between <code class="docutils literal notranslate"><span class="pre">-voffset_range</span></code> and <code class="docutils literal notranslate"><span class="pre">+voffset_range</span></code>.</li>
-<li><code class="docutils literal notranslate"><span class="pre">ioffset</span> <span class="pre">=</span> <span class="pre">None</span></code> : Offset in DC tunneling current data in units
-[A].</li>
-<li><code class="docutils literal notranslate"><span class="pre">voffset</span> <span class="pre">=</span> <span class="pre">None</span></code> : Offset in DC bias voltage data in units [V].</li>
+<li><code class="docutils literal notranslate"><span class="pre">ioffset</span> <span class="pre">=</span> <span class="pre">None</span></code> : Offset of the DC tunneling current data in
+units [A].</li>
+<li><code class="docutils literal notranslate"><span class="pre">voffset</span> <span class="pre">=</span> <span class="pre">None</span></code> : Offset of the DC bias voltage data in units
+[V].</li>
 <li><code class="docutils literal notranslate"><span class="pre">voffset_range</span> <span class="pre">=</span> <span class="pre">3e-4</span></code> : Voltage range over which to look for the
 voltage offset in units [V]. The <code class="docutils literal notranslate"><span class="pre">RawData0</span></code> class will look from
 <code class="docutils literal notranslate"><span class="pre">-voffset_range</span></code> to <code class="docutils literal notranslate"><span class="pre">+voffset_range</span></code> for the voltage offset.</li>
@@ -1707,8 +1701,8 @@ before filtering (in radians).</li>
 <li><dl class="first docutils">
 <dt>Analyzing the DC I-V curve:</dt>
 <dd><ul class="first last">
-<li><code class="docutils literal notranslate"><span class="pre">vgap_threshold</span> <span class="pre">=</span> <span class="pre">105e-6</span></code> : Threshold current at which to measure
-the gap voltage, in units [A]. (Note: the gap voltage is defined
+<li><code class="docutils literal notranslate"><span class="pre">vgap_threshold</span> <span class="pre">=</span> <span class="pre">105e-6</span></code> : Threshold current, in units [A], at
+which to measure the gap voltage. (Note: the gap voltage is defined
 here as the voltage at which the DC I-V curve crosses this current
 value.)</li>
 <li><code class="docutils literal notranslate"><span class="pre">rn_vmin</span> <span class="pre">=</span> <span class="pre">3.5e-3</span></code> : Lower range over which to calculate normal
@@ -1729,17 +1723,17 @@ in units [V].</li>
 <li><code class="docutils literal notranslate"><span class="pre">analyze_iv</span> <span class="pre">=</span> <span class="pre">True</span></code> : Analyze the pumped I-V data? This involves
 a procedure to recover the embedding circuit.</li>
 <li><code class="docutils literal notranslate"><span class="pre">cut_low</span> <span class="pre">=</span> <span class="pre">0.25</span></code> : Fit interval for impedance recovery, lower end,
-normalized to photon step width.</li>
+normalized to the photon voltage.</li>
 <li><code class="docutils literal notranslate"><span class="pre">cut_high</span> <span class="pre">=</span> <span class="pre">0.2</span></code> : Fit interval for impedance recovery, upper end,
-normalized to photon step width.</li>
+normalized to the photon voltage.</li>
 <li><code class="docutils literal notranslate"><span class="pre">remb_range</span> <span class="pre">=</span> <span class="pre">(0,</span> <span class="pre">1)</span></code> : Range of embedding resistances to test,
-normalized to normal resistance.</li>
+normalized to the normal resistance.</li>
 <li><code class="docutils literal notranslate"><span class="pre">xemb_range</span> <span class="pre">=</span> <span class="pre">(-1,</span> <span class="pre">1)</span></code> : Range of embedding reactances to test,
-normalized to normal resistance.</li>
-<li><code class="docutils literal notranslate"><span class="pre">alpha_max</span> <span class="pre">=</span> <span class="pre">1.5</span></code> : Maximum drive level (alpha) for initial guess
+normalized to the normal resistance.</li>
+<li><code class="docutils literal notranslate"><span class="pre">alpha_max</span> <span class="pre">=</span> <span class="pre">1.5</span></code> : Initial guess for the drive level (alpha)
 during impedance recovery.</li>
 <li><code class="docutils literal notranslate"><span class="pre">num_b</span> <span class="pre">=</span> <span class="pre">20</span></code> : Maximum number of Bessel functions to include when
-calculating tunneling currents.</li>
+calculating the tunneling currents.</li>
 </ul>
 </dd>
 </dl>
@@ -1769,6 +1763,10 @@ deviation, in number of data points.</li>
 <li><dl class="first docutils">
 <dt>Analyzing the DC IF data:</dt>
 <dd><ul class="first last">
+<li><strong>Note:</strong> DC IF data (IF power with no LO injection) is used to
+measure the IF noise contribution and convert the power units into
+units of temperature [K]. This is done by fitting a linear trend
+to the shot noise present in the DC IF data.</li>
 <li><code class="docutils literal notranslate"><span class="pre">vshot</span> <span class="pre">=</span> <span class="pre">None</span></code> : Range of voltages over which to fit a linear
 trend line to the shot noise. This is a list of lists, in units [V].
 For example, to fit the shot noise slope from 4-5 mV and from
@@ -1800,8 +1798,8 @@ class will determine the best bias voltage automatically.</li>
 <dd><ul class="first last">
 <li><strong>Note:</strong> The <code class="docutils literal notranslate"><span class="pre">RawData0</span></code> class generates a response function
 based on the imported DC I-V data (using <code class="docutils literal notranslate"><span class="pre">qmix.respfn.RespFn</span></code>).
-It also generates a second response function that is smeared
-slightly. This smeared response function is useful for simulations
+It also generates a second response function that is slightly
+smeared. This smeared response function is useful for simulations
 because it simulates a small amount of heating.</li>
 <li><code class="docutils literal notranslate"><span class="pre">v_smear</span> <span class="pre">=</span> <span class="pre">0.020</span></code> : Voltage smear of the “smeared” response
 function.</li>
@@ -1838,7 +1836,7 @@ function.</li>
 <dt>Miscellaneous:</dt>
 <dd><ul class="first last">
 <li><code class="docutils literal notranslate"><span class="pre">comment</span> <span class="pre">=</span> <span class="pre">&quot;&quot;</span></code> : Add a comment to describe this instance.</li>
-<li><code class="docutils literal notranslate"><span class="pre">verbose</span> <span class="pre">=</span> <span class="pre">True</span></code> : Print information to the terminal?</li>
+<li><code class="docutils literal notranslate"><span class="pre">verbose</span> <span class="pre">=</span> <span class="pre">True</span></code> : Print information to the terminal.</li>
 </ul>
 </dd>
 </dl>

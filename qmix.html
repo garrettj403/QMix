@@ -249,9 +249,9 @@ for each signal that is applied to the junction:</p>
 <li>the Thevenin impedance of the embedding circuit at this freq.</li>
 </ol>
 </div></blockquote>
+</div></blockquote>
 <p>The main class in this module (<code class="docutils literal notranslate"><span class="pre">EmbeddingCircuit</span></code>) allows the user to
 build an embedding circuit in the proper format.</p>
-</div></blockquote>
 <dl class="class">
 <dt id="qmix.circuit.EmbeddingCircuit">
 <em class="property">class </em><code class="descclassname">qmix.circuit.</code><code class="descname">EmbeddingCircuit</code><span class="sig-paren">(</span><em>num_f=1</em>, <em>num_p=1</em>, <em>vb_min=0</em>, <em>vb_max=2</em>, <em>vb_npts=201</em>, <em>fgap=None</em>, <em>vgap=None</em>, <em>rn=None</em>, <em>name=''</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.circuit.EmbeddingCircuit" title="Permalink to this definition">¶</a></dt>
@@ -364,11 +364,11 @@ dynamic resistance of the DC I-V curve above the gap voltage.</li>
 <code class="descname">vph</code><a class="headerlink" href="#qmix.circuit.EmbeddingCircuit.vph" title="Permalink to this definition">¶</a></dt>
 <dd><p>An array for the photon voltage normalized to the
 gap voltage. This is a 1-dimensional array of real numbers. It
-contains all of the photon voltages for the fundamental tones that
+contains photon voltages for all of the fundamental tones that
 are applied to the junction. The photon voltage is defined as
 <code class="docutils literal notranslate"><span class="pre">hf/e</span></code>, where <code class="docutils literal notranslate"><span class="pre">h</span></code> is the Planck constant, <code class="docutils literal notranslate"><span class="pre">f</span></code> is the
 frequency of the fundamental tone, and <code class="docutils literal notranslate"><span class="pre">e</span></code> is the charge of an
-electron. However, since this value is normalized to the gap
+electron. Since this value is normalized to the gap
 voltage, the photon voltage is also equal to the normalized
 frequency, <code class="docutils literal notranslate"><span class="pre">f/fgap</span></code>, where <code class="docutils literal notranslate"><span class="pre">fgap</span></code> is the gap frequency. Note
 that this array is 1-based, meaning that the photon voltage of the
@@ -1100,13 +1100,13 @@ function with a Gaussian distribution, allowing you to control the
 sharpness of the transition.</li>
 <li><code class="docutils literal notranslate"><span class="pre">RespFnPolynomial</span></code>: This class will generate a response function
 based on the polynomial model from Kennedy (1999). The order of the
-polynomial controls how sharp the transition is, so this class can be
-used to simulate the effect of the transition’s sharpness (i.e., how
-do the results change when the gap is more or less sharp).</li>
+polynomial controls the sharpness of the transition, so this class can
+be used to simulate the effect of the transition’s sharpness (e.g.,
+how does the gain change when the gap is more or less sharp?).</li>
 <li><code class="docutils literal notranslate"><span class="pre">RespFnExponential</span></code>: This class will generate a response function
-based on the exponential model from Rashid et al. (2016). This model is
-very similar to <code class="docutils literal notranslate"><span class="pre">RespFnPolynomial</span></code>, except that you can include a
-constant subgap resistance.</li>
+based on the exponential model from Rashid <em>et al.</em> (2016). This model
+is very similar to <code class="docutils literal notranslate"><span class="pre">RespFnPolynomial</span></code>, except that you can include a
+leakage current (i.e., a finite subgap resistance).</li>
 </ul>
 </div></blockquote>
 </li>
@@ -1167,7 +1167,10 @@ the previous <code class="docutils literal notranslate"><span class="pre">dc_cur
 <em class="property">class </em><code class="descclassname">qmix.respfn.</code><code class="descname">RespFn</code><span class="sig-paren">(</span><em>voltage</em>, <em>current</em>, <em>**params</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.respfn.RespFn" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Generate the response function from pre-processed I-V data.</p>
-<p>This is a class to contain, interpolate and plot the response function.</p>
+<p>This class expects “pre-processed” I-V data, meaning that there are more
+data points around the curvier regions of the I-V curve and fewer points
+in the linear regions. Sampling in this way helps the interpolation run
+as quick as possible.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -1267,7 +1270,7 @@ current and <code class="docutils literal notranslate"><span class="pre">vb</spa
 <p class="first admonition-title">Note</p>
 <p class="last">This method is not used directly by QMix, but it can be useful if
 you are calculating the tunneling currents using Tucker theory
-(Tucker and Feldman, 1985).</p>
+(see: Tucker and Feldman, 1985).</p>
 </div>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1294,7 +1297,7 @@ voltage.</p>
 <p class="first admonition-title">Note</p>
 <p class="last">This method is not used directly by QMix, but it can be useful if
 you are calculating the tunneling currents using Tucker theory
-(Tucker and Feldman, 1985).</p>
+(see: Tucker and Feldman, 1985).</p>
 </div>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1357,6 +1360,8 @@ used to calculate the quasiparticle tunneling currents in
 <dt id="qmix.respfn.RespFn.plot_interpolation">
 <code class="descname">plot_interpolation</code><span class="sig-paren">(</span><em>fig_name=None</em>, <em>ax=None</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.respfn.RespFn.plot_interpolation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plot the interpolation of the response function.</p>
+<p>This can be used to check the interpolation of the response function.
+(Mostly just a sanity check.)</p>
 <p>Note: If <code class="docutils literal notranslate"><span class="pre">fig_name</span></code> is provided, this method will save the plot
 to the specified folder and then close the plot. This means
 that the Matplotlib axis object will not be returned in this
@@ -1410,7 +1415,7 @@ would like to add to an existing figure</li>
 <p class="first admonition-title">Note</p>
 <p>This method is not used directly by QMix, but it can be useful if
 you are calculating the tunneling currents using Tucker theory
-(Tucker and Feldman, 1985).</p>
+(see: Tucker and Feldman, 1985).</p>
 <p class="last">This method is included because it might be <em>slightly</em> faster than
 <code class="docutils literal notranslate"><span class="pre">np.conj(resp.resp(vb))</span></code> where <code class="docutils literal notranslate"><span class="pre">resp</span></code> is an instance of this
 class.</p>
@@ -1438,11 +1443,11 @@ components swapped.</p>
 <p class="first admonition-title">Note</p>
 <p>This method is not used directly by QMix, but it can be useful if
 you are calculating the tunneling currents using Tucker theory
-(Tucker and Feldman, 1985).</p>
+(see: Tucker and Feldman, 1985).</p>
 <p class="last">This method is included because it might be <em>slightly</em> faster than
-<code class="docutils literal notranslate"><span class="pre">1j</span> <span class="pre">*</span> <span class="pre">np.conj(resp.resp(vb))</span></code> where <code class="docutils literal notranslate"><span class="pre">resp</span></code> is an instance of
-this class (which is the normal way that you would swap the real
-and imaginary components).</p>
+<code class="docutils literal notranslate"><span class="pre">1j*np.conj(resp.resp(vb))</span></code> where <code class="docutils literal notranslate"><span class="pre">resp</span></code> is an instance of
+this class. This is the normal way that you would swap the real
+and imaginary components.</p>
 </div>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1466,6 +1471,8 @@ and imaginary components).</p>
 <dt id="qmix.respfn.RespFn.show_current">
 <code class="descname">show_current</code><span class="sig-paren">(</span><em>fig_name=None</em>, <em>ax=None</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.respfn.RespFn.show_current" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plot the interpolation of the response function.</p>
+<p>This can be used to check the interpolation of the response function.
+(Mostly just a sanity check.)</p>
 <p>Note: If <code class="docutils literal notranslate"><span class="pre">fig_name</span></code> is provided, this method will save the plot
 to the specified folder and then close the plot. This means
 that the Matplotlib axis object will not be returned in this
@@ -1498,12 +1505,9 @@ the QMix package.</p>
 <em class="property">class </em><code class="descclassname">qmix.respfn.</code><code class="descname">RespFnExponential</code><span class="sig-paren">(</span><em>vgap=0.0028</em>, <em>rn=14</em>, <em>rsg=1000</em>, <em>agap=40000.0</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.respfn.RespFnExponential" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#qmix.respfn.RespFn" title="qmix.respfn.RespFn"><code class="xref py py-class docutils literal notranslate"><span class="pre">qmix.respfn.RespFn</span></code></a></p>
 <p>Response function based on the exponential I-V curve model.</p>
-<p>Class to contain, interpolate and plot the response function.</p>
-<p>Reference:</p>
-<blockquote>
-<div>H. Rashid, et al., “Harmonic and reactive behavior of the
-quasiparticle tunnel current in SIS junctions,” AIP Advances,
-vol. 6, 2016.</div></blockquote>
+<p>This model is from Rashid <em>et al.</em> (2016). Through this model you can
+set the sharpness of the non-linearity <em>and</em> the subgap resistance.</p>
+<p>See <code class="docutils literal notranslate"><span class="pre">qmix.mathfn.ivcurve_models.exponential</span></code> for the model.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -1543,7 +1547,6 @@ a Gaussian dist. with this std. dev.</li>
 <em class="property">class </em><code class="descclassname">qmix.respfn.</code><code class="descname">RespFnFromIVData</code><span class="sig-paren">(</span><em>voltage</em>, <em>current</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.respfn.RespFnFromIVData" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#qmix.respfn.RespFn" title="qmix.respfn.RespFn"><code class="xref py py-class docutils literal notranslate"><span class="pre">qmix.respfn.RespFn</span></code></a></p>
 <p>Generate the response function from I-V data.</p>
-<p>This is a class to contain, interpolate and plot the response function.</p>
 <p>Unlike <code class="docutils literal notranslate"><span class="pre">RespFn</span></code>, this class will resample the I-V data to optimize the
 interpolation.</p>
 <div class="admonition note">
@@ -1592,7 +1595,10 @@ gap voltage.</li>
 <em class="property">class </em><code class="descclassname">qmix.respfn.</code><code class="descname">RespFnPerfect</code><span class="sig-paren">(</span><em>**params</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.respfn.RespFnPerfect" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#qmix.respfn.RespFn" title="qmix.respfn.RespFn"><code class="xref py py-class docutils literal notranslate"><span class="pre">qmix.respfn.RespFn</span></code></a></p>
 <p>Response function based on the perfect I-V curve model.</p>
-<p>Class to contain, interpolate and plot the response function.</p>
+<p>The perfect I-V curve has zero subgap current below the transition, and
+a current exactly equal to <code class="docutils literal notranslate"><span class="pre">vb</span> <span class="pre">*</span> <span class="pre">Rn</span></code>, where <code class="docutils literal notranslate"><span class="pre">vb</span></code> is the bias voltage
+and <code class="docutils literal notranslate"><span class="pre">Rn</span></code> is the normal resistance, above the transition.</p>
+<p>See <code class="docutils literal notranslate"><span class="pre">qmix.mathfn.ivcurve_models.perfect</span></code> for the model.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -1624,7 +1630,9 @@ a Gaussian dist. with this std. dev.</li>
 <em class="property">class </em><code class="descclassname">qmix.respfn.</code><code class="descname">RespFnPolynomial</code><span class="sig-paren">(</span><em>p_order=50</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.respfn.RespFnPolynomial" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#qmix.respfn.RespFn" title="qmix.respfn.RespFn"><code class="xref py py-class docutils literal notranslate"><span class="pre">qmix.respfn.RespFn</span></code></a></p>
 <p>Response function based on the polynomial I-V curve model.</p>
-<p>Class to contain, interpolate and plot the response function.</p>
+<p>This model is from Kennedy (1999). The order of the polynomial
+(<code class="docutils literal notranslate"><span class="pre">p_order</span></code>) controls the sharpness of the non-linearity.</p>
+<p>See <code class="docutils literal notranslate"><span class="pre">qmix.mathfn.ivcurve_models.polynomial</span></code> for the model.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
