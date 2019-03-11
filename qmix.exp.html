@@ -1579,19 +1579,20 @@ filtering. Given in radians.</li>
 <div class="section" id="module-qmix.exp.parameters">
 <span id="qmix-exp-parameters-module"></span><h2>2.1.1.6. qmix.exp.parameters module<a class="headerlink" href="#module-qmix.exp.parameters" title="Permalink to this headline">¶</a></h2>
 <p>This module contains a dictionary of parameters (<code class="docutils literal notranslate"><span class="pre">params</span></code>) that is
-used by the <code class="docutils literal notranslate"><span class="pre">qmix.exp.RawData</span></code> and <code class="docutils literal notranslate"><span class="pre">qmix.exp.RawData0</span></code> classes to control
+used by <code class="docutils literal notranslate"><span class="pre">qmix.exp.RawData</span></code> and <code class="docutils literal notranslate"><span class="pre">qmix.exp.RawData0</span></code> to control
 how experimental data is loaded and analyzed.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p>This dictionary just contains the default values. You can overwrite these
 values by passing keyword arguments to <code class="docutils literal notranslate"><span class="pre">RawData</span></code> or <code class="docutils literal notranslate"><span class="pre">RawData0</span></code>. For
-example, the default value for voltage units is <code class="docutils literal notranslate"><span class="pre">&quot;mV&quot;</span></code>.
-You can change this parameter to be <code class="docutils literal notranslate"><span class="pre">&quot;uV&quot;</span></code> by passing
-<code class="docutils literal notranslate"><span class="pre">v_fmt=&quot;uV&quot;</span></code> to the <code class="docutils literal notranslate"><span class="pre">RawData</span></code> or <code class="docutils literal notranslate"><span class="pre">RawData0</span></code> class.</p>
+example, the default value for voltage units is millivolts (<code class="docutils literal notranslate"><span class="pre">&quot;mV&quot;</span></code>).
+You can change this parameter to be microvolts (<code class="docutils literal notranslate"><span class="pre">&quot;uV&quot;</span></code>) by passing
+<code class="docutils literal notranslate"><span class="pre">v_fmt=&quot;uV&quot;</span></code> to <code class="docutils literal notranslate"><span class="pre">RawData</span></code> or <code class="docutils literal notranslate"><span class="pre">RawData0</span></code>.</p>
 <p class="last">Also note that experimental data can be passed to <code class="docutils literal notranslate"><span class="pre">RawData0</span></code> and
 <code class="docutils literal notranslate"><span class="pre">RawData</span></code> either as CSV data files or as Numpy arrays. In both
 cases, the data should have two columns: one for voltage and one
-for current or IF power, depending on the file.</p>
+for current or IF power, depending on the file. See Example #3 on the
+QMix website for more information.</p>
 </div>
 <p>All of the different parameters are described below along with their default
 values.</p>

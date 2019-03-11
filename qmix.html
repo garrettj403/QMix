@@ -337,15 +337,15 @@ the first harmonic of the first tone to 10 nW (10e-9 W).</p>
 (tones) applied to the junction.</li>
 <li><strong>num_p</strong> (<em>int</em><em>, </em><em>optional</em><em>, </em><em>default is 1</em>) – Number of harmonics included for
 each tone.</li>
-<li><strong>vb_min</strong> (<em>float</em><em>, </em><em>optional</em><em>, </em><em>default is 0</em>) – Minimum bias voltage for array.</li>
-<li><strong>vb_max</strong> (<em>float</em><em>, </em><em>optional</em><em>, </em><em>default is 2</em>) – Maximum bias voltage for array.</li>
+<li><strong>vb_min</strong> (<em>float</em><em>, </em><em>optional</em><em>, </em><em>default is 0</em>) – Minimum bias voltage.</li>
+<li><strong>vb_max</strong> (<em>float</em><em>, </em><em>optional</em><em>, </em><em>default is 2</em>) – Maximum bias voltage.</li>
 <li><strong>vb_npts</strong> (<em>int</em><em>, </em><em>optional</em><em>, </em><em>default is 201</em>) – Number of points in bias
 voltage sweep.</li>
 <li><strong>fgap</strong> (<em>float</em><em>, </em><em>optional</em>) – Gap frequency of the junction in units [Hz].
 This is equal to <code class="docutils literal notranslate"><span class="pre">e*Vgap/h</span></code>, where <code class="docutils literal notranslate"><span class="pre">e</span></code> is the charge of an
 electron, <code class="docutils literal notranslate"><span class="pre">Vgap</span></code> is the gap voltage, and <code class="docutils literal notranslate"><span class="pre">h</span></code> is the Planck
 constant. <code class="docutils literal notranslate"><span class="pre">fgap</span></code> is used to normalize and de-normalize frequency
-values (that’t it).</li>
+values (that’t it!).</li>
 <li><strong>vgap</strong> (<em>float</em><em>, </em><em>optional</em>) – Gap voltage of the junction in units [V]. This is the
 voltage where the sharp non-linearity in the DC I-V curve occurs
 (a.k.a., the transition voltage).</li>
@@ -571,12 +571,27 @@ normalized to the gap voltage.</p>
 </dd></dl>
 
 <dl class="attribute">
+<dt id="qmix.circuit.EmbeddingCircuit.name">
+<code class="descname">name</code><a class="headerlink" href="#qmix.circuit.EmbeddingCircuit.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>A name to describe this instance of the embedding circuit
+class.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">str</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
 <dt id="qmix.circuit.EmbeddingCircuit.comment">
 <code class="descname">comment</code><a class="headerlink" href="#qmix.circuit.EmbeddingCircuit.comment" title="Permalink to this definition">¶</a></dt>
 <dd><p>A list of comments to describe the different signals.
 For example, to describe tone 1/harmonic 1 as the local-oscillator
 signal, you might use <code class="docutils literal notranslate"><span class="pre">cct.comment[1][1]</span> <span class="pre">=</span> <span class="pre">&quot;LO&quot;</span></code>. This has to be
-done after the initialization of the EmbeddingCircuit class.</p>
+set after the initialization of the EmbeddingCircuit class.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -1171,6 +1186,8 @@ the previous <code class="docutils literal notranslate"><span class="pre">dc_cur
 data points around the curvier regions of the I-V curve and fewer points
 in the linear regions. Sampling in this way helps the interpolation run
 as quick as possible.</p>
+<p>If you have not “pre-processed” your data, please use
+<code class="docutils literal notranslate"><span class="pre">RespFnFromIVData</span></code>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
