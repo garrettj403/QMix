@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name = "QMix",
-    version = "1.0.2",
+    version = "1.0.3",
     author = "John Garrett",
     author_email = "garrettj403@gmail.com",
     description = ("Simulate SIS mixer operation"),
@@ -26,5 +26,6 @@ setup(
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Topic :: Scientific/Engineering :: Physics",
+        "Topic :: Scientific/Engineering :: Astronomy",
     ],
 )

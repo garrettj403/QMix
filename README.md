@@ -2,7 +2,7 @@
 
 **Quantum Mixing software**
 
-[![GitHub version](https://badge.fury.io/gh/garrettj403%2FQMix.svg)](https://pypi.org/project/QMix/)
+[![PyPI version](https://badge.fury.io/py/QMix.svg)](https://badge.fury.io/py/QMix)
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/QMix.svg)](https://pypi.org/project/QMix/)
 [![Build Status](https://travis-ci.org/garrettj403/QMix.svg?branch=master)](https://travis-ci.org/garrettj403/QMix)
 [![Coverage Status](https://coveralls.io/repos/github/garrettj403/QMix/badge.svg?branch=master)](https://coveralls.io/github/garrettj403/QMix?branch=master)
@@ -47,16 +47,16 @@ Citing QMix
 
 If you use QMix, please cite the Zenodo archive: 
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.2557839.svg)](https://doi.org/10.5281/zenodo.2557839)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.2557839.svg)](https://doi.org/10.5281/zenodo.2538162)
 
     @article{Garrett2019,
       author       = {J. D. Garrett and G. Yassin},
-      title        = {{garrettj403/QMix  (Version v1.0.2)}},
+      title        = {{garrettj403/QMix  (Version v1.0.3)}},
       month        = mar,
       year         = 2019,
       publisher    = {Zenodo},
-      doi          = {10.5281/zenodo.2590165},
-      url          = {http://doi.org/10.5281/zenodo.2590165}
+      doi          = {10.5281/zenodo.2538162},
+      url          = {http://doi.org/10.5281/zenodo.2538162}
     }
 
 We have also submitted a paper to the Journal of Open Source Software. Once this paper is accepted, please cite this paper instead of the Zenodo archive (or both!).

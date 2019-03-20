@@ -1,3 +1,11 @@
+v1.0.3 (20-Mar-2019)
+====================
+
+- This release was created after the JOSS review.
+- There are minor changes to the documentation, but no changes to the code base.
+
+
+
 v1.0.2 (11-Mar-2019)
 ====================
 
