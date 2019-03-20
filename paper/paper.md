@@ -29,6 +29,4 @@ Here we present a new software package called ``QMix``, short for Quantum Mixing
 
 ``QMix`` has already been used to successfully recreate the experimental results from an SIS mixer operating at $230~\mathrm{GHz}$ [@Garrett2018]. This included simulating the conversion gain, the intermediate frequency response and the broken photon step phenomenon, which was present in some of the experimental data. Based on this success, we believe that ``QMix`` will be a useful tool for designing new SIS devices, investigating experimental results and optimizing SIS mixer operation.
 
-The ``QMix`` repository is hosted on GitHub ([garrettj403/QMix](https://github.com/garrettj403/QMix)) and archived using Zenodo (see @Garrett2019).
-
 # References
