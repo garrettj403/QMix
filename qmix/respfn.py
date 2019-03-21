@@ -195,6 +195,14 @@ class RespFn(object):
         self.voltage_kk = voltage
         self.current_kk = current_kk
 
+    def __str__(self):
+
+        return "Response function object: RespFn"
+
+    def __repr__(self):  # pragma: no cover
+
+        return self.__str__()
+
     def plot_interpolation(self, fig_name=None, ax=None):  # pragma: no cover
         """Plot the interpolation of the response function.
 
@@ -242,6 +250,57 @@ class RespFn(object):
         ax.set_ylabel(r'Current / $I_\mathrm{{gap}}$')
         ax.set_xlim([-2, 2])
         ax.set_ylim([-2, 2])
+        ax.legend(loc=0, fontsize=8, frameon=True)
+        ax.grid()
+
+        if fig_name is not None:
+            fig.savefig(fig_name, bbox_inches='tight')
+            plt.close(fig)
+            return
+        else:
+            return ax
+
+    def plot(self, fig_name=None, ax=None):  # pragma: no cover
+        """Plot the response function.
+
+        This will plot the real and imaginary parts separately.
+
+        Note: If ``fig_name`` is provided, this method will save the plot
+        to the specified folder and then close the plot. This means
+        that the Matplotlib axis object will not be returned in this
+        case. This is done to prevent too many plots from being open
+        at the time.
+
+        Args:
+            fig_name (str, default is None): name of figure file name, if you
+                wish to save
+            ax (matplotlib.axes.Axes, default is None): figure axis, if you
+                would like to add to an existing figure
+
+        Returns:
+            matplotlib.axes.Axes: figure axis (only if ``fig_name`` is
+                ``None``)
+
+        """
+
+        # Figure labels
+        lb1 = r'$I_\mathrm{{dc}}^0(V_0)$'  # DC I-V curve
+        lb2 = r'$I_\mathrm{{kk}}^0(V_0)$'  # KK transform
+
+        if ax is None:
+            fig, ax = plt.subplots()
+        else:
+            fig = ax.get_figure()
+
+        # Plot response function
+        ax.plot(self.voltage, self.current, 'k', label=lb1)
+        ax.plot(self.voltage_kk, self.current_kk, 'r--', label=lb2)
+
+        # Set plot properties
+        ax.set_xlabel(r'Bias Voltage (normalized)')
+        ax.set_ylabel(r'Current (normalized)')
+        ax.set_xlim([0, 2])
+        ax.set_ylim([-1.2, 2])
         ax.legend(loc=0, fontsize=8, frameon=True)
         ax.grid()
 
@@ -479,6 +538,10 @@ class RespFnFromIVData(RespFn):
 
         RespFn.__init__(self, voltage, current, **params)
 
+    def __str__(self):
+
+        return "Response function object: RespFnFromIVData"
+
 
 # Generate from other I-V curve models ----------------------------------------
 
@@ -518,6 +581,10 @@ class RespFnPolynomial(RespFn):
         current = iv.polynomial(voltage, p_order)
 
         RespFn.__init__(self, voltage, current, **params)
+
+    def __str__(self):
+
+        return "Response function object: RespFnPolynomial"
 
 
 class RespFnExponential(RespFn):
@@ -559,6 +626,10 @@ class RespFnExponential(RespFn):
         current = iv.exponential(voltage, vgap, rn, rsg, agap)
 
         RespFn.__init__(self, voltage, current, **params)
+
+    def __str__(self):
+
+        return "Response function object: RespFnExponential"
 
 
 class RespFnPerfect(RespFn):
@@ -632,6 +703,10 @@ class RespFnPerfect(RespFn):
                 print(" - Voltage smear: {:.4f}".format(params['v_smear']))
 
             RespFn.__init__(self, voltage, current, **params)
+
+    def __str__(self):
+
+        return "Response function object: RespFnPerfect"
 
 
 # Helper functions ------------------------------------------------------------

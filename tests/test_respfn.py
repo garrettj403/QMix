@@ -59,6 +59,7 @@ def test_RespFnFromIVData():
 
     # Generate response function using the DC I-V curve from the model
     resp = RespFnFromIVData(voltage, current)
+    print(resp)
 
     # High-density interpolation
     i_resp = resp._f_idc(voltage)
@@ -81,6 +82,7 @@ def test_polynomial():
 
     # Interpolated values
     resp = RespFnPolynomial(order)
+    print(resp)
     i_resp = resp._f_idc(v)
 
     # Check interpolated values
@@ -104,6 +106,7 @@ def test_exponential_interpolation():
 
     # Interpolated values
     resp = RespFnExponential(v_gap, r_n, r_sg, a_g)
+    print(resp)
     i_resp = resp._f_idc(v)
 
     # Check interpolated values
@@ -116,6 +119,7 @@ def test_perfect_interpolation():
 
     # Generate response function
     resp = RespFnPerfect()
+    print(resp)
 
     # Check individual DC I-V values using known values
     assert resp.idc(-2.0) == -2.
@@ -142,6 +146,7 @@ def test_smearing_perfect_respfn():
 
     # Generate 'smeared' response function
     resp = RespFnPerfect(v_smear=0.05)
+    print(resp)
 
     # Check DC I-V curve
     # The smear should only affect the region around the transition
