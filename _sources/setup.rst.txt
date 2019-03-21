@@ -40,7 +40,7 @@ QMix is written using Python version 3.7. If you don't want to change your Pytho
 
 .. code-block:: console
 
-   conda env create -f environment-qmix.yaml
+   conda env create -f environment.yaml
 
 This may take a few minutes. You can then activate the virtual environment using:
 

@@ -573,7 +573,7 @@ DC I-V data:</span>
         Ileak:            8.70  uA
 
         Offset:           0.10  mV
-                          9.68  uV
+                          9.68  uA
 
         Vint:             0.45  mV
 
@@ -621,40 +621,40 @@ Running harmonic balance:
  - 3 tone(s) and 1 harmonic(s)
  - 7 calls to the tunneling current function per iteration
 Estimated time:
- - time per iteration:    2.66 s /   0.04 min /  0.00 hrs
- - max time:             26.63 s /   0.44 min /  0.01 hrs
+ - time per iteration:    2.52 s /   0.04 min /  0.00 hrs
+ - max time:             25.20 s /   0.42 min /  0.01 hrs
 Error after 0 iteration(s):
-        f:1.0, p:1,   med. r.error:     0.795,   max r.error:     1.827,     0.0 % complete
-        f:2.0, p:1,   med. r.error:     0.795,   max r.error:     1.673,     0.0 % complete
-        f:3.0, p:1,   med. r.error: 99999.000,   max r.error: 99999.000,     0.0 % complete
+        f:1, p:1,   med. r.error:     0.795,   max r.error:     1.827,     0.0 % complete
+        f:2, p:1,   med. r.error:     0.795,   max r.error:     1.673,     0.0 % complete
+        f:3, p:1,   med. r.error: 99999.000,   max r.error: 99999.000,     0.0 % complete
 Calculating inverse Jacobian |--------------------| 100.0% Complete
 Applying correction
 Error after 1 iteration(s):
-        f:1.0, p:1,   med. r.error:     0.010,   max r.error:     0.200,    11.9 % complete
-        f:2.0, p:1,   med. r.error:     0.034,   max r.error:     0.366,     2.5 % complete
-        f:3.0, p:1,   med. r.error:     0.706,   max r.error:   119.897,     0.0 % complete
+        f:1, p:1,   med. r.error:     0.010,   max r.error:     0.200,    11.9 % complete
+        f:2, p:1,   med. r.error:     0.034,   max r.error:     0.366,     2.5 % complete
+        f:3, p:1,   med. r.error:     0.706,   max r.error:   119.897,     0.0 % complete
 Calculating inverse Jacobian |--------------------| 100.0% Complete
 Applying correction
 Error after 2 iteration(s):
-        f:1.0, p:1,   med. r.error:     0.000,   max r.error:     0.006,    97.5 % complete
-        f:2.0, p:1,   med. r.error:     0.000,   max r.error:     0.018,    90.5 % complete
-        f:3.0, p:1,   med. r.error:     0.000,   max r.error:     1.056,    63.2 % complete
+        f:1, p:1,   med. r.error:     0.000,   max r.error:     0.006,    97.5 % complete
+        f:2, p:1,   med. r.error:     0.000,   max r.error:     0.018,    90.5 % complete
+        f:3, p:1,   med. r.error:     0.000,   max r.error:     1.056,    63.2 % complete
 Calculating inverse Jacobian |--------------------| 100.0% Complete
 Applying correction
 Error after 3 iteration(s):
-        f:1.0, p:1,   med. r.error:     0.000,   max r.error:     0.000,   100.0 % complete
-        f:2.0, p:1,   med. r.error:     0.000,   max r.error:     0.000,   100.0 % complete
-        f:3.0, p:1,   med. r.error:     0.000,   max r.error:     0.001,    99.0 % complete
+        f:1, p:1,   med. r.error:     0.000,   max r.error:     0.000,   100.0 % complete
+        f:2, p:1,   med. r.error:     0.000,   max r.error:     0.000,   100.0 % complete
+        f:3, p:1,   med. r.error:     0.000,   max r.error:     0.001,    99.0 % complete
 Calculating inverse Jacobian |--------------------| 100.0% Complete
 Applying correction
 Error after 4 iteration(s):
-        f:1.0, p:1,   med. r.error:     0.000,   max r.error:     0.000,   100.0 % complete
-        f:2.0, p:1,   med. r.error:     0.000,   max r.error:     0.000,   100.0 % complete
-        f:3.0, p:1,   med. r.error:     0.000,   max r.error:     0.000,   100.0 % complete
+        f:1, p:1,   med. r.error:     0.000,   max r.error:     0.000,   100.0 % complete
+        f:2, p:1,   med. r.error:     0.000,   max r.error:     0.000,   100.0 % complete
+        f:3, p:1,   med. r.error:     0.000,   max r.error:     0.000,   100.0 % complete
 Done: Minimum error target was achieved.
- - time: 12.09 s / 0.20 min.
+ - time: 11.18 s / 0.19 min.
  - 4 iterations required
-        - 3.02 s / iteration
+        - 2.80 s / iteration
         - 0.05 min / iteration
 </pre></div></div>
 </div>
@@ -729,7 +729,7 @@ Done: Minimum error target was achieved.
 <span class="n">ax2</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">cct</span><span class="o">.</span><span class="n">vb</span><span class="o">*</span><span class="n">vmv</span><span class="p">,</span> <span class="n">ilo</span><span class="o">.</span><span class="n">imag</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;-.&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Imaginary&#39;</span><span class="p">)</span>
 <span class="n">ax2</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">xlim</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mf">4.5</span><span class="p">),</span> <span class="n">xlabel</span><span class="o">=</span><span class="s1">&#39;Bias Voltage (mV)&#39;</span><span class="p">)</span>
 <span class="n">ax2</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">ylabel</span><span class="o">=</span><span class="s1">&#39;AC Current (uA)&#39;</span><span class="p">)</span>
-<span class="n">ax2</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">frameon</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;@ LO frequency&quot;</span><span class="p">)</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">frameon</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;@ LO frequency&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">9</span><span class="p">)</span>
 
 <span class="c1"># Plot AC currents at IF frequency</span>
 <span class="n">ax3</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">cct</span><span class="o">.</span><span class="n">vb</span><span class="o">*</span><span class="n">vmv</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">iif</span><span class="p">),</span> <span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Absolute&#39;</span><span class="p">)</span>
@@ -737,7 +737,7 @@ Done: Minimum error target was achieved.
 <span class="n">ax3</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">cct</span><span class="o">.</span><span class="n">vb</span><span class="o">*</span><span class="n">vmv</span><span class="p">,</span> <span class="n">iif</span><span class="o">.</span><span class="n">imag</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;-.&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Imaginary&#39;</span><span class="p">)</span>
 <span class="n">ax3</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">xlim</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mf">4.5</span><span class="p">),</span> <span class="n">xlabel</span><span class="o">=</span><span class="s1">&#39;Bias Voltage (mV)&#39;</span><span class="p">)</span>
 <span class="n">ax3</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">ylabel</span><span class="o">=</span><span class="s1">&#39;AC Current (uA)&#39;</span><span class="p">)</span>
-<span class="n">ax3</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">frameon</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;@ IF frequency&quot;</span><span class="p">)</span>
+<span class="n">ax3</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">frameon</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;@ IF frequency&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">9</span><span class="p">)</span>
 
 <span class="c1"># Plot gain of SIS junction</span>
 <span class="n">ax4</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">cct</span><span class="o">.</span><span class="n">vb</span><span class="o">*</span><span class="n">vmv</span><span class="p">,</span> <span class="n">gain</span><span class="o">*</span><span class="mi">100</span><span class="p">)</span>
@@ -745,7 +745,7 @@ Done: Minimum error target was achieved.
 <span class="n">ax4</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">ylabel</span><span class="o">=</span><span class="s1">&#39;Gain (%)&#39;</span><span class="p">)</span>
 <span class="n">ax4</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">bottom</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 
-<span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s1">&#39;../example.png&#39;</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">500</span><span class="p">);</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s1">&#39;../example.png&#39;</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s1">&#39;tight&#39;</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>

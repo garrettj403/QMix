@@ -1374,6 +1374,43 @@ used to calculate the quasiparticle tunneling currents in
 </dd></dl>
 
 <dl class="method">
+<dt id="qmix.respfn.RespFn.plot">
+<code class="descname">plot</code><span class="sig-paren">(</span><em>fig_name=None</em>, <em>ax=None</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.respfn.RespFn.plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot the response function.</p>
+<p>This will plot the real and imaginary parts separately.</p>
+<p>Note: If <code class="docutils literal notranslate"><span class="pre">fig_name</span></code> is provided, this method will save the plot
+to the specified folder and then close the plot. This means
+that the Matplotlib axis object will not be returned in this
+case. This is done to prevent too many plots from being open
+at the time.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>fig_name</strong> (<em>str</em><em>, </em><em>default is None</em>) – name of figure file name, if you
+wish to save</li>
+<li><strong>ax</strong> (<em>matplotlib.axes.Axes</em><em>, </em><em>default is None</em>) – figure axis, if you
+would like to add to an existing figure</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><dl class="docutils">
+<dt>figure axis (only if <code class="docutils literal notranslate"><span class="pre">fig_name</span></code> is</dt>
+<dd><p class="first last"><code class="docutils literal notranslate"><span class="pre">None</span></code>)</p>
+</dd>
+</dl>
+</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">matplotlib.axes.Axes</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
 <dt id="qmix.respfn.RespFn.plot_interpolation">
 <code class="descname">plot_interpolation</code><span class="sig-paren">(</span><em>fig_name=None</em>, <em>ax=None</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.respfn.RespFn.plot_interpolation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plot the interpolation of the response function.</p>
