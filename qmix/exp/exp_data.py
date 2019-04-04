@@ -862,11 +862,11 @@ class RawData(object):
 
         """
 
-        fit_low  = self.kwargs.get('cut_low',  0.25)
-        fit_high = self.kwargs.get('cut_high', 0.20)
+        fit_low  = self.kwargs.get('cut_low',  PARAMS['cut_low'])
+        fit_high = self.kwargs.get('cut_high', PARAMS['cut_high'])
 
-        remb_range = self.kwargs.get('remb_range', (0, 1))
-        xemb_range = self.kwargs.get('xemb_range', (-1, 1))
+        remb_range = self.kwargs.get('remb_range', PARAMS['remb_range'])
+        xemb_range = self.kwargs.get('xemb_range', PARAMS['xemb_range'])
 
         cprint(" -> Impedance recovery:")
 
@@ -1526,8 +1526,8 @@ class RawData(object):
         # assert fig_name is not None and ax is not None
 
         # Range of impedance values (normalized)
-        remb_range = self.kwargs.get('remb_range', (0, 1))
-        xemb_range = self.kwargs.get('xemb_range', (-1, 1))
+        remb_range = self.kwargs.get('remb_range', PARAMS['remb_range'])
+        xemb_range = self.kwargs.get('xemb_range', PARAMS['xemb_range'])
 
         # Range of impedance values (de-normalized)
         zt_real = np.linspace(remb_range[0], remb_range[1], 101) * self.rn
@@ -1615,11 +1615,10 @@ class RawData(object):
         # Unpack
         vph = self.freq * sc.giga / self.dciv.fgap
         resp = self.dciv.resp_smear
-        # resp = self.dciv.resp
 
         # Fit range
-        fit_low = self.kwargs.get('cut_low', 0.25)
-        fit_high = self.kwargs.get('cut_high', 0.2)
+        fit_low = self.kwargs.get('cut_low', PARAMS['cut_low'])
+        fit_high = self.kwargs.get('cut_high', PARAMS['cut_high'])
         v_min = (1 - vph + vph * fit_low) * self.vgap * 1e3
         v_max = (1 - vph * fit_high) * self.vgap * 1e3
 
