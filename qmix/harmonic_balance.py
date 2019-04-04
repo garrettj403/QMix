@@ -143,7 +143,7 @@ def harmonic_balance(cct, resp, num_b=15, max_it=10, stop_rerror=0.001, vj_initi
         if verbose:
             print(("Error after {0} iteration(s):".format(iteration)))
         max_rel_error = 0.  # initialize maximum relative error of all signals
-        msg = "\tf:{}, p:{},   med. r.error: {:9.3f},   max r.error: {:9.3f},   {:5.1f} % complete"
+        msg = "\tf:{:d}, p:{:d},   med. rel. error: {:9.3f},   max. rel. error: {:9.3f},   {:5.1f} % complete"
         finished_points = np.ones(npts, dtype=bool)
         for k in range(num_n):
             with np.errstate(divide='ignore'):
@@ -161,16 +161,16 @@ def harmonic_balance(cct, resp, num_b=15, max_it=10, stop_rerror=0.001, vj_initi
                 f, p = _k_to_fp(k, num_p)
 
                 if med_rel_error > 99999.999:
-                    _med_rel_error = 99999.
+                    _med_rel_error = 99999.999
                 else:
                     _med_rel_error = med_rel_error
 
                 if np.max(rel_error) > 99999.999:
-                    _rel_error = 99999.
+                    _rel_error = 99999.999
                 else:
                     _rel_error = np.max(rel_error)
                     
-                print((msg.format(f, p, _med_rel_error, _rel_error, complete * 100)))
+                print((msg.format(int(f), int(p), _med_rel_error, _rel_error, complete * 100)))
 
         # Exit if the error is good enough
         if max_rel_error <= stop_rerror:
