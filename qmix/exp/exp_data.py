@@ -35,6 +35,7 @@ from scipy.interpolate import UnivariateSpline
 
 import qmix
 from qmix.exp.if_data import dcif_data, if_data
+from qmix.exp.if_response import if_response
 from qmix.exp.iv_data import dciv_curve, iv_curve
 from qmix.exp.parameters import params as PARAMS
 from qmix.harmonic_balance import harmonic_balance
@@ -171,9 +172,9 @@ class RawData0(object):
         area    = kw['area']
         verbose = kw['verbose']
 
-        self.kwargs    = kw
-        self.comment   = comment
-        self.vleak     = vleak
+        self.kwargs  = kw
+        self.comment = comment
+        self.vleak   = vleak
 
         if isinstance(dciv, str):  # input type: CSV file
             self.file_path = dciv
@@ -184,7 +185,7 @@ class RawData0(object):
 
         # Get DC I-V data
         self.voltage, self.current, self.dc = dciv_curve(dciv, **kw)
-        
+
         # Unpack DC I-V metadata
         self.vgap   = self.dc.vgap
         self.igap   = self.dc.igap
@@ -233,11 +234,9 @@ class RawData0(object):
 
     def __str__(self):  # pragma: no cover
 
-        fgap = self.vgap * sc.e / sc.h / sc.giga  # gap voltage
-
         message = "\033[35m\nDC I-V data:\033[0m {0}\n".format(self.comment)
         message += "\tVgap:  \t\t{:6.2f}\tmV\n".format(self.vgap * 1e3)
-        message += "\tfgap:  \t\t{:6.2f}\tGHz\n".format(fgap)
+        message += "\tfgap:  \t\t{:6.2f}\tGHz\n".format(self.fgap / 1e9)
         message += "\n"
         message += "\tRn:    \t\t{:6.2f}\tohms\n".format(self.rn)
         message += "\tRsg:   \t\t{:6.2f}\tohms\n".format(self.rsg)
@@ -325,12 +324,12 @@ class RawData0(object):
             fig = ax.get_figure()
         ax.plot(v_mv, i_ua, label=lgd_str1)
         # Label gap
-        ax.plot(self.vgap * 1e3, i_at_gap, 
-                marker='o', ls='None', color='r', mfc='None', 
+        ax.plot(self.vgap * 1e3, i_at_gap,
+                marker='o', ls='None', color='r', mfc='None',
                 markeredgewidth=1, label=lgd_str3)
         # Label leakage current
         ax.plot(2, i_leak * ua,
-                marker='o', ls='None', color='g', mfc='None', 
+                marker='o', ls='None', color='g', mfc='None',
                 markeredgewidth=1, label=lgd_str4)
         # Fit line to normal resistance slope
         ax.plot(v_mv, rn_slope, 'k--', label=lgd_str2)
@@ -518,7 +517,7 @@ class RawData0(object):
         # assert fig_name is not None and ax is not None
 
         if self.if_data is None:
-            print('No DC IF data loaded.')
+            print('No DC IF data loaded.\n')
             return
 
         # Line that fits to normal-state resistance
@@ -784,11 +783,11 @@ class RawData(object):
         if analyze_iv:
             self._recover_zemb()
         else:  # pragma: no cover
-            self.zt = None
-            self.vt = None
+            self.zt       = None
+            self.vt       = None
             self.fit_good = None
-            self.zw = None
-            self.alpha = None
+            self.zw       = None
+            self.alpha    = None
 
         # Import and analyze IF data from hot/cold loads
         self.good_if_noise_fit = True
@@ -799,20 +798,20 @@ class RawData(object):
                                                    dcif=dciv.dcif, **kw)
 
             # Unpack results
-            self.if_hot  = results[:, :2]
-            self.if_cold = np.vstack((results[:, 0], results[:, 2])).T
-            self.tn      = results[:, 3]
-            self.gain    = results[:, 4]
+            self.if_hot            = results[:, :2]
+            self.if_cold           = np.vstack((results[:, 0], results[:, 2])).T
+            self.tn                = results[:, 3]
+            self.gain              = results[:, 4]
             # DC IF values
             self.if_noise          = dcif.if_noise
             self.corr              = dcif.corr
             self.shot_slope        = dcif.shot_slope
             self.good_if_noise_fit = dcif.if_fit
             # Best values
-            self.tn_best   = self.tn[self.idx_best]
-            self.gain_best = self.gain[self.idx_best]
-            self.g_db      = 10 * np.log10(self.gain[self.idx_best])
-            self.v_best    = self.if_hot[self.idx_best, 0]
+            self.tn_best           = self.tn[self.idx_best]
+            self.gain_best         = self.gain[self.idx_best]
+            self.g_db              = 10 * np.log10(self.gain[self.idx_best])
+            self.v_best            = self.if_hot[self.idx_best, 0]
             # Dynamic resistance at optimal bias voltage
             i = np.abs(self.voltage - self.v_best).argmin()
             p = np.polyfit(self.voltage[i:i + 10], self.current[i:i + 10], 1)
@@ -863,8 +862,8 @@ class RawData(object):
 
         """
 
-        fit_low  = self.kwargs.get('cut_low', 0.25)
-        fit_high = self.kwargs.get('cut_high', 0.2)
+        fit_low  = self.kwargs.get('cut_low',  0.25)
+        fit_high = self.kwargs.get('cut_high', 0.20)
 
         remb_range = self.kwargs.get('remb_range', (0, 1))
         xemb_range = self.kwargs.get('xemb_range', (-1, 1))
@@ -933,11 +932,11 @@ class RawData(object):
         print("\t\t- deliv. power:\t{:+7.2f}\t\tnW".format(power_delivered / 1e-9))
 
         # Save values as attributes
-        self.zt = zt_best
-        self.vt = vt_best 
+        self.zt       = zt_best
+        self.vt       = vt_best
         self.fit_good = good_fit
-        self.zw = zw
-        self.alpha = alpha[idx_middle]
+        self.zw       = zw
+        self.alpha    = alpha[idx_middle]
 
         self.err_surf = err_surf
 
@@ -1175,18 +1174,18 @@ class RawData(object):
             fig = ax1.get_figure()
         plt.subplots_adjust(hspace=0., wspace=0.)
 
-        ax1.plot(self.dciv.voltage * self.vgap * 1e3, 
+        ax1.plot(self.dciv.voltage * self.vgap * 1e3,
                  self.dciv.current * self.igap * 1e6, label='Unpumped')
-        ax1.plot(self.voltage * self.vgap * 1e3, 
+        ax1.plot(self.voltage * self.vgap * 1e3,
                  self.current * self.igap * 1e6, 'r', label='Pumped')
-        ax1.plot(self.voltage * self.vgap * 1e3, 
+        ax1.plot(self.voltage * self.vgap * 1e3,
                  rslope, 'k--', label=r'$R_\mathrm{{n}}^{{-1}}$ slope')
         ax1.plot(self.vint * 1e3, 0, 'ro', label=r'$V_\mathrm{{int}}$')
         ax1.set_ylabel(r'Current ($\mu$A)')
         ax1.set_ylim([0, imax])
         ax1.set_xlim([0, vmax])
         ax1.legend()
-        
+
         v_mv = self.if_hot[:, 0] * self.vgap * 1e3
 
         ax2.plot(v_mv, self.if_hot[:, 1], _pale_red, label='Hot')
@@ -1321,7 +1320,7 @@ class RawData(object):
         msg = '{0:.1f} K'.format(self.tn_best)
         ax2.annotate(msg,
                      xy=(v_mv[self.idx_best], self.tn_best),
-                     xytext=(v_mv[self.idx_best]+0.5, self.tn_best+50),
+                     xytext=(v_mv[self.idx_best] + 0.5, self.tn_best + 50),
                      bbox=dict(boxstyle="round", fc="w", alpha=0.5),
                      arrowprops=dict(color='black', arrowstyle="->", lw=1),
                      )
@@ -1452,7 +1451,7 @@ class RawData(object):
         ax.plot(v_mv, rdyn, label=r'$R_\mathrm{dyn}$')
         ax.plot(vb_best, rdyn_bias, 'r^', label=r'%.1f $\Omega$' % rdyn_bias)
         ax.plot(v_steps, r_steps, 'k+',
-                 label=r'$V_\mathrm{gap} + nV_\mathrm{ph}$')
+                label=r'$V_\mathrm{gap} + nV_\mathrm{ph}$')
         plt.axvline(-1 * self.vgap * 1e3, c='k', ls='--', lw=0.5)
         plt.axvline(0, c='k', ls='--', lw=0.5)
         plt.axvline(1 * self.vgap * 1e3, c='k', ls='--', lw=0.5)
@@ -1570,7 +1569,7 @@ class RawData(object):
             text_va = "bottom"
         # Annotate best value
         err_str1 = 'Minimum Error at\n'
-        err_str2 = r'$Z_\mathrm{{T}}$={0:.2f} $\Omega$'.format(zt_best)    
+        err_str2 = r'$Z_\mathrm{{T}}$={0:.2f} $\Omega$'.format(zt_best)
         err_str = err_str1 + err_str2
         text_pos = text_posx, text_posy
         bbox_props = dict(boxstyle="round", fc="w", alpha=0.5)
@@ -1616,6 +1615,7 @@ class RawData(object):
         # Unpack
         vph = self.freq * sc.giga / self.dciv.fgap
         resp = self.dciv.resp_smear
+        # resp = self.dciv.resp
 
         # Fit range
         fit_low = self.kwargs.get('cut_low', 0.25)
@@ -1643,23 +1643,23 @@ class RawData(object):
         else:
             fig = ax.get_figure()
         ax.plot(self.dciv.voltage * mv, self.dciv.current * ua,
-                 label='Unpumped', c='gray')
+                label='Unpumped', c='gray')
         ax.plot(self.voltage * mv, self.current * ua,
-                 label='Pumped')
+                label='Pumped')
         ax.plot(cct.vb * mv, current[0].real * ua,
-                 label='Simulated', c='r', ls='--')
+                label='Simulated', c='r', ls='--')
         ax.plot([v_min, v_max],
-                 np.interp([v_min, v_max], 
-                           cct.vb * mv, current[0].real * ua),
-                 'k+', label='Fit Interval')
+                np.interp([v_min, v_max],
+                          cct.vb * mv, current[0].real * ua),
+                'k+', label='Fit Interval')
         ax.set_xlim([0, vmax_plot])
         ax.set_ylim([0, np.interp(vmax_plot, self.dciv.voltage * mv,
                                   self.dciv.current * ua)])
         ax.set_xlabel(r'Bias Voltage (mV)')
         ax.set_ylabel(r'DC Current (uA)')
         msg1 = 'LO: {:.1f} GHz'.format(self.freq)
-        msg2 = r'$V_T$ = {:.2f} mV'.format(self.vt*self.vgap*1e3)
-        msg3 = r'$Z_T$ = {:.2f} $\Omega$'.format(self.zt*self.rn)
+        msg2 = r'$V_T$ = {:.2f} mV'.format(self.vt * self.vgap * 1e3)
+        msg3 = r'$Z_T$ = {:.2f} $\Omega$'.format(self.zt * self.rn)
         msg = msg1 + '\n' + msg2 + '\n' + msg3
         ax.legend(title=msg, frameon=False)
         if fig_name is not None:
@@ -1743,44 +1743,6 @@ class RawData(object):
 
 # ANALYZE IF SPECTRUM DATA ---------------------------------------------------
 
-def _if_spectrum(filename, **kw):
-        """Get noise temperature from hot/cold spectrum measurements.
-        
-        Args:
-            filename: filename
-            
-        Keyword Args:
-            t_hot: hot blackbody load temperature
-            t_cold: cold blackbody load temperature
-
-        Returns: 
-            ndarray: frequency, noise temp, hot power, cold power
-
-        """
-
-        # Unpack keyword arguments
-        t_hot = kw.get('t_hot', PARAMS['t_hot'])
-        t_cold = kw.get('t_cold', PARAMS['t_cold'])
-
-        # Import data
-        freq, p_hot_db, p_cold_db = np.genfromtxt(filename).T
-
-        y_fac = _db_to_lin(p_hot_db) / _db_to_lin(p_cold_db)
-        y_fac[y_fac <= 1] = 1 + 1e-6
-
-        t_n = (t_hot - t_cold * y_fac) / (y_fac - 1)
-
-        data = np.vstack((freq, t_n, p_hot_db, p_cold_db)).T
-
-        return data
-
-
-def _db_to_lin(db):
-    """dB to linear units."""
-
-    return 10 ** (db / 10.)
-
-
 def plot_if_spectrum(data_folder, fig_folder=None, figsize=None):  # pragma: no cover
     """Plot all IF spectra within data_folder.
         
@@ -1805,7 +1767,7 @@ def plot_if_spectrum(data_folder, fig_folder=None, figsize=None):  # pragma: no 
         print(" - {}".format(filename))
         base = filename.split('_')[0][1:]
 
-        freq, t_n, p_hot_db, p_cold_db = _if_spectrum(if_file).T
+        freq, t_n, p_hot_db, p_cold_db = if_response(if_file).T
 
         fig2, ax2 = plt.subplots(figsize=figsize)
         ax2.plot(freq, t_n)
@@ -1837,9 +1799,11 @@ def plot_if_spectrum(data_folder, fig_folder=None, figsize=None):  # pragma: no 
     ax2.set_ylim([0, 500])
     ax2.set_xlim([0, 20])
     ax2.legend()
-    fig2.savefig(os.path.join(fig_folder, 'if_spectra_smooth.png'), **_plot_params)
+    fig2.savefig(os.path.join(fig_folder, 'if_spectra_smooth.png'),
+                 **_plot_params)
     ax2.set_ylim([0, 2000])
-    fig2.savefig(os.path.join(fig_folder, 'if_spectra_smooth2.png'), **_plot_params)
+    fig2.savefig(os.path.join(fig_folder, 'if_spectra_smooth2.png'),
+                 **_plot_params)
 
     print("")
 
@@ -1847,7 +1811,8 @@ def plot_if_spectrum(data_folder, fig_folder=None, figsize=None):  # pragma: no 
 # Plot overall results -------------------------------------------------------
 
 def plot_overall_results(dciv, data_list, fig_folder, vmax_plot=4.,
-                         figsize=None, tn_max=None, f_range=None):  # pragma: no cover
+                         figsize=None, tn_max=None,
+                         f_range=None):  # pragma: no cover
     """Plot all results.
     
     This function is somewhat messy, but it will take in a list of RawData 
@@ -1879,6 +1844,7 @@ def plot_overall_results(dciv, data_list, fig_folder, vmax_plot=4.,
     # Gather data as a function of LO frequency
     freq, t_n, gain, rdyn = [], [], [], []
     f_z, z, v, aemb = [], [], [], []
+    f_z_all, z_all, v_all, aemb_all = [], [], [], []
     if_noise_f, if_noise = [], []
     aj, zj = [], []
     for data in data_list:
@@ -1893,18 +1859,24 @@ def plot_overall_results(dciv, data_list, fig_folder, vmax_plot=4.,
             z.append(data.zt * data.rn)
             v.append(data.vt * data.vgap)
             aemb.append(data.vt / data.vph)
+        f_z_all.append(data.freq)
+        z_all.append(data.zt * data.rn)
+        v_all.append(data.vt * data.vgap)
+        aemb_all.append(data.vt / data.vph)
         if data.good_if_noise_fit:
             if_noise_f.append(data.freq)
             if_noise.append(data.if_noise)
     f_z = np.array(f_z)
     z = np.array(z)
+    f_z_all = np.array(f_z_all)
+    z_all = np.array(z_all)
     t_n = np.array(t_n)
     gain = np.array(gain)
     v = np.array(v)
 
     # For normalizing data 
     mv = dciv.vgap * 1e3
-    ua = dciv.igap * 1e6 
+    ua = dciv.igap * 1e6
     imax_plot = np.interp(vmax_plot, dciv.voltage * mv, dciv.current * ua)
 
     # Save data in text format -----------------------------------------------
@@ -1918,19 +1890,19 @@ def plot_overall_results(dciv, data_list, fig_folder, vmax_plot=4.,
         for i in range(len(data_list)):
             vt_tmp = data_list[i].vt * dciv.vgap * 1e3
             zt_tmp = data_list[i].zt * dciv.rn
-            zt_fmt = "{:6.2f} + 1j * ({:6.2f})".format(zt_tmp.real, 
+            zt_fmt = "{:6.2f} + 1j * ({:6.2f})".format(zt_tmp.real,
                                                        zt_tmp.imag)
             pstring = '{0}\t{1:5.2f}\t{2}\t{3}\n'.format(data_list[i].freq,
-                                                    vt_tmp,
-                                                    zt_fmt,
-                                                    data_list[i].fit_good)
+                                                         vt_tmp,
+                                                         zt_fmt,
+                                                         data_list[i].fit_good)
             fout.write(pstring)
 
     # Write all DC I-V data to a file
     with open(os.path.join(csv_folder, 'dciv-info.txt'), 'w') as fout:
-        fout.write('Gap voltage      \t{:6.2f} [mV]\n'.format(dciv.vgap*1e3))
+        fout.write('Gap voltage      \t{:6.2f} [mV]\n'.format(dciv.vgap * 1e3))
         fout.write('Normal resistance\t{:6.2f} [ohms]\n'.format(dciv.rn))
-        fout.write('Gap frequency    \t{:6.2f} [GHz]\n'.format(dciv.fgap/1e9))
+        fout.write('Gap frequency    \t{:6.2f} [GHz]\n'.format(dciv.fgap / 1e9))
 
     # Write all pumped data to a file
     with open(os.path.join(csv_folder, 'results.txt'), 'w') as fout:
@@ -1941,8 +1913,8 @@ def plot_overall_results(dciv, data_list, fig_folder, vmax_plot=4.,
                    'Noise Temperature (K)',
                    'Gain (dB)',
                    'Drive Level',
-                   'Embedding Impedance (mV)',
-                   'Embedding Voltage (ohms)',
+                   'Embedding Impedance (ohms)',
+                   'Embedding Voltage (mV)',
                    'Embedding Circuit Recovered',
                    'IF Noise (K)',
                    'IF Noise Recovered']
@@ -1962,7 +1934,7 @@ def plot_overall_results(dciv, data_list, fig_folder, vmax_plot=4.,
                      data.good_if_noise_fit]
             string = ', '.join([str(item) for item in _list])
             fout.write(string + '\n')
-            
+
     # Plot all pumped iv curves ----------------------------------------------
 
     fig, ax = plt.subplots(figsize=figsize)
@@ -2081,6 +2053,20 @@ def plot_overall_results(dciv, data_list, fig_folder, vmax_plot=4.,
     # Plot embedding impedance results ---------------------------------------
 
     fig, ax = plt.subplots(figsize=figsize)
+    ax.plot(f_z_all, z_all.real, c=_pale_blue, label='Real', **plotparam)
+    ax.plot(f_z_all, z_all.imag, c=_pale_red, label='Imaginary', **plotparam)
+    if f_range is not None:
+        ax.set_xlim([f_range[0], f_range[1]])
+    ax.set_xlabel('Frequency (GHz)')
+    ax.set_ylabel(r'Embedding Impedance ($\Omega$)')
+    ax.legend(frameon=False)
+    ax.minorticks_on()
+    fig.savefig(os.path.join(fig_folder, 'embedding_impedance_all.png'), dpi=500)
+    plt.close(fig)
+
+    # Plot embedding impedance results ---------------------------------------
+
+    fig, ax = plt.subplots(figsize=figsize)
     ax.plot(f_z, v * 1e3, c=_pale_green, ls='--', marker='o')
     if f_range is not None:
         ax.set_xlim([f_range[0], f_range[1]])
@@ -2106,7 +2092,7 @@ def plot_overall_results(dciv, data_list, fig_folder, vmax_plot=4.,
     plt.close(fig)
 
     # Plot the impedance of the SIS junction ---------------------------------
-    
+
     fig, ax1 = plt.subplots(figsize=figsize)
     zj = np.array(zj) * dciv.rn
     ax1.plot(freq, zj.real, c=_pale_blue, label=r'Re$\{Z_J\}$', **plotparam)
@@ -2127,24 +2113,21 @@ def plot_overall_results(dciv, data_list, fig_folder, vmax_plot=4.,
 # IMPEDANCE RECOVERY HELPER FUNCTIONS (PRIVATE) ------------------------------
 
 def _error_function(vwi, zwi, zs):
-
-    err1 = np.sum(np.abs(vwi) ** 2)
+    err1 = np.sum(np.abs(vwi)**2)
     err2 = np.sum(np.abs(vwi * zwi / (zs + zwi)))
-    err3 = np.sum(np.abs(zwi / (zs + zwi)) ** 2)
+    err3 = np.sum(np.abs(zwi / (zs + zwi))**2)
 
-    return (err1 - err2 ** 2 / err3) / np.alen(vwi)
+    return (err1 - err2**2 / err3) / np.alen(vwi)
 
 
 def _find_source_voltage(vwi, zwi, zs):
-
     v1 = np.sum(np.abs(vwi * zwi / (zs + zwi)))
-    v2 = np.sum(np.abs(zwi / (zs + zwi)) ** 2)
+    v2 = np.sum(np.abs(zwi / (zs + zwi))**2)
 
     return v1 / v2
 
 
 def _find_ac_current(resp, vb, vph, alpha, num_b=15):
-
     ac_current = np.zeros_like(vb, dtype=complex)
 
     for n in range(-num_b, num_b + 1):
@@ -2162,16 +2145,14 @@ def _find_ac_current(resp, vb, vph, alpha, num_b=15):
 
 
 def _find_pumped_iv_curve(resp, vb, vph, alpha, num_b=15):
-
     dc_current = np.zeros_like(vb, dtype=float)
     for n in range(-num_b, num_b + 1):
-        dc_current += special.jv(n, alpha) ** 2 * resp.idc(vb + n * vph)
+        dc_current += special.jv(n, alpha)**2 * resp.idc(vb + n * vph)
 
     return dc_current
 
 
 def _find_alpha(dciv, vdc_exp, idc_exp, vph, alpha_max=1.5, num_b=20):
-
     resp = dciv.resp
 
     # Get alpha guess from Bisection Method
@@ -2183,7 +2164,6 @@ def _find_alpha(dciv, vdc_exp, idc_exp, vph, alpha_max=1.5, num_b=20):
     # Refine alpha using an iterative technique
     alpha_step = alpha_max / 4.
     for it in range(15):
-
         idc_tmp = _find_pumped_iv_curve(resp, vdc_exp, vph, alpha, num_b=40)
         idc_err_tmp = idc_tmp - idc_exp
 

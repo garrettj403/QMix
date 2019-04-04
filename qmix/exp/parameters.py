@@ -137,13 +137,16 @@ values.
     - Analyzing pumped IF data (noise temperature analysis):
         - ``analyze_if = True`` : Analyze the IF data? This involves 
           calculating the noise temperature and gain.
-        - ``t_cold = 80.`` : Temperature of the cold load (likely liquid 
+        - ``t_cold = 78.`` : Temperature of the cold load (likely liquid 
           nitrogen), in units [K].
         - ``t_hot = 293.`` : Temperature of the hot load (likely room 
           temperature), in units [K].
         - ``vbest = None`` : Bias voltage at which to calculate the best noise
           temperature value. If this value is set to ``None``, the ``RawData``
           class will determine the best bias voltage automatically.
+        - ``best_pt = 'Max Gain'`` : Which bias voltage should we select as
+          the best bias? Where the gain is the highest (``'Max Gain'``)? Or
+          the lowest noise temperature (``'Min Tn'``)?
     - Response function:
         - **Note:** The ``RawData0`` class generates a response function
           based on the imported DC I-V data (using ``qmix.respfn.RespFn``).
@@ -221,9 +224,14 @@ params = dict(
               alpha_max =      1.5,
               num_b =          20,
               # Analyzing pumped IF data (i.e., noise temperature analysis)
-              t_cold =         80.,
+              t_cold =         78.,
               t_hot =          293.,
               vbest =          None,
+              best_pt =        'Max Gain',
+              # Import IF response data
+              ifresp_delimiter  = '\t',
+              ifresp_usecols    = (0, 1, 2),
+              ifresp_skipheader = 0,
               # Response function
               v_smear =        0.020,
               # Plotting parameters

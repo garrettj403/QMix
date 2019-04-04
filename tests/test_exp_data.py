@@ -34,12 +34,12 @@ def test_importing_exp_data(directory='tests/exp-data/'):
     ivdata = np.genfromtxt(directory+'f230_0_iv.csv', **csv)
     hotdata = np.genfromtxt(directory+'f230_0_hot.csv', **csv)
     colddata = np.genfromtxt(directory+'f230_0_cold.csv', **csv)
-    pump = qe.RawData(ivdata, dciv, hotdata, colddata, freq=230.2)
+    pump = qe.RawData(ivdata, dciv, hotdata, colddata, freq=230.2, best_pt="Min Tn")
     assert pump.freq == 230.2, "Wrong frequency."
 
     # Check some of the attributes
     # Note: I calculated these by hand
-    assert 33. < pump.tn_best < 37., "Wrong noise temperature."
+    assert 35. < pump.tn_best < 40., "Wrong noise temperature."
     assert -1.2 < pump.g_db < -1.0, "Wrong conversion gain."
 
     # Check automatic frequency determination
