@@ -133,6 +133,7 @@ def if_data(if_hot, if_cold, dc, **kwargs):
 
     print("\033[95m -> Analyze IF data:\033[0m")
 
+    verbose = kwargs.get('verbose', PARAMS['verbose'])
     dcif = kwargs.get('dcif', None)
 
     # Load IF data
@@ -142,7 +143,7 @@ def if_data(if_hot, if_cold, dc, **kwargs):
     # Correct data based on shot noise slope
     if dcif is None or dcif.corr is None:
         if_average = (if_hot + if_cold) / 2.
-        if_noise, corr, i_slope, if_fit = _find_if_noise(if_average, dc)
+        if_noise, corr, i_slope, if_fit = _find_if_noise(if_average, dc, **kwargs)
         shot_slope = np.vstack((if_cold[:, 0], i_slope)).T
     else:
         if_noise = dcif.if_noise
@@ -159,6 +160,9 @@ def if_data(if_hot, if_cold, dc, **kwargs):
     vmax = if_hot[:,0].max() * dc.vgap
     dcif_out = DCIFData(if_noise=if_noise, corr=corr, if_fit=if_fit,
                         shot_slope=shot_slope, vmax=vmax)
+
+    if verbose:
+        print("\t- IF noise:\t{0:+6.2f} K".format(if_noise))
 
     return results, idx_best, dcif_out
 
@@ -198,6 +202,7 @@ def _find_tn_gain(if_data_hot, if_data_cold, dc, **kw):
     t_cold = kw.get('t_cold', PARAMS['t_cold'])
     verbose = kw.get('verbose', PARAMS['verbose'])
     vbest = kw.get('vbest', PARAMS['vbest'])
+    best_pt = kw.get('best_pt', PARAMS['best_pt'])
 
     # Unpack
     vnorm = if_data_hot[:, 0]
@@ -220,10 +225,14 @@ def _find_tn_gain(if_data_hot, if_data_cold, dc, **kw):
     gain = (p_hot - p_cold) / (t_hot - t_cold)
 
     # Best bias point
-    if vbest is None:
-        idx_out = gain.argmax()
-    else:
+    if vbest is not None:
         idx_out = np.abs(vnorm * dc.vgap - vbest).argmin()
+    elif best_pt.lower() == 'max gain':
+        idx_out = gain.argmax()
+    elif best_pt.lower() == 'min tn':
+        idx_out = tn.argmin()
+    else:
+        raise ValueError("best_pt not recognized")
 
     if verbose:
         tn_best = tn[idx_out]
