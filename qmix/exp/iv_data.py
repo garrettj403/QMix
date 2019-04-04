@@ -23,7 +23,7 @@ import numpy as np
 import scipy.constants as sc
 from scipy.signal import savgol_filter
 
-from .clean_data import remove_doubles_xy, remove_nans_xy, sort_xy
+from qmix.exp.clean_data import remove_doubles_xy, remove_nans_xy, sort_xy
 from qmix.exp.parameters import params as PARAMS
 from qmix.mathfn.filters import gauss_conv
 from qmix.mathfn.misc import slope
@@ -32,7 +32,6 @@ filterwarnings(action="ignore", module="scipy", message="^internal gelsd")
 
 _vfmt_dict = {'uV': 1e-6, 'mV': 1e-3, 'V': 1}  # Voltage units
 _ifmt_dict = {'uA': 1e-6, 'mA': 1e-3, 'A': 1}  # Current units
-
 
 # Import and analyze I-V data ------------------------------------------------
 
@@ -267,7 +266,7 @@ def iv_curve(ivdata, dc, **kwargs):
 
     # Correct offset
     if voffset is not None and ioffset is not None:
-        volt_v -= voffset 
+        volt_v -= voffset
         curr_a -= ioffset
     else:
         volt_v -= dc.offset[0]
@@ -534,7 +533,7 @@ def _correct_offset(volt_v, curr_a, **kw):
         idx = der_smooth.argmax()
         voffset = v[idx]
         # ioffset = np.interp(voffset, v, i)
-        ioffset = (np.interp(voffset - 0.1e-3, v, i) + 
+        ioffset = (np.interp(voffset - 0.1e-3, v, i) +
                    np.interp(voffset + 0.1e-3, v, i)) / 2
 
     if ioffset is None:  # Find ioffset
