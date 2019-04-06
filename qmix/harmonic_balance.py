@@ -83,8 +83,9 @@ def harmonic_balance(cct, resp, num_b=15, max_it=10, stop_rerror=0.001, vj_initi
             print("Done.\n")
         return vt[:, :, None] * np.ones(npts, dtype=complex)
 
-    # Check whether any Thevenin voltages (vt) are zero (prevents div0 errors)
-    vt[vt < MIN_VT] = MIN_VT
+    # Check whether any Thevenin voltages are zero (prevents div0 errors) ----
+
+    vt[np.abs(vt) < MIN_VT] = MIN_VT
     vt[0, :] = 0
     vt[:, 0] = 0
 
