@@ -303,7 +303,10 @@ class EmbeddingCircuit(object):
         v_v = self.vt[f, p] * self.vgap
         r_ohms = self.zt[f, p].real * self.rn
 
-        power = np.abs(v_v) ** 2 / r_ohms / 8.
+        if r_ohms != 0.:
+            power = np.abs(v_v) ** 2 / r_ohms / 8.
+        else:
+            power = 0
 
         if units.lower() == 'w':
             return power
