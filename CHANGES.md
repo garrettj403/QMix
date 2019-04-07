@@ -4,7 +4,10 @@ v1.0.4 (unreleased)
 - Move code for analyzing IF response into a new module (``qmix.exp.if_response``)
 - Improved progress messages for ``qmix.harmonic_balance.harmonic_balance``
 - Add ability to plot response function (``qmix.respfn.RespFn``)
+- Always use default parameters from ``qmix.exp.parameters``
 - Minor changes to documentation
+- Fix error in ``qmix.harmonic_balance.harmonic_balance`` (involves when VT is checked)
+- Add validation notebook. Comparing against Kittara's thesis.
 
 
 
