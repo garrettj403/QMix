@@ -278,7 +278,7 @@ def _find_resp_current_1_tone(resp, vb, vph, num_b1):
     vb_tmp = vb[None, :] * np.ones(k_npts)[:, None]
     ind = np.r_[np.arange(0, num_b1+1), np.arange(-num_b1, 0)]
     k_array = ind[:, None] * np.ones(npts, dtype=int)[None, :]
-    resp_current_out = resp.resp(vb_tmp + k_array * vph[1])
+    resp_current_out = resp(vb_tmp + k_array * vph[1])
 
     # # DEBUG
     # print k_array[:,0]
@@ -303,7 +303,7 @@ def _find_resp_current_2_tones(resp, vb, vph, num_b1, num_b2):
     l_array = ind[None, :, None] * np.ones((k_npts, npts), dtype=int)[:, None, :] 
 
     vb_tmp = vb[None, None, :] * np.ones((k_npts, l_npts))[:, :, None]
-    resp_current_out = resp.resp(vb_tmp + k_array * vph[1] + l_array * vph[2])
+    resp_current_out = resp(vb_tmp + k_array * vph[1] + l_array * vph[2])
 
     # # DEBUG
     # print k_array[:,0,0]
@@ -326,7 +326,7 @@ def _find_resp_current_3_tones(resp, vb, vph, num_b1, num_b2, num_b3):
         for l in range(-num_b2, num_b2 + 1):
             for m in range(-num_b3, num_b3 + 1):
                 voltage[k, l, m] = vb + k * vph[1] + l * vph[2] + m * vph[3]
-    resp_current_out = resp.resp(voltage)
+    resp_current_out = resp(voltage)
 
     return resp_current_out
 
@@ -340,7 +340,7 @@ def _find_resp_current_4_tones(resp, vb, vph, num_b1, num_b2, num_b3, num_b4):
             for m in range(-num_b3, num_b3 + 1):
                 for n in range(-num_b4, num_b4 + 1):
                     voltage[k, l, m, n] = vb + k * vph[1] + l * vph[2] + m * vph[3] + n * vph[4]
-    resp_current_out = resp.resp(voltage)
+    resp_current_out = resp(voltage)
 
     return resp_current_out
 

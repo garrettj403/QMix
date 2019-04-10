@@ -426,7 +426,7 @@ def test_interpolation_of_respfn():
     interp_matrix = qmix.qtcurrent.interpolate_respfn(cct, RESP, num_b=5)
     vtest = cct.vb + a * cct.vph[1]
 
-    np.testing.assert_equal(interp_matrix[a, :], RESP.resp(vtest))
+    np.testing.assert_equal(interp_matrix[a, :], RESP(vtest))
 
     # test 2 tones -----------------------------------------------------------
 
@@ -438,7 +438,7 @@ def test_interpolation_of_respfn():
     interp_matrix = qmix.qtcurrent.interpolate_respfn(cct, RESP, num_b=5)
     vtest = cct.vb + a * cct.vph[1] + b * cct.vph[2]
 
-    np.testing.assert_equal(interp_matrix[a, b, :], RESP.resp(vtest))
+    np.testing.assert_equal(interp_matrix[a, b, :], RESP(vtest))
 
     # test 3 tones -----------------------------------------------------------
 
@@ -452,7 +452,7 @@ def test_interpolation_of_respfn():
     interp_matrix = qmix.qtcurrent.interpolate_respfn(cct, RESP, num_b=5)
     vtest = cct.vb + a * cct.vph[1] + b * cct.vph[2] + c * cct.vph[3]
 
-    np.testing.assert_equal(interp_matrix[a, b, c, :], RESP.resp(vtest))
+    np.testing.assert_equal(interp_matrix[a, b, c, :], RESP(vtest))
 
     # test 4 tones -----------------------------------------------------------
 
@@ -467,7 +467,7 @@ def test_interpolation_of_respfn():
     interp_matrix = qmix.qtcurrent.interpolate_respfn(cct, RESP, num_b=5)
     vtest = cct.vb + a * cct.vph[1] + b * cct.vph[2] + c * cct.vph[3] + d * cct.vph[4]
 
-    np.testing.assert_equal(interp_matrix[a, b, c, d, :], RESP.resp(vtest))
+    np.testing.assert_equal(interp_matrix[a, b, c, d, :], RESP(vtest))
 
 
 # Tucker theory --------------------------------------------------------------
@@ -495,7 +495,7 @@ def _tucker_dc_current(voltage, resp, alpha, v_ph, num_b=20):
 
     i_dc = np.zeros(np.alen(voltage), dtype=float)
     for n in range(-num_b, num_b + 1):
-        i_dc += jv(n, alpha)**2 * np.imag(resp.resp(voltage + n * v_ph))
+        i_dc += jv(n, alpha)**2 * np.imag(resp(voltage + n * v_ph))
 
     return i_dc
 
@@ -521,10 +521,10 @@ def _tucker_ac_current(voltage, resp, alpha, v_ph, num_b=20):
 
         # Real component
         i_ac += (jv(n, alpha) * (jv(n - 1, alpha) + jv(n + 1, alpha)) *
-                 np.imag(resp.resp(voltage + n * v_ph)))
+                 resp.idc(voltage + n * v_ph))
 
         # Imaginary component
         i_ac += (1j * jv(n, alpha) * (jv(n - 1, alpha) - jv(n + 1, alpha)) *
-                 np.real(resp.resp(voltage + n * v_ph)))
+                 resp.ikk(voltage + n * v_ph))
 
     return i_ac

@@ -86,7 +86,7 @@ Examples:
     You can also interpolate the response function directly, which is a complex
     array:
 
-    >>> resp = resp.resp(bias_voltage)
+    >>> resp = resp(bias_voltage)
     >>> np.around(resp, 1)
     array([-0.5+0.j ,  1.1+0.5j,  0.1+2.j ])
 
@@ -202,6 +202,10 @@ class RespFn(object):
     def __repr__(self):  # pragma: no cover
 
         return self.__str__()
+
+    def __call__(self, vbias):
+
+        return self.resp(vbias)
 
     def plot_interpolation(self, fig_name=None, ax=None):  # pragma: no cover
         """Plot the interpolation of the response function.
@@ -441,7 +445,7 @@ class RespFn(object):
             (see: Tucker and Feldman, 1985).
 
             This method is included because it might be *slightly* faster than
-            ``np.conj(resp.resp(vb))`` where ``resp`` is an instance of this
+            ``np.conj(resp(vb))`` where ``resp`` is an instance of this
             class.
 
         Args:
@@ -465,7 +469,7 @@ class RespFn(object):
             (see: Tucker and Feldman, 1985).
 
             This method is included because it might be *slightly* faster than
-            ``1j*np.conj(resp.resp(vb))`` where ``resp`` is an instance of
+            ``1j*np.conj(resp(vb))`` where ``resp`` is an instance of
             this class. This is the normal way that you would swap the real
             and imaginary components.
 
