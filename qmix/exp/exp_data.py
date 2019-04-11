@@ -868,6 +868,8 @@ class RawData(object):
         remb_range = self.kwargs.get('remb_range', PARAMS['remb_range'])
         xemb_range = self.kwargs.get('xemb_range', PARAMS['xemb_range'])
 
+        zemb = self.kwargs.get('zemb', PARAMS['zemb'])
+
         cprint(" -> Impedance recovery:")
 
         # Unpack
@@ -906,7 +908,10 @@ class RawData(object):
 
         ibest, jbest = np.unravel_index(err_surf.argmin(), err_surf.shape)
         zt_real_best, zt_imag_best = zt_real[ibest], zt_imag[jbest]
-        zt_best = zt_real_best + 1j * zt_imag_best
+        if zemb is None:
+            zt_best = zt_real_best + 1j * zt_imag_best
+        else:
+            zt_best = zemb
         vt_best = _find_source_voltage(ac_voltage, ac_impedance, zt_best)
         err_best = err_surf[ibest, jbest]
 

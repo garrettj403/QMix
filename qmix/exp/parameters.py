@@ -109,6 +109,8 @@ values.
           normalized to the normal resistance.
         - ``xemb_range = (-1, 1)`` : Range of embedding reactances to test, 
           normalized to the normal resistance.
+        - ``zemb = None`` : During impedance recovery, force the embedding 
+          impedance to be this value (normalized).
         - ``alpha_max = 1.5`` : Initial guess for the drive level (alpha)
           during impedance recovery.
         - ``num_b = 20`` : Maximum number of Bessel functions to include when 
@@ -221,6 +223,7 @@ params = dict(
               cut_high =       0.2,
               remb_range =     (0, 1),
               xemb_range =     (-1, 1),
+              zemb =           None,
               alpha_max =      1.5,
               num_b =          20,
               # Analyzing pumped IF data (i.e., noise temperature analysis)
