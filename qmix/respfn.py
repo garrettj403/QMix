@@ -789,14 +789,13 @@ def _setup_interpolation(voltage, current, current_kk, **params):
     # Print to terminal
     if verbose:
         print("\t- DC I-V curve:")
-        print("\t\t- npts for DC I-V: {0}".format(len(dc_idx)))
-        print("\t\t- avg. error: {0:.4E}".format(np.mean(np.abs(err_dc))))
-        print("\t\t- max. error: {0:.4f} " +
-              "at v={1:.2f}".format(err_dc.max(), err_v[err_dc.argmax()]))
+        print("\t\t- npts for DC I-V: {}".format(len(dc_idx)))
+        print("\t\t- avg. error: {:.4E}".format(np.mean(np.abs(err_dc))))
+        print("\t\t- max. error: {:.4f} at v={:.2f}".format(err_dc.max(), err_v[err_dc.argmax()]))
         print("\t- KK curve:")
-        print("\t\t- npts for KK I-V: {0}".format(len(kk_idx)))
-        print("\t\t- avg. error: {0:.4E}".format(np.mean(np.abs(err_kk))))
-        print("\t\t- max. error: {0:.4f} " +
+        print("\t\t- npts for KK I-V: {}".format(len(kk_idx)))
+        print("\t\t- avg. error: {:.4E}".format(np.mean(np.abs(err_kk))))
+        print("\t\t- max. error: {:.4f} " +
               "at v={1:.2f}".format(err_kk.max(), err_v[err_kk.argmax()]))
         print("")
 

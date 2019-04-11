@@ -54,23 +54,23 @@ def cprint(text, color='HEADER'):  # pragma: no cover
 
 # Titles ---------------------------------------------------------------------
 
-def title(title_string, color=None):  # pragma: no cover
+def title(title_string, color=None, total_len=60):  # pragma: no cover
     """ Print a nice title to the terminal.
 
     Args:
         title_string (str): title to print
         color (str): Color to print in
+        total_len (int): Total length of title string (including stars)
 
     """
 
-    total_len = 60
     minus_title = total_len - len(title_string) - 2
     if minus_title % 2 == 0:
-        left = minus_title / 2
-        right = minus_title / 2
+        left = minus_title // 2
+        right = minus_title // 2
     else:
-        left = minus_title / 2
-        right = minus_title / 2 + 1
+        left = minus_title // 2
+        right = minus_title // 2 + 1
 
     title_string = " " + title_string + " "
     title_string = "*" * left + title_string + "*" * right + "\n"
