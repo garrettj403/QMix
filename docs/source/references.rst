@@ -3,11 +3,13 @@
 References
 ==========
 
-.. note:: For more information on QMix, see Garrett (2018).
+.. note:: For more information on QMix, see Garrett and Yassin (2019) and Garrett (2018).
 
 .. note:: For more information on multi-tone spectral domain analysis (MTSDA), see Kittara (2002); Kittara, Winthington & Yassin (2007); or Withington, Kittara & Yassin (2003).
 
 Garrett, J. D. (2018). `A 230 GHz Focal Plane Array Using a Wide IF Bandwidth SIS Receiver <https://ora.ox.ac.uk/objects/uuid:d47fbf3b-1cf3-4e58-be97-767b9893066e>`_ (DPhil). University of Oxford.
+
+Garrett, J. D., & Yassin, G. (2019). `QMix: A Python package for simulating the quasiparticle tunneling currents in SIS junctions <http://joss.theoj.org/papers/10.21105/joss.01231>`_ Journal of Open Source Software, 4(35), 1231.
 
 Kennedy, P. R. (1999). *Superconducting Devices for Millimeter Wavelength Astronomy* (DPhil). University of Cambridge.
 
