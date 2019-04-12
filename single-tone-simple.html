@@ -423,9 +423,9 @@ div.rendered_html tbody tr:hover {
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="n">resp</span> <span class="o">=</span> <span class="n">qmix</span><span class="o">.</span><span class="n">respfn</span><span class="o">.</span><span class="n">RespFnPolynomial</span><span class="p">(</span><span class="n">p_order</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
 
-<span class="c1"># Plot the interpolation</span>
+<span class="c1"># Plot</span>
 <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span><span class="mi">5</span><span class="p">))</span>
-<span class="n">resp</span><span class="o">.</span><span class="n">plot_interpolation</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">);</span>
+<span class="n">resp</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
@@ -439,11 +439,11 @@ Generating response function:
         - DC I-V curve:
                 - npts for DC I-V: 273
                 - avg. error: 3.7010E-10
-                - max. error: {0:.4f} at v=-1.10
+                - max. error: 0.0000 at v=-1.10
         - KK curve:
                 - npts for KK I-V: 330
                 - avg. error: 6.1923E-07
-                - max. error: {0:.4f} at v=1.11
+                - max. error: {:.4f} at v=1.11
 
 </pre></div></div>
 </div>
@@ -536,13 +536,13 @@ Calculating tunneling current...
  - 1 tone(s)
  - 1 harmonic(s)
 Done.
-Time: 0.0071 s
+Time: 0.0277 s
 
 Calculating tunneling current...
  - 1 tone(s)
  - 1 harmonic(s)
 Done.
-Time: 0.0038 s
+Time: 0.0033 s
 
 </pre></div></div>
 </div>

@@ -586,7 +586,7 @@ DC I-V data:</span>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="c1"># Plot</span>
 <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span><span class="mi">5</span><span class="p">))</span>
-<span class="n">resp</span><span class="o">.</span><span class="n">plot_interpolation</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">);</span>
+<span class="n">resp</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
@@ -621,41 +621,41 @@ Running harmonic balance:
  - 3 tone(s) and 1 harmonic(s)
  - 7 calls to the tunneling current function per iteration
 Estimated time:
- - time per iteration:    2.52 s /   0.04 min /  0.00 hrs
- - max time:             25.20 s /   0.42 min /  0.01 hrs
+ - time per iteration:    2.03 s /   0.03 min /  0.00 hrs
+ - max time:             20.30 s /   0.34 min /  0.01 hrs
 Error after 0 iteration(s):
-        f:1, p:1,   med. r.error:     0.795,   max r.error:     1.827,     0.0 % complete
-        f:2, p:1,   med. r.error:     0.795,   max r.error:     1.673,     0.0 % complete
-        f:3, p:1,   med. r.error: 99999.000,   max r.error: 99999.000,     0.0 % complete
+        f:1, p:1,   med. rel. error:     0.795,   max. rel. error:     1.827,     0.0 % complete
+        f:2, p:1,   med. rel. error:     0.795,   max. rel. error:     1.673,     0.0 % complete
+        f:3, p:1,   med. rel. error: 99999.999,   max. rel. error: 99999.999,     0.0 % complete
 Calculating inverse Jacobian |--------------------| 100.0% Complete
 Applying correction
 Error after 1 iteration(s):
-        f:1, p:1,   med. r.error:     0.010,   max r.error:     0.200,    11.9 % complete
-        f:2, p:1,   med. r.error:     0.034,   max r.error:     0.366,     2.5 % complete
-        f:3, p:1,   med. r.error:     0.706,   max r.error:   119.897,     0.0 % complete
+        f:1, p:1,   med. rel. error:     0.010,   max. rel. error:     0.200,    11.9 % complete
+        f:2, p:1,   med. rel. error:     0.034,   max. rel. error:     0.366,     2.5 % complete
+        f:3, p:1,   med. rel. error:     0.706,   max. rel. error:   119.897,     0.0 % complete
 Calculating inverse Jacobian |--------------------| 100.0% Complete
 Applying correction
 Error after 2 iteration(s):
-        f:1, p:1,   med. r.error:     0.000,   max r.error:     0.006,    97.5 % complete
-        f:2, p:1,   med. r.error:     0.000,   max r.error:     0.018,    90.5 % complete
-        f:3, p:1,   med. r.error:     0.000,   max r.error:     1.056,    63.2 % complete
+        f:1, p:1,   med. rel. error:     0.000,   max. rel. error:     0.006,    97.5 % complete
+        f:2, p:1,   med. rel. error:     0.000,   max. rel. error:     0.018,    90.5 % complete
+        f:3, p:1,   med. rel. error:     0.000,   max. rel. error:     1.056,    63.2 % complete
 Calculating inverse Jacobian |--------------------| 100.0% Complete
 Applying correction
 Error after 3 iteration(s):
-        f:1, p:1,   med. r.error:     0.000,   max r.error:     0.000,   100.0 % complete
-        f:2, p:1,   med. r.error:     0.000,   max r.error:     0.000,   100.0 % complete
-        f:3, p:1,   med. r.error:     0.000,   max r.error:     0.001,    99.0 % complete
+        f:1, p:1,   med. rel. error:     0.000,   max. rel. error:     0.000,   100.0 % complete
+        f:2, p:1,   med. rel. error:     0.000,   max. rel. error:     0.000,   100.0 % complete
+        f:3, p:1,   med. rel. error:     0.000,   max. rel. error:     0.001,    99.0 % complete
 Calculating inverse Jacobian |--------------------| 100.0% Complete
 Applying correction
 Error after 4 iteration(s):
-        f:1, p:1,   med. r.error:     0.000,   max r.error:     0.000,   100.0 % complete
-        f:2, p:1,   med. r.error:     0.000,   max r.error:     0.000,   100.0 % complete
-        f:3, p:1,   med. r.error:     0.000,   max r.error:     0.000,   100.0 % complete
+        f:1, p:1,   med. rel. error:     0.000,   max. rel. error:     0.000,   100.0 % complete
+        f:2, p:1,   med. rel. error:     0.000,   max. rel. error:     0.000,   100.0 % complete
+        f:3, p:1,   med. rel. error:     0.000,   max. rel. error:     0.000,   100.0 % complete
 Done: Minimum error target was achieved.
- - time: 11.18 s / 0.19 min.
+ - time: 8.63 s / 0.14 min.
  - 4 iterations required
-        - 2.80 s / iteration
-        - 0.05 min / iteration
+        - 2.16 s / iteration
+        - 0.04 min / iteration
 </pre></div></div>
 </div>
 </div>

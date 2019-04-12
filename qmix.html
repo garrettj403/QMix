@@ -1169,7 +1169,7 @@ polynomial model, with polynomial order 50:</p>
 </div>
 <p>You can also interpolate the response function directly, which is a complex
 array:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">resp</span> <span class="o">=</span> <span class="n">resp</span><span class="o">.</span><span class="n">resp</span><span class="p">(</span><span class="n">bias_voltage</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">resp</span> <span class="o">=</span> <span class="n">resp</span><span class="p">(</span><span class="n">bias_voltage</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">around</span><span class="p">(</span><span class="n">resp</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 <span class="go">array([-0.5+0.j ,  1.1+0.5j,  0.1+2.j ])</span>
 </pre></div>
@@ -1471,7 +1471,7 @@ would like to add to an existing figure</li>
 you are calculating the tunneling currents using Tucker theory
 (see: Tucker and Feldman, 1985).</p>
 <p class="last">This method is included because it might be <em>slightly</em> faster than
-<code class="docutils literal notranslate"><span class="pre">np.conj(resp.resp(vb))</span></code> where <code class="docutils literal notranslate"><span class="pre">resp</span></code> is an instance of this
+<code class="docutils literal notranslate"><span class="pre">np.conj(resp(vb))</span></code> where <code class="docutils literal notranslate"><span class="pre">resp</span></code> is an instance of this
 class.</p>
 </div>
 <table class="docutils field-list" frame="void" rules="none">
@@ -1499,7 +1499,7 @@ components swapped.</p>
 you are calculating the tunneling currents using Tucker theory
 (see: Tucker and Feldman, 1985).</p>
 <p class="last">This method is included because it might be <em>slightly</em> faster than
-<code class="docutils literal notranslate"><span class="pre">1j*np.conj(resp.resp(vb))</span></code> where <code class="docutils literal notranslate"><span class="pre">resp</span></code> is an instance of
+<code class="docutils literal notranslate"><span class="pre">1j*np.conj(resp(vb))</span></code> where <code class="docutils literal notranslate"><span class="pre">resp</span></code> is an instance of
 this class. This is the normal way that you would swap the real
 and imaginary components.</p>
 </div>

@@ -1731,6 +1731,8 @@ normalized to the photon voltage.</li>
 normalized to the normal resistance.</li>
 <li><code class="docutils literal notranslate"><span class="pre">xemb_range</span> <span class="pre">=</span> <span class="pre">(-1,</span> <span class="pre">1)</span></code> : Range of embedding reactances to test,
 normalized to the normal resistance.</li>
+<li><code class="docutils literal notranslate"><span class="pre">zemb</span> <span class="pre">=</span> <span class="pre">None</span></code> : During impedance recovery, force the embedding
+impedance to be this value (normalized).</li>
 <li><code class="docutils literal notranslate"><span class="pre">alpha_max</span> <span class="pre">=</span> <span class="pre">1.5</span></code> : Initial guess for the drive level (alpha)
 during impedance recovery.</li>
 <li><code class="docutils literal notranslate"><span class="pre">num_b</span> <span class="pre">=</span> <span class="pre">20</span></code> : Maximum number of Bessel functions to include when
@@ -1783,13 +1785,16 @@ in the IF power data.</li>
 <dd><ul class="first last">
 <li><code class="docutils literal notranslate"><span class="pre">analyze_if</span> <span class="pre">=</span> <span class="pre">True</span></code> : Analyze the IF data? This involves
 calculating the noise temperature and gain.</li>
-<li><code class="docutils literal notranslate"><span class="pre">t_cold</span> <span class="pre">=</span> <span class="pre">80.</span></code> : Temperature of the cold load (likely liquid
+<li><code class="docutils literal notranslate"><span class="pre">t_cold</span> <span class="pre">=</span> <span class="pre">78.</span></code> : Temperature of the cold load (likely liquid
 nitrogen), in units [K].</li>
 <li><code class="docutils literal notranslate"><span class="pre">t_hot</span> <span class="pre">=</span> <span class="pre">293.</span></code> : Temperature of the hot load (likely room
 temperature), in units [K].</li>
 <li><code class="docutils literal notranslate"><span class="pre">vbest</span> <span class="pre">=</span> <span class="pre">None</span></code> : Bias voltage at which to calculate the best noise
 temperature value. If this value is set to <code class="docutils literal notranslate"><span class="pre">None</span></code>, the <code class="docutils literal notranslate"><span class="pre">RawData</span></code>
 class will determine the best bias voltage automatically.</li>
+<li><code class="docutils literal notranslate"><span class="pre">best_pt</span> <span class="pre">=</span> <span class="pre">'Max</span> <span class="pre">Gain'</span></code> : Which bias voltage should we select as
+the best bias? Where the gain is the highest (<code class="docutils literal notranslate"><span class="pre">'Max</span> <span class="pre">Gain'</span></code>)? Or
+the lowest noise temperature (<code class="docutils literal notranslate"><span class="pre">'Min</span> <span class="pre">Tn'</span></code>)?</li>
 </ul>
 </dd>
 </dl>
@@ -1846,7 +1851,7 @@ function.</li>
 </div></blockquote>
 <dl class="data">
 <dt id="qmix.exp.parameters.params">
-<code class="descclassname">qmix.exp.parameters.</code><code class="descname">params</code><em class="property"> = {'alpha_max': 1.5, 'analyze': None, 'analyze_if': True, 'analyze_iv': True, 'area': 1.5, 'comment': '', 'cut_high': 0.2, 'cut_low': 0.25, 'debug': False, 'delimiter': ',', 'filter_data': True, 'filter_npoly': 3, 'filter_nwind': 21, 'filter_theta': 0.785, 'freq': None, 'i_fmt': 'mA', 'i_multiplier': 1.0, 'ifdata_npts': 3000, 'ifdata_sigma': 5, 'ifdata_vmax': 2.25, 'ifresp_delimiter': '\t', 'ifresp_skipheader': 0, 'ifresp_usecols': (0, 1, 2), 'igap_guess': 0.0002, 'ioffset': None, 'npts': 6001, 'num_b': 20, 'remb_range': (0, 1), 'rn_vmax': 0.0045, 'rn_vmin': 0.0035, 'rseries': None, 'skip_header': 1, 't_cold': 80.0, 't_hot': 293.0, 'usecols': (0, 1), 'v_fmt': 'mV', 'v_multiplier': 1.0, 'v_smear': 0.02, 'vbest': None, 'verbose': True, 'vgap_guess': 0.0027, 'vgap_threshold': 0.000105, 'vleak': 0.002, 'vmax': 0.006, 'vmax_plot': 4.0, 'voffset': None, 'voffset_range': 0.0003, 'voffset_sigma': 1e-05, 'vrsg': 0.002, 'vshot': None, 'xemb_range': (-1, 1)}</em><a class="headerlink" href="#qmix.exp.parameters.params" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">qmix.exp.parameters.</code><code class="descname">params</code><em class="property"> = {'alpha_max': 1.5, 'analyze': None, 'analyze_if': True, 'analyze_iv': True, 'area': 1.5, 'best_pt': 'Max Gain', 'comment': '', 'cut_high': 0.2, 'cut_low': 0.25, 'debug': False, 'delimiter': ',', 'filter_data': True, 'filter_npoly': 3, 'filter_nwind': 21, 'filter_theta': 0.785, 'freq': None, 'i_fmt': 'mA', 'i_multiplier': 1.0, 'ifdata_npts': 3000, 'ifdata_sigma': 5, 'ifdata_vmax': 2.25, 'ifresp_delimiter': '\t', 'ifresp_skipheader': 0, 'ifresp_usecols': (0, 1, 2), 'igap_guess': 0.0002, 'ioffset': None, 'npts': 6001, 'num_b': 20, 'remb_range': (0, 1), 'rn_vmax': 0.0045, 'rn_vmin': 0.0035, 'rseries': None, 'skip_header': 1, 't_cold': 78.0, 't_hot': 293.0, 'usecols': (0, 1), 'v_fmt': 'mV', 'v_multiplier': 1.0, 'v_smear': 0.02, 'vbest': None, 'verbose': True, 'vgap_guess': 0.0027, 'vgap_threshold': 0.000105, 'vleak': 0.002, 'vmax': 0.006, 'vmax_plot': 4.0, 'voffset': None, 'voffset_range': 0.0003, 'voffset_sigma': 1e-05, 'vrsg': 0.002, 'vshot': None, 'xemb_range': (-1, 1), 'zemb': None}</em><a class="headerlink" href="#qmix.exp.parameters.params" title="Permalink to this definition">¶</a></dt>
 <dd><p>Default parameters for importing experimental data.</p>
 </dd></dl>
 
