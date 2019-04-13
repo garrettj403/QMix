@@ -91,7 +91,7 @@ def four_tone():
 
     idc = qmix.qtcurrent.qtcurrent(vj, cct, resp, 0., num_b=num_b, verbose=False)
 
-time_4tone = min(timeit.Timer(two_tone).repeat(3, 1))
+time_4tone = min(timeit.Timer(two_tone).repeat(5, 1))
 print("4 tones:\t", time_4tone)
 
 print("\n")

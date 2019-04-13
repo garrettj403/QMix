@@ -67,8 +67,8 @@ def qtcurrent(vj, cct, resp, vph_list, num_b=15, verbose=True, resp_matrix=None)
 
     # Load, prepare and check input data -------------------------------------
 
-    cct.lock()
-    vj.flags.writeable = False
+    # cct.lock()
+    # vj.flags.writeable = False
 
     num_f = cct.num_f
     num_p = cct.num_p
@@ -130,7 +130,7 @@ def qtcurrent(vj, cct, resp, vph_list, num_b=15, verbose=True, resp_matrix=None)
         print("Time: {0:.4f} s\n".format(timer() - start_time))
 
     cct.unlock()
-    vj.flags.writeable = True
+    # vj.flags.writeable = True
 
     if vph_is_list:
         return current_out
@@ -266,7 +266,7 @@ def interpolate_respfn(cct, resp, num_b):
     elif num_f == 4:
         resp_matrix = _find_resp_current_4_tones(resp, cct.vb, cct.vph, *nb_list)
 
-    resp_matrix.flags.writeable = False
+    # resp_matrix.flags.writeable = False
 
     return resp_matrix
 
@@ -384,7 +384,7 @@ def _convolution_coefficient(vj, vph, num_f, num_p, num_b):
 
     # Convolution coefficients: cc[f, k, i] in C^(num_f+1)(num_b*2+1)(npts)
     cc_out = _calculate_coeff(jac)
-    cc_out.flags.writeable = False
+    # cc_out.flags.writeable = False
 
     # # DEBUG
     # import matplotlib.pyplot as plt 
@@ -449,6 +449,7 @@ def _current_1_tone(vph_out, ccc, vph, resp_matrix, num_p, npts, num_b1):
     return current_out
 
 
+@nb.njit("c16[:](i4, c16[:,:,:], c16[:,:], i4, i4)")
 def _current_coeff_1_tone(a, ccc, resp_matrix, num_b1, npts):
     """ This function will calculate the tunneling current coefficient
         (I(a)) for a one tone system. Equations 5.17 and 5.18 in Kittara's
@@ -456,8 +457,8 @@ def _current_coeff_1_tone(a, ccc, resp_matrix, num_b1, npts):
     """
 
     # Equation 5.17
-    rsp_p = np.zeros(npts, dtype=complex)  # positive coefficients p
-    rsp_m = np.zeros(npts, dtype=complex)  # negative coefficients p
+    rsp_p = np.zeros(npts, dtype=np.complex128)  # positive coefficients p
+    rsp_m = np.zeros(npts, dtype=np.complex128)  # negative coefficients p
     ccc_conj = np.conj(ccc[1])
     for k in range(-num_b1, num_b1 + 1):
 
@@ -469,7 +470,7 @@ def _current_coeff_1_tone(a, ccc, resp_matrix, num_b1, npts):
 
     # Calculate current coefficient: equation 5.26
     if a == 0:
-        return rsp_p.imag
+        return rsp_p.imag + 1j * 0
     else:
         return (rsp_p.imag + rsp_m.imag) - 1j * (rsp_p.real - rsp_m.real)
 
@@ -498,6 +499,7 @@ def _current_2_tones(vph_out, ccc, vph, resp_matrix, num_p, npts, num_b1, num_b2
     return current_out
 
 
+@nb.njit("c16[:](i4, i4, c16[:,:,:], c16[:,:,:], i4, i4, i4)")
 def _current_coeff_2_tones(a, b, ccc, resp_matrix, num_b1, num_b2, npts):
     """ This function will calculate the tunneling current coefficient
         (I(a,b)) for a two tone system (i.e., for a (a,b) pair versus
@@ -506,8 +508,8 @@ def _current_coeff_2_tones(a, b, ccc, resp_matrix, num_b1, num_b2, npts):
     """
 
     # Equation 5.25
-    rsp_p = np.zeros(npts, dtype=complex)
-    rsp_m = np.zeros(npts, dtype=complex)
+    rsp_p = np.zeros(npts, dtype=np.complex128)
+    rsp_m = np.zeros(npts, dtype=np.complex128)
     ccc_conj = np.conj(ccc)
     for k in range(-num_b1, num_b1 + 1):
         for l in range(-num_b2, num_b2 + 1):
@@ -526,7 +528,7 @@ def _current_coeff_2_tones(a, b, ccc, resp_matrix, num_b1, num_b2, npts):
 
     # Calculate current coefficient: equation 5.26
     if a == 0 and b == 0:
-        return rsp_p.imag
+        return rsp_p.imag + 1j * 0.
     else:
         return (rsp_p.imag + rsp_m.imag) - 1j * (rsp_p.real - rsp_m.real)
 
@@ -574,6 +576,7 @@ def _current_3_tones(vph_out, ccc, vph, resp_matrix, num_p, npts, num_b1, num_b2
     return current_out
 
 
+@nb.njit("c16[:](i4, i4, i4, c16[:,:,:], c16[:,:,:,:], i4, i4, i4)")
 def _current_coeff_3_tones(a, b, c, ccc, resp_matrix, num_b1, num_b2, num_b3):
     """ This function will calculate the tunneling current coefficient
         (I(a,b,c)) for a three tone system (i.e., for an (a,b,c) pair versus
@@ -581,16 +584,34 @@ def _current_coeff_3_tones(a, b, c, ccc, resp_matrix, num_b1, num_b2, num_b3):
         and 5.26 in Kittara's thesis.
     """
 
-    ccc1 = np.array(ccc[1], order='C')
-    ccc2 = np.array(ccc[2], order='C')
-    ccc3 = np.array(ccc[3], order='C')
-    ccc1.flags.writeable = True
-    ccc2.flags.writeable = True
-    ccc3.flags.writeable = True
+    ccc1 = ccc[1]
+    ccc2 = ccc[2]
+    ccc3 = ccc[3]
 
     # Equation 5.25
-    rsp_p = np.zeros_like(ccc1[0,:], dtype=complex)
-    rsp_m = np.zeros_like(ccc1[0,:], dtype=complex)
+    rsp_p = np.zeros_like(ccc1[0,:], dtype=np.complex128)
+    rsp_m = np.zeros_like(ccc1[0,:], dtype=np.complex128)
+
+    def _multiply_ccc3both(ccc1, ccc2, ccc3, k, l, m, a, b, c):
+
+        c0 = ccc1[k] * ccc2[l] * ccc3[m]
+        cp = np.conj(ccc1[k + a, :] * \
+                     ccc2[l + b, :] * \
+                     ccc3[m + c, :])
+        cm = np.conj(ccc1[k - a, :] * \
+                     ccc2[l - b, :] * \
+                     ccc3[m - c, :])
+        
+        return c0 * cp, c0 * cm
+
+    def _multiply_ccc3m(ccc1, ccc2, ccc3, k, l, m, a, b, c):
+
+        c0 = ccc1[k] * ccc2[l] * ccc3[m]
+        cm = np.conj(ccc1[k - a, :] * \
+                     ccc2[l - b, :] * \
+                     ccc3[m - c, :])
+
+        return c0 * cm
 
     for k in range(-num_b1, num_b1 + 1):
         for l in range(-num_b2, num_b2 + 1):
@@ -620,38 +641,14 @@ def _current_coeff_3_tones(a, b, c, ccc, resp_matrix, num_b1, num_b2, num_b3):
 
     # Calculate current coefficient: equation 5.26
     if a == 0 and b == 0 and c == 0:
-        return rsp_p.imag
+        return rsp_p.imag + 1j * 0.
     else:
         return (rsp_p.imag + rsp_m.imag) - 1j * (rsp_p.real - rsp_m.real)
 
 
-@nb.njit("Tuple((c16[:], c16[:]))(c16[:,:], c16[:,:], c16[:,:], i4, i4, i4, i4, i4, i4)")
-def _multiply_ccc3both(ccc1, ccc2, ccc3, k, l, m, a, b, c):  # pragma: no cover
-
-    c0 = ccc1[k] * ccc2[l] * ccc3[m]
-    cp = np.conj(ccc1[k + a, :] * \
-                 ccc2[l + b, :] * \
-                 ccc3[m + c, :])
-    cm = np.conj(ccc1[k - a, :] * \
-                 ccc2[l - b, :] * \
-                 ccc3[m - c, :])
-    
-    return c0 * cp, c0 * cm
-
-
-@nb.njit("c16[:](c16[:,:], c16[:,:], c16[:,:], i4, i4, i4, i4, i4, i4)")
-def _multiply_ccc3m(ccc1, ccc2, ccc3, k, l, m, a, b, c):  # pragma: no cover
-
-    c0 = ccc1[k] * ccc2[l] * ccc3[m]
-    cm = np.conj(ccc1[k - a, :] * \
-                 ccc2[l - b, :] * \
-                 ccc3[m - c, :])
-
-    return c0 * cm
-
-
 ### Four tones ###
 
+# @nb.njit("c16[:](f4, c16[:,:,:], f8[:], c16[:,:,:,:,:], i4, i4, i4, i4, i4, i4)")
 def _current_4_tones(vph_out, ccc, vph, resp_matrix, num_p, npts, num_b1, num_b2, num_b3, num_b4):
     """ Calculate the tunneling current at a specific frequency.
 
@@ -660,7 +657,7 @@ def _current_4_tones(vph_out, ccc, vph, resp_matrix, num_p, npts, num_b1, num_b2
     """
 
     vph_out = round(vph_out, ROUND_VPH)
-    current_out = np.zeros(npts, dtype=complex)
+    current_out = np.zeros(npts, dtype=np.complex128)
 
     for a in range(num_p, -(num_p + 1), -1):
         for b in range(num_p, -(num_p + 1), -1):
@@ -677,6 +674,7 @@ def _current_4_tones(vph_out, ccc, vph, resp_matrix, num_p, npts, num_b1, num_b2
     return current_out
 
 
+@nb.njit("c16[:](i4, i4, i4, i4, c16[:,:,:], c16[:,:,:,:,:], i4, i4, i4, i4, i4)")
 def _current_coeff_4_tones(a, b, c, d, ccc, resp_matrix, num_b1, num_b2, num_b3, num_b4, npts):
     """ This function will calculate the tunneling current coefficient
         (I(a,b,c,d)) for a four tone system (i.e., for an (a,b,c,d) pair
@@ -685,18 +683,38 @@ def _current_coeff_4_tones(a, b, c, d, ccc, resp_matrix, num_b1, num_b2, num_b3,
     """
 
     # Recast cofficients
-    ccc1 = np.array(ccc[1], order='C')
-    ccc2 = np.array(ccc[2], order='C')
-    ccc3 = np.array(ccc[3], order='C')
-    ccc4 = np.array(ccc[4], order='C')
-    ccc1.flags.writeable = True
-    ccc2.flags.writeable = True
-    ccc3.flags.writeable = True
-    ccc4.flags.writeable = True
+    ccc1 = ccc[1]
+    ccc2 = ccc[2]
+    ccc3 = ccc[3]
+    ccc4 = ccc[4]
+
+    def _multiply_ccc4both(ccc1, ccc2, ccc3, ccc4, k, l, m, n, a, b, c, d):
+
+        c0 = ccc1[k] * ccc2[l] * ccc3[m] * ccc4[n]
+        cp = np.conj(ccc1[k + a] * \
+                     ccc2[l + b] * \
+                     ccc3[m + c] * \
+                     ccc4[n + d])
+        cm = np.conj(ccc1[k - a] * \
+                     ccc2[l - b] * \
+                     ccc3[m - c] * \
+                     ccc4[n - d])
+        
+        return c0 * cp, c0 * cm
+
+    def _mult_ccc4m(ccc1, ccc2, ccc3, ccc4, k, l, m, n, a, b, c, d):
+
+        c0 = ccc1[k] * ccc2[l] * ccc3[m] * ccc4[n]
+        cm = np.conj(ccc1[k - a] * \
+                     ccc2[l - b] * \
+                     ccc3[m - c] * \
+                     ccc4[n - d])
+
+        return c0 * cm
 
     # Equation 5.25
-    rsp_p = np.zeros(npts, dtype=complex)
-    rsp_m = np.zeros(npts, dtype=complex)
+    rsp_p = np.zeros(npts, dtype=np.complex128)
+    rsp_m = np.zeros(npts, dtype=np.complex128)
     for k in range(-num_b1, num_b1 + 1):
         for l in range(-num_b2, num_b2 + 1):
             for m in range(-num_b3, num_b3 + 1):
@@ -727,37 +745,9 @@ def _current_coeff_4_tones(a, b, c, d, ccc, resp_matrix, num_b1, num_b2, num_b3,
 
     # Calculate current coefficient: equation 5.26
     if a == 0 and b == 0 and c == 0 and d == 0:
-        return rsp_p.imag
+        return rsp_p.imag + 1j * 0.
     else:
         return (rsp_p.imag + rsp_m.imag) - 1j * (rsp_p.real - rsp_m.real)
-
-
-@nb.njit("Tuple((c16[:], c16[:]))(c16[:,:], c16[:,:], c16[:,:], c16[:,:], i4, i4, i4, i4, i4, i4, i4, i4)")
-def _multiply_ccc4both(ccc1, ccc2, ccc3, ccc4, k, l, m, n, a, b, c, d):  # pragma: no cover
-
-    c0 = ccc1[k] * ccc2[l] * ccc3[m] * ccc4[n]
-    cp = np.conj(ccc1[k + a] * \
-                 ccc2[l + b] * \
-                 ccc3[m + c] * \
-                 ccc4[n + d])
-    cm = np.conj(ccc1[k - a] * \
-                 ccc2[l - b] * \
-                 ccc3[m - c] * \
-                 ccc4[n - d])
-    
-    return c0 * cp, c0 * cm
-
-
-@nb.njit("c16[:](c16[:,:], c16[:,:], c16[:,:], c16[:,:], i4, i4, i4, i4, i4, i4, i4, i4)")
-def _mult_ccc4m(ccc1, ccc2, ccc3, ccc4, k, l, m, n, a, b, c, d):  # pragma: no cover
-
-    c0 = ccc1[k] * ccc2[l] * ccc3[m] * ccc4[n]
-    cm = np.conj(ccc1[k - a] * \
-                 ccc2[l - b] * \
-                 ccc3[m - c] * \
-                 ccc4[n - d])
-
-    return c0 * cm
 
 
 # Helper functions -----------------------------------------------------------
