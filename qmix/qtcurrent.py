@@ -450,7 +450,7 @@ def _current_1_tone(vph_out, ccc, vph, resp_matrix, num_p, npts, num_b1):
 
 
 @nb.njit("c16[:](i4, c16[:,:,:], c16[:,:], i4, i4)")
-def _current_coeff_1_tone(a, ccc, resp_matrix, num_b1, npts):
+def _current_coeff_1_tone(a, ccc, resp_matrix, num_b1, npts):  # pragma: no cover
     """ This function will calculate the tunneling current coefficient
         (I(a)) for a one tone system. Equations 5.17 and 5.18 in Kittara's
         thesis.
@@ -500,7 +500,7 @@ def _current_2_tones(vph_out, ccc, vph, resp_matrix, num_p, npts, num_b1, num_b2
 
 
 @nb.njit("c16[:](i4, i4, c16[:,:,:], c16[:,:,:], i4, i4, i4)")
-def _current_coeff_2_tones(a, b, ccc, resp_matrix, num_b1, num_b2, npts):
+def _current_coeff_2_tones(a, b, ccc, resp_matrix, num_b1, num_b2, npts):  # pragma: no cover
     """ This function will calculate the tunneling current coefficient
         (I(a,b)) for a two tone system (i.e., for a (a,b) pair versus
         calculating the entire matrix for every (a,b) pair). Equations 5.25
@@ -577,7 +577,7 @@ def _current_3_tones(vph_out, ccc, vph, resp_matrix, num_p, npts, num_b1, num_b2
 
 
 @nb.njit("c16[:](i4, i4, i4, c16[:,:,:], c16[:,:,:,:], i4, i4, i4)")
-def _current_coeff_3_tones(a, b, c, ccc, resp_matrix, num_b1, num_b2, num_b3):
+def _current_coeff_3_tones(a, b, c, ccc, resp_matrix, num_b1, num_b2, num_b3):  # pragma: no cover
     """ This function will calculate the tunneling current coefficient
         (I(a,b,c)) for a three tone system (i.e., for an (a,b,c) pair versus
         calculating the entire matrix for every (a,b,c) pair). Equations 5.25
@@ -649,7 +649,7 @@ def _current_coeff_3_tones(a, b, c, ccc, resp_matrix, num_b1, num_b2, num_b3):
 ### Four tones ###
 
 # @nb.njit("c16[:](f4, c16[:,:,:], f8[:], c16[:,:,:,:,:], i4, i4, i4, i4, i4, i4)")
-def _current_4_tones(vph_out, ccc, vph, resp_matrix, num_p, npts, num_b1, num_b2, num_b3, num_b4):
+def _current_4_tones(vph_out, ccc, vph, resp_matrix, num_p, npts, num_b1, num_b2, num_b3, num_b4):  # pragma: no cover
     """ Calculate the tunneling current at a specific frequency.
 
     Four tones.
@@ -675,7 +675,7 @@ def _current_4_tones(vph_out, ccc, vph, resp_matrix, num_p, npts, num_b1, num_b2
 
 
 @nb.njit("c16[:](i4, i4, i4, i4, c16[:,:,:], c16[:,:,:,:,:], i4, i4, i4, i4, i4)")
-def _current_coeff_4_tones(a, b, c, d, ccc, resp_matrix, num_b1, num_b2, num_b3, num_b4, npts):
+def _current_coeff_4_tones(a, b, c, d, ccc, resp_matrix, num_b1, num_b2, num_b3, num_b4, npts):  # pragma: no cover
     """ This function will calculate the tunneling current coefficient
         (I(a,b,c,d)) for a four tone system (i.e., for an (a,b,c,d) pair
         versus calculating the entire matrix for every (a,b,c) pair).
