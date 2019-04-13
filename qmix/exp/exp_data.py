@@ -1771,7 +1771,7 @@ def plot_if_spectrum(data_folder, fig_folder=None, figsize=None):  # pragma: no 
         print(" - {}".format(filename))
         base = filename.split('_')[0][1:]
 
-        freq, t_n, p_hot_db, p_cold_db = if_response(if_file).T
+        freq, t_n, p_hot_db, p_cold_db = if_response(if_file)
 
         fig2, ax2 = plt.subplots(figsize=figsize)
         ax2.plot(freq, t_n)

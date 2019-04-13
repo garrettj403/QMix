@@ -149,6 +149,16 @@ values.
         - ``best_pt = 'Max Gain'`` : Which bias voltage should we select as
           the best bias? Where the gain is the highest (``'Max Gain'``)? Or
           the lowest noise temperature (``'Min Tn'``)?
+    - IF response:
+        - ``ifresp_delimiter = '\\t'`` : Delimiter for IF spectrum files.
+        - ``ifresp_usecols = (0, 1, 2)`` : Columns to import from IF spectrum
+          files. The first column should be the frequency, the second should 
+          be the IF power from the hot load, and the third should be the IF 
+          power from the cold load.
+        - ``ifresp_skipheader = 1`` : Number of rows to skip at the beginning
+          of the IF spectrum file.
+        - ``ifresp_maxtn = 1e6`` : Maximum noise temperature. All values above
+          this value will be set to ``ifresp_maxtn``.
     - Response function:
         - **Note:** The ``RawData0`` class generates a response function
           based on the imported DC I-V data (using ``qmix.respfn.RespFn``).
@@ -234,7 +244,8 @@ params = dict(
               # Import IF response data
               ifresp_delimiter  = '\t',
               ifresp_usecols    = (0, 1, 2),
-              ifresp_skipheader = 0,
+              ifresp_skipheader = 1,
+              ifresp_maxtn      = 1e6,
               # Response function
               v_smear =        0.020,
               # Plotting parameters
