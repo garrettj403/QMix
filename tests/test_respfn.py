@@ -81,13 +81,20 @@ def test_polynomial():
     current = qmix.mathfn.ivcurve_models.polynomial(v, order)
 
     # Interpolated values
-    resp = RespFnPolynomial(order)
+    resp = RespFnPolynomial(order, check_error=True)
     print(resp)
     i_resp = resp._f_idc(v)
 
     # Check interpolated values
     max_diff = np.abs(i_resp - current).max()
     assert max_diff < MAX_INTERP_ERROR
+
+    # Check resp_swap and resp_conj
+    voltage = np.linspace(0, 2, 201)
+    resp1 = resp.resp_swap(voltage)
+    resp2 = 1j * resp.resp_conj(voltage)
+    np.testing.assert_equal(resp1, resp2)
+
 
 
 @pytest.mark.filterwarnings("ignore::FutureWarning")
