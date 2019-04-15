@@ -1,13 +1,38 @@
-v1.0.4 (unreleased)
-===================
+v1.0.4 (15-Apr-2019)
+====================
 
-- Move code for analyzing IF response into a new module (``qmix.exp.if_response``)
-- Improved progress messages for ``qmix.harmonic_balance.harmonic_balance``
-- Add ability to plot response function (``qmix.respfn.RespFn``)
-- Always use default parameters from ``qmix.exp.parameters``
-- Minor changes to documentation
-- Fix error in ``qmix.harmonic_balance.harmonic_balance`` (involves when VT is checked)
-- Add validation notebook. Comparing against Kittara's thesis.
+Optimization
+------------
+
+- Optimize ``qmix.qtcurrent`` using Numba and JIT. 4 tone simulations are now 1.5 times faster!
+- Add basic timing scripts for ``qmix.qtcurrent``. See ``speed/`` directory.
+
+Changes
+-------
+
+- Move the code that is used for analyzing the IF response into a new module: ``qmix.exp.if_response``.
+
+New Features
+------------
+
+- Add ability to force embedding impedance in ``qmix.exp.exp_data.RawData``. The embedding voltage will then be calculated using this value.
+
+Testing
+-------
+
+- Improve test coverage for ``qmix.circuit``, ``qmix.respfn``, and ``qmix.exp.exp_data``.
+- Add tests for new module (``qmix.exp.if_response``).
+- Add notebook to recreate plots from Kittara's thesis. (For the purpose of validation.)
+
+Minor Changes
+-------------
+
+- Improved progress messages from ``qmix.harmonic_balance.harmonic_balance``.
+- Add ability to plot response function (``qmix.respfn.RespFn``).
+- Always use default parameters from ``qmix.exp.parameters`` (i.e., reduce the number of magic numbers).
+- Add ability to call ``qmix.respfn.RespFn`` by adding ``__call__`` method. This will return the interpolated response function (a complex value).
+- Fix error in ``qmix.harmonic_balance.harmonic_balance`` (when Thevenin voltage is checked).
+- Other minor changes to documentation.
 
 
 
