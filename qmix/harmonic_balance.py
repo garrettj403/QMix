@@ -37,7 +37,7 @@ ROUND_VPH = 4
 # method to find the solution to the highly non-linear equation.
 
 
-def harmonic_balance(cct, resp, num_b=15, max_it=10, stop_rerror=0.001, vj_initial=None, damp_coeff=1., mode="o", verbose=True):
+def harmonic_balance(cct, resp, num_b=15, max_it=10, stop_rerror=0.001, vj_initial=None, damp_coeff=1., mode="o", verbose=True, zj_guess=0.67,):
     """Perform harmonic balance.
 
     Determine the harmonic balance of the junction + embedding circuit system. 
@@ -93,7 +93,9 @@ def harmonic_balance(cct, resp, num_b=15, max_it=10, stop_rerror=0.001, vj_initi
 
     if vj_initial is None:
 
-        vj_initial = vt[:, :, None] * np.ones(npts, dtype=complex) / 2
+        vj_initial = vt[:, :, None] * \
+                     zj_guess / (zj_guess + zt[:, :, None]) * \
+                     np.ones(npts, dtype=complex)
 
     # Prepare input data ----------------------------------------------------
 
