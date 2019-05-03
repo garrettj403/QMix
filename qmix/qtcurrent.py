@@ -105,6 +105,9 @@ def qtcurrent(vj, cct, resp, vph_list, num_b=15, verbose=True, resp_matrix=None)
 
     if resp_matrix is None:
         resp_matrix = interpolate_respfn(cct, resp, num_b)
+    else:
+        assert resp_matrix.ndim == num_f + 1
+        assert resp_matrix.shape[-1] == npts
 
     # Call the correct function depending on the number of tones---------------
 
