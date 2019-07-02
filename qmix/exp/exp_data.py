@@ -835,7 +835,7 @@ class RawData(object):
         if verbose:
             print("")
 
-    def _recover_zemb(self, **kwargs):
+    def _recover_zemb(self):
         """Recover the embedding circuit (i.e., the Thevenin eqiv. circuit).
 
         The technique used here is the RF voltage match method described by 
@@ -845,9 +845,6 @@ class RawData(object):
 
             All currents and voltages are normalized to the gap voltage and 
             to the normal resistance, respectively. 
-
-        Args:
-            kwargs: Keyword arguments
             
         Keyword Args:
             fit_range (list): Fit interval for impedance recovery, normalized 
@@ -904,11 +901,11 @@ class RawData(object):
         idx_middle = np.abs(exp_voltage - (1 - vph / 2.)).argmin()
 
         # Calculate alpha for every bias voltage
-        alpha = _find_alpha(self.dciv, exp_voltage, exp_current, vph, **kwargs)
+        alpha = _find_alpha(self.dciv, exp_voltage, exp_current, vph, **self.kwargs)
         ac_voltage = alpha * vph
 
         # Calculate AC junction impedance
-        ac_current = _find_ac_current(resp, exp_voltage, vph, alpha, **kwargs)
+        ac_current = _find_ac_current(resp, exp_voltage, vph, alpha, **self.kwargs)
         ac_impedance = ac_voltage / ac_current
         zw = ac_impedance[idx_middle]
 
@@ -2154,6 +2151,17 @@ def plot_overall_results(dciv, data_list, fig_folder, vmax_plot=4.,
 # IMPEDANCE RECOVERY HELPER FUNCTIONS (PRIVATE) ------------------------------
 
 def _error_function(vwi, zwi, zs):
+    """Calculate error function.
+
+    Equation 26 from:
+
+        S. Withington, K. G. Isaak, S. Kovtonyuk, R. Panhuyzen, and T. M. 
+        Klapwijk, “Direct detection at submillimetre wavelengths using 
+        superconducting tunnel junctions,” Infrared Phys. Technol., vol. 36, 
+        no. 7, pp. 1059–1075, Dec. 1995.
+
+    """
+
     err1 = np.sum(np.abs(vwi)**2)
     err2 = np.sum(np.abs(vwi * zwi / (zs + zwi)))
     err3 = np.sum(np.abs(zwi / (zs + zwi))**2)
@@ -2162,42 +2170,66 @@ def _error_function(vwi, zwi, zs):
 
 
 def _find_source_voltage(vwi, zwi, zs):
+    """Calculate source voltage (i.e., embedding voltage).
+
+    Equation 27 from:
+
+        S. Withington, K. G. Isaak, S. Kovtonyuk, R. Panhuyzen, and T. M. 
+        Klapwijk, “Direct detection at submillimetre wavelengths using 
+        superconducting tunnel junctions,” Infrared Phys. Technol., vol. 36, 
+        no. 7, pp. 1059–1075, Dec. 1995.
+
+    """
+
     v1 = np.sum(np.abs(vwi * zwi / (zs + zwi)))
     v2 = np.sum(np.abs(zwi / (zs + zwi))**2)
 
     return v1 / v2
 
 
-def _find_ac_current(resp, vb, vph, alpha, num_b=15):
+def _find_ac_current(resp, vb, vph, alpha, num_b=20, **kw):
+    """Calculate AC tunneling current. 
+
+    This is the large-signal equation from Tucker theory.
+
+    """
+
     ac_current = np.zeros_like(vb, dtype=complex)
-
     for n in range(-num_b, num_b + 1):
-        idc_tmp = resp.idc(vb + n * vph)
-        ikk_tmp = resp.ikk(vb + n * vph)
 
+        # Bessel functions
         j_n = special.jv(n, alpha)
         j_minus = special.jv(n - 1, alpha)
         j_plus = special.jv(n + 1, alpha)
 
-        ac_current += j_n * (j_minus + j_plus) * idc_tmp
-        ac_current += j_n * (j_minus - j_plus) * ikk_tmp * 1j
+        ac_current +=      j_n * (j_minus + j_plus) * resp.idc(vb + n * vph)
+        ac_current += 1j * j_n * (j_minus - j_plus) * resp.ikk(vb + n * vph)
 
     return ac_current
 
 
-def _find_pumped_iv_curve(resp, vb, vph, alpha, num_b=15):
+def _find_pumped_iv_curve(resp, vb, vph, alpha, num_b=20, **kw):
+    """Calculate DC tunneling current (from Tucker theory).
+
+    """
+
     dc_current = np.zeros_like(vb, dtype=float)
     for n in range(-num_b, num_b + 1):
+
         dc_current += special.jv(n, alpha)**2 * resp.idc(vb + n * vph)
 
     return dc_current
 
 
-def _find_alpha(dciv, vdc_exp, idc_exp, vph, alpha_max=1.5, num_b=20):
+def _find_alpha(dciv, vdc_exp, idc_exp, vph, alpha_max=1.5, num_b=20, **kw):
+    """Find the drive level (alpha) at each bias voltage.
+
+    """
+
     resp = dciv.resp
 
-    # Get alpha guess from Bisection Method
-    idc_tmp = _find_pumped_iv_curve(resp, vdc_exp, vph, alpha_max, num_b=num_b)
+    # Guess initial alpha value using the Bisection Method
+    idc_tmp = _find_pumped_iv_curve(resp, vdc_exp, vph, alpha_max, num_b=num_b, **kw)
     idciv = resp.idc(vdc_exp)
     alpha = (idc_exp - idciv) / (idc_tmp - idciv) * alpha_max
     alpha[alpha < 0] = 0
@@ -2205,7 +2237,7 @@ def _find_alpha(dciv, vdc_exp, idc_exp, vph, alpha_max=1.5, num_b=20):
     # Refine alpha using an iterative technique
     alpha_step = alpha_max / 4.
     for it in range(15):
-        idc_tmp = _find_pumped_iv_curve(resp, vdc_exp, vph, alpha, num_b=40)
+        idc_tmp = _find_pumped_iv_curve(resp, vdc_exp, vph, alpha, num_b=num_b, **kw)
         idc_err_tmp = idc_tmp - idc_exp
 
         alpha[idc_err_tmp > 0] -= alpha_step
