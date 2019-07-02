@@ -24,6 +24,7 @@ from qmix.exp.clean_data import remove_doubles_matrix, remove_nans_matrix
 from qmix.exp.parameters import params as PARAMS
 from qmix.mathfn import slope_span_n
 from qmix.mathfn.filters import gauss_conv
+from qmix.misc.terminal import cprint
 
 _vfmt_dict = {'uV': 1e-6, 'mV': 1e-3, 'V': 1}  # Voltage units
 
@@ -321,12 +322,13 @@ def _find_if_noise(if_data, dc, **kw):
             mask_tmp = (vrange[0] < x * dc.vgap) & (x * dc.vgap < vrange[1])
             mask = mask | mask_tmp
 
+    if np.sum(mask) < 5:  # pragma: no cover
+        cprint('\t\tShot noise fit failed.', 'RED')
+        cprint('\t\tSelecting all voltages above 2*Vgap.', 'RED')
+        mask = x > 2.
+
     # Combine criteria
     x_red, y_red = x[mask], y[mask]
-    #
-    if np.alen(x_red) < 5:
-        x_red = x[x > 2.]
-        y_red = y[x > 2.]
 
     # Find slope of shot noise
     slope, intercept, _, _, _ = stats.linregress(x_red, y_red)
@@ -409,8 +411,7 @@ def _load_if(ifdata, dc, **kwargs):
         ifdata = np.genfromtxt(ifdata, delimiter=delim, usecols=usecols,
                                skip_header=skip_header)
     elif isinstance(ifdata, np.ndarray):  # Numpy array
-        assert isinstance(ifdata, np.ndarray), \
-            'I-V data should be a Numpy array.'
+        ifdata = ifdata.copy()
         assert ifdata.ndim == 2, 'I-V data should be 2-dimensional.'
         assert ifdata.shape[1] == 2, 'I-V data should have 2 columns.'
     else:
