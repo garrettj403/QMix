@@ -71,17 +71,12 @@ values.
         - ``v_multiplier = 1.`` : Multiply the imported I-V voltage by this 
           number. Used to correct for errors in the I-V readout.
     - Filtering I-V data:
-        - **Note:** When I-V data is loaded, it is temporarily normalized
-          using ``vgap_guess`` and ``igap_guess``. The DC I-V curve is then 
+        - **Note:** When I-V data is loaded, it is normalized,
           rotated 45 degrees, filtered using a Savitzky-Golay filter, and 
           then rotated back. (The rotation allows for good filtering 
           without smearing the transition.) The parameters below control this
           process.
         - ``filter_data = True`` : Filter the I-V data?
-        - ``vgap_guess = 2.7e-3`` : Normalize the bias voltage to this value 
-          before rotating.
-        - ``igap_guess = 2e-4`` : Normalize the DC tunneling current to this 
-          value before rotating.
         - ``filter_theta = 0.785`` : Angle by which to rotate the DC I-V curve
           before filtering (in radians).
         - ``filter_nwind = 21`` : Width of the Savitzky-Golay filter.

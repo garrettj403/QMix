@@ -404,15 +404,15 @@ def _filter_iv_data(volt_v, curr_a, **kw):
     filter_npoly = kw.get('filter_npoly', PARAMS['filter_npoly'])
     filter_theta = kw.get('filter_theta', PARAMS['filter_theta'])
     filter_data = kw.get('filter_data', PARAMS['filter_data'])
-    vgap_guess = kw.get('vgap_guess', PARAMS['vgap_guess'])
-    igap_guess = kw.get('igap_guess', PARAMS['igap_guess'])
     npts = kw.get('npts', PARAMS['npts'])
 
     if not filter_data:  # pragma: no cover
         return volt_v, curr_a
 
     # Normalize (temporary)
-    vnorm, inorm = volt_v / vgap_guess, curr_a / igap_guess
+    vmax = volt_v.max()
+    imax = curr_a.max()
+    vnorm, inorm = volt_v / vmax, curr_a / imax
 
     # Rotate I-V curve
     x, y = _rotate(vnorm, inorm, -filter_theta)
@@ -433,7 +433,7 @@ def _filter_iv_data(volt_v, curr_a, **kw):
     x = xtmp
 
     # Go back to units [V] and [A]
-    volt_v, curr_a = x * vgap_guess, y * igap_guess
+    volt_v, curr_a = x * vmax, y * imax
 
     return volt_v, curr_a
 
