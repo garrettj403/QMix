@@ -129,12 +129,12 @@ values.
           measure the IF noise contribution and convert the power units into
           units of temperature [K]. This is done by fitting a linear trend
           to the shot noise present in the DC IF data.
-        - ``vshot = None`` : Range of voltages over which to fit a linear 
-          trend line to the shot noise. This is a list of lists, in units [V].
-          For example, to fit the shot noise slope from 4-5 mV and from 
-          6-7 mV, you would pass ``vshot=((4e-3, 5e-3), (6e-3, 7e-3))``. You
-          can break it up this way in case there are Josephson effects present
-          in the IF power data.
+        - ``vshot = None`` : Voltage range over which to fit the shot noise 
+          slope, in units [V]. Can be a list of lists to define multiple 
+          ranges. For example, to fit the shot noise slope from 4-5 mV and 
+          from 6-7 mV, you would pass ``vshot=((4e-3, 5e-3), (6e-3, 7e-3))``.
+          You can break it up this way in case there are Josephson effects 
+          present in the IF power data.
     - Analyzing pumped IF data (noise temperature analysis):
         - ``analyze_if = True`` : Analyze the IF data? This involves 
           calculating the noise temperature and gain.

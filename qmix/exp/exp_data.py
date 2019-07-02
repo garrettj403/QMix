@@ -152,7 +152,8 @@ class RawData0(object):
             resistance.
         vleak (float): The voltage at which to calculate the subgap leakage
             current.
-        vshot (list): Range of voltages for fitting shot noise slope.
+        vshot (list): Voltage range over which to fit shot noise slope, in 
+            units [V]. Can be a list of lists to define multiple ranges.
         comment (str): Comment to describe this instance.
         verbose (bool): Print to terminal.
         

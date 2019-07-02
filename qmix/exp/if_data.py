@@ -72,7 +72,8 @@ def dcif_data(ifdata, dc, **kwargs):
         ifdata_vmax (float): Maximum IF voltage to import.
         ifdata_npts (int): Number of points for interpolation.
         ifdata_sigma (float): Std. dev. of Gaussian used for filtering.
-        vshot (list): Range of voltages for fitting shot noise slope.
+        vshot (list): Voltage range over which to fit shot noise slope, in 
+            units [V]. Can be a list of lists to define multiple ranges.
         verbose (bool): Print to terminal.
 
     Returns:
@@ -264,7 +265,8 @@ def _find_if_noise(if_data, dc, **kw):
         dc: DC I-V metadata
 
     Keyword Args:
-        vshot (list): Range of voltage for fitting shot noise.
+        vshot (list): Voltage range over which to fit shot noise slope, in 
+            units [V]. Can be a list of lists to define multiple ranges.
         
     Returns: 
         tuple: IF noise, correction factor, linear fit
@@ -308,6 +310,11 @@ def _find_if_noise(if_data, dc, **kw):
         mask_tmp[:-1] = mask[:-1] & mask[1:]
         mask = mask & mask_tmp
     else:
+        # Make vshot a list of lists
+        assert isinstance(vshot, list)
+        if not isinstance(vshot[0], list):
+            vshot = (vshot,)
+        # Build mask    
         mask = np.zeros_like(x, dtype=bool)
         for vrange in vshot:
             mask_tmp = (vrange[0] < x * dc.vgap) & (x * dc.vgap < vrange[1])
