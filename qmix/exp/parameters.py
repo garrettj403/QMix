@@ -100,10 +100,12 @@ values.
     - Analyzing pumped I-V data:
         - ``analyze_iv = True`` : Analyze the pumped I-V data? This involves 
           a procedure to recover the embedding circuit.
-        - ``cut_low = 0.25`` : Fit interval for impedance recovery, lower end,
-          normalized to the photon voltage.
-        - ``cut_high = 0.2`` : Fit interval for impedance recovery, upper end,
-          normalized to the photon voltage.
+        - ``fit_range = (0.25, 0.8)`` : Fit interval for impedance recovery, 
+          normalized to the width of the first photon step. For example, with
+          ``(0.25, 0.8)``, the impedance recovery procedure will not 
+          consider the first 25% of the first step or the last 20%. It will 
+          only use the bias voltages between 25% and 80%. This is used to
+          select only the middle of the step.
         - ``remb_range = (0, 1)`` : Range of embedding resistances to test, 
           normalized to the normal resistance.
         - ``xemb_range = (-1, 1)`` : Range of embedding reactances to test, 
@@ -228,8 +230,7 @@ params = dict(
               # Analyzing DC IF data
               vshot =          None,
               # Analyzing pumped I-V data (i.e., impedance recovery)
-              cut_low =        0.25,
-              cut_high =       0.2,
+              fit_range =      (0.25, 0.8),
               remb_range =     (0, 1),
               xemb_range =     (-1, 1),
               zemb =           None,

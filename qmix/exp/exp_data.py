@@ -850,10 +850,12 @@ class RawData(object):
             kwargs: Keyword arguments
             
         Keyword Args:
+            fit_range (list): Fit interval for impedance recovery, normalized 
+                to the width of the first photon step.
             cut_low (float): only fit over first photon step,
-                start at Vgap - vph + vph * cut_low
+                start at Vgap - vph + vph * cut_low (DEPRECATED)
             cut_high: only fit over first photon step,
-                finish at Vgap - vph * cut_high
+                finish at Vgap - vph * cut_high (DEPRECATED)
             remb_range (tuple): range of embedding resistances to check,
                 normalized to the normal-state resistance
             xemb_range (tuple): range of embedding reactances to check,
@@ -863,12 +865,24 @@ class RawData(object):
 
         """
 
-        fit_low  = self.kwargs.get('cut_low',  PARAMS['cut_low'])
-        fit_high = self.kwargs.get('cut_high', PARAMS['cut_high'])
+        # Fit interval for impedance recovery
+        fit_range  = self.kwargs.get('fit_range', None)
+        if fit_range is not None:
+            fit_low = fit_range[0]
+            fit_high = fit_range[1]
+        else:
+            fit_low  = self.kwargs.get('cut_low', None)
+            fit_high = self.kwargs.get('cut_high', None)
+            if fit_low is None or fit_high is None:
+                fit_low = PARAMS['fit_range'][0]
+                fit_high = PARAMS['fit_range'][1]
+        fit_high = 1 - fit_high
 
+        # Range of impedance values to test
         remb_range = self.kwargs.get('remb_range', PARAMS['remb_range'])
         xemb_range = self.kwargs.get('xemb_range', PARAMS['xemb_range'])
 
+        # Force certain value
         zemb = self.kwargs.get('zemb', PARAMS['zemb'])
 
         cprint(" -> Impedance recovery:")
@@ -1622,9 +1636,18 @@ class RawData(object):
         vph = self.freq * sc.giga / self.dciv.fgap
         resp = self.dciv.resp_smear
 
-        # Fit range
-        fit_low = self.kwargs.get('cut_low', PARAMS['cut_low'])
-        fit_high = self.kwargs.get('cut_high', PARAMS['cut_high'])
+        # Fit interval for impedance recovery
+        fit_range  = self.kwargs.get('fit_range', None)
+        if fit_range is not None:
+            fit_low = fit_range[0]
+            fit_high = fit_range[1]
+        else:
+            fit_low  = self.kwargs.get('cut_low', None)
+            fit_high = self.kwargs.get('cut_high', None)
+            if fit_low is None or fit_high is None:
+                fit_low = PARAMS['fit_range'][0]
+                fit_high = PARAMS['fit_range'][1]
+        fit_high = 1 - fit_high
         v_min = (1 - vph + vph * fit_low) * self.vgap * 1e3
         v_max = (1 - vph * fit_high) * self.vgap * 1e3
 
