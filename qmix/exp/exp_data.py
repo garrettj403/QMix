@@ -143,7 +143,8 @@ class RawData0(object):
             filtering. Given in radians.
         filter_nwind (int): Window size for Savitsky-Golay filter.
         filter_npoly (int): Order of Savitsky-Golay filter.
-        ifdata_sigma (float): Std. dev. of Gaussian used for filtering.
+        ifdata_sigma (float): Standard deviation of Gaussian used for 
+            filtering, in units [V]
         area (float): Area of the junction in um^2.
         vgap_threshold (float): The current to measure the gap voltage at.
         rn_vmin (float): Lower voltage range to determine the normal resistance
@@ -674,7 +675,8 @@ class RawData(object):
             filtering. Given in radians.
         filter_nwind (int): Window size for Savitsky-Golay filter.
         filter_npoly (int): Order of Savitsky-Golay filter.
-        ifdata_sigma (float): Std. dev. of Gaussian used for filtering.
+        ifdata_sigma (float): Standard deviation of Gaussian used for 
+            filtering, in units [V]
         analyze_iv (bool): Analyze I-V data?
         analyze_if (bool): Analyze IF data?
         area (float): Area of the junction in um^2.

@@ -70,7 +70,8 @@ def dcif_data(ifdata, dc, **kwargs):
             system, in units [ohms].
         v_multiplier (float): Multiply the imported voltage by this value.
         ifdata_npts (int): Number of points for interpolation.
-        ifdata_sigma (float): Std. dev. of Gaussian used for filtering.
+        ifdata_sigma (float): Standard deviation of Gaussian used for 
+            filtering, in units [V]
         vshot (list): Voltage range over which to fit shot noise slope, in 
             units [V]. Can be a list of lists to define multiple ranges.
         verbose (bool): Print to terminal.
@@ -117,7 +118,8 @@ def if_data(if_hot, if_cold, dc, **kwargs):
         v_multiplier (float): Multiply the imported voltage by this value.
         ifdata_max (float): Maximum IF voltage to import.
         ifdata_npts (int): Number of points for interpolation.
-        ifdata_sigma (float): Std. dev. of Gaussian used for filtering.
+        ifdata_sigma (float): Standard deviation of Gaussian used for 
+            filtering, in units [V]
         t_cold (float): Temperature of cold blackbody load.
         t_hot (float): Temperature of hot blackbody load.
         vbest (float): Bias voltage for best results (best temperature and
@@ -380,7 +382,8 @@ def _load_if(ifdata, dc, **kwargs):
         delimiter (str): delimiter used in data files
         v_fmt (str): units for voltage ('V', 'mV', 'uV')
         usecols (tuple): columns for voltage and current (e.g., ``(0,1)``)
-        ifdata_sigma (float): convolve IF data by Gaussian with this std dev
+        ifdata_sigma (float): Standard deviation of Gaussian used for 
+            filtering, in units [V]
         ifdata_npts (float): evenly interpolate data to have this many data 
             points
         rseries (float): series resistance of measurement system
@@ -452,6 +455,7 @@ def _load_if(ifdata, dc, **kwargs):
 
     # Smooth IF data
     if sigma is not None:
-        ifdata[:, 1] = gauss_conv(ifdata[:, 1], sigma)
+        step = (ifdata[1, 0] - ifdata[0, 0]) * dc.vgap
+        ifdata[:, 1] = gauss_conv(ifdata[:, 1], sigma / step)
 
     return ifdata

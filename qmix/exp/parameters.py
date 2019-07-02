@@ -117,7 +117,7 @@ values.
     - Filtering IF data:
         - ``ifdata_sigma = 5`` : Smooth the measured IF power data by 
           convolving it with a Gaussian distribution. This is the standard 
-          deviation, in number of data points.
+          deviation, in units [V].
     - Analyzing the DC IF data:
         - **Note:** DC IF data (IF power with no LO injection) is used to 
           measure the IF noise contribution and convert the power units into
@@ -203,7 +203,7 @@ params = dict(
               filter_nwind =   21,
               filter_npoly =   3,
               # Filtering IF data
-              ifdata_sigma =   5,
+              ifdata_sigma =   1e-5,
               # Analyzing data
               analyze_iv =     True,
               analyze_if =     True,
