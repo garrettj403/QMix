@@ -137,15 +137,6 @@ def dciv_curve(ivdata, **kwargs):
     volt_v *= v_multiplier
     curr_a *= i_multiplier
 
-    # Filter I-V data
-    volt_v, curr_a = _filter_iv_data(volt_v, curr_a, **kwargs)
-
-    if debug:  # pragma: no cover
-        plt.figure()
-        plt.plot(volt_v, curr_a)
-        plt.title('After filtering')
-        plt.show()
-
     # Correct offsets in I-V data
     volt_v, curr_a, offset = _correct_offset(volt_v, curr_a, **kwargs)
 
@@ -154,6 +145,15 @@ def dciv_curve(ivdata, **kwargs):
         plt.plot(volt_v, curr_a)
         plt.grid()
         plt.title('After correcting for the offset')
+        plt.show()
+        
+    # Filter I-V data
+    volt_v, curr_a = _filter_iv_data(volt_v, curr_a, **kwargs)
+
+    if debug:  # pragma: no cover
+        plt.figure()
+        plt.plot(volt_v, curr_a)
+        plt.title('After filtering')
         plt.show()
 
     # Save uncorrected data
@@ -370,6 +370,12 @@ def _filter_iv_data(volt_v, curr_a, **kw):
     """Filter I-V data.
 
     Rotate, use Savitzky-Golay (SG) filter, then rotate back.
+
+    This is similar to the technique described in:
+
+        P. K. Grimes, S. Withington, G. Yassin, and P. Kittara, “Quantum 
+        multitone simulations of saturation in SIS mixers,” in Millimeter and
+        Submillimeter Detectors for Astronomy II, 2004, vol. 5498, p. 158-167.
 
     Args:
         volt_v (ndarray): voltage in units V

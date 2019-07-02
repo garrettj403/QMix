@@ -408,17 +408,19 @@ def _load_if(ifdata, dc, **kwargs):
     else:
         raise ValueError("Input data type not recognized.")
 
+    # Units for voltage
+    ifdata[:, 0] *= _vfmt_dict[v_fmt]
+
     # Clean
     ifdata = remove_nans_matrix(ifdata)
-    ifdata[:, 0] *= _vfmt_dict[v_fmt]
     ifdata = ifdata[np.argsort(ifdata[:, 0])]
     ifdata = remove_doubles_matrix(ifdata)
 
-    # Correct for offset
-    ifdata[:, 0] = ifdata[:, 0] - dc.offset[0]
-
     # Correct errors in experimental system
     ifdata[:, 0] *= v_multiplier
+    
+    # Correct for offset
+    ifdata[:, 0] = ifdata[:, 0] - dc.offset[0]
 
     # Correct for series resistance
     if rseries is not None:
@@ -438,7 +440,7 @@ def _load_if(ifdata, dc, **kwargs):
     v, p = ifdata[:, 0], ifdata[:, 1]
     assert v.max() > vmax, \
         'vmax ({0}) outside data range ({1})'.format(vmax, v.max())
-    assert v.min() < 0., '0 outside data range'
+    assert v.min() < 0., 'V=0 not included in IF data'
     v_out = np.linspace(0, vmax, npts)
     p_out = np.interp(v_out, v, p)
     ifdata = np.vstack((v_out, p_out)).T
