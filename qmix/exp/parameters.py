@@ -112,9 +112,6 @@ values.
         - ``num_b = 20`` : Maximum number of Bessel functions to include when 
           calculating the tunneling currents.
     - Importing IF data:
-        - ``ifdata_vmax = 2.25`` : Maximum IF voltage to import (normalized to
-          vgap). Used in case the IF data is saturated beyond a certain bias 
-          voltage.
         - ``ifdata_npts = 3000`` : Number of points to use when interpolating 
           IF data.
     - Filtering IF data:
@@ -191,7 +188,7 @@ params = dict(
               # Correcting voltage/current offsets
               ioffset =        None,
               voffset =        None,
-              # Find voltage offset
+              # Find voltage offset automatically
               voffset_range =  (-3e-4, 3e-4),
               voffset_sigma =  1e-5,
               # Correcting experimental I-V data
@@ -199,12 +196,9 @@ params = dict(
               i_multiplier =   1.,
               v_multiplier =   1.,
               # Importing IF data
-              ifdata_vmax =    2.25,
               ifdata_npts =    3000,
               # Filtering I-V data
               filter_data =    True,
-              vgap_guess =     2.7e-3,
-              igap_guess =     2e-4,
               filter_theta =   0.785,
               filter_nwind =   21,
               filter_npoly =   3,
@@ -213,7 +207,7 @@ params = dict(
               # Analyzing data
               analyze_iv =     True,
               analyze_if =     True,
-              analyze =        None,  # DEPRECATED
+              analyze =        True,  # DEPRECATED
               # Junction properties
               area =           1.5,
               freq =           None,

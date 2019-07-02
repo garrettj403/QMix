@@ -69,7 +69,6 @@ def dcif_data(ifdata, dc, **kwargs):
         rseries (float): Series resistance in experimental measurement 
             system, in units [ohms].
         v_multiplier (float): Multiply the imported voltage by this value.
-        ifdata_vmax (float): Maximum IF voltage to import.
         ifdata_npts (int): Number of points for interpolation.
         ifdata_sigma (float): Std. dev. of Gaussian used for filtering.
         vshot (list): Voltage range over which to fit shot noise slope, in 
@@ -381,7 +380,6 @@ def _load_if(ifdata, dc, **kwargs):
         delimiter (str): delimiter used in data files
         v_fmt (str): units for voltage ('V', 'mV', 'uV')
         usecols (tuple): columns for voltage and current (e.g., ``(0,1)``)
-        ifdata_vmax (float): maximum IF voltage to import
         ifdata_sigma (float): convolve IF data by Gaussian with this std dev
         ifdata_npts (float): evenly interpolate data to have this many data 
             points
@@ -396,7 +394,7 @@ def _load_if(ifdata, dc, **kwargs):
     v_multiplier = kwargs.get('v_multiplier', PARAMS['v_multiplier'])
     skip_header = kwargs.get('skip_header', PARAMS['skip_header'])
     sigma = kwargs.get('ifdata_sigma', PARAMS['ifdata_sigma'])
-    vmax = kwargs.get('ifdata_vmax', PARAMS['ifdata_vmax'])
+    vmax = kwargs.get('vmax', PARAMS['vmax'])
     npts = kwargs.get('ifdata_npts', PARAMS['ifdata_npts'])
     delim = kwargs.get('delimiter', PARAMS['delimiter'])
     usecols = kwargs.get('usecols', PARAMS['usecols'])
@@ -445,10 +443,10 @@ def _load_if(ifdata, dc, **kwargs):
 
     # Set to common voltage (so that data can be stacked)
     v, p = ifdata[:, 0], ifdata[:, 1]
-    assert v.max() > vmax, \
-        'vmax ({0}) outside data range ({1})'.format(vmax, v.max())
+    assert v.max() > vmax / dc.vgap, \
+        'vmax ({0}) outside data range ({1})'.format(vmax / dc.vgap, v.max())
     assert v.min() < 0., 'V=0 not included in IF data'
-    v_out = np.linspace(0, vmax, npts)
+    v_out = np.linspace(0, vmax / dc.vgap, npts)
     p_out = np.interp(v_out, v, p)
     ifdata = np.vstack((v_out, p_out)).T
 
