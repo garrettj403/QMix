@@ -387,8 +387,6 @@ def _filter_iv_data(volt_v, curr_a, **kw):
 
     Keyword Args:
         filter_data: filter data
-        vgap_guess: guess of gap voltage (used to temporarily normalize)
-        igap_guess: guess of gap current (used to temporarily normalize)
         filter_nwind: SG filter window size
         filter_npoly: SG filter order
         filter_theta: angle to rotate data by during filtering
@@ -418,7 +416,7 @@ def _filter_iv_data(volt_v, curr_a, **kw):
     x, y = _rotate(vnorm, inorm, -filter_theta)
 
     # Resample rotated curve
-    x_resampled = np.linspace(x.min(), x.max(), np.alen(x))
+    x_resampled = np.linspace(x.min(), x.max(), npts)
     y_resampled = np.interp(x_resampled, x, y)
 
     # Filter using Savitsky-Golay filter

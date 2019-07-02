@@ -70,3 +70,9 @@ def test_importing_exp_data(directory='tests/exp-data/'):
         dciv = qe.RawData0(data)
     with pytest.raises(ValueError):
         pump = qe.RawData(data, dciv)
+
+
+# Main -----------------------------------------------------------------------
+
+if __name__ == "__main__":
+    test_importing_exp_data()
