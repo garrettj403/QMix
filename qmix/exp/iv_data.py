@@ -27,6 +27,7 @@ from qmix.exp.clean_data import remove_doubles_xy, remove_nans_xy, sort_xy
 from qmix.exp.parameters import params as PARAMS
 from qmix.mathfn.filters import gauss_conv
 from qmix.mathfn.misc import slope
+from qmix.misc.terminal import cprint
 
 filterwarnings(action="ignore", module="scipy", message="^internal gelsd")
 
@@ -179,6 +180,11 @@ def dciv_curve(ivdata, **kwargs):
     vgap = _find_gap_voltage(volt_v, curr_a, **kwargs)
     fgap = sc.e * vgap / sc.h
     igap = vgap / rn
+
+    # Warnings
+    if rn < 1:
+        cprint('\nWarning: Normal resistance is very low...', 'RED')
+        cprint('         Are you sure you have the right units?\n', 'RED')
 
     # Normalize I-V curve
     voltage = volt_v / vgap
