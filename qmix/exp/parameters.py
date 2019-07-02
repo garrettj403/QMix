@@ -50,14 +50,15 @@ values.
           ``voffset``, respectively. Otherwise, ``RawData0`` will attempt to
           find the offset on its own. This is done by taking the derivative
           of the DC I-V curve, and then finding the maximum derivative value 
-          between ``-voffset_range`` and ``+voffset_range``.
+          between ``voffset_range[0]`` and ``voffset_range[1]``.
         - ``ioffset = None`` : Offset of the DC tunneling current data in 
           units [A].
         - ``voffset = None`` : Offset of the DC bias voltage data in units 
           [V].
-        - ``voffset_range = 3e-4`` : Voltage range over which to look for the 
-          voltage offset in units [V]. The ``RawData0`` class will look from 
-          ``-voffset_range`` to ``+voffset_range`` for the voltage offset.
+        - ``voffset_range = (-3e-4, 3e-4)`` : Voltage range over which to look 
+          for the voltage offset in units [V]. The ``RawData0`` class will 
+          look from ``voffset_range[0]`` to ``+voffset_range[1]`` for the 
+          voltage offset.
         - ``voffset_sigma = 1e-5`` : When looking for the voltage offset, 
           smooth the derivative of the DC I-V curve by convolving data with a 
           Gaussian distribution with this standard deviation.
@@ -195,7 +196,8 @@ params = dict(
               # Correcting voltage/current offsets
               ioffset =        None,
               voffset =        None,
-              voffset_range =  3e-4,
+              # Find voltage offset
+              voffset_range =  (-3e-4, 3e-4),
               voffset_sigma =  1e-5,
               # Correcting experimental I-V data
               rseries =        None,
@@ -216,7 +218,7 @@ params = dict(
               # Analyzing data
               analyze_iv =     True,
               analyze_if =     True,
-              analyze =        None,  # (deprecated)
+              analyze =        None,  # DEPRECATED
               # Junction properties
               area =           1.5,
               freq =           None,

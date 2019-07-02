@@ -85,7 +85,7 @@ def dciv_curve(ivdata, **kwargs):
         debug (bool): Plot each step of the I-V processing procedure.
         voffset (float): Voltage offset, in units [V].
         ioffset (float): Current offset, in units [A].
-        voffset_range (float): Voltage range over which to search for offset,
+        voffset_range (list): Voltage range over which to search for offset,
             in units [V].
         voffset_sigma (float): Standard deviation of Gaussian filter when 
             searching for offset.
@@ -219,7 +219,7 @@ def iv_curve(ivdata, dc, **kwargs):
         debug (bool): Plot each step of the I-V processing procedure.
         voffset (float): Voltage offset, in units [V].
         ioffset (float): Current offset, in units [A].
-        voffset_range (float): Voltage range over which to search for offset,
+        voffset_range (list): Voltage range over which to search for offset,
             in units [V].
         voffset_sigma (float): Standard deviation of Gaussian filter when 
             searching for offset.
@@ -505,7 +505,8 @@ def _correct_offset(volt_v, curr_a, **kw):
     Keyword Args:
         voffset: voltage offset, in V
         ioffset: current offset, in A
-        voffset_range: voltage range to search for offset, in V
+        voffset_range (list): Voltage range over which to search for offset,
+            in units [V].
         voffset_sigma: std dev of Gaussian filter when searching for offset
 
     Returns:
