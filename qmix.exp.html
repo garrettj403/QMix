@@ -196,11 +196,6 @@
 .admonition > p:before {
     margin-right: 4px;  /* make room for the exclamation icon */
 }
-
-/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
-.math {
-    text-align: unset;
-}
 </style>
 <div class="section" id="qmix-exp-package">
 <h1>2.1.1. qmix.exp package<a class="headerlink" href="#qmix-exp-package" title="Permalink to this headline">¶</a></h1>
@@ -502,7 +497,8 @@ normalize while filtering. Given in units [A].</li>
 filtering. Given in radians.</li>
 <li><strong>filter_nwind</strong> (<em>int</em>) – Window size for Savitsky-Golay filter.</li>
 <li><strong>filter_npoly</strong> (<em>int</em>) – Order of Savitsky-Golay filter.</li>
-<li><strong>ifdata_sigma</strong> (<em>float</em>) – Std. dev. of Gaussian used for filtering.</li>
+<li><strong>ifdata_sigma</strong> (<em>float</em>) – Standard deviation of Gaussian used for
+filtering, in units [V]</li>
 <li><strong>analyze_iv</strong> (<em>bool</em>) – Analyze I-V data?</li>
 <li><strong>analyze_if</strong> (<em>bool</em>) – Analyze IF data?</li>
 <li><strong>area</strong> (<em>float</em>) – Area of the junction in um^2.</li>
@@ -912,7 +908,8 @@ normalize while filtering. Given in units [A].</li>
 filtering. Given in radians.</li>
 <li><strong>filter_nwind</strong> (<em>int</em>) – Window size for Savitsky-Golay filter.</li>
 <li><strong>filter_npoly</strong> (<em>int</em>) – Order of Savitsky-Golay filter.</li>
-<li><strong>ifdata_sigma</strong> (<em>float</em>) – Std. dev. of Gaussian used for filtering.</li>
+<li><strong>ifdata_sigma</strong> (<em>float</em>) – Standard deviation of Gaussian used for
+filtering, in units [V]</li>
 <li><strong>area</strong> (<em>float</em>) – Area of the junction in um^2.</li>
 <li><strong>vgap_threshold</strong> (<em>float</em>) – The current to measure the gap voltage at.</li>
 <li><strong>rn_vmin</strong> (<em>float</em>) – Lower voltage range to determine the normal resistance</li>
@@ -921,7 +918,8 @@ filtering. Given in radians.</li>
 resistance.</li>
 <li><strong>vleak</strong> (<em>float</em>) – The voltage at which to calculate the subgap leakage
 current.</li>
-<li><strong>vshot</strong> (<em>list</em>) – Range of voltages for fitting shot noise slope.</li>
+<li><strong>vshot</strong> (<em>list</em>) – Voltage range over which to fit shot noise slope, in
+units [V]. Can be a list of lists to define multiple ranges.</li>
 <li><strong>comment</strong> (<em>str</em>) – Comment to describe this instance.</li>
 <li><strong>verbose</strong> (<em>bool</em>) – Print to terminal.</li>
 </ul>
@@ -1248,10 +1246,11 @@ the CSV file can be set through additional keyword arguments
 <li><strong>rseries</strong> (<em>float</em>) – Series resistance in experimental measurement
 system, in units [ohms].</li>
 <li><strong>v_multiplier</strong> (<em>float</em>) – Multiply the imported voltage by this value.</li>
-<li><strong>ifdata_vmax</strong> (<em>float</em>) – Maximum IF voltage to import.</li>
 <li><strong>ifdata_npts</strong> (<em>int</em>) – Number of points for interpolation.</li>
-<li><strong>ifdata_sigma</strong> (<em>float</em>) – Std. dev. of Gaussian used for filtering.</li>
-<li><strong>vshot</strong> (<em>list</em>) – Range of voltages for fitting shot noise slope.</li>
+<li><strong>ifdata_sigma</strong> (<em>float</em>) – Standard deviation of Gaussian used for
+filtering, in units [V]</li>
+<li><strong>vshot</strong> (<em>list</em>) – Voltage range over which to fit shot noise slope, in
+units [V]. Can be a list of lists to define multiple ranges.</li>
 <li><strong>verbose</strong> (<em>bool</em>) – Print to terminal.</li>
 </ul>
 </td>
@@ -1302,7 +1301,8 @@ system, in units [ohms].</li>
 <li><strong>v_multiplier</strong> (<em>float</em>) – Multiply the imported voltage by this value.</li>
 <li><strong>ifdata_max</strong> (<em>float</em>) – Maximum IF voltage to import.</li>
 <li><strong>ifdata_npts</strong> (<em>int</em>) – Number of points for interpolation.</li>
-<li><strong>ifdata_sigma</strong> (<em>float</em>) – Std. dev. of Gaussian used for filtering.</li>
+<li><strong>ifdata_sigma</strong> (<em>float</em>) – Standard deviation of Gaussian used for
+filtering, in units [V]</li>
 <li><strong>t_cold</strong> (<em>float</em>) – Temperature of cold blackbody load.</li>
 <li><strong>t_hot</strong> (<em>float</em>) – Temperature of hot blackbody load.</li>
 <li><strong>vbest</strong> (<em>float</em>) – Bias voltage for best results (best temperature and
@@ -1477,7 +1477,7 @@ the CSV file can be set through additional keyword arguments.
 <li><strong>debug</strong> (<em>bool</em>) – Plot each step of the I-V processing procedure.</li>
 <li><strong>voffset</strong> (<em>float</em>) – Voltage offset, in units [V].</li>
 <li><strong>ioffset</strong> (<em>float</em>) – Current offset, in units [A].</li>
-<li><strong>voffset_range</strong> (<em>float</em>) – Voltage range over which to search for offset,
+<li><strong>voffset_range</strong> (<em>list</em>) – Voltage range over which to search for offset,
 in units [V].</li>
 <li><strong>voffset_sigma</strong> (<em>float</em>) – Standard deviation of Gaussian filter when
 searching for offset.</li>
@@ -1495,8 +1495,12 @@ filtering. Given in radians.</li>
 <li><strong>filter_nwind</strong> (<em>int</em>) – Window size for Savitsky-Golay filter.</li>
 <li><strong>filter_npoly</strong> (<em>int</em>) – Order of Savitsky-Golay filter.</li>
 <li><strong>vgap_threshold</strong> (<em>float</em>) – The current to measure the gap voltage at.</li>
-<li><strong>rn_vmin</strong> (<em>float</em>) – Lower voltage range to determine the normal resistance</li>
-<li><strong>rn_vmax</strong> (<em>float</em>) – Upper voltage range to determine the normal resistance</li>
+<li><strong>vrn</strong> (<em>list</em>) – Voltage range over which to calculate the normal
+resistance, in units [V]</li>
+<li><strong>rn_vmin</strong> (<em>float</em>) – Lower voltage range to determine the normal
+resistance, in units [V] (DEPRECATED)</li>
+<li><strong>rn_vmax</strong> (<em>float</em>) – Upper voltage range to determine the normal
+resistance, in units [V] (DEPRECATED)</li>
 <li><strong>vrsg</strong> (<em>float</em>) – The voltage at which to calculate the subgap
 resistance.</li>
 <li><strong>vleak</strong> (<em>float</em>) – The voltage at which to calculate the subgap leakage
@@ -1545,7 +1549,7 @@ previously by <code class="docutils literal notranslate"><span class="pre">dciv_
 <li><strong>debug</strong> (<em>bool</em>) – Plot each step of the I-V processing procedure.</li>
 <li><strong>voffset</strong> (<em>float</em>) – Voltage offset, in units [V].</li>
 <li><strong>ioffset</strong> (<em>float</em>) – Current offset, in units [A].</li>
-<li><strong>voffset_range</strong> (<em>float</em>) – Voltage range over which to search for offset,
+<li><strong>voffset_range</strong> (<em>list</em>) – Voltage range over which to search for offset,
 in units [V].</li>
 <li><strong>voffset_sigma</strong> (<em>float</em>) – Standard deviation of Gaussian filter when
 searching for offset.</li>
@@ -1648,14 +1652,15 @@ current and voltage offset, you can define <code class="docutils literal notrans
 <code class="docutils literal notranslate"><span class="pre">voffset</span></code>, respectively. Otherwise, <code class="docutils literal notranslate"><span class="pre">RawData0</span></code> will attempt to
 find the offset on its own. This is done by taking the derivative
 of the DC I-V curve, and then finding the maximum derivative value
-between <code class="docutils literal notranslate"><span class="pre">-voffset_range</span></code> and <code class="docutils literal notranslate"><span class="pre">+voffset_range</span></code>.</li>
+between <code class="docutils literal notranslate"><span class="pre">voffset_range[0]</span></code> and <code class="docutils literal notranslate"><span class="pre">voffset_range[1]</span></code>.</li>
 <li><code class="docutils literal notranslate"><span class="pre">ioffset</span> <span class="pre">=</span> <span class="pre">None</span></code> : Offset of the DC tunneling current data in
 units [A].</li>
 <li><code class="docutils literal notranslate"><span class="pre">voffset</span> <span class="pre">=</span> <span class="pre">None</span></code> : Offset of the DC bias voltage data in units
 [V].</li>
-<li><code class="docutils literal notranslate"><span class="pre">voffset_range</span> <span class="pre">=</span> <span class="pre">3e-4</span></code> : Voltage range over which to look for the
-voltage offset in units [V]. The <code class="docutils literal notranslate"><span class="pre">RawData0</span></code> class will look from
-<code class="docutils literal notranslate"><span class="pre">-voffset_range</span></code> to <code class="docutils literal notranslate"><span class="pre">+voffset_range</span></code> for the voltage offset.</li>
+<li><code class="docutils literal notranslate"><span class="pre">voffset_range</span> <span class="pre">=</span> <span class="pre">(-3e-4,</span> <span class="pre">3e-4)</span></code> : Voltage range over which to look
+for the voltage offset in units [V]. The <code class="docutils literal notranslate"><span class="pre">RawData0</span></code> class will
+look from <code class="docutils literal notranslate"><span class="pre">voffset_range[0]</span></code> to <code class="docutils literal notranslate"><span class="pre">+voffset_range[1]</span></code> for the
+voltage offset.</li>
 <li><code class="docutils literal notranslate"><span class="pre">voffset_sigma</span> <span class="pre">=</span> <span class="pre">1e-5</span></code> : When looking for the voltage offset,
 smooth the derivative of the DC I-V curve by convolving data with a
 Gaussian distribution with this standard deviation.</li>
@@ -1680,17 +1685,12 @@ number. Used to correct for errors in the I-V readout.</li>
 <li><dl class="first docutils">
 <dt>Filtering I-V data:</dt>
 <dd><ul class="first last">
-<li><strong>Note:</strong> When I-V data is loaded, it is temporarily normalized
-using <code class="docutils literal notranslate"><span class="pre">vgap_guess</span></code> and <code class="docutils literal notranslate"><span class="pre">igap_guess</span></code>. The DC I-V curve is then
+<li><strong>Note:</strong> When I-V data is loaded, it is normalized,
 rotated 45 degrees, filtered using a Savitzky-Golay filter, and
 then rotated back. (The rotation allows for good filtering
 without smearing the transition.) The parameters below control this
 process.</li>
 <li><code class="docutils literal notranslate"><span class="pre">filter_data</span> <span class="pre">=</span> <span class="pre">True</span></code> : Filter the I-V data?</li>
-<li><code class="docutils literal notranslate"><span class="pre">vgap_guess</span> <span class="pre">=</span> <span class="pre">2.7e-3</span></code> : Normalize the bias voltage to this value
-before rotating.</li>
-<li><code class="docutils literal notranslate"><span class="pre">igap_guess</span> <span class="pre">=</span> <span class="pre">2e-4</span></code> : Normalize the DC tunneling current to this
-value before rotating.</li>
 <li><code class="docutils literal notranslate"><span class="pre">filter_theta</span> <span class="pre">=</span> <span class="pre">0.785</span></code> : Angle by which to rotate the DC I-V curve
 before filtering (in radians).</li>
 <li><code class="docutils literal notranslate"><span class="pre">filter_nwind</span> <span class="pre">=</span> <span class="pre">21</span></code> : Width of the Savitzky-Golay filter.</li>
@@ -1706,10 +1706,8 @@ before filtering (in radians).</li>
 which to measure the gap voltage. (Note: the gap voltage is defined
 here as the voltage at which the DC I-V curve crosses this current
 value.)</li>
-<li><code class="docutils literal notranslate"><span class="pre">rn_vmin</span> <span class="pre">=</span> <span class="pre">3.5e-3</span></code> : Lower range over which to calculate normal
-resistance, in units [V].</li>
-<li><code class="docutils literal notranslate"><span class="pre">rn_vmax</span> <span class="pre">=</span> <span class="pre">4.5e-3</span></code> : Upper range over which to calculate normal
-resistance, in units [V].</li>
+<li><code class="docutils literal notranslate"><span class="pre">vrn</span> <span class="pre">=</span> <span class="pre">(3.5e-3,</span> <span class="pre">4.5e-3)</span></code> : Voltage range over which to calculate
+the normal-state resistance, in units [V].</li>
 <li><code class="docutils literal notranslate"><span class="pre">vrsg</span> <span class="pre">=</span> <span class="pre">2e-3</span></code> : Voltage at which to measure the subgap resistance,
 in units [V].</li>
 <li><code class="docutils literal notranslate"><span class="pre">vleak</span> <span class="pre">=</span> <span class="pre">2e-3</span></code> : Voltage at which to measure the leakage current,
@@ -1723,10 +1721,12 @@ in units [V].</li>
 <dd><ul class="first last">
 <li><code class="docutils literal notranslate"><span class="pre">analyze_iv</span> <span class="pre">=</span> <span class="pre">True</span></code> : Analyze the pumped I-V data? This involves
 a procedure to recover the embedding circuit.</li>
-<li><code class="docutils literal notranslate"><span class="pre">cut_low</span> <span class="pre">=</span> <span class="pre">0.25</span></code> : Fit interval for impedance recovery, lower end,
-normalized to the photon voltage.</li>
-<li><code class="docutils literal notranslate"><span class="pre">cut_high</span> <span class="pre">=</span> <span class="pre">0.2</span></code> : Fit interval for impedance recovery, upper end,
-normalized to the photon voltage.</li>
+<li><code class="docutils literal notranslate"><span class="pre">fit_range</span> <span class="pre">=</span> <span class="pre">(0.25,</span> <span class="pre">0.8)</span></code> : Fit interval for impedance recovery,
+normalized to the width of the first photon step. For example, with
+<code class="docutils literal notranslate"><span class="pre">(0.25,</span> <span class="pre">0.8)</span></code>, the impedance recovery procedure will not
+consider the first 25% of the first step or the last 20%. It will
+only use the bias voltages between 25% and 80%. This is used to
+select only the middle of the step.</li>
 <li><code class="docutils literal notranslate"><span class="pre">remb_range</span> <span class="pre">=</span> <span class="pre">(0,</span> <span class="pre">1)</span></code> : Range of embedding resistances to test,
 normalized to the normal resistance.</li>
 <li><code class="docutils literal notranslate"><span class="pre">xemb_range</span> <span class="pre">=</span> <span class="pre">(-1,</span> <span class="pre">1)</span></code> : Range of embedding reactances to test,
@@ -1744,9 +1744,6 @@ calculating the tunneling currents.</li>
 <li><dl class="first docutils">
 <dt>Importing IF data:</dt>
 <dd><ul class="first last">
-<li><code class="docutils literal notranslate"><span class="pre">ifdata_vmax</span> <span class="pre">=</span> <span class="pre">2.25</span></code> : Maximum IF voltage to import (normalized to
-vgap). Used in case the IF data is saturated beyond a certain bias
-voltage.</li>
 <li><code class="docutils literal notranslate"><span class="pre">ifdata_npts</span> <span class="pre">=</span> <span class="pre">3000</span></code> : Number of points to use when interpolating
 IF data.</li>
 </ul>
@@ -1756,9 +1753,9 @@ IF data.</li>
 <li><dl class="first docutils">
 <dt>Filtering IF data:</dt>
 <dd><ul class="first last">
-<li><code class="docutils literal notranslate"><span class="pre">ifdata_sigma</span> <span class="pre">=</span> <span class="pre">5</span></code> : Smooth the measured IF power data by
+<li><code class="docutils literal notranslate"><span class="pre">ifdata_sigma</span> <span class="pre">=</span> <span class="pre">1e-5</span></code> : Smooth the measured IF power data by
 convolving it with a Gaussian distribution. This is the standard
-deviation, in number of data points.</li>
+deviation, in units [V].</li>
 </ul>
 </dd>
 </dl>
@@ -1770,12 +1767,12 @@ deviation, in number of data points.</li>
 measure the IF noise contribution and convert the power units into
 units of temperature [K]. This is done by fitting a linear trend
 to the shot noise present in the DC IF data.</li>
-<li><code class="docutils literal notranslate"><span class="pre">vshot</span> <span class="pre">=</span> <span class="pre">None</span></code> : Range of voltages over which to fit a linear
-trend line to the shot noise. This is a list of lists, in units [V].
-For example, to fit the shot noise slope from 4-5 mV and from
-6-7 mV, you would pass <code class="docutils literal notranslate"><span class="pre">vshot=((4e-3,</span> <span class="pre">5e-3),</span> <span class="pre">(6e-3,</span> <span class="pre">7e-3))</span></code>. You
-can break it up this way in case there are Josephson effects present
-in the IF power data.</li>
+<li><code class="docutils literal notranslate"><span class="pre">vshot</span> <span class="pre">=</span> <span class="pre">None</span></code> : Voltage range over which to fit the shot noise
+slope, in units [V]. Can be a list of lists to define multiple
+ranges. For example, to fit the shot noise slope from 4-5 mV and
+from 6-7 mV, you would pass <code class="docutils literal notranslate"><span class="pre">vshot=((4e-3,</span> <span class="pre">5e-3),</span> <span class="pre">(6e-3,</span> <span class="pre">7e-3))</span></code>.
+You can break it up this way in case there are Josephson effects
+present in the IF power data.</li>
 </ul>
 </dd>
 </dl>
@@ -1795,6 +1792,22 @@ class will determine the best bias voltage automatically.</li>
 <li><code class="docutils literal notranslate"><span class="pre">best_pt</span> <span class="pre">=</span> <span class="pre">'Max</span> <span class="pre">Gain'</span></code> : Which bias voltage should we select as
 the best bias? Where the gain is the highest (<code class="docutils literal notranslate"><span class="pre">'Max</span> <span class="pre">Gain'</span></code>)? Or
 the lowest noise temperature (<code class="docutils literal notranslate"><span class="pre">'Min</span> <span class="pre">Tn'</span></code>)?</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>IF response:</dt>
+<dd><ul class="first last">
+<li><code class="docutils literal notranslate"><span class="pre">ifresp_delimiter</span> <span class="pre">=</span> <span class="pre">'\t'</span></code> : Delimiter for IF spectrum files.</li>
+<li><code class="docutils literal notranslate"><span class="pre">ifresp_usecols</span> <span class="pre">=</span> <span class="pre">(0,</span> <span class="pre">1,</span> <span class="pre">2)</span></code> : Columns to import from IF spectrum
+files. The first column should be the frequency, the second should
+be the IF power from the hot load, and the third should be the IF
+power from the cold load.</li>
+<li><code class="docutils literal notranslate"><span class="pre">ifresp_skipheader</span> <span class="pre">=</span> <span class="pre">1</span></code> : Number of rows to skip at the beginning
+of the IF spectrum file.</li>
+<li><code class="docutils literal notranslate"><span class="pre">ifresp_maxtn</span> <span class="pre">=</span> <span class="pre">1e6</span></code> : Maximum noise temperature. All values above
+this value will be set to <code class="docutils literal notranslate"><span class="pre">ifresp_maxtn</span></code>.</li>
 </ul>
 </dd>
 </dl>
@@ -1851,7 +1864,7 @@ function.</li>
 </div></blockquote>
 <dl class="data">
 <dt id="qmix.exp.parameters.params">
-<code class="descclassname">qmix.exp.parameters.</code><code class="descname">params</code><em class="property"> = {'alpha_max': 1.5, 'analyze': None, 'analyze_if': True, 'analyze_iv': True, 'area': 1.5, 'best_pt': 'Max Gain', 'comment': '', 'cut_high': 0.2, 'cut_low': 0.25, 'debug': False, 'delimiter': ',', 'filter_data': True, 'filter_npoly': 3, 'filter_nwind': 21, 'filter_theta': 0.785, 'freq': None, 'i_fmt': 'mA', 'i_multiplier': 1.0, 'ifdata_npts': 3000, 'ifdata_sigma': 5, 'ifdata_vmax': 2.25, 'ifresp_delimiter': '\t', 'ifresp_skipheader': 0, 'ifresp_usecols': (0, 1, 2), 'igap_guess': 0.0002, 'ioffset': None, 'npts': 6001, 'num_b': 20, 'remb_range': (0, 1), 'rn_vmax': 0.0045, 'rn_vmin': 0.0035, 'rseries': None, 'skip_header': 1, 't_cold': 78.0, 't_hot': 293.0, 'usecols': (0, 1), 'v_fmt': 'mV', 'v_multiplier': 1.0, 'v_smear': 0.02, 'vbest': None, 'verbose': True, 'vgap_guess': 0.0027, 'vgap_threshold': 0.000105, 'vleak': 0.002, 'vmax': 0.006, 'vmax_plot': 4.0, 'voffset': None, 'voffset_range': 0.0003, 'voffset_sigma': 1e-05, 'vrsg': 0.002, 'vshot': None, 'xemb_range': (-1, 1), 'zemb': None}</em><a class="headerlink" href="#qmix.exp.parameters.params" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">qmix.exp.parameters.</code><code class="descname">params</code><em class="property"> = {'alpha_max': 1.5, 'analyze': True, 'analyze_if': True, 'analyze_iv': True, 'area': 1.5, 'best_pt': 'Max Gain', 'comment': '', 'debug': False, 'delimiter': ',', 'filter_data': True, 'filter_npoly': 3, 'filter_nwind': 21, 'filter_theta': 0.785, 'fit_range': (0.25, 0.8), 'freq': None, 'i_fmt': 'mA', 'i_multiplier': 1.0, 'ifdata_npts': 3000, 'ifdata_sigma': 1e-05, 'ifresp_delimiter': '\t', 'ifresp_maxtn': 1000000.0, 'ifresp_skipheader': 1, 'ifresp_usecols': (0, 1, 2), 'ioffset': None, 'npts': 6001, 'num_b': 20, 'remb_range': (0, 1), 'rseries': None, 'skip_header': 1, 't_cold': 78.0, 't_hot': 293.0, 'usecols': (0, 1), 'v_fmt': 'mV', 'v_multiplier': 1.0, 'v_smear': 0.02, 'vbest': None, 'verbose': True, 'vgap_threshold': 0.000105, 'vleak': 0.002, 'vmax': 0.006, 'vmax_plot': 4.0, 'voffset': None, 'voffset_range': (-0.0003, 0.0003), 'voffset_sigma': 1e-05, 'vrn': (0.0035, 0.0045), 'vrsg': 0.002, 'vshot': None, 'xemb_range': (-1, 1), 'zemb': None}</em><a class="headerlink" href="#qmix.exp.parameters.params" title="Permalink to this definition">¶</a></dt>
 <dd><p>Default parameters for importing experimental data.</p>
 </dd></dl>
 
@@ -1904,11 +1917,21 @@ experimental data.</p>
 
     
     
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'./',
+              VERSION:'latest',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
         <script type="text/javascript" src="_static/jquery.js"></script>
         <script type="text/javascript" src="_static/underscore.js"></script>
         <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
 
   
