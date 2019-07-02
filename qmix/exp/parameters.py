@@ -115,7 +115,7 @@ values.
         - ``ifdata_npts = 3000`` : Number of points to use when interpolating 
           IF data.
     - Filtering IF data:
-        - ``ifdata_sigma = 5`` : Smooth the measured IF power data by 
+        - ``ifdata_sigma = 1e-5`` : Smooth the measured IF power data by 
           convolving it with a Gaussian distribution. This is the standard 
           deviation, in units [V].
     - Analyzing the DC IF data:

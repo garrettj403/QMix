@@ -312,8 +312,8 @@ def _find_if_noise(if_data, dc, **kw):
         mask = mask & mask_tmp
     else:
         # Make vshot a list of lists
-        assert isinstance(vshot, list)
-        if not isinstance(vshot[0], list):
+        assert isinstance(vshot, tuple) or isinstance(vshot, list)
+        if not isinstance(vshot[0], tuple) and not isinstance(vshot[0], list):
             vshot = (vshot,)
         # Build mask    
         mask = np.zeros_like(x, dtype=bool)
