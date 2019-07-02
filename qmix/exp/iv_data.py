@@ -103,8 +103,12 @@ def dciv_curve(ivdata, **kwargs):
         filter_nwind (int): Window size for Savitsky-Golay filter.
         filter_npoly (int): Order of Savitsky-Golay filter.
         vgap_threshold (float): The current to measure the gap voltage at.
-        rn_vmin (float): Lower voltage range to determine the normal resistance
-        rn_vmax (float): Upper voltage range to determine the normal resistance
+        vrn (list): Voltage range over which to calculate the normal 
+            resistance, in units [V]
+        rn_vmin (float): Lower voltage range to determine the normal 
+            resistance, in units [V] (DEPRECATED)
+        rn_vmax (float): Upper voltage range to determine the normal 
+            resistance, in units [V] (DEPRECATED)
         vrsg (float): The voltage at which to calculate the subgap 
             resistance.
         vleak (float): The voltage at which to calculate the subgap leakage
@@ -562,17 +566,30 @@ def _find_normal_resistance(volt_v, curr_a, **kw):
         curr_a (ndarray): current, in A
 
     Keyword Args:
-        rn_vmin: lower voltage range to determine the normal resistance
-        rn_vmax: upper voltage range to determine the normal resistance
+        vrn (list): Voltage range over which to calculate the normal 
+            resistance, in units [V]
+        rn_vmin (float): Lower voltage range to determine the normal 
+            resistance, in units [V] (DEPRECATED)
+        rn_vmax (float): Upper voltage range to determine the normal 
+            resistance, in units [V] (DEPRECATED)
 
     Returns:
         tuple: normal resistance, intercept voltage
 
     """
 
-    # Unpack keyword arguments
-    rn_vmin = kw.get('rn_vmin', PARAMS['rn_vmin'])
-    rn_vmax = kw.get('rn_vmax', PARAMS['rn_vmax'])
+    # Range of voltages over which to calculate the normal resistance
+    rn_vmin = kw.get('rn_vmin', None)  # DEPRECATED argument
+    rn_vmax = kw.get('rn_vmax', None)  # DEPRECATED argument
+    vrn = kw.get('vrn', None)  # voltage range (list)
+    if vrn is not None:
+        # Try to use new argument first
+        rn_vmin = vrn[0]
+        rn_vmax = vrn[1]
+    elif rn_vmin is None or rn_vmax is None:
+        # Use default values if neither are defined
+        rn_vmin = PARAMS['vrn'][0]
+        rn_vmax = PARAMS['vrn'][1]
 
     # Range over which to fit normal resistance
     mask = (rn_vmin < volt_v) & (volt_v < rn_vmax)

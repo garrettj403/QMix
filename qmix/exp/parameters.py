@@ -91,10 +91,8 @@ values.
           which to measure the gap voltage. (Note: the gap voltage is defined
           here as the voltage at which the DC I-V curve crosses this current 
           value.)
-        - ``rn_vmin = 3.5e-3`` : Lower range over which to calculate normal 
-          resistance, in units [V].
-        - ``rn_vmax = 4.5e-3`` : Upper range over which to calculate normal 
-          resistance, in units [V].
+        - ``vrn = (3.5e-3, 4.5e-3)`` : Voltage range over which to calculate
+          the normal-state resistance, in units [V].
         - ``vrsg = 2e-3`` : Voltage at which to measure the subgap resistance,
           in units [V].
         - ``vleak = 2e-3`` : Voltage at which to measure the leakage current,
@@ -224,8 +222,7 @@ params = dict(
               freq =           None,
               # Analyzing DC I-V curve
               vgap_threshold = 105e-6,
-              rn_vmin =        3.5e-3,
-              rn_vmax =        4.5e-3,
+              vrn =            (3.5e-3, 4.5e-3),
               vrsg =           2e-3,
               vleak =          2e-3,
               # Analyzing DC IF data
