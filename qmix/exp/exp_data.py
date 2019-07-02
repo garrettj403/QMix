@@ -1739,10 +1739,11 @@ class RawData(object):
         # Generate plots
         self.plot_iv(fig1, **kw)
         self.plot_ivif(fig2, **kw)
-        self.plot_error_surface(fig3)
-        self.plot_simulated(fig4, **kw)
         self.plot_noise_temp(fig5, **kw)
         self.plot_gain_noise_temp(fig6, **kw)
+        if self.zt is not None:
+            self.plot_error_surface(fig3)
+            self.plot_simulated(fig4, **kw)
 
 
 # ANALYZE IF SPECTRUM DATA ---------------------------------------------------
@@ -2003,6 +2004,18 @@ def plot_overall_results(dciv, data_list, fig_folder, vmax_plot=4.,
     ax.grid()
     fname = os.path.join(fig_folder, 'noise_temperature_spline_fit.png')
     fig.savefig(fname, dpi=500)
+    plt.close(fig)
+
+    # Plot noise temperature results on log scale ----------------------------
+
+    fig, ax = plt.subplots(figsize=figsize)
+    ax.semilogy(freq, t_n, color=_blue, **plotparam)
+    ax.set_xlabel('Frequency (GHz)')
+    ax.set_ylabel('Noise Temperature (K)')
+    if f_range is not None:
+        ax.set_xlim([f_range[0], f_range[1]])
+    ax.grid()
+    fig.savefig(os.path.join(fig_folder, 'noise_temperature_logy.png'), dpi=500)
     plt.close(fig)
 
     # Plot noise temperature and gain ----------------------------------------
