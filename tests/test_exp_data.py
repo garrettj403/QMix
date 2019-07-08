@@ -10,6 +10,7 @@ import numpy as np
 import pytest
 
 import qmix.exp.exp_data as qe
+import qmix.exp.iv_data as iv
 
 
 # Parameters for importing data
@@ -140,3 +141,71 @@ def test_importing_exp_data(directory='tests/exp-data/'):
     pump = qe.RawData(directory + 'f230_0_iv.csv', dciv1, 
                       analyze=False, **params)
     assert pump.freq == 230.0, "Wrong frequency."
+
+
+def test_dciv_importing_bad_units():
+
+    tmp = params.copy()
+    tmp['i_fmt'] = 'A'
+
+    _, _, dc = iv.dciv_curve('tests/exp-data/dciv-data.csv', **tmp)
+    assert dc.rn < 1
+
+
+def test_try_loading_list():
+
+    with pytest.raises(ValueError):
+        _, _, _ = iv.dciv_curve([1, 2, 3])
+
+
+def test_vgap_methods():
+    """Test methods for finding Vgap."""
+
+    # Method 1: Vgap is where the current passes
+    _, _, dc1 = iv.dciv_curve('tests/exp-data/dciv-data.csv', **params)
+
+    # Method 2: Vgap is where the derivative is the highest
+    tmp = params.copy()
+    tmp['vgap_threshold'] = None
+    _, _, dc2 = iv.dciv_curve('tests/exp-data/dciv-data.csv', **tmp)
+
+    # Both methods should be within 0.05 mV
+    assert abs(dc1.vgap - dc2.vgap) < 0.05e-3
+
+
+def test_offset_methods():
+    """Test methods for finding the voltage+current offsets."""
+
+    param = params.copy()
+
+    # Automatic for voltage and current offset
+    param['voffset_range'] = 0.3e-3
+    _, _, dc0 = iv.dciv_curve('tests/exp-data/dciv-data.csv', **param)
+    param['voffset_range'] = (-0.1e-3, 0.3e-3)
+    _, _, dc1 = iv.dciv_curve('tests/exp-data/dciv-data.csv', **param)
+
+    # Set voltage offset
+    param['voffset'] = dc1.offset[0]
+    _, _, dc2 = iv.dciv_curve('tests/exp-data/dciv-data.csv', **param)
+
+    # Set both
+    param['ioffset'] = dc1.offset[1]
+    _, _, dc3 = iv.dciv_curve('tests/exp-data/dciv-data.csv', **param)
+
+    # Check values
+    assert abs(dc0.offset[0] - dc1.offset[0]) < 0.01e-3
+    assert abs(dc0.offset[0] - dc2.offset[0]) < 0.01e-3
+    assert abs(dc0.offset[0] - dc3.offset[0]) < 0.01e-3
+    assert abs(dc1.offset[1] - dc2.offset[1]) < 1e-6
+    assert abs(dc1.offset[1] - dc3.offset[1]) < 1e-6
+
+    # Load pumped I-V curve with both voffset and ioffset defined
+    pump = iv.iv_curve('tests/exp-data/f230_0_iv.csv', dc3, **param)
+
+
+
+# Main -----------------------------------------------------------------------
+
+if __name__ == "__main__":
+
+    test_dciv_importing()
