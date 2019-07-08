@@ -7,6 +7,7 @@ on experimental data and plotting the results.
 """
 
 import numpy as np 
+import pytest 
 
 from qmix.exp.if_response import if_response
 from qmix.exp.parameters import params as PARAMS
@@ -34,6 +35,10 @@ def test_importing_if_spectrum_data():
                                   delimiter=PARAMS['ifresp_delimiter'])
     if_data2 = if_response(if_data_array)
     if_data2 = if_response(if_data_array.T)
+
+    # Import IF response as a list
+    with pytest.raises(ValueError):
+        if_data3 = if_response([1, 2, 3])
 
     # Assert that both arrays are the same
     np.testing.assert_equal(if_data1, if_data2)

@@ -476,26 +476,26 @@ def _take_one_pass(v, i):
 
     # TODO: Update -- make more general
 
-    idx_imin, idx_imax = i.argmin(), i.argmax()
+    idx_min, idx_max = v.argmin(), v.argmax()
 
     # If data is already sorted
-    if idx_imin == 0 and idx_imax == np.alen(i) - 1:  # pragma: no cover
+    if idx_min == 0 and idx_max == np.alen(i) - 1:  # pragma: no cover
         return v, i
 
     # If data is already sorted, but in reverse order
-    if idx_imax == 0 and idx_imin == np.alen(i) - 1:  # pragma: no cover
+    if idx_max == 0 and idx_min == np.alen(i) - 1:  # pragma: no cover
         return v, i
 
     # If the sweep starts in the middle.
-    if idx_imax < idx_imin:
-        idx_mid = np.abs(v[idx_imax:idx_imin]).argmin() + idx_imax
-        xout = np.r_[v[0:idx_imax], v[idx_mid:idx_imin]]
-        yout = np.r_[i[0:idx_imax], i[idx_mid:idx_imin]]
+    if idx_max < idx_min:
+        idx_start = np.abs(v[idx_max:idx_min+1] - v[0]).argmin() + idx_max
+        xout = np.r_[v[idx_start:idx_min+1][::-1], v[0:idx_max+1]]
+        yout = np.r_[i[idx_start:idx_min+1][::-1], i[0:idx_max+1]]
         return xout, yout
     else:
-        idx_mid = np.abs(v[idx_imin:idx_imax]).argmin() + idx_imin
-        xout = np.r_[v[0:idx_imin], v[idx_mid:idx_imax]]
-        yout = np.r_[i[0:idx_imin], i[idx_mid:idx_imax]]
+        idx_start = np.abs(v[idx_min:idx_max+1] - v[0]).argmin() + idx_min
+        xout = np.r_[v[0:idx_min+1][::-1], v[idx_start:idx_max+1]]
+        yout = np.r_[i[0:idx_min+1][::-1], i[idx_start:idx_max+1]]
         return xout, yout
 
 

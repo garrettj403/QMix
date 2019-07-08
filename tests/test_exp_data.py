@@ -153,6 +153,7 @@ def test_dciv_importing_bad_units():
 
 
 def test_try_loading_list():
+    """Try loading a list (not an accepted input type)."""
 
     with pytest.raises(ValueError):
         _, _, _ = iv.dciv_curve([1, 2, 3])
@@ -203,9 +204,19 @@ def test_offset_methods():
     pump = iv.iv_curve('tests/exp-data/f230_0_iv.csv', dc3, **param)
 
 
+def test_try_importing_reflected_iv_data():
+
+    dciv_data = np.genfromtxt('tests/exp-data/dciv-data.csv', **csv_param)
+    dciv_data.flags.writeable = False
+
+    v1, i1, dc1 = iv.dciv_curve(dciv_data, **params)
+    v2, i2, dc2 = iv.dciv_curve(dciv_data[::-1,:], **params)
+
+    assert abs(dc1.vgap - dc2.vgap) < 0.05e-3
+
 
 # Main -----------------------------------------------------------------------
 
 if __name__ == "__main__":
 
-    test_dciv_importing()
+    test_try_importing_reflected_iv_data()
