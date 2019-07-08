@@ -149,6 +149,11 @@ def test_power_settings():
     with pytest.raises(ValueError):
         cct.available_power(1, 1, 'test')
 
+    # Try getting power when real component is zero
+    cct.zt[1, 1] = 0. + 1j * 0.1
+    cct.vt[1, 1] = 1.
+    assert cct.available_power(1, 1, units='W') == 0.
+
 
 def test_setting_alpha():
     """The EmbeddingCircuit class includes a method to set the drive level
@@ -177,6 +182,25 @@ def test_setting_alpha():
     idx = np.abs(cct.vb - (1 - cct.vph[1]/2)).argmin()
     alpha = np.abs(vj[1, 1, idx]) / cct.vph[1]
     assert 0.9 < alpha < 1.1  # only has to be approximate
+
+
+def test_junction_properties():
+    """Test junction properties."""
+
+    # Junction properties
+    rn = 10.
+    vgap = 3e-3
+    fgap = vgap * sc.e / sc.h 
+
+    # Set Vgap
+    cct1 = EmbeddingCircuit(1, 1, vgap=vgap, rn=rn)
+
+    # Set fgap
+    cct2 = EmbeddingCircuit(1, 1, fgap=fgap, rn=rn)    
+
+    # Check
+    assert cct1.vgap == cct2.vgap
+    assert cct1.fgap == cct2.fgap
 
 
 if __name__ == "__main__":
