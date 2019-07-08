@@ -195,7 +195,7 @@ class RespFn(object):
         self.voltage_kk = voltage
         self.current_kk = current_kk
 
-    def __str__(self):
+    def __str__(self):  # pragma: no cover
 
         return "Response function object: RespFn"
 

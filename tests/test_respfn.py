@@ -95,6 +95,21 @@ def test_polynomial():
     resp2 = 1j * resp.resp_conj(voltage)
     np.testing.assert_equal(resp1, resp2)
 
+    # Check derivative of I-V curve
+    vb = np.linspace(0, 2, 201)
+    idc0 = resp.didc(vb)
+    assert abs(idc0[-1] - 1.) < 1e-10
+    assert abs(idc0[0]) < 1e-10
+    idx_max = idc0.argmax()
+    assert idx_max == 100
+
+    # Check derivative of KK transform
+    vb = np.linspace(0, 2, 201)
+    ikk0 = resp.dikk(vb)
+    assert ikk0[99]  > 0.
+    assert ikk0[101] < 0.
+    assert ikk0[100] < ikk0[99]
+    assert ikk0[100] > ikk0[101]
 
 
 @pytest.mark.filterwarnings("ignore::FutureWarning")
