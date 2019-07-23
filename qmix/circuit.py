@@ -501,14 +501,14 @@ class EmbeddingCircuit(object):
                     fq = self.vph[f] * self.fgap / 1e9
                     vt = self.vt[f, p]
                     zt = self.zt[f, p]
-                    power = self.available_power(f, p)
                     with np.errstate(divide='ignore'):
-                        power_dbm = 10 * np.log10(power * 1000)
+                        power_w = self.available_power(f, p, units='W')
+                        power_dbm = self.available_power(f, p, units='dBm')
                     cprint(str2.format(f, p, fq, self.comment[f][p]), 'GREEN')
                     print(str3.format(float(vt.real)))
                     print(str6.format(float(vt.real / (self.vph[f] * p))))
                     print(str4.format(zt))
-                    print(str7.format(power))
+                    print(str7.format(power_w))
                     print(str8.format(power_dbm))
         print("")
 
