@@ -871,7 +871,7 @@ class RawData(object):
             fit_high = fit_range[1]
         else:
             fit_low  = self.kwargs.get('cut_low', None)
-            fit_high = self.kwargs.get('cut_high', None)
+            fit_high = 1 - self.kwargs.get('cut_high', None)
             if fit_low is None or fit_high is None:
                 fit_low = PARAMS['fit_range'][0]
                 fit_high = PARAMS['fit_range'][1]

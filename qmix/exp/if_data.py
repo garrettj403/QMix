@@ -457,6 +457,9 @@ def _load_if(ifdata, dc, **kwargs):
     # Smooth IF data
     if sigma is not None:
         step = (ifdata[1, 0] - ifdata[0, 0]) * dc.vgap
+        # Backwards compatibility
+        if sigma > 0.5:
+            sigma = sigma * step
         ifdata[:, 1] = gauss_conv(ifdata[:, 1], sigma / step)
 
     return ifdata

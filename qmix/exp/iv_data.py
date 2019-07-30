@@ -185,6 +185,9 @@ def dciv_curve(ivdata, **kwargs):
     if rn < 1:
         cprint('\nWarning: Normal resistance is very low...', 'RED')
         cprint('         Are you sure you have the right units?\n', 'RED')
+    if rn > 50:
+        cprint('\nWarning: Normal resistance is very high...', 'RED')
+        cprint('         Are you sure you have the right units?\n', 'RED')
 
     # Normalize I-V curve
     voltage = volt_v / vgap
