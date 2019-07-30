@@ -1,9 +1,11 @@
-v1.0.5 (not released yet)
-=========================
+v1.0.5 (30-Jul-2019)
+====================
 
 Experimental data
 -----------------
 
+- Process experimental data in a consistent order (i.e., I-V and IF data should be processed in the same way).
+- Add warning if normal resistance is too low or too high. This can help to detect if you are using the wrong units for the current.
 - Make parameters in ``qmix.exp.parameters`` more consistent. Changes include:
     - ``voffset_range``, which defines where the voltage offset is potentially found, is now defined as a list. E.g., if the experimental voltage offset could be found anywhere between -0.5mV and 0.1mV, you now use ``voffset_range=(-0.5e-3, 0.1e-3)``. This change is backwards compatible, so you can still define it as a float if you like. For example, if you set ``voffset_range=1e-3``, this is equivalent to ``voffset_range=(-1e-3, 1e-3)``.
     - ``rn_vmin`` and ``rn_vmax``, which previously defined where the normal resistance was calculated, are now combined into ``vrn``. Previously, this was defined using ``rn_vmin`` and ``rn_vmax``. Now, it is defined using ``vrn`` as a list. For example, if you previously used ``rn_vmin=4e-3`` and ``rn_vmax=5e-3``, you would now use ``vrn=(4e-3, 5e-3)``. This change is backwards compatible, so you can still use ``rn_vmin`` and ``rn_vmax``.
@@ -12,8 +14,6 @@ Experimental data
     - ``vgap_guess`` and ``igap_guess`` have been removed. They actually weren't needed all along.
     - ``ifdata_vmax``, which previously defined the maximum IF voltage to import, has been removed. QMix now uses the value from ``vmax`` instead.
     - ``ifdata_sigma``, which defines the width of the filter for the IF data, is now defined in units [V]. Previously, it was defined by the number of data points. This is also backwards compatible (if ``ifdata_sigma`` is >0.5, it will assume that you are defining it by the number steps).
-- Process experimental data in a consistent order (i.e., I-V and IF data should be processed in the same way).
-- Add warning if normal resistance is too low or too high. This can help to detect if you are using the wrong units for the current.
 
 Optimization
 ------------
