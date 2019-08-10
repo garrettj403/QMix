@@ -1,5 +1,5 @@
 *.py linguist-language=Python
 *.ipynb linguist-documentation
-workflow-examples/* linguist-documentation
+examples/* linguist-documentation
 paper/* linguist-documentation
 docs/* linguist-documentation
