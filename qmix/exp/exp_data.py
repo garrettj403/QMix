@@ -2158,9 +2158,9 @@ def _error_function(vwi, zwi, zs):
     Equation 26 from:
 
         S. Withington, K. G. Isaak, S. Kovtonyuk, R. Panhuyzen, and T. M. 
-        Klapwijk, “Direct detection at submillimetre wavelengths using 
-        superconducting tunnel junctions,” Infrared Phys. Technol., vol. 36, 
-        no. 7, pp. 1059–1075, Dec. 1995.
+        Klapwijk, "Direct detection at submillimetre wavelengths using 
+        superconducting tunnel junctions," Infrared Phys. Technol., vol. 36, 
+        no. 7, pp. 1059-1075, Dec. 1995.
 
     """
 
@@ -2177,9 +2177,9 @@ def _find_source_voltage(vwi, zwi, zs):
     Equation 27 from:
 
         S. Withington, K. G. Isaak, S. Kovtonyuk, R. Panhuyzen, and T. M. 
-        Klapwijk, “Direct detection at submillimetre wavelengths using 
-        superconducting tunnel junctions,” Infrared Phys. Technol., vol. 36, 
-        no. 7, pp. 1059–1075, Dec. 1995.
+        Klapwijk, "Direct detection at submillimetre wavelengths using 
+        superconducting tunnel junctions," Infrared Phys. Technol., vol. 36, 
+        no. 7, pp. 1059-1075, Dec. 1995.
 
     """
 
