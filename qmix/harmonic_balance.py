@@ -78,6 +78,7 @@ def harmonic_balance(cct, resp, num_b=15, max_it=10, stop_rerror=0.001, vj_initi
     vt = cct.vt
     zt = cct.zt
 
+    # Harmonic balance isn't required if all zt are equal to zero
     if (zt == 0).all():
         if verbose:
             print("Done.\n")
@@ -86,10 +87,10 @@ def harmonic_balance(cct, resp, num_b=15, max_it=10, stop_rerror=0.001, vj_initi
     # Check whether any Thevenin voltages are zero (prevents div0 errors) ----
 
     vt[np.abs(vt) < MIN_VT] = MIN_VT
-    vt[0, :] = 0
+    vt[0, :] = 0  # TODO: is this needed?
     vt[:, 0] = 0
 
-    # Get initial guess of the junction voltage (vj) -------------------------
+    # Initial guess of the junction voltage (vj) -----------------------------
 
     if vj_initial is None:
 
@@ -114,8 +115,9 @@ def harmonic_balance(cct, resp, num_b=15, max_it=10, stop_rerror=0.001, vj_initi
 
     if verbose:
         print((" - {0} tone(s) and {1} harmonic(s)".format(num_f, num_p)))
-        msg = " - {0} calls to the tunneling current function per iteration"
+        msg = " - {0} calls to the quasiparticle tunneling current (qtc) function per iteration"
         print((msg.format(num_n * 2 + 1)))
+        print(" - max. iterations: {}".format(max_it))
 
     # Interpolate response function for all required voltages
     respfn_interp = interpolate_respfn(cct, resp, num_b)
@@ -125,19 +127,17 @@ def harmonic_balance(cct, resp, num_b=15, max_it=10, stop_rerror=0.001, vj_initi
     iteration = 0
     for iteration in range(max_it + 1):
 
-        # time_it = timer()
-
         # Current vector (junction current)
         time_current = timer()
         ij_2d = _qt_current_for_hb(vj_2d, cct, resp, num_b, resp_matrix=respfn_interp)
         if iteration == 0 and verbose:
             print("Estimated time:")
             call_time = timer() - time_current
-            # print ' - time per call:      {:.2f} s'.format(call_time)
+            print((' - time per qtc call:  {:7.2f} s / {:6.2f} min / {:5.2f} hrs'.format(call_time, call_time/60., call_time/3600.)))
             it_time = call_time * (num_n * 2 + 1)
             print((' - time per iteration: {:7.2f} s / {:6.2f} min / {:5.2f} hrs'.format(it_time, it_time/60., it_time/3600.)))
             max_time = it_time * max_it
-            print((' - max time:           {:7.2f} s / {:6.2f} min / {:5.2f} hrs'.format(max_time, max_time/60., max_time/3600.)))
+            print((' - max sim time:       {:7.2f} s / {:6.2f} min / {:5.2f} hrs'.format(max_time, max_time/60., max_time/3600.)))
 
         # Error vector
         err_all = vt_2d[:, None] - zt_2d[:, None] * ij_2d - vj_2d
@@ -189,8 +189,6 @@ def harmonic_balance(cct, resp, num_b=15, max_it=10, stop_rerror=0.001, vj_initi
         # Update junction voltages (i.e., the business end of this function)
         inv_j = _inv_jacobian(err_all, vj_2d, vt_2d, zt_2d, cct, resp, num_b, resp_matrix=respfn_interp, verbose=verbose)
         if verbose:
-            # it_time = timer() - time_it
-            # print ' -> last iteration time: {0:.1f} s / {1:.1f} min'.format(it_time, it_time/60.)
             print("Applying correction")
         corr = np.zeros((num_n, npts), dtype=complex)
         for p in range(num_n):
@@ -207,22 +205,19 @@ def harmonic_balance(cct, resp, num_b=15, max_it=10, stop_rerror=0.001, vj_initi
 
     time = timer() - start_time
     if verbose:
-        print((" - time: {0:.2f} s / {1:.2f} min.".format(time, time/60.)))
+        print((" - sim time:\t\t{:7.2f} s / {:6.2f} min / {:5.2f} hrs".format(time, time/60., time/3600.)))
         if iteration >= 1:
             tit = time / iteration  # time per iteration
             msg = " - {} iterations required"
             print((msg.format(iteration)))
-            msg =  "\t- {:.2f} s / iteration"
-            print((msg.format(tit)))
-            msg =  "\t- {:.2f} min / iteration"
-            print((msg.format(tit/60.)))
+            print((" - time per iteration:\t{:7.2f} s / {:6.2f} min / {:5.2f} hrs".format(tit, tit/60., tit/3600.)))
 
     if mode == "o":  # return vj
         return vj_out
-    elif mode == "x":  # return vj + extra data
+    elif mode == "x":  # return vj, number of iterations, and if converged
         did_not_hit_max_it = iteration != max_it
         return vj_out, iteration, did_not_hit_max_it
-    elif mode == "m":  # return vj + mask
+    elif mode == "m":  # return vj and mask
         return vj_out, finished_points
 
 
