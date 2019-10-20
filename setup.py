@@ -5,7 +5,7 @@ setup(
     version = "1.0.5",
     author = "John Garrett",
     author_email = "garrettj403@gmail.com",
-    description = ("Simulate SIS mixer operation"),
+    description = "Simulate SIS mixer operation",
     license = "GPL v3",
     keywords = "SIS mixers, radio astronomy, superconducting detectors, terahertz instrumentation, Python",
     url = "https://garrettj403.github.io/QMix/",
