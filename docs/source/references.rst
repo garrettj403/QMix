@@ -6,9 +6,11 @@ References
 References related to QMix
 --------------------------
 
-Garrett, J. D. (2018). `A 230 GHz Focal Plane Array Using a Wide IF Bandwidth SIS Receiver. <https://ora.ox.ac.uk/objects/uuid:d47fbf3b-1cf3-4e58-be97-767b9893066e>`_ (DPhil). University of Oxford.
-
 Garrett, J. D., & Yassin, G. (2019). `QMix: A Python package for simulating the quasiparticle tunneling currents in SIS junctions. <http://joss.theoj.org/papers/10.21105/joss.01231>`_ Journal of Open Source Software, 4(35), 1231.
+
+Garrett, J. D., Tan, B.-K., Boussaha, F., Chaumont, C., and Yassin, G. (2019). `Simulating the Behavior of a 230 GHz SIS Mixer Using Multi-Tone Spectral Domain Analysis. <https://ora.ox.ac.uk/objects/uuid:0fd4537d-258c-454a-bbfb-09b1bcd88d49>`_ IEEE Trans. THz Sci. Technol., 9(9), 540-548.
+
+Garrett, J. D. (2018). `A 230 GHz Focal Plane Array Using a Wide IF Bandwidth SIS Receiver. <https://ora.ox.ac.uk/objects/uuid:d47fbf3b-1cf3-4e58-be97-767b9893066e>`_ (DPhil). University of Oxford.
 
 References related to multi-tone spectral domain analysis (MTSDA)
 -----------------------------------------------------------------
