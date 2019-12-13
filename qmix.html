@@ -185,6 +185,11 @@
 .admonition > p:before {
     margin-right: 4px;  /* make room for the exclamation icon */
 }
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
 </style>
 <div class="section" id="package-api">
 <h1>2. Package API<a class="headerlink" href="#package-api" title="Permalink to this headline">¶</a></h1>
@@ -357,7 +362,7 @@ dynamic resistance of the DC I-V curve above the gap voltage.</li>
 <dl class="attribute">
 <dt id="qmix.circuit.EmbeddingCircuit.vph">
 <code class="descname">vph</code><a class="headerlink" href="#qmix.circuit.EmbeddingCircuit.vph" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>numpy.ndarray</em> – An array for the photon voltage normalized to the
+<dd><p>An array for the photon voltage normalized to the
 gap voltage. This is a 1-dimensional array of real numbers. It
 contains photon voltages for all of the fundamental tones that
 are applied to the junction. The photon voltage is defined as
@@ -369,12 +374,20 @@ frequency, <code class="docutils literal notranslate"><span class="pre">f/fgap</
 that this array is 1-based, meaning that the photon voltage of the
 1st tone is located in <code class="docutils literal notranslate"><span class="pre">.vph[1]</span></code>. (The index represents the tone
 number.) <strong>This attribute must be set after initialization!</strong></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">numpy.ndarray</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="qmix.circuit.EmbeddingCircuit.vt">
 <code class="descname">vt</code><a class="headerlink" href="#qmix.circuit.EmbeddingCircuit.vt" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>numpy.ndarray</em> – An array for the Thevenin voltage normalized to the
+<dd><p>An array for the Thevenin voltage normalized to the
 gap voltage. This is a 2-dimensional array of complex values. It
 contains the voltages for all of the Thevenin equivalent circuits
 (which describe the embedding circuit). In order, the indices are:
@@ -382,12 +395,20 @@ contains the voltages for all of the Thevenin equivalent circuits
 array is 1-based, meaning that the voltage for tone number 2 /
 harmonic number 3 is stored in <code class="docutils literal notranslate"><span class="pre">vt[2,3]</span></code>. <strong>This attribute must
 be set after initialization!</strong></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">numpy.ndarray</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="qmix.circuit.EmbeddingCircuit.zt">
 <code class="descname">zt</code><a class="headerlink" href="#qmix.circuit.EmbeddingCircuit.zt" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>numpy.ndarray</em> – An array for the Thevenin impedance array
+<dd><p>An array for the Thevenin impedance array
 normalized to the normal-state resistance. This is a 2-dimensional
 array of complex values. It contains the impedances of all of the
 Thevenin equivalent circuits (which describe the embedding
@@ -396,93 +417,189 @@ circuit). In order, the indices are: <code class="docutils literal notranslate">
 that the impedance for tone number 2, and harmonic number 3 is
 stored in <code class="docutils literal notranslate"><span class="pre">zt[2,3]</span></code>. <strong>This attribute must be set after
 initialization!</strong></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">numpy.ndarray</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="qmix.circuit.EmbeddingCircuit.num_f">
 <code class="descname">num_f</code><a class="headerlink" href="#qmix.circuit.EmbeddingCircuit.num_f" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>int</em> – Number of fundamental frequencies (tones) applied to the
+<dd><p>Number of fundamental frequencies (tones) applied to the
 junction.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="qmix.circuit.EmbeddingCircuit.num_p">
 <code class="descname">num_p</code><a class="headerlink" href="#qmix.circuit.EmbeddingCircuit.num_p" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>int</em> – Number of harmonics included for each tone.</p>
+<dd><p>Number of harmonics included for each tone.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="qmix.circuit.EmbeddingCircuit.num_n">
 <code class="descname">num_n</code><a class="headerlink" href="#qmix.circuit.EmbeddingCircuit.num_n" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>int</em> – Total number of signals. This is equal to <code class="docutils literal notranslate"><span class="pre">num_f*num_p</span></code>.</p>
+<dd><p>Total number of signals. This is equal to <code class="docutils literal notranslate"><span class="pre">num_f*num_p</span></code>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="qmix.circuit.EmbeddingCircuit.fgap">
 <code class="descname">fgap</code><a class="headerlink" href="#qmix.circuit.EmbeddingCircuit.fgap" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>float</em> – Gap frequency of the junction in units [Hz]. This is
+<dd><p>Gap frequency of the junction in units [Hz]. This is
 equal to <code class="docutils literal notranslate"><span class="pre">e*Vgap/h</span></code>, where <code class="docutils literal notranslate"><span class="pre">e</span></code> is the charge of an electron,
 <code class="docutils literal notranslate"><span class="pre">Vgap</span></code> is the gap voltage, and <code class="docutils literal notranslate"><span class="pre">h</span></code> is the Planck constant. Note
 that <code class="docutils literal notranslate"><span class="pre">E=fgap*e</span></code> is the energy required to break Cooper pairs, so
 at frequencies above the <code class="docutils literal notranslate"><span class="pre">fgap</span></code> the superconductors will begin to
 become lossy. Here, <code class="docutils literal notranslate"><span class="pre">fgap</span></code> is used to normalize and de-normalize
 frequency values (that’t it).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">float</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="qmix.circuit.EmbeddingCircuit.vgap">
 <code class="descname">vgap</code><a class="headerlink" href="#qmix.circuit.EmbeddingCircuit.vgap" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>float</em> – Gap voltage of the junction in units [V]. This is the
+<dd><p>Gap voltage of the junction in units [V]. This is the
 voltage where the sharp non-linearity in the DC I-V curve occurs
 (i.e., the transition voltage). This value is used to normalize
 and de-normalize voltages.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">float</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="qmix.circuit.EmbeddingCircuit.igap">
 <code class="descname">igap</code><a class="headerlink" href="#qmix.circuit.EmbeddingCircuit.igap" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>float</em> – Gap current of the junction in units [A]. This is equal
+<dd><p>Gap current of the junction in units [A]. This is equal
 to <code class="docutils literal notranslate"><span class="pre">vgap/rn</span></code>. This value is used to normalize and de-normalize
 currents.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">float</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="qmix.circuit.EmbeddingCircuit.rn">
 <code class="descname">rn</code><a class="headerlink" href="#qmix.circuit.EmbeddingCircuit.rn" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>float</em> – Normal-state resistance of the junction in units [ohms].
+<dd><p>Normal-state resistance of the junction in units [ohms].
 This is the resistance of the junction at a temperature slightly
 above the critical temperature. It is found by calculating the
 dynamic resistance of the DC I-V curve above the gap voltage. This
 value is used to normalize and de-normalize resistances.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">float</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="qmix.circuit.EmbeddingCircuit.vb">
 <code class="descname">vb</code><a class="headerlink" href="#qmix.circuit.EmbeddingCircuit.vb" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>numpy.ndarray</em> – Array for the DC bias voltage sweep. This value is
+<dd><p>Array for the DC bias voltage sweep. This value is
 normalized to the gap voltage.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">numpy.ndarray</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="qmix.circuit.EmbeddingCircuit.vb_npts">
 <code class="descname">vb_npts</code><a class="headerlink" href="#qmix.circuit.EmbeddingCircuit.vb_npts" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>int</em> – Number of points in the bias voltage sweep.</p>
+<dd><p>Number of points in the bias voltage sweep.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="qmix.circuit.EmbeddingCircuit.name">
 <code class="descname">name</code><a class="headerlink" href="#qmix.circuit.EmbeddingCircuit.name" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>str</em> – A name to describe this instance of the embedding circuit
+<dd><p>A name to describe this instance of the embedding circuit
 class.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">str</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="qmix.circuit.EmbeddingCircuit.comment">
 <code class="descname">comment</code><a class="headerlink" href="#qmix.circuit.EmbeddingCircuit.comment" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>list</em> – A list of comments to describe the different signals.
+<dd><p>A list of comments to describe the different signals.
 For example, to describe tone 1/harmonic 1 as the local-oscillator
 signal, you might use <code class="docutils literal notranslate"><span class="pre">cct.comment[1][1]</span> <span class="pre">=</span> <span class="pre">&quot;LO&quot;</span></code>. This has to be
 set after the initialization of the EmbeddingCircuit class.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">list</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -1104,27 +1221,59 @@ a Gaussian dist. with this std. dev.</li>
 <dl class="attribute">
 <dt id="qmix.respfn.RespFn.voltage">
 <code class="descname">voltage</code><a class="headerlink" href="#qmix.respfn.RespFn.voltage" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>ndarray</em> – The DC bias voltage values.</p>
+<dd><p>The DC bias voltage values.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">ndarray</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="qmix.respfn.RespFn.current">
 <code class="descname">current</code><a class="headerlink" href="#qmix.respfn.RespFn.current" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>ndarray</em> – The DC tunneling current values.</p>
+<dd><p>The DC tunneling current values.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">ndarray</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="qmix.respfn.RespFn.voltage_kk">
 <code class="descname">voltage_kk</code><a class="headerlink" href="#qmix.respfn.RespFn.voltage_kk" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>ndarray</em> – The DC bias voltage values that correspond to
+<dd><p>The DC bias voltage values that correspond to
 <code class="docutils literal notranslate"><span class="pre">current_kk</span></code>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">ndarray</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="qmix.respfn.RespFn.current_kk">
 <code class="descname">current_kk</code><a class="headerlink" href="#qmix.respfn.RespFn.current_kk" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>ndarray</em> – The values of the KK transform of the DC I-V
+<dd><p>The values of the KK transform of the DC I-V
 curve.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">ndarray</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -1619,21 +1768,11 @@ saturation and wide IF bandwidth devices.</p>
 
     
     
-      <script type="text/javascript">
-          var DOCUMENTATION_OPTIONS = {
-              URL_ROOT:'./',
-              VERSION:'latest',
-              LANGUAGE:'None',
-              COLLAPSE_INDEX:false,
-              FILE_SUFFIX:'.html',
-              HAS_SOURCE:  true,
-              SOURCELINK_SUFFIX: '.txt'
-          };
-      </script>
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
         <script type="text/javascript" src="_static/jquery.js"></script>
         <script type="text/javascript" src="_static/underscore.js"></script>
         <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
     
 
   

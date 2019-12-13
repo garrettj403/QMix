@@ -4,34 +4,39 @@ Getting Started
 Installing QMix using pip
 -------------------------
 
-The easiest way to install QMix is using ``pip``:
+The easiest way to install QMix is using ``pip``. You can install it via the Python Package Index (PyPI):
 
 .. code-block:: console
 
-   pip install QMix
+   python -m pip install QMix
+
+Or you can install it via GitHub to get the latest version:
+
+.. code-block:: console
+
+   python -m pip install git+https://github.com/garrettj403/QMix.git
 
 Downloading QMix from GitHub
 ----------------------------
 
-If you want the latest version, you can download QMix from `GitHub`_. 
+If you want the example files, you can download QMix from `GitHub`_. 
 
 .. _GitHub: https://github.com/garrettj403/QMix/
 
 .. warning:: The instructions below are for macOS. Some of the commands will be slightly different for Windows or Linux.
 
-In order to clone the repository, open a terminal window, navigate to the directory in which you would like to put QMix, and then run:
+To clone the repository, open a terminal window, navigate to the directory in which you would like to put QMix, and then run:
 
 .. code-block:: console
    
    git clone https://github.com/garrettj403/QMix.git QMix
 
-This will download QMix into a new directory called ``QMix/``. You then need to add the ``QMix/`` directory to your ``PYTHONPATH`` environment variable. If you are on a macOS system, open your bash profile (normally located in ``~/.bash_profile`` or ``~/.profile``) and add the following:
+This will download QMix into a new directory called ``QMix/``. You then need to install QMix.
 
 .. code-block:: console
 
-   export PYTHONPATH="<path-to-qmix>:$PYTHONPATH"
-
-where ``<path-to-qmix>`` is the path to the ``QMix/`` directory on your computer. 
+   cd QMix/
+   python -m pip install -e .
 
 Configuring Python
 ------------------

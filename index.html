@@ -170,12 +170,17 @@
 .admonition > p:before {
     margin-right: 4px;  /* make room for the exclamation icon */
 }
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
 </style>
 <div class="section" id="qmix-quantum-mixing-software">
 <h1>QMix: Quantum Mixing Software<a class="headerlink" href="#qmix-quantum-mixing-software" title="Permalink to this headline">¶</a></h1>
-<p>QMix is a software package for simulating the quasiparticle tunneling currents in Superconductor/Insulator/Superconductor (SIS) junctions. In radio astronomy, these junctions are used for heterodyne mixing at millimeter and submillimeter wavelengths. QMix can be used to simulate and optimize the performance of SIS mixers, and investigate their experimental results.</p>
+<p>QMix is a software package for simulating the quasiparticle tunneling currents in Superconductor/Insulator/Superconductor (SIS) junctions. In radio astronomy, these junctions are used for heterodyne mixing at millimeter and submillimeter wavelengths. QMix can be used to simulate and optimize the performance of SIS mixers, and analyze their experimental results.</p>
 <p>In order to calculate the quasiparticle tunneling currents, QMix uses <em>multi-tone spectral domain analysis</em> (see <a class="reference internal" href="references.html#references"><span class="std std-ref">References</span></a>). Among other applications, this makes QMix ideal for simulating power saturation, higher-order harmonics, sub-harmonic pumping and frequency multiplication.</p>
-<p><strong>Repository address:</strong> <a class="reference external" href="https://github.com/garrettj403/QMix/">https://github.com/garrettj403/QMix/</a></p>
+<p><strong>Repository:</strong> <a class="reference external" href="https://github.com/garrettj403/QMix/">https://github.com/garrettj403/QMix/</a></p>
 </div>
 <div class="section" id="contents">
 <h1>Contents<a class="headerlink" href="#contents" title="Permalink to this headline">¶</a></h1>
@@ -239,7 +244,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="references.html">6. References</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="references.html#references-related-to-qmix">6.1. References related to QMix</a></li>
-<li class="toctree-l2"><a class="reference internal" href="references.html#references-related-to-multi-tone-spectral-domain-analysis">6.2. References related to multi-tone spectral domain analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="references.html#references-related-to-multi-tone-spectral-domain-analysis-mtsda">6.2. References related to multi-tone spectral domain analysis (MTSDA)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="references.html#other-references">6.3. Other references</a></li>
 </ul>
 </li>
@@ -293,21 +298,11 @@
 
     
     
-      <script type="text/javascript">
-          var DOCUMENTATION_OPTIONS = {
-              URL_ROOT:'./',
-              VERSION:'latest',
-              LANGUAGE:'None',
-              COLLAPSE_INDEX:false,
-              FILE_SUFFIX:'.html',
-              HAS_SOURCE:  true,
-              SOURCELINK_SUFFIX: '.txt'
-          };
-      </script>
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
         <script type="text/javascript" src="_static/jquery.js"></script>
         <script type="text/javascript" src="_static/underscore.js"></script>
         <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
     
 
   
