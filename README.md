@@ -42,11 +42,11 @@ If you would like to contribute to the QMix project, please take a look at [``QM
 Citing QMix
 -----------
 
-If you use QMix, please cite the following paper:
+If you use QMix, please cite the following papers:
 
 [![DOI](http://joss.theoj.org/papers/10.21105/joss.01231/status.svg)](https://doi.org/10.21105/joss.01231)
 
-    @article{Garrett2019a,
+    @article{Qmix1,
       author       = {J. D. Garrett and G. Yassin},
       title        = {{QMix: A Python package for simulating the quasiparticle tunneling currents in SIS junctions}},
       publisher    = {Journal of Open Source Software},
@@ -59,11 +59,24 @@ If you use QMix, please cite the following paper:
       url          = {https://doi.org/10.21105/joss.01231},
     }
 
+    @article{Qmix2,
+      author       = {J. D. Garrett and B.-K. Tan and F. Boussaha and C. Chaumont and G. Yassin},
+      title        = {{Simulating the Behavior of a 230-GHz SIS Mixer Using Multitone Spectral Domain Analysis}},
+      publisher    = {IEEE Transactions on Terahertz Science and Technology},
+      month        = nov,
+      year         = 2019,
+      volume       = 9,
+      number       = 6,
+      pages        = {540--548},
+      doi          = {10.1109/TTHZ.2019.2938993},
+      url          = {https://ieeexplore.ieee.org/document/8822760/},
+    }
+
 You can also cite a specific version of QMix by citing the appropriate Zenodo archive:
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.2557839.svg)](https://doi.org/10.5281/zenodo.2538162)
 
-    @article{Garrett2019b,
+    @article{Qmix3,
       author       = {J. D. Garrett and G. Yassin},
       title        = {{garrettj403/QMix  (Version v1.0.4)}},
       month        = apr,
