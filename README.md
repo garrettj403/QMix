@@ -59,6 +59,8 @@ If you use QMix, please cite the following papers:
       url          = {https://doi.org/10.21105/joss.01231},
     }
 
+[![DOI](https://img.shields.io/badge/DOI-10.1109%2FTTHZ.2019.2938993-brightgreen)](https://doi.org/10.1109/TTHZ.2019.2938993)
+
     @article{Qmix2,
       author       = {J. D. Garrett and B.-K. Tan and F. Boussaha and C. Chaumont and G. Yassin},
       title        = {{Simulating the Behavior of a 230-GHz SIS Mixer Using Multitone Spectral Domain Analysis}},
