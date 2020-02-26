@@ -1,4 +1,5 @@
-# QMix
+QMix
+====
 
 **Quantum Mixing software**
 
@@ -28,7 +29,7 @@ Examples
 
 QMix can be used to simulate a wide variety of SIS junction behavior. A simple example is shown below for simulating an SIS mixer at 230 GHz. You can find more examples in the ``QMix/examples/`` directory or on the [QMix website](https://garrettj403.github.io/QMix/single-tone-simple.html). 
 
-![](example.png)
+![](https://github.com/garrettj403/QMix/raw/master/example.png){width="700"}
 
 Contributing to QMix
 --------------------
@@ -37,14 +38,14 @@ Contributing to QMix
 [![GitHub commits since latest release](https://img.shields.io/github/commits-since/garrettj403/QMix/latest.svg)](https://github.com/garrettj403/QMix/commits/master)
 [![GitHub issues](https://img.shields.io/github/issues-raw/garrettj403/QMix.svg)](https://github.com/garrettj403/QMix/issues)
 
-If you would like to contribute to the QMix project, please take a look at [``QMix/CONTRIBUTING.md``](https://github.com/garrettj403/QMix/blob/master/CONTRIBUTING.md). This document includes information on reporting bugs, requesting new features, creating pull requests and contributing new code.
+If you would like to contribute to the QMix project, please take a look at the [contribution instructions](https://github.com/garrettj403/QMix/blob/master/CONTRIBUTING.md). This document includes information on reporting bugs, requesting new features, creating pull requests and contributing new code.
 
 Citing QMix
 -----------
 
 If you use QMix, please cite the following papers:
 
-[![DOI](http://joss.theoj.org/papers/10.21105/joss.01231/status.svg)](https://doi.org/10.21105/joss.01231)
+[![DOI1](https://img.shields.io/badge/DOI%201%3A-10.21105%2Fjoss.01231-blue)](https://doi.org/10.21105/joss.01231)
 
     @article{Qmix1,
       author       = {J. D. Garrett and G. Yassin},
@@ -59,7 +60,7 @@ If you use QMix, please cite the following papers:
       url          = {https://doi.org/10.21105/joss.01231},
     }
 
-[![DOI](https://img.shields.io/badge/DOI-10.1109%2FTTHZ.2019.2938993-brightgreen)](https://doi.org/10.1109/TTHZ.2019.2938993)
+[![DOI2](https://img.shields.io/badge/DOI%202%3A-10.1109%2FTTHZ.2019.2938993-blue)](https://doi.org/10.1109/TTHZ.2019.2938993)
 
     @article{Qmix2,
       author       = {J. D. Garrett and B.-K. Tan and F. Boussaha and C. Chaumont and G. Yassin},
@@ -76,7 +77,7 @@ If you use QMix, please cite the following papers:
 
 You can also cite a specific version of QMix by citing the appropriate Zenodo archive:
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.2557839.svg)](https://doi.org/10.5281/zenodo.2538162)
+[![DOI3](https://img.shields.io/badge/DOI%203%3A-10.5281%2Fzenodo.2538162-blue)](https://doi.org/10.5281/zenodo.2538162)
 
     @article{Qmix3,
       author       = {J. D. Garrett and G. Yassin},
