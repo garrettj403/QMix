@@ -109,7 +109,7 @@ print("\n")
 # WRITE TO FILE --------------------------------------------------------------
 
 if args.save:
-    with open('speed-test-results-harmonic-balance.txt', 'a') as f:
+    with open('results-harmonic-balance.txt', 'a') as f:
         now = datetime.datetime.now()
         machine = socket.gethostname()
         f.write("{}\t{:.6f}\t{:.6f}\t{:.6f}\t{:.6f}\t{}\n".format(now,
