@@ -19,6 +19,7 @@ qmix/exp/hfss_data.py
 misc/ 
 my-projects/
 old/
+speed/
 
 dist/
 htmlcov/
