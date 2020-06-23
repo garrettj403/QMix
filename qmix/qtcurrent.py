@@ -276,7 +276,7 @@ def interpolate_respfn(cct, resp, num_b):
 
 def _find_resp_current_1_tone(resp, vb, vph, num_b1):
 
-    npts = np.alen(vb)
+    npts = len(vb)
     k_npts = num_b1 * 2 + 1
     vb_tmp = vb[None, :] * np.ones(k_npts)[:, None]
     ind = np.r_[np.arange(0, num_b1+1), np.arange(-num_b1, 0)]
@@ -285,7 +285,7 @@ def _find_resp_current_1_tone(resp, vb, vph, num_b1):
 
     # # DEBUG
     # print k_array[:,0]
-    # print np.alen(k_array[0,:])
+    # print len(k_array[0,:])
     # print " {} -> {}".format(-num_b1, k_array[-num_b1][0])
     # print " 0 -> {}".format(k_array[0][0])
     # print " {} -> {}".format(num_b1, k_array[num_b1][0])
@@ -295,7 +295,7 @@ def _find_resp_current_1_tone(resp, vb, vph, num_b1):
 
 def _find_resp_current_2_tones(resp, vb, vph, num_b1, num_b2):
 
-    npts = np.alen(vb)
+    npts = len(vb)
     k_npts = num_b1 * 2 + 1
     l_npts = num_b2 * 2 + 1
 
@@ -323,7 +323,7 @@ def _find_resp_current_2_tones(resp, vb, vph, num_b1, num_b2):
 
 def _find_resp_current_3_tones(resp, vb, vph, num_b1, num_b2, num_b3):
 
-    npts = np.alen(vb)
+    npts = len(vb)
     voltage = np.zeros((num_b1 * 2 + 1, num_b2 * 2 + 1, num_b3 * 2 + 1, npts))
     for k in range(-num_b1, num_b1 + 1):
         for l in range(-num_b2, num_b2 + 1):
@@ -336,7 +336,7 @@ def _find_resp_current_3_tones(resp, vb, vph, num_b1, num_b2, num_b3):
 
 def _find_resp_current_4_tones(resp, vb, vph, num_b1, num_b2, num_b3, num_b4):
 
-    npts = np.alen(vb)
+    npts = len(vb)
     voltage = np.zeros((num_b1 * 2 + 1, num_b2 * 2 + 1, num_b3 * 2 + 1, num_b4 * 2 + 1, npts))
     for k in range(-num_b1, num_b1 + 1):
         for l in range(-num_b2, num_b2 + 1):
@@ -364,7 +364,7 @@ def _convolution_coefficient(vj, vph, num_f, num_p, num_b):
 
     """
 
-    npts = np.alen(vj[0, 0, :])
+    npts = len(vj[0, 0, :])
     if isinstance(num_b, tuple):
         num_b = max(num_b)
 

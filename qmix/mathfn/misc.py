@@ -21,7 +21,7 @@ def slope(x, y):
 
     """
 
-    der = np.zeros(np.alen(x), dtype=float)
+    der = np.zeros(len(x), dtype=float)
 
     rise = y[2:] - y[:-2]
     run = x[2:] - x[:-2]
@@ -57,7 +57,7 @@ def slope_span_n(x, y, n=11, nozeros=True):
     assert n % 2 == 1, "N must be odd."
     n = (n - 1) // 2
 
-    der = np.zeros(np.alen(x), dtype=float)
+    der = np.zeros(len(x), dtype=float)
 
     rise = y[2 * n + 1:] - y[:-2 * n - 1]
     run  = x[2 * n + 1:] - x[:-2 * n - 1]

@@ -17,9 +17,9 @@ Note:
     argument ``delimiter=','``, the number of rows to skip for the header 
     using ``skip_header=1``, and which columns to import using 
     ``usecols=(0,1)``. Take a look at the data in 
-    ``QMix/examples/eg-230-data/`` for an example. Also, take a look at 
-    ``QMix/examples/analyze-experimental-data.ipynb`` for an example of how to
-    use this module.
+    ``QMix/notebooks/eg-230-data/`` for an example. Also, take a look at 
+    ``QMix/notebooks/analyze-experimental-data.ipynb`` for an example of how 
+    to use this module.
 
 """
 
@@ -94,8 +94,8 @@ class RawData0(object):
         argument ``delimiter=','``, the number of rows to skip for the header 
         using ``skip_header=1``, and which columns to import using 
         ``usecols=(0,1)``. Take a look at the data in 
-        ``QMix/examples/eg-230-data/`` for an example. Also, take a look at 
-        ``QMix/examples/analyze-experimental-data.ipynb`` for an example of 
+        ``QMix/notebooks/eg-230-data/`` for an example. Also, take a look at 
+        ``QMix/notebooks/analyze-experimental-data.ipynb`` for an example of 
         how to use this module.
         
         See ``qmix.exp.parameters.params`` for all possible keyword arguments.
@@ -630,8 +630,8 @@ class RawData(object):
         argument ``delimiter=','``, the number of rows to skip for the header 
         using ``skip_header=1``, and which columns to import using 
         ``usecols=(0,1)``. Take a look at the data in 
-        ``QMix/examples/eg-230-data/`` for an example. Also, take a look at 
-        ``QMix/examples/analyze-experimental-data.ipynb`` for an example of 
+        ``QMix/notebooks/eg-230-data/`` for an example. Also, take a look at 
+        ``QMix/notebooks/analyze-experimental-data.ipynb`` for an example of 
         how to use this module.
         
         See ``qmix.exp.parameters.params`` for all possible keyword arguments.
@@ -2168,7 +2168,7 @@ def _error_function(vwi, zwi, zs):
     err2 = np.sum(np.abs(vwi * zwi / (zs + zwi)))
     err3 = np.sum(np.abs(zwi / (zs + zwi))**2)
 
-    return (err1 - err2**2 / err3) / np.alen(vwi)
+    return (err1 - err2**2 / err3) / len(vwi)
 
 
 def _find_source_voltage(vwi, zwi, zs):

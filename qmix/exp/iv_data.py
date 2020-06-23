@@ -482,11 +482,11 @@ def _take_one_pass(v, i):
     idx_min, idx_max = v.argmin(), v.argmax()
 
     # If data is already sorted
-    if idx_min == 0 and idx_max == np.alen(i) - 1:  # pragma: no cover
+    if idx_min == 0 and idx_max == len(i) - 1:  # pragma: no cover
         return v, i
 
     # If data is already sorted, but in reverse order
-    if idx_max == 0 and idx_min == np.alen(i) - 1:  # pragma: no cover
+    if idx_max == 0 and idx_min == len(i) - 1:  # pragma: no cover
         return v, i
 
     # If the sweep starts in the middle.

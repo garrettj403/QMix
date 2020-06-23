@@ -493,7 +493,7 @@ def _tucker_dc_current(voltage, resp, alpha, v_ph, num_b=20):
 
     """
 
-    i_dc = np.zeros(np.alen(voltage), dtype=float)
+    i_dc = np.zeros(len(voltage), dtype=float)
     for n in range(-num_b, num_b + 1):
         i_dc += jv(n, alpha)**2 * np.imag(resp(voltage + n * v_ph))
 
@@ -516,7 +516,7 @@ def _tucker_ac_current(voltage, resp, alpha, v_ph, num_b=20):
 
     """
 
-    i_ac = np.zeros(np.alen(voltage), dtype=complex)
+    i_ac = np.zeros(len(voltage), dtype=complex)
     for n in range(-num_b, num_b + 1):
 
         # Real component

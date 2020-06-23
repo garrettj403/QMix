@@ -23,9 +23,9 @@ def gauss_conv(x, sigma=10, ext_x=3):
     """
 
     wind = _gauss(sigma, ext_x)
-    wlen = np.alen(wind)
+    wlen = len(wind)
 
-    assert wlen <= np.alen(x), "Window size must be smaller than data size"
+    assert wlen <= len(x), "Window size must be smaller than data size"
     assert sigma * ext_x >= 1, \
         "Window size must be larger than 1. Increase ext_x."
 

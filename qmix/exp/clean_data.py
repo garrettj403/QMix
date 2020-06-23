@@ -67,7 +67,7 @@ def remove_doubles_xy(x, y, check=True):
         assert (x[1:] - x[:-1]).min() >= 0
 
     # Find doubles
-    mask = np.ones(np.alen(x), dtype=bool)
+    mask = np.ones(len(x), dtype=bool)
     mask[1:] = (x[1:] != x[:-1])
 
     return x[mask], y[mask]
@@ -87,7 +87,7 @@ def clean_xy(x, y):
 
     """
 
-    assert np.alen(x) == np.alen(y)
+    assert len(x) == len(y)
 
     x, y = remove_nans_xy(x, y)
     x, y = sort_xy(x, y)

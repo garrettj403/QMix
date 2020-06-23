@@ -68,7 +68,7 @@ def kk_trans_trapz(v, i):
 
     # very crude integration
     ikk = []
-    for a in range(np.alen(v)):
+    for a in range(len(v)):
         v_prime, i_prime = np.delete(v, a), np.delete(i, a)
         ikk.append(np.trapz((i_prime - v_prime) / (v_prime - v[a]), x=v_prime))
     ikk = np.array(ikk) / np.pi
