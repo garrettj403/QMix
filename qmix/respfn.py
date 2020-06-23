@@ -254,7 +254,7 @@ class RespFn(object):
         ax.set_ylabel(r'Current / $I_\mathrm{{gap}}$')
         ax.set_xlim([-2, 2])
         ax.set_ylim([-2, 2])
-        ax.legend(loc=0, fontsize=8, frameon=True)
+        ax.legend(loc=0, frameon=True)
         ax.grid()
 
         if fig_name is not None:
@@ -305,7 +305,7 @@ class RespFn(object):
         ax.set_ylabel(r'Current (normalized)')
         ax.set_xlim([0, 2])
         ax.set_ylim([-1.2, 2])
-        ax.legend(loc=0, fontsize=8, frameon=True)
+        ax.legend(loc=0, frameon=True)
         ax.grid()
 
         if fig_name is not None:

@@ -345,7 +345,7 @@ class RawData0(object):
         ax.set_xlabel(r'Bias Voltage (mV)')
         ax.set_ylabel(r'Current ($\mu$A)')
         ax.minorticks_on()
-        ax.legend(loc=2, fontsize=8)
+        ax.legend(loc=2)
         if fig_name is not None:
             fig.savefig(fig_name, **_plot_params)
             plt.close(fig)
@@ -548,7 +548,7 @@ class RawData0(object):
         ax1.set_ylabel(r'Current ($\mu$A)')
         ax1.set_ylim(bottom=0)
         ax1.set_xlim(left=0)
-        ax1.legend(loc=4, fontsize=8, frameon=False)
+        ax1.legend(loc=4, frameon=False)
 
         # Plot DC IF data
         v_mv = self.if_data[:, 0] * mv
@@ -564,7 +564,7 @@ class RawData0(object):
         ax2.set_ylabel('IF Power (K)')
         ax2.set_xlim([0, v_mv.max()])
         ax2.set_ylim(bottom=0)
-        ax2.legend(loc=4, fontsize=8, frameon=False)
+        ax2.legend(loc=4, frameon=False)
 
         if fig_name is not None:
             fig.savefig(fig_name, **_plot_params)
@@ -1092,7 +1092,7 @@ class RawData(object):
         ax1.set_xlabel('Bias Voltage (mV)')
         ax1.set_ylabel(r'DC Current ($\mu$A)')
         ax1.set_ylim([0, imax])
-        ax1.legend(loc=2, fontsize=6, frameon=True, framealpha=1.)
+        ax1.legend(loc=2, frameon=True, framealpha=1.)
         ax1.grid(False)
 
         # Plot IF data
@@ -1101,7 +1101,7 @@ class RawData(object):
         ax2.plot(mv, self.if_hot[:, 1], '#f96b6b', label='Hot')
         ax2.plot(mv, self.if_cold[:, 1], '#6ba2f9', label='Cold')
         ax2.set_ylabel('IF Power (K)')
-        ax2.legend(loc=1, fontsize=6, framealpha=1., frameon=True)
+        ax2.legend(loc=1, framealpha=1., frameon=True)
         ax2.grid(False)
         ax2.set_ylim(bottom=0)
         ax2.set_xlim([0, vmax_plot])
@@ -1281,7 +1281,7 @@ class RawData(object):
         # Build legend
         lns = l1 + l2 + l3 + l4
         labs = [l.get_label() for l in lns]
-        ax2.legend(lns, labs, loc=2, fontsize=7, frameon=True, framealpha=1.)
+        ax2.legend(lns, labs, loc=2, frameon=True, framealpha=1.)
 
         if fig_name is not None:
             fig.savefig(fig_name, **_plot_params)
@@ -1396,7 +1396,7 @@ class RawData(object):
                      xytext=(v_mv[self.idx_best] + 0.75,
                              self.gain[self.idx_best] - 0.1),
                      arrowprops=dict(color='black', arrowstyle="->", lw=0.5),
-                     va="center", ha="left",
+                     va="center", ha="left", fontsize=16,
                      )
         ax1.set_xlabel('Bias Voltage (mV)')
         ax1.set_ylabel('Gain', color=_dark_blue)
@@ -1413,7 +1413,7 @@ class RawData(object):
         ax2.annotate(msg, xy=(v_mv[self.idx_best], self.tn_best),
                      xytext=(v_mv[self.idx_best] + 0.75, self.tn_best + 50),
                      arrowprops=dict(color='black', arrowstyle="->", lw=0.5),
-                     va="center", ha="left")
+                     va="center", ha="left",  fontsize=16)
         ax2.set_ylabel('Noise Temperature (K)', color=_red)
         for tl in ax2.get_yticklabels():
             tl.set_color(_red)
@@ -1595,7 +1595,7 @@ class RawData(object):
         ax.annotate(err_str, xy=(zt_re_best, zt_im_best),
                     xytext=text_pos, bbox=bbox_props,
                     va=text_va, ha=text_ha,
-                    fontsize=8,
+                    fontsize=16,
                     arrowprops=dict(color='black', arrowstyle="->", lw=2))
         ax.set_xlabel(r'$R_\mathrm{{T}}$ ($\Omega$)')
         ax.set_ylabel(r'$X_\mathrm{{T}}$ ($\Omega$)')
@@ -1603,7 +1603,7 @@ class RawData(object):
         textstr1 = 'Embedding impedance:\n'
         textstr2 = r'$Z_\mathrm{{T}}=R_\mathrm{{T}}+j\,X_\mathrm{{T}}$'
         textstr = textstr1 + textstr2
-        ax.text(0.05, 0.95, textstr, transform=ax.transAxes, fontsize=7,
+        ax.text(0.05, 0.95, textstr, transform=ax.transAxes,
                 verticalalignment='top', bbox=bbox_props)
         if fig_name is not None:
             fig.savefig(fig_name, **_plot_params)
@@ -1977,7 +1977,7 @@ def plot_overall_results(dciv, data_list, fig_folder, vmax_plot=4.,
     ax.set_ylabel(r'Current (uA)')
     ax.set_xlim([0, vmax_plot])
     ax.set_ylim([0, imax_plot])
-    ax.legend(fontsize=8, title='LO (GHz)', frameon=False)
+    ax.legend(title='LO (GHz)', frameon=False)
     fig.savefig(os.path.join(fig_folder, 'iv_curves.png'), dpi=500)
     plt.close(fig)
 
