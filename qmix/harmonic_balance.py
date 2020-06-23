@@ -314,9 +314,8 @@ def _inv_jacobian(error_all, vj_2d, vt_2d, zt_2d, cct, resp, num_b, resp_matrix=
         progress_bar(num_n, num_n, prefix="Calculating inverse Jacobian")
 
     # Invert the Jacobian matrix
-    inv_jacobian = np.zeros((num_n * 2, num_n * 2, npts), dtype=float)
-    for i in range(npts):
-        inv_jacobian[:, :, i] = np.linalg.inv(jacobian[:, :, i])
+    # https://stackoverflow.com/a/49582794
+    inv_jacobian = np.linalg.inv(jacobian.transpose(2,0,1)).transpose(1,2,0)
 
     return inv_jacobian
 

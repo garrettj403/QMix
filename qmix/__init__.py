@@ -27,3 +27,4 @@ import warnings
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
 __author__ = "John Garrett"
+__version__ = "1.0.5"

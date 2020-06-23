@@ -1,22 +1,67 @@
+import io
+import os
+import sys
+
+from os import path
 from setuptools import setup, find_packages
+from setuptools.command.test import test as TestCommand
+
+import qmix
+
+root = path.abspath(path.dirname(__file__))
+
+def read(*filenames, **kwargs):
+    encoding = kwargs.get('encoding', 'utf-8')
+    sep = kwargs.get('sep', '\n')
+    buf = []
+    for filename in filenames:
+        with io.open(path.join(root, filename), encoding=encoding) as f:
+            buf.append(f.read())
+    return sep.join(buf)
+
+long_description = read('README.md')
+print(long_description)
+
+class PyTest(TestCommand):
+    def finalize_options(self):
+        TestCommand.finalize_options(self)
+        self.test_args = []
+        self.test_suite = True
+
+    def run_tests(self):
+        import pytest
+        errcode = pytest.main(self.test_args)
+        sys.exit(errcode)
 
 setup(
     name = "QMix",
-    version = "1.0.5",
+    version = qmix.__version__,
     author = "John Garrett",
     author_email = "garrettj403@gmail.com",
+    url = "https://garrettj403.github.io/QMix/",
     description = "Simulate SIS mixer operation",
     license = "GPL v3",
-    keywords = "SIS mixers, radio astronomy, superconducting detectors, terahertz instrumentation, Python",
-    url = "https://garrettj403.github.io/QMix/",
-    packages=find_packages(),
+    keywords = [
+        "SIS mixers",
+        "radio astronomy",
+        "superconducting detectors",
+        "terahertz instrumentation",
+        "Python"
+    ],
+    packages=find_packages('qmix'),
+    package_dir={'': 'qmix'},
     install_requires=[
         'matplotlib',
         'numba',
         'numpy',
         'scipy'
     ],
-    long_description="QMix is a software package for simulating the quasiparticle tunneling currents in Superconductor/Insulator/Superconductor (SIS) junctions. In radio astronomy, these junctions are used for heterodyne mixing at millimeter and submillimeter wavelengths. QMix can be used to simulate the behavior of SIS mixers, optimize their performance and investigate experimental results.",
+    extras_require={'testing': ['pytest'],},
+    tests_require=['pytest'],
+    cmdclass={'test': PyTest},
+    long_description=long_description,
+    long_description_content_type='text/markdown',
+    platforms='any',
     classifiers=[
         "Development Status :: 5 - Production/Stable",
         "Intended Audience :: Science/Research",
@@ -28,4 +73,9 @@ setup(
         "Topic :: Scientific/Engineering :: Physics",
         "Topic :: Scientific/Engineering :: Astronomy",
     ],
+    project_urls={
+        'Changelog': 'https://github.com/garrettj403/QMix/blob/master/CHANGES.md',
+        'Issue Tracker': 'https://github.com/garrettj403/QMix/issues',
+    },
+    # scripts=[],
 )
