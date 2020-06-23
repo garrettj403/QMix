@@ -27,7 +27,7 @@ Then take a look at the [QMix website](https://garrettj403.github.io/QMix/), whi
 Examples
 --------
 
-QMix can be used to simulate a wide variety of SIS junction behavior. A simple example is shown below for simulating an SIS mixer at 230 GHz. You can find more examples in the ``QMix/examples/`` directory or on the [QMix website](https://garrettj403.github.io/QMix/single-tone-simple.html). 
+QMix can be used to simulate a wide variety of SIS junction behavior. A simple example is shown below for simulating an SIS mixer at 230 GHz. You can find more examples in the ``QMix/notebooks/`` directory or on the [QMix website](https://garrettj403.github.io/QMix/single-tone-simple.html). 
 
 ![](https://github.com/garrettj403/QMix/raw/master/example.png)
 
