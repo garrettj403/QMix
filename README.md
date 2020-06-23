@@ -18,18 +18,23 @@ In order to calculate the quasiparticle tunneling currents, QMix uses *multi-ton
 Getting Started
 ---------------
 
-The easiest way to install QMix is using ``pip``:
+An [environment file](https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html) is provided to configure your Python installation. Assuming that you use Anaconda, you can run:
+
+    conda env create -f environment.yml
+    conda activate qmix
+
+This will create a new virtual environment called ``qmix``. The easiest way to install QMix is then using ``pip``:
 
     python -m pip install QMix
 
-Then take a look at the [QMix website](https://garrettj403.github.io/QMix/), which has much more information on how to use the QMix package and examples showing how to simulate SIS junctions. If you run into any problems, please create a new issue through the [issue tracker](https://github.com/garrettj403/QMix/issues) with the ``help wanted`` or ``question`` tag. In your message, make sure to include your operating system, Python version, and package versions for QMix, Numpy, SciPy and Matplotlib.
+Take a look at the [QMix website](https://garrettj403.github.io/QMix/), which has much more information on how to use the QMix package and examples showing how to simulate SIS junctions. If you run into any problems, please create a new issue through the [issue tracker](https://github.com/garrettj403/QMix/issues) with the ``help wanted`` or ``question`` tag. In your message, make sure to include your operating system, Python version, and package versions for QMix, Numpy, SciPy and Matplotlib.
 
 Examples
 --------
 
 QMix can be used to simulate a wide variety of SIS junction behavior. A simple example is shown below for simulating an SIS mixer at 230 GHz. You can find more examples in the ``QMix/notebooks/`` directory or on the [QMix website](https://garrettj403.github.io/QMix/single-tone-simple.html). 
 
-![](https://github.com/garrettj403/QMix/raw/master/example.png)
+![](https://raw.githubusercontent.com/garrettj403/QMix/master/notebooks/multi-tone-results.png)
 
 Contributing to QMix
 --------------------
