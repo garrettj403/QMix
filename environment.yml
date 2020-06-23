@@ -4,6 +4,7 @@ channels:
   - conda-forge
 dependencies:
   - python>=3.5
+  - pip
   # QMix dependencies (same as requirements.txt)
   - matplotlib
   - numba
@@ -14,11 +15,13 @@ dependencies:
   - ipykernel
   - jupyter
   - nbconvert
+  - nb_conda
   - pandoc
   - sphinx>=1.6
   - sphinx_rtd_theme
   - pip:
     - nbsphinx
+    - tornado==4.5.3
   # for testing
   - pytest>=3.0
   - pip:
