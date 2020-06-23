@@ -1,3 +1,6 @@
+#!/usr/bin/env python3
+"""Install QMix."""
+
 import io
 import os
 import sys
@@ -56,8 +59,8 @@ setup(
         'numpy',
         'scipy'
     ],
-    extras_require={'testing': ['pytest'],},
-    tests_require=['pytest'],
+    extras_require={'test': ['pytest'],},
+    tests_require=['pytest', 'pytest-cov'],
     cmdclass={'test': PyTest},
     long_description=long_description,
     long_description_content_type='text/markdown',
@@ -77,5 +80,7 @@ setup(
         'Changelog': 'https://github.com/garrettj403/QMix/blob/master/CHANGES.md',
         'Issue Tracker': 'https://github.com/garrettj403/QMix/issues',
     },
-    # scripts=[],
+    scripts=[
+        "bin/plot-if-response.py",
+    ],
 )
