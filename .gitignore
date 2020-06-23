@@ -25,6 +25,7 @@ dist/
 htmlcov/
 QMix.egg-info/
 __pycache__/
+.eggs/
 
 docs/source/analyze-experimental-data.ipynb
 docs/source/multi-tone.ipynb
