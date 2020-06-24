@@ -17,7 +17,7 @@ resp = qmix.respfn.RespFnPolynomial(50, verbose=False)
 
 num_b = (10, 5, 5, 5)
 
-print("\n\n\tRUNNING SPEED TEST: harmonic_balance\n")
+print("\n\tRUNNING SPEED TEST: harmonic_balance\n")
 
 
 # 1 tone ---------------------------------------------------------------------
@@ -103,7 +103,7 @@ time_4tone = timer() - start
 print("4 tones:\t{:7.3f} s".format(time_4tone))
 print("\t -> {} iterations".format(it))
 
-print("\n")
+print("")
 
 
 # WRITE TO FILE --------------------------------------------------------------

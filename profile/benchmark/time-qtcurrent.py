@@ -17,7 +17,7 @@ resp = qmix.respfn.RespFnPolynomial(50, verbose=False)
 
 num_b = (10, 5, 5, 5)
 
-print("\n\n\tRUNNING SPEED TEST:\n")
+print("\n\tRUNNING SPEED TEST:\n")
 
 # 1 tone ---------------------------------------------------------------------
 
@@ -99,7 +99,7 @@ if args.tone is None or args.tone == 4:
     t_4tone = min(timeit.Timer(four_tone).repeat(10, 1))
     print("4 tones:\t", t_4tone)
 
-print("\n")
+print("")
 
 # WRITE TO FILE --------------------------------------------------------------
 
