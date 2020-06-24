@@ -1,9 +1,19 @@
+# Virtual environment for QMix
+# see: https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html
+#
+# Create new environment using:
+#     conda env create -f environment.yml
+#
+# Remove using:
+#     conda remove --name qmix --all
+#
+
 name: qmix
 channels:
   - defaults
   - conda-forge
 dependencies:
-  - python>=3.5
+  - python>=3.7
   - pip
   # QMix dependencies (same as requirements.txt)
   - matplotlib
@@ -22,6 +32,11 @@ dependencies:
   - pip:
     - nbsphinx
     - tornado==4.5.3
+  # for profiling
+  - pip:
+    - py-heat-magic
+    - snakeviz
+    - gprof2dot
   # for testing
   - pytest>=3.0
   - pip:
