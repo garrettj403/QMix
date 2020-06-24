@@ -18,16 +18,15 @@ In order to calculate the quasiparticle tunneling currents, QMix uses *multi-ton
 Getting Started
 ---------------
 
-An [environment file](https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html) is provided to configure your Python installation. Assuming that you use Anaconda, you can run:
+The easiest way to install QMix is using ``pip``:
 
-    conda env create -f environment.yml
-    conda activate qmix
-
-This will create a new virtual environment called ``qmix``. The easiest way to install QMix is then using ``pip``:
-
+    # for latest release
     python -m pip install QMix
 
-Take a look at the [QMix website](https://garrettj403.github.io/QMix/), which has much more information on how to use the QMix package and examples showing how to simulate SIS junctions. If you run into any problems, please create a new issue through the [issue tracker](https://github.com/garrettj403/QMix/issues) with the ``help wanted`` or ``question`` tag. In your message, make sure to include your operating system, Python version, and package versions for QMix, Numpy, SciPy and Matplotlib.
+    # for latest commit
+    python -m pip install git+https://github.com/garrettj403/QMix.git
+
+Take a look at the [QMix website](https://garrettj403.github.io/QMix/) for more information on how to use the QMix package and examples showing how to simulate SIS junctions. If you run into any problems, please create a new issue through the [issue tracker](https://github.com/garrettj403/QMix/issues) with the ``help wanted`` or ``question`` tag. In your message, make sure to include your operating system, Python version, and package versions for QMix, Numpy, SciPy and Matplotlib.
 
 Examples
 --------
