@@ -37,6 +37,8 @@ dependencies:
     - py-heat-magic
     - snakeviz
     - gprof2dot
+    - memory_profiler
+    - line_profiler
   # for testing
   - pytest>=3.0
   - pip:
