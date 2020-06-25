@@ -16,8 +16,6 @@ import numpy as np
 from scipy.special import jv as bessel
 
 
-# from qmix.misc.timeit import timeit
-
 # round vph values to this number of decimal places
 # required when comparing vph to vph_list
 ROUND_VPH = 4  
@@ -691,30 +689,6 @@ def _current_coeff_4_tones(a, b, c, d, ccc, resp_matrix, num_b1, num_b2, num_b3,
     ccc3 = ccc[3]
     ccc4 = ccc[4]
 
-    def _multiply_ccc4both(ccc1, ccc2, ccc3, ccc4, k, l, m, n, a, b, c, d):
-
-        c0 = ccc1[k] * ccc2[l] * ccc3[m] * ccc4[n]
-        cp = np.conj(ccc1[k + a] * \
-                     ccc2[l + b] * \
-                     ccc3[m + c] * \
-                     ccc4[n + d])
-        cm = np.conj(ccc1[k - a] * \
-                     ccc2[l - b] * \
-                     ccc3[m - c] * \
-                     ccc4[n - d])
-        
-        return c0 * cp, c0 * cm
-
-    def _mult_ccc4m(ccc1, ccc2, ccc3, ccc4, k, l, m, n, a, b, c, d):
-
-        c0 = ccc1[k] * ccc2[l] * ccc3[m] * ccc4[n]
-        cm = np.conj(ccc1[k - a] * \
-                     ccc2[l - b] * \
-                     ccc3[m - c] * \
-                     ccc4[n - d])
-
-        return c0 * cm
-
     # Equation 5.25
     rsp_p = np.zeros(npts, dtype=np.complex128)
     rsp_m = np.zeros(npts, dtype=np.complex128)
@@ -723,27 +697,31 @@ def _current_coeff_4_tones(a, b, c, d, ccc, resp_matrix, num_b1, num_b2, num_b3,
             for m in range(-num_b3, num_b3 + 1):
                 for n in range(-num_b4, num_b4 + 1):
 
-                    current_found = False
+                    c0 = ccc1[k] * ccc2[l] * ccc3[m] * ccc4[n]
+                    resp_current = resp_matrix[k, l, m, n]
 
                     if -num_b1 <= k + a <= num_b1 and \
                        -num_b2 <= l + b <= num_b2 and \
                        -num_b3 <= m + c <= num_b3 and \
                        -num_b4 <= n + d <= num_b4:
 
-                        resp_current = resp_matrix[k, l, m, n]
-                        current_found = True
-                        cp, cm = _multiply_ccc4both(ccc1, ccc2, ccc3, ccc4, k, l, m, n, a, b, c, d)
+                        cp = np.conj(ccc1[k + a] * \
+                                     ccc2[l + b] * \
+                                     ccc3[m + c] * \
+                                     ccc4[n + d]) * c0
+
                         rsp_p += cp * resp_current
 
                     if -num_b1 <= k - a <= num_b1 and \
                        -num_b2 <= l - b <= num_b2 and \
                        -num_b3 <= m - c <= num_b3 and \
                        -num_b4 <= n - d <= num_b4:
-
-                        if not current_found:
-                            resp_current = resp_matrix[k, l, m, n]
-                            cm = _mult_ccc4m(ccc1, ccc2, ccc3, ccc4, k, l, m, n, a, b, c, d)
-
+                        
+                        cm = np.conj(ccc1[k - a] * \
+                                     ccc2[l - b] * \
+                                     ccc3[m - c] * \
+                                     ccc4[n - d]) * c0
+                        
                         rsp_m += cm * resp_current
 
     # Calculate current coefficient: equation 5.26
@@ -757,7 +735,8 @@ def _current_coeff_4_tones(a, b, c, d, ccc, resp_matrix, num_b1, num_b2, num_b3,
 
 def _unpack_num_b(num_b, num_f):
 
-    # note that num_b is 0-indexed if it is a tuple
+    # Note: num_b is 0-indexed if it is a tuple
+    # I.e.: num_b[0] is for the fundamental frequency
     if isinstance(num_b, tuple):
         assert len(num_b) >= num_f, \
             "There must be one value of num_b for each fundamental frequency."
