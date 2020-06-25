@@ -585,6 +585,7 @@ def _current_coeff_3_tones(a, b, c, ccc, resp_matrix, num_b1, num_b2, num_b3):  
         and 5.26 in Kittara's thesis.
     """
 
+    # Recast cofficients
     ccc1 = ccc[1]
     ccc2 = ccc[2]
     ccc3 = ccc[3]
@@ -592,51 +593,30 @@ def _current_coeff_3_tones(a, b, c, ccc, resp_matrix, num_b1, num_b2, num_b3):  
     # Equation 5.25
     rsp_p = np.zeros_like(ccc1[0,:], dtype=np.complex128)
     rsp_m = np.zeros_like(ccc1[0,:], dtype=np.complex128)
-
-    def _multiply_ccc3both(ccc1, ccc2, ccc3, k, l, m, a, b, c):
-
-        c0 = ccc1[k] * ccc2[l] * ccc3[m]
-        cp = np.conj(ccc1[k + a, :] * \
-                     ccc2[l + b, :] * \
-                     ccc3[m + c, :])
-        cm = np.conj(ccc1[k - a, :] * \
-                     ccc2[l - b, :] * \
-                     ccc3[m - c, :])
-        
-        return c0 * cp, c0 * cm
-
-    def _multiply_ccc3m(ccc1, ccc2, ccc3, k, l, m, a, b, c):
-
-        c0 = ccc1[k] * ccc2[l] * ccc3[m]
-        cm = np.conj(ccc1[k - a, :] * \
-                     ccc2[l - b, :] * \
-                     ccc3[m - c, :])
-
-        return c0 * cm
-
     for k in range(-num_b1, num_b1 + 1):
         for l in range(-num_b2, num_b2 + 1):
             for m in range(-num_b3, num_b3 + 1):
 
-                current_found = False
+                c0 = ccc1[k] * ccc2[l] * ccc3[m]
+                resp_current = resp_matrix[k, l, m]
 
                 if -num_b1 <= k + a <= num_b1 and \
                    -num_b2 <= l + b <= num_b2 and \
                    -num_b3 <= m + c <= num_b3:
 
-                    resp_current = resp_matrix[k, l, m]
-                    current_found = True
-                    cp, cm = _multiply_ccc3both(ccc1, ccc2, ccc3, k, l, m, a, b, c)
+                    cp = np.conj(ccc1[k + a, :] *
+                                 ccc2[l + b, :] *
+                                 ccc3[m + c, :]) * c0
+
                     rsp_p += cp * resp_current
 
                 if -num_b1 <= k - a <= num_b1 and \
                    -num_b2 <= l - b <= num_b2 and \
                    -num_b3 <= m - c <= num_b3:
 
-                    if not current_found:
-
-                        resp_current = resp_matrix[k, l, m]
-                        cm = _multiply_ccc3m(ccc1, ccc2, ccc3, k, l, m, a, b, c)
+                    cm = np.conj(ccc1[k - a, :] *
+                                 ccc2[l - b, :] *
+                                 ccc3[m - c, :]) * c0
 
                     rsp_m += cm * resp_current
 
@@ -705,9 +685,9 @@ def _current_coeff_4_tones(a, b, c, d, ccc, resp_matrix, num_b1, num_b2, num_b3,
                        -num_b3 <= m + c <= num_b3 and \
                        -num_b4 <= n + d <= num_b4:
 
-                        cp = np.conj(ccc1[k + a] * \
-                                     ccc2[l + b] * \
-                                     ccc3[m + c] * \
+                        cp = np.conj(ccc1[k + a] *
+                                     ccc2[l + b] *
+                                     ccc3[m + c] *
                                      ccc4[n + d]) * c0
 
                         rsp_p += cp * resp_current
@@ -717,9 +697,9 @@ def _current_coeff_4_tones(a, b, c, d, ccc, resp_matrix, num_b1, num_b2, num_b3,
                        -num_b3 <= m - c <= num_b3 and \
                        -num_b4 <= n - d <= num_b4:
                         
-                        cm = np.conj(ccc1[k - a] * \
-                                     ccc2[l - b] * \
-                                     ccc3[m - c] * \
+                        cm = np.conj(ccc1[k - a] *
+                                     ccc2[l - b] *
+                                     ccc3[m - c] *
                                      ccc4[n - d]) * c0
                         
                         rsp_m += cm * resp_current
