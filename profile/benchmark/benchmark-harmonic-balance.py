@@ -1,10 +1,13 @@
+"""Benchmark the harmonic_balance function."""
+
 import argparse
 import datetime
-import qmix
 import socket
 import timeit
-
 from timeit import default_timer as timer
+
+import qmix
+from qmix.harmonic_balance import harmonic_balance
 
 # Arguments
 parser = argparse.ArgumentParser()
@@ -29,12 +32,12 @@ cct.zt[1,1] = 0.5 - 1j*0.3
 
 def one_tone():
 
-    vj = qmix.harmonic_balance.harmonic_balance(cct, resp, num_b=num_b, verbose=False)
+    harmonic_balance(cct, resp, num_b=num_b, verbose=False)
 
 time_1tone = min(timeit.Timer(one_tone).repeat(50, 1))
 print("1 tone:\t\t{:7.3f} ms".format(time_1tone*1e3))
 
-_, it, _ = qmix.harmonic_balance.harmonic_balance(cct, resp, num_b=num_b, verbose=False, mode='x')
+_, it, _ = harmonic_balance(cct, resp, num_b=num_b, verbose=False, mode='x')
 print("\t -> {} iterations".format(it))
 
 
@@ -50,12 +53,12 @@ cct.zt[2,1] = 0.5 - 1j*0.3
 
 def two_tone():
 
-    vj = qmix.harmonic_balance.harmonic_balance(cct, resp, num_b=num_b, verbose=False)
+    harmonic_balance(cct, resp, num_b=num_b, verbose=False)
 
 time_2tone = min(timeit.Timer(two_tone).repeat(20, 1))
 print("2 tones:\t{:7.3f} ms".format(time_2tone*1e3))
 
-_, it, _ = qmix.harmonic_balance.harmonic_balance(cct, resp, num_b=num_b, verbose=False, mode='x')
+_, it, _ = harmonic_balance(cct, resp, num_b=num_b, verbose=False, mode='x')
 print("\t -> {} iterations".format(it))
 
 # 3 tone ---------------------------------------------------------------------
@@ -73,12 +76,12 @@ cct.zt[3,1] = 0.5 - 1j*0.3
 
 def three_tone():
 
-    vj = qmix.harmonic_balance.harmonic_balance(cct, resp, num_b=num_b, verbose=False)
+    harmonic_balance(cct, resp, num_b=num_b, verbose=False)
 
 time_3tone = min(timeit.Timer(two_tone).repeat(3, 1))
 print("3 tones:\t{:7.3f} s".format(time_3tone))
 
-_, it, _ = qmix.harmonic_balance.harmonic_balance(cct, resp, num_b=num_b, verbose=False, mode='x')
+_, it, _ = harmonic_balance(cct, resp, num_b=num_b, verbose=False, mode='x')
 print("\t -> {} iterations".format(it))
 
 # 4 tone ---------------------------------------------------------------------
@@ -98,7 +101,7 @@ cct.zt[4,1] = 1.
 
 # def four_tone():
 start = timer()
-_, it, _ = qmix.harmonic_balance.harmonic_balance(cct, resp, num_b=num_b, verbose=False, mode='x')
+_, it, _ = harmonic_balance(cct, resp, num_b=num_b, verbose=False, mode='x')
 time_4tone = timer() - start
 print("4 tones:\t{:7.3f} s".format(time_4tone))
 print("\t -> {} iterations".format(it))

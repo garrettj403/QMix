@@ -1,9 +1,12 @@
+"""Benchmark the qtcurrent function."""
+
 import argparse
 import datetime
-import qmix
 import socket
 import timeit
 
+import qmix
+from qmix.qtcurrent import qtcurrent
 
 # Arguments
 parser = argparse.ArgumentParser()
@@ -31,7 +34,7 @@ if args.tone is None or args.tone == 1:
 
     def one_tone():
 
-        idc = qmix.qtcurrent.qtcurrent(vj, cct, resp, 0., num_b=num_b, verbose=False)
+        qtcurrent(vj, cct, resp, 0., num_b=num_b, verbose=False)
 
     t_1tone = min(timeit.Timer(one_tone).repeat(3000, 1))
     print("1 tone:\t\t", t_1tone)
@@ -50,7 +53,7 @@ if args.tone is None or args.tone == 2:
 
     def two_tone():
 
-        idc = qmix.qtcurrent.qtcurrent(vj, cct, resp, 0., num_b=num_b, verbose=False)
+        qtcurrent(vj, cct, resp, 0., num_b=num_b, verbose=False)
 
     t_2tone = min(timeit.Timer(two_tone).repeat(200, 1))
     print("2 tones:\t", t_2tone)
@@ -71,7 +74,7 @@ if args.tone is None or args.tone == 3:
 
     def three_tone():
 
-        idc = qmix.qtcurrent.qtcurrent(vj, cct, resp, 0., num_b=num_b, verbose=False)
+        qtcurrent(vj, cct, resp, 0., num_b=num_b, verbose=False)
 
     t_3tone = min(timeit.Timer(three_tone).repeat(50, 1))
     print("3 tones:\t", t_3tone)
@@ -94,7 +97,7 @@ if args.tone is None or args.tone == 4:
 
     def four_tone():
 
-        idc = qmix.qtcurrent.qtcurrent(vj, cct, resp, 0., num_b=num_b, verbose=False)
+        qtcurrent(vj, cct, resp, 0., num_b=num_b, verbose=False)
 
     t_4tone = min(timeit.Timer(four_tone).repeat(10, 1))
     print("4 tones:\t", t_4tone)
