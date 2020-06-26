@@ -1,16 +1,27 @@
 """ This module contains functions to calculate the quasiparticle tunneling 
 currents passing through an SIS junction. 
 
-**Description**
+Description:
 
     Given the voltages applied across an SIS junction, the quasiparticle 
     tunneling currents can be calculated using multi-tone spectral domain 
     analysis (MTSDA; see references in online docs). 
 
+Note: 
+
+    This code is largely based on P. Kittara's 2002 DPhil thesis (see 
+    references in online docs). I include some inline comments to refer to
+    specific equations.
+
+    Also, all of the values in this module are normalized, i.e., voltages are
+    normalized to the gap voltage, frequencies are normalized to the gap 
+    frequency, etc.
+
 """
 
 from timeit import default_timer as timer
 
+import math
 import numba as nb
 import numpy as np
 from scipy.special import jv as bessel
@@ -22,12 +33,6 @@ ROUND_VPH = 4
 
 
 # Determine the dc/ac tunneling currents -------------------------------------
-
-# Note: I reference equations from Kittara (2002) in some of my comments.
-
-# Note: All values in this module are normalized. I.e., voltages are 
-#       normalized to the gap voltage, frequencies are normalized to the gap 
-#       frequency, etc.
 
 def qtcurrent(vj, cct, resp, vph_list, num_b=15, verbose=True, resp_matrix=None):
     """Calculate the quasiparticle tunneling current.
@@ -44,7 +49,7 @@ def qtcurrent(vj, cct, resp, vph_list, num_b=15, verbose=True, resp_matrix=None)
         ``vph_list`` would  be ``[0, 230e9 / fgap]`` where ``fgap`` is the gap
         frequency.
 
-        Maximum of 4 fundamental tones.
+        Maximum of 4 non-harmonic tones.
 
     Args:
         vj (ndarray): Voltage across the SIS junction
@@ -65,12 +70,9 @@ def qtcurrent(vj, cct, resp, vph_list, num_b=15, verbose=True, resp_matrix=None)
 
     # Load, prepare and check input data -------------------------------------
 
-    # cct.lock()
-    # vj.flags.writeable = False
-
-    num_f = cct.num_f
-    num_p = cct.num_p
-    npts = cct.vb_npts
+    num_f = cct.num_f   # number of frequencies
+    num_p = cct.num_p   # number of harmonics
+    npts = cct.vb_npts  # number of bias voltages
 
     assert cct.vph[1:].min() > 0., "All vph must be > 0!"
 
@@ -81,6 +83,7 @@ def qtcurrent(vj, cct, resp, vph_list, num_b=15, verbose=True, resp_matrix=None)
         vph_list = [float(vph_list)]
         vph_is_list = False
 
+    # TODO: there must be a better way...
     for i, vph_val in enumerate(vph_list):
         vph_list[i] = round(vph_list[i], ROUND_VPH)
     nvph = len(vph_list)
@@ -97,7 +100,7 @@ def qtcurrent(vj, cct, resp, vph_list, num_b=15, verbose=True, resp_matrix=None)
 
     # Convolution coefficients ------------------------------------------------
 
-    ccc = _convolution_coefficient(vj, cct.vph, num_f, num_p, num_b)
+    ccc = _convolution_coefficient(vj, vph, num_f, num_p, num_b)
 
     # Interpolate response function ------------------------------------------
 
@@ -129,9 +132,6 @@ def qtcurrent(vj, cct, resp, vph_list, num_b=15, verbose=True, resp_matrix=None)
     if verbose:
         print("Done.")
         print("Time: {0:.4f} s\n".format(timer() - start_time))
-
-    cct.unlock()
-    # vj.flags.writeable = True
 
     if vph_is_list:
         return current_out
@@ -254,20 +254,19 @@ def interpolate_respfn(cct, resp, num_b):
 
     """
 
-    num_f = cct.num_f
+    nb_list = _unpack_num_b(num_b, cct.num_f)
 
-    nb_list = _unpack_num_b(num_b, num_f)
-
-    if num_f == 1:
+    if cct.num_f == 1:
         resp_matrix = _find_resp_current_1_tone(resp, cct.vb, cct.vph, *nb_list)
-    elif num_f == 2:
+    elif cct.num_f == 2:
         resp_matrix = _find_resp_current_2_tones(resp, cct.vb, cct.vph, *nb_list)
-    elif num_f == 3:
+    elif cct.num_f == 3:
         resp_matrix = _find_resp_current_3_tones(resp, cct.vb, cct.vph, *nb_list)
-    elif num_f == 4:
+    elif cct.num_f == 4:
         resp_matrix = _find_resp_current_4_tones(resp, cct.vb, cct.vph, *nb_list)
-
-    # resp_matrix.flags.writeable = False
+    else:
+        print("num_f must be 1, 2, 3 or 4!")
+        raise ValueError
 
     return resp_matrix
 
@@ -340,25 +339,36 @@ def _find_resp_current_4_tones(resp, vb, vph, num_b1, num_b2, num_b3, num_b4):
         for l in range(-num_b2, num_b2 + 1):
             for m in range(-num_b3, num_b3 + 1):
                 for n in range(-num_b4, num_b4 + 1):
-                    voltage[k, l, m, n] = vb + k * vph[1] + l * vph[2] + m * vph[3] + n * vph[4]
+                    voltage[k, l, m, n, :] = vb + k * vph[1] + l * vph[2] + m * vph[3] + n * vph[4]
     resp_current_out = resp(voltage)
 
     return resp_current_out
 
 
 # Calculate the convolution coefficients -------------------------------------
-# The convolution coefficients contains all of the spectral data (amplitudes
-# and phases). They are found through an iterative technique. Note: I 
-# originally wrote these functions using linear algebra/recursion/
-# broadcasting, but I found the method used below to be faster (does that make
-# sense?).
-#
-# Runs once per qtcurrent function call
 
 def _convolution_coefficient(vj, vph, num_f, num_p, num_b):
-    """
-    Calculate the convolution coefficients for each tone. Eqn. 5.12 in
-    Kittara's thesis.
+    """Calculate the convolution coefficients for each tone.
+
+    The convolution coefficients contains all of the spectral data (amplitudes
+    and phases). They are found through an iterative technique. 
+    
+    Runs once per qtcurrent function call
+
+    Note: 
+
+        I originally wrote these functions using linear algebra/recursion/
+        broadcasting, but I found the method used below to be faster.
+
+    Args:
+        vj (ndarray): Voltage across the SIS junction
+        vph (ndarray): Photon voltages
+        num_f (int): Number of non-harmonically related frequencies
+        num_p (int): Number of harmonics
+        num_b (int): Number of Bessel functions
+
+    Returns:
+        ndarray: Coefficients
 
     """
 
@@ -367,7 +377,7 @@ def _convolution_coefficient(vj, vph, num_f, num_p, num_b):
         num_b = max(num_b)
 
     # Junction drive level:  alpha[f, p, i] in R^(num_f+1)(num_p+1)(npts)
-    alpha = np.zeros((num_f + 1, num_p + 1, npts))
+    alpha = np.zeros_like(vj, dtype=float)
     for f in range(1, num_f + 1):
         for p in range(1, num_p + 1):
             alpha[f, p, :] = np.abs(vj[f, p, :]) / (p * vph[f])
@@ -375,37 +385,54 @@ def _convolution_coefficient(vj, vph, num_f, num_p, num_b):
     # Junction voltage phase:  phi[f, p, i] in R^(num_f+1)(num_p+1)(npts)
     phi = np.angle(vj)  # in radians
 
-    # Jacobi-Angers coefficients: 
-    # jac[f, p, n, i] in C^(num_f+1)(num_p+1)(num_b*2+1)(npts)
+    # Jacobi-Angers coefficients: jac[f, p, n, i] in C^(num_f+1)(num_p+1)(num_b*2+1)(npts)
+    # Equation 5.7 in Kittara's thesis
+    # Note: This chunk of code dominates the computation time of this function
+    # Note: I tried using the recurrence relation, but ran into numerical errors
     jac = np.zeros((num_f + 1, num_p + 1, num_b * 2 + 1, npts), dtype=complex)
     for f in range(1, num_f + 1):
         for p in range(1, num_p + 1):
-            for n in range(-num_b, num_b + 1):
-                jac[f, p, n] = bessel(n, alpha[f, p]) * np.exp(-1j * n * phi[f, p])
+            jac[f, p,  0] =  bessel(0, alpha[f, p])
+            for n in range(1, num_b + 1):
+                jn = bessel(n, alpha[f, p])
+                jac[f, p,  n] =           jn * np.exp(-1j * n * phi[f, p])
+                jac[f, p, -n] = (-1)**n * jn * np.exp( 1j * n * phi[f, p])
 
     # Convolution coefficients: cc[f, k, i] in C^(num_f+1)(num_b*2+1)(npts)
     cc_out = _calculate_coeff(jac)
-    # cc_out.flags.writeable = False
 
     # # DEBUG
     # import matplotlib.pyplot as plt 
     # plt.figure()
     # for f in range(1, num_f+1):
-    #     plt.plot(vph[f]*np.arange(-num_b, num_b+1), cc_out[f, :, 70])
+    #     # plt.stem(vph[f]*np.arange(-num_b, num_b+1), np.abs(cc_out[f, :, 70]))
+    #     plt.stem(np.abs(cc_out[f, :, 70]))
     # plt.show()
 
     return cc_out
 
 
 @nb.njit("c16[:,:,:](c16[:,:,:,:])")
-def _calculate_coeff(aaa):  # pragma: no cover
-    """Find convolution coefficients (recursively)."""
+def _calculate_coeff(jac):  # pragma: no cover
+    """Calculate convolution coefficients (recursively).
 
-    _, num_p, num_b, _ = aaa.shape
+    This function is only used if num_p > 1 !!!
+
+    Calculation time is proportional to num_p.
+
+    Args:
+        jac (ndarray): Jacobi-Angers coefficients (from Eqn. 5.7)
+
+    Returns:
+        ndarray: Convolution coefficients
+
+    """
+
+    _, num_p, num_b, _ = jac.shape
     num_p -= 1                # number of harmonics
     num_b = (num_b - 1) // 2  # number of bessel functions
 
-    ccc_last = aaa[:, 1, :, :]
+    ccc_last = jac[:, 1, :, :]
     if num_p == 1:
         return ccc_last
 
@@ -415,7 +442,7 @@ def _calculate_coeff(aaa):  # pragma: no cover
             for l in range(-num_b, num_b + 1):
                 idx = k - p * l
                 if -num_b <= idx <= num_b:
-                    ccc_next[1:, k] += ccc_last[1:, idx] * aaa[1:, p, l]
+                    ccc_next[1:, k] += ccc_last[1:, idx] * jac[1:, p, l]
         ccc_last = ccc_next
 
     return ccc_last
@@ -430,7 +457,7 @@ def _calculate_coeff(aaa):  # pragma: no cover
 ### One tone ###
 
 def _current_1_tone(vph_out, ccc, vph, resp_matrix, num_p, npts, num_b1):
-    """ Calculate the tunneling current at a specific frequency.
+    """Calculate the tunneling current at a specific frequency.
 
     One tone.
 
@@ -452,34 +479,34 @@ def _current_1_tone(vph_out, ccc, vph, resp_matrix, num_p, npts, num_b1):
 
 @nb.njit("c16[:](i4, c16[:,:,:], c16[:,:], i4, i4)")
 def _current_coeff_1_tone(a, ccc, resp_matrix, num_b1, npts):  # pragma: no cover
-    """ This function will calculate the tunneling current coefficient
+    """This function will calculate the tunneling current coefficient
         (I(a)) for a one tone system. Equations 5.17 and 5.18 in Kittara's
         thesis.
     """
 
     # Equation 5.17
-    rsp_p = np.zeros(npts, dtype=np.complex128)  # positive coefficients p
-    rsp_m = np.zeros(npts, dtype=np.complex128)  # negative coefficients p
+    rs_p = np.zeros(npts, dtype=np.complex128)  # positive coefficients
+    rs_m = np.zeros(npts, dtype=np.complex128)  # negative coefficients
     ccc_conj = np.conj(ccc[1])
     for k in range(-num_b1, num_b1 + 1):
 
         if -num_b1 <= k + a <= num_b1:
-            rsp_p += ccc[1, k, :] * ccc_conj[k + a, :] * resp_matrix[k]
+            rs_p += ccc[1, k, :] * ccc_conj[k + a, :] * resp_matrix[k]
 
         if -num_b1 <= k - a <= num_b1:
-            rsp_m += ccc[1, k, :] * ccc_conj[k - a, :] * resp_matrix[k]
+            rs_m += ccc[1, k, :] * ccc_conj[k - a, :] * resp_matrix[k]
 
     # Calculate current coefficient: equation 5.26
     if a == 0:
-        return rsp_p.imag + 1j * 0
+        return rs_p.imag + 1j * 0
     else:
-        return (rsp_p.imag + rsp_m.imag) - 1j * (rsp_p.real - rsp_m.real)
+        return (rs_p.imag + rs_m.imag) - 1j * (rs_p.real - rs_m.real)
 
 
 ### Two tones ###
 
 def _current_2_tones(vph_out, ccc, vph, resp_matrix, num_p, npts, num_b1, num_b2):
-    """ Calculate the tunneling current at a specific frequency.
+    """Calculate the tunneling current at a specific frequency.
 
     Two tones.
     
@@ -502,42 +529,42 @@ def _current_2_tones(vph_out, ccc, vph, resp_matrix, num_p, npts, num_b1, num_b2
 
 @nb.njit("c16[:](i4, i4, c16[:,:,:], c16[:,:,:], i4, i4, i4)")
 def _current_coeff_2_tones(a, b, ccc, resp_matrix, num_b1, num_b2, npts):  # pragma: no cover
-    """ This function will calculate the tunneling current coefficient
+    """This function will calculate the tunneling current coefficient
         (I(a,b)) for a two tone system (i.e., for a (a,b) pair versus
         calculating the entire matrix for every (a,b) pair). Equations 5.25
         and 5.26 in Kittara's thesis.
     """
 
     # Equation 5.25
-    rsp_p = np.zeros(npts, dtype=np.complex128)
-    rsp_m = np.zeros(npts, dtype=np.complex128)
+    rs_p = np.zeros(npts, dtype=np.complex128)
+    rs_m = np.zeros(npts, dtype=np.complex128)
     ccc_conj = np.conj(ccc)
     for k in range(-num_b1, num_b1 + 1):
         for l in range(-num_b2, num_b2 + 1):
 
             if -num_b1 <= k + a <= num_b1 and \
                -num_b2 <= l + b <= num_b2:
-                rsp_p += ccc[1, k, :] * ccc_conj[1, k + a, :] * \
-                         ccc[2, l, :] * ccc_conj[2, l + b, :] * \
-                         resp_matrix[k, l]
+                rs_p += ccc[1, k, :] * ccc_conj[1, k + a, :] * \
+                        ccc[2, l, :] * ccc_conj[2, l + b, :] * \
+                        resp_matrix[k, l]
 
             if -num_b1 <= k - a <= num_b1 and \
                -num_b2 <= l - b <= num_b2:
-                rsp_m += ccc[1, k, :] * ccc_conj[1, k - a, :] * \
-                         ccc[2, l, :] * ccc_conj[2, l - b, :] * \
-                         resp_matrix[k, l]
+                rs_m += ccc[1, k, :] * ccc_conj[1, k - a, :] * \
+                        ccc[2, l, :] * ccc_conj[2, l - b, :] * \
+                        resp_matrix[k, l]
 
     # Calculate current coefficient: equation 5.26
     if a == 0 and b == 0:
-        return rsp_p.imag + 1j * 0.
+        return rs_p.imag + 1j * 0.
     else:
-        return (rsp_p.imag + rsp_m.imag) - 1j * (rsp_p.real - rsp_m.real)
+        return (rs_p.imag + rs_m.imag) - 1j * (rs_p.real - rs_m.real)
 
 
 ### Three tones ###
 
 def _current_3_tones(vph_out, ccc, vph, resp_matrix, num_p, npts, num_b1, num_b2, num_b3):
-    """ Calculate the tunneling current at a specific frequency.
+    """Calculate the tunneling current at a specific frequency.
 
     Three tones.
     
@@ -579,7 +606,7 @@ def _current_3_tones(vph_out, ccc, vph, resp_matrix, num_p, npts, num_b1, num_b2
 
 @nb.njit("c16[:](i4, i4, i4, c16[:,:,:], c16[:,:,:,:], i4, i4, i4)")
 def _current_coeff_3_tones(a, b, c, ccc, resp_matrix, num_b1, num_b2, num_b3):  # pragma: no cover
-    """ This function will calculate the tunneling current coefficient
+    """This function will calculate the tunneling current coefficient
         (I(a,b,c)) for a three tone system (i.e., for an (a,b,c) pair versus
         calculating the entire matrix for every (a,b,c) pair). Equations 5.25
         and 5.26 in Kittara's thesis.
@@ -591,8 +618,8 @@ def _current_coeff_3_tones(a, b, c, ccc, resp_matrix, num_b1, num_b2, num_b3):  
     ccc3 = ccc[3]
 
     # Equation 5.25
-    rsp_p = np.zeros_like(ccc1[0,:], dtype=np.complex128)
-    rsp_m = np.zeros_like(ccc1[0,:], dtype=np.complex128)
+    rs_p = np.zeros_like(ccc1[0,:], dtype=np.complex128)
+    rs_m = np.zeros_like(ccc1[0,:], dtype=np.complex128)
     for k in range(-num_b1, num_b1 + 1):
         for l in range(-num_b2, num_b2 + 1):
             for m in range(-num_b3, num_b3 + 1):
@@ -608,7 +635,7 @@ def _current_coeff_3_tones(a, b, c, ccc, resp_matrix, num_b1, num_b2, num_b3):  
                                  ccc2[l + b, :] *
                                  ccc3[m + c, :]) * c0
 
-                    rsp_p += cp * resp_current
+                    rs_p += cp * resp_current
 
                 if -num_b1 <= k - a <= num_b1 and \
                    -num_b2 <= l - b <= num_b2 and \
@@ -618,20 +645,20 @@ def _current_coeff_3_tones(a, b, c, ccc, resp_matrix, num_b1, num_b2, num_b3):  
                                  ccc2[l - b, :] *
                                  ccc3[m - c, :]) * c0
 
-                    rsp_m += cm * resp_current
+                    rs_m += cm * resp_current
 
     # Calculate current coefficient: equation 5.26
     if a == 0 and b == 0 and c == 0:
-        return rsp_p.imag + 1j * 0.
+        return rs_p.imag + 1j * 0.
     else:
-        return (rsp_p.imag + rsp_m.imag) - 1j * (rsp_p.real - rsp_m.real)
+        return (rs_p.imag + rs_m.imag) - 1j * (rs_p.real - rs_m.real)
 
 
 ### Four tones ###
 
 # @nb.njit("c16[:](f4, c16[:,:,:], f8[:], c16[:,:,:,:,:], i4, i4, i4, i4, i4, i4)")
 def _current_4_tones(vph_out, ccc, vph, resp_matrix, num_p, npts, num_b1, num_b2, num_b3, num_b4):  # pragma: no cover
-    """ Calculate the tunneling current at a specific frequency.
+    """Calculate the tunneling current at a specific frequency (4 tones).
 
     Four tones.
     
@@ -657,29 +684,32 @@ def _current_4_tones(vph_out, ccc, vph, resp_matrix, num_p, npts, num_b1, num_b2
 
 @nb.njit("c16[:](i4, i4, i4, i4, c16[:,:,:], c16[:,:,:,:,:], i4, i4, i4, i4, i4)")
 def _current_coeff_4_tones(a, b, c, d, ccc, resp_matrix, num_b1, num_b2, num_b3, num_b4, npts):  # pragma: no cover
-    """ This function will calculate the tunneling current coefficient
+    """This function will calculate the tunneling current coefficient
         (I(a,b,c,d)) for a four tone system (i.e., for an (a,b,c,d) pair
         versus calculating the entire matrix for every (a,b,c) pair).
         Equations 5.25 and 5.26 in Kittara's thesis.
     """
 
-    # Recast cofficients
+    # Recast coefficients (saves a bit of time)
     ccc1 = ccc[1]
     ccc2 = ccc[2]
     ccc3 = ccc[3]
     ccc4 = ccc[4]
 
-    # Equation 5.25
-    rsp_p = np.zeros(npts, dtype=np.complex128)
-    rsp_m = np.zeros(npts, dtype=np.complex128)
+    # Calculate Rabcd+j*Sabcd: quation 5.25
+    rs_p = np.zeros(npts, dtype=np.complex128)  # positive abcd indices
+    rs_m = np.zeros(npts, dtype=np.complex128)  # negative abcd indices
     for k in range(-num_b1, num_b1 + 1):
         for l in range(-num_b2, num_b2 + 1):
             for m in range(-num_b3, num_b3 + 1):
                 for n in range(-num_b4, num_b4 + 1):
 
                     c0 = ccc1[k] * ccc2[l] * ccc3[m] * ccc4[n]
+
+                    # Response function
                     resp_current = resp_matrix[k, l, m, n]
 
+                    # Positive abcd indices
                     if -num_b1 <= k + a <= num_b1 and \
                        -num_b2 <= l + b <= num_b2 and \
                        -num_b3 <= m + c <= num_b3 and \
@@ -690,8 +720,9 @@ def _current_coeff_4_tones(a, b, c, d, ccc, resp_matrix, num_b1, num_b2, num_b3,
                                      ccc3[m + c] *
                                      ccc4[n + d]) * c0
 
-                        rsp_p += cp * resp_current
+                        rs_p += cp * resp_current
 
+                    # Negative abcd indices
                     if -num_b1 <= k - a <= num_b1 and \
                        -num_b2 <= l - b <= num_b2 and \
                        -num_b3 <= m - c <= num_b3 and \
@@ -702,18 +733,28 @@ def _current_coeff_4_tones(a, b, c, d, ccc, resp_matrix, num_b1, num_b2, num_b3,
                                      ccc3[m - c] *
                                      ccc4[n - d]) * c0
                         
-                        rsp_m += cm * resp_current
+                        rs_m += cm * resp_current
 
     # Calculate current coefficient: equation 5.26
     if a == 0 and b == 0 and c == 0 and d == 0:
-        return rsp_p.imag + 1j * 0.
+        return rs_p.imag + 1j * 0.
     else:
-        return (rsp_p.imag + rsp_m.imag) - 1j * (rsp_p.real - rsp_m.real)
+        return (rs_p.imag + rs_m.imag) - 1j * (rs_p.real - rs_m.real)
 
 
 # Helper functions -----------------------------------------------------------
 
 def _unpack_num_b(num_b, num_f):
+    """Unpack num_b (number of Bessel functions to include).
+
+    Args:
+        num_b: Number of Bessel functions to include
+        num_f: Number of frequencies
+
+    Returns:
+        tuple: Number of Bessel functions in tuple form
+
+    """
 
     # Note: num_b is 0-indexed if it is a tuple
     # I.e.: num_b[0] is for the fundamental frequency

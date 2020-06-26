@@ -166,7 +166,7 @@ if args.tone is None or args.tone == 4:
 
 if args.tone is None:
     if args.save:
-        with open('results-coeff.txt', 'a') as f:
+        with open('results/coeff.txt', 'a') as f:
             now = datetime.datetime.now()
             machine = socket.gethostname()
             msg = "{}\t{:.6f}\t{:.6f}\t{:.6f}\t{:.6f}\t{}\n"
