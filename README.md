@@ -46,6 +46,9 @@ To get a local copy of QMix running:
     conda env create -f environment.yml
     conda activate qmix
 
+    # Install QMix
+    python -m pip install -e .
+
     # Test installation
     pytest --verbose --color=yes tests/
 
@@ -54,7 +57,7 @@ Examples
 
 QMix can be used to simulate a wide variety of SIS junction behavior. A simple example is shown below for simulating an SIS mixer at 230 GHz. You can find more examples in the ``QMix/notebooks/`` directory or on the [QMix website](https://garrettj403.github.io/QMix/single-tone-simple.html). 
 
-![](https://raw.githubusercontent.com/garrettj403/QMix/master/notebooks/multi-tone-results.png)
+![](https://raw.githubusercontent.com/garrettj403/QMix/master/notebooks/results/multi-tone-results.png)
 
 Citing QMix
 -----------
