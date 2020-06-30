@@ -83,7 +83,7 @@ setup(
         'Changelog': 'https://github.com/garrettj403/QMix/blob/master/CHANGES.md',
         'Issue Tracker': 'https://github.com/garrettj403/QMix/issues',
     },
-    scripts=[
-        "bin/plot-if-response.py",
-    ],
+    # scripts=[
+    #     "bin/plot-if-response.py",
+    # ],
 )

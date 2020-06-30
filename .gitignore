@@ -16,11 +16,13 @@
 
 qmix/exp/hfss_data.py
 
+bin/
 misc/ 
 my-projects/
 old/
 speed/
 
+build/
 dist/
 htmlcov/
 QMix.egg-info/
