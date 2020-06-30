@@ -30,7 +30,7 @@ __pycache__/
 .eggs/
 
 docs/source/analyze-experimental-data.ipynb
-docs/source/multi-tone.ipynb
-docs/source/single-tone-simple.ipynb
+docs/source/multi-tone-simulation.ipynb
+docs/source/single-tone-simulation.ipynb
 
 Makefile
