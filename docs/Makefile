@@ -6,8 +6,8 @@ SPHINXOPTS    =
 SPHINXBUILD   = sphinx-build
 SPHINXPROJ    = QMix
 SOURCEDIR     = source
-BUILDDIR      = ../../QMix-docs
-PDF           = ../QMix-manual.pdf
+BUILDDIR      = build
+PDF           = 
 
 # Put it first so that "make" without argument is like "make help".
 help:

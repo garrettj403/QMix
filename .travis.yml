@@ -7,17 +7,29 @@ python:
   - "3.6"
   - "3.7"
   - "3.8"
-# command to install dependencies
 install:
+  # install dependencies
   - pip install llvmlite --prefer-binary
   - pip install -r requirements.txt
   - pip install .
   - pip install pytest>=3.0
   - pip install pytest-cov==2.5.0
   - pip install python-coveralls
-# command to run tests
 script: 
+  # run tests
   - py.test ./tests/ --verbose --doctest-modules --color=yes --cov=./qmix/ --cov-report=term-missing
-# for coveralls.io
+  # build documentation
+  - ln -s notebooks/*.ipynb docs/source/
+  - make -C docs/ html
+  - touch docs/build/html/.nojekyll
 after_success:
+  # for coveralls.io
   - coveralls
+deploy:
+  # push to github pages
+  - provider: pages:git
+    verbose: true
+    token: $GITHUB_TOKEN
+    edge: true
+    local_dir: ./docs/build/html/
+    keep_history: true
