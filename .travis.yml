@@ -17,6 +17,12 @@ install:
   - pip install pytest-cov==2.5.0
   - pip install python-coveralls
   # install documentation dependencies
+  - pip install ipython
+  - pip install ipykernel
+  - pip install jupyter
+  - pip install nbconvert
+  - pip install nb_conda
+  - pip install pandoc
   - pip install sphinx>=1.6
   - pip install sphinx_rtd_theme
   - pip install nbsphinx
