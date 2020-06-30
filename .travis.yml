@@ -3,10 +3,7 @@
 # see: https://docs.travis-ci.com/user/languages/python/
 language: python
 python:
-  - "3.5"
-  - "3.6"
   - "3.7"
-  - "3.8"
 install:
   # install dependencies
   - pip install llvmlite --prefer-binary
@@ -37,9 +34,9 @@ after_success:
   - coveralls
 deploy:
   # push to github pages
-  - provider: pages:git
+  - provider: pages
     verbose: true
     token: $GITHUB_TOKEN
     edge: true
-    local_dir: ./docs/build/html/
+    local_dir: docs/build/html/
     keep_history: true
