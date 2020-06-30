@@ -27,7 +27,9 @@ script:
   - py.test ./tests/ --verbose --doctest-modules --color=yes --cov=./qmix/ --cov-report=term-missing
   # build documentation
   - ln -s notebooks/*.ipynb docs/source/
-  - make -C docs/ html
+  - ls docs/source/
+  # - make -C docs/ html
+  - python3 -m sphinx docs/source/ docs/build/
   - touch docs/build/html/.nojekyll
 after_success:
   # for coveralls.io
