@@ -16,8 +16,8 @@ Contents
    
    setup
    qmix
-   single-tone-simple
-   multi-tone
+   single-tone-simulation
+   multi-tone-simulation
    analyze-experimental-data
    references
 

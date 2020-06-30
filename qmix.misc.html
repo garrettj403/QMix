@@ -28,7 +28,7 @@
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="3. Example #1: Creating a simple 1 tone simulation" href="single-tone-simple.html" />
+    <link rel="next" title="3. Example #1: Creating a simple 1 tone simulation" href="single-tone-simulation.html" />
     <link rel="prev" title="2.1.2. qmix.mathfn package" href="qmix.mathfn.html" /> 
 
   
@@ -105,8 +105,8 @@
 <li class="toctree-l2"><a class="reference internal" href="qmix.html#module-qmix">2.7. Module contents</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="single-tone-simple.html">3. Example #1: Creating a simple 1 tone simulation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="multi-tone.html">4. Example #2: Simulating an SIS mixer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="single-tone-simulation.html">3. Example #1: Creating a simple 1 tone simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multi-tone-simulation.html">4. Example #2: Simulating an SIS mixer</a></li>
 <li class="toctree-l1"><a class="reference internal" href="analyze-experimental-data.html">5. Example #3: Analyzing experimental data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="references.html">6. References</a></li>
 </ul>
@@ -154,9 +154,9 @@
     
       <li><a href="index.html">Docs</a> &raquo;</li>
         
-          <li><a href="qmix.html">2. Package API</a> &raquo;</li>
+          <li><a href="qmix.html"><span class="section-number">2. </span>Package API</a> &raquo;</li>
         
-      <li>2.1.3. qmix.misc package</li>
+      <li><span class="section-number">2.1.3. </span>qmix.misc package</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -200,167 +200,140 @@
 }
 </style>
 <div class="section" id="qmix-misc-package">
-<h1>2.1.3. qmix.misc package<a class="headerlink" href="#qmix-misc-package" title="Permalink to this headline">¶</a></h1>
+<h1><span class="section-number">2.1.3. </span>qmix.misc package<a class="headerlink" href="#qmix-misc-package" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="submodules">
-<h2>2.1.3.1. Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">2.1.3.1. </span>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
 </div>
 <div class="section" id="module-qmix.misc.progbar">
-<span id="qmix-misc-progbar-module"></span><h2>2.1.3.2. qmix.misc.progbar module<a class="headerlink" href="#module-qmix.misc.progbar" title="Permalink to this headline">¶</a></h2>
+<span id="qmix-misc-progbar-module"></span><h2><span class="section-number">2.1.3.2. </span>qmix.misc.progbar module<a class="headerlink" href="#module-qmix.misc.progbar" title="Permalink to this headline">¶</a></h2>
 <p>This sub-module contains a function for printing a progress bar to the
 terminal.</p>
 <p>Taken from:</p>
 <blockquote>
-<div><a class="reference external" href="http://stackoverflow.com/questions/3173320/text-progress-bar-in-the-console">http://stackoverflow.com/questions/3173320/text-progress-bar-in-the-console</a></div></blockquote>
-<dl class="function">
+<div><p><a class="reference external" href="http://stackoverflow.com/questions/3173320/text-progress-bar-in-the-console">http://stackoverflow.com/questions/3173320/text-progress-bar-in-the-console</a></p>
+</div></blockquote>
+<dl class="py function">
 <dt id="qmix.misc.progbar.progress_bar">
-<code class="descclassname">qmix.misc.progbar.</code><code class="descname">progress_bar</code><span class="sig-paren">(</span><em>iteration</em>, <em>total</em>, <em>prefix='Progress:'</em>, <em>suffix='Complete'</em>, <em>decimals=2</em>, <em>bar_length=20</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.misc.progbar.progress_bar" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">qmix.misc.progbar.</code><code class="sig-name descname">progress_bar</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">iteration</span></em>, <em class="sig-param"><span class="n">total</span></em>, <em class="sig-param"><span class="n">prefix</span><span class="o">=</span><span class="default_value">'Progress:'</span></em>, <em class="sig-param"><span class="n">suffix</span><span class="o">=</span><span class="default_value">'Complete'</span></em>, <em class="sig-param"><span class="n">decimals</span><span class="o">=</span><span class="default_value">2</span></em>, <em class="sig-param"><span class="n">bar_length</span><span class="o">=</span><span class="default_value">20</span></em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.misc.progbar.progress_bar" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generate a progress bar.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>iteration</strong> (<em>int</em>) – current iteration</li>
-<li><strong>total</strong> (<em>int</em>) – total iterations</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>iteration</strong> (<em>int</em>) – current iteration</p></li>
+<li><p><strong>total</strong> (<em>int</em>) – total iterations</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
-<tr class="field-even field"><td>&#160;</td><td class="field-body"><ul class="first last simple">
-<li><strong>prefix</strong> (<em>str</em>) – prefix string</li>
-<li><strong>suffix</strong> (<em>str</em>) – suffix string</li>
-<li><strong>decimals</strong> (<em>int</em>) – number of decimals in percent complete</li>
-<li><strong>bar_length</strong> (<em>int</em>) – character length of bar</li>
+</dd>
+<dt class="field-even">Keyword Arguments</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>prefix</strong> (<em>str</em>) – prefix string</p></li>
+<li><p><strong>suffix</strong> (<em>str</em>) – suffix string</p></li>
+<li><p><strong>decimals</strong> (<em>int</em>) – number of decimals in percent complete</p></li>
+<li><p><strong>bar_length</strong> (<em>int</em>) – character length of bar</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 </div>
 <div class="section" id="module-qmix.misc.terminal">
-<span id="qmix-misc-terminal-module"></span><h2>2.1.3.3. qmix.misc.terminal module<a class="headerlink" href="#module-qmix.misc.terminal" title="Permalink to this headline">¶</a></h2>
+<span id="qmix-misc-terminal-module"></span><h2><span class="section-number">2.1.3.3. </span>qmix.misc.terminal module<a class="headerlink" href="#module-qmix.misc.terminal" title="Permalink to this headline">¶</a></h2>
 <p>This sub-module contains functions for printing numbers and text to the
 terminal.</p>
-<dl class="function">
+<dl class="py function">
 <dt id="qmix.misc.terminal.cprint">
-<code class="descclassname">qmix.misc.terminal.</code><code class="descname">cprint</code><span class="sig-paren">(</span><em>text</em>, <em>color='HEADER'</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.misc.terminal.cprint" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">qmix.misc.terminal.</code><code class="sig-name descname">cprint</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">text</span></em>, <em class="sig-param"><span class="n">color</span><span class="o">=</span><span class="default_value">'HEADER'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.misc.terminal.cprint" title="Permalink to this definition">¶</a></dt>
 <dd><p>Print colored text to the terminal.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>text</strong> (<em>str</em>) – Text to print</li>
-<li><strong>color</strong> (<em>str</em>) – Color/style to print in</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>text</strong> (<em>str</em>) – Text to print</p></li>
+<li><p><strong>color</strong> (<em>str</em>) – Color/style to print in</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="qmix.misc.terminal.header">
-<code class="descclassname">qmix.misc.terminal.</code><code class="descname">header</code><span class="sig-paren">(</span><em>header_string</em>, <em>color=None</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.misc.terminal.header" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">qmix.misc.terminal.</code><code class="sig-name descname">header</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">header_string</span></em>, <em class="sig-param"><span class="n">color</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.misc.terminal.header" title="Permalink to this definition">¶</a></dt>
 <dd><p>Print a nice header to the terminal.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>header_string</strong> (<em>str</em>) – Header title to print</li>
-<li><strong>color</strong> (<em>str</em>) – Color to print in</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>header_string</strong> (<em>str</em>) – Header title to print</p></li>
+<li><p><strong>color</strong> (<em>str</em>) – Color to print in</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="qmix.misc.terminal.print_intro">
-<code class="descclassname">qmix.misc.terminal.</code><code class="descname">print_intro</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qmix.misc.terminal.print_intro" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">qmix.misc.terminal.</code><code class="sig-name descname">print_intro</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qmix.misc.terminal.print_intro" title="Permalink to this definition">¶</a></dt>
 <dd><p>Print a quick intro to the terminal.</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="qmix.misc.terminal.printc">
-<code class="descclassname">qmix.misc.terminal.</code><code class="descname">printc</code><span class="sig-paren">(</span><em>complex_number</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.misc.terminal.printc" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">qmix.misc.terminal.</code><code class="sig-name descname">printc</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">complex_number</span></em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.misc.terminal.printc" title="Permalink to this definition">¶</a></dt>
 <dd><p>Print a complex number to the terminal.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>complex_number</strong> (<em>complex</em>) – number to print</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>complex_number</strong> (<em>complex</em>) – number to print</p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="qmix.misc.terminal.pvale">
-<code class="descclassname">qmix.misc.terminal.</code><code class="descname">pvale</code><span class="sig-paren">(</span><em>name</em>, <em>val</em>, <em>units=''</em>, <em>comment=''</em>, <em>color=None</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.misc.terminal.pvale" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">qmix.misc.terminal.</code><code class="sig-name descname">pvale</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">val</span></em>, <em class="sig-param"><span class="n">units</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">comment</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">color</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.misc.terminal.pvale" title="Permalink to this definition">¶</a></dt>
 <dd><p>Print name, value in scientific notation and units to terminal.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>name</strong> (<em>str</em>) – variable name</li>
-<li><strong>val</strong> (<em>float</em>) – variable value</li>
-<li><strong>units</strong> (<em>str</em>) – variable units (optional)</li>
-<li><strong>comment</strong> (<em>str</em>) – comment (optional)</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – variable name</p></li>
+<li><p><strong>val</strong> (<em>float</em>) – variable value</p></li>
+<li><p><strong>units</strong> (<em>str</em>) – variable units (optional)</p></li>
+<li><p><strong>comment</strong> (<em>str</em>) – comment (optional)</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="qmix.misc.terminal.pvalf">
-<code class="descclassname">qmix.misc.terminal.</code><code class="descname">pvalf</code><span class="sig-paren">(</span><em>name</em>, <em>val</em>, <em>units=''</em>, <em>comment=''</em>, <em>color=None</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.misc.terminal.pvalf" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">qmix.misc.terminal.</code><code class="sig-name descname">pvalf</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">val</span></em>, <em class="sig-param"><span class="n">units</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">comment</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">color</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.misc.terminal.pvalf" title="Permalink to this definition">¶</a></dt>
 <dd><p>Print name, value as float, and units to terminal.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>name</strong> (<em>str</em>) – variable name</li>
-<li><strong>val</strong> (<em>float</em>) – variable value</li>
-<li><strong>units</strong> (<em>str</em>) – variable units (optional)</li>
-<li><strong>comment</strong> (<em>str</em>) – comment (optional)</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – variable name</p></li>
+<li><p><strong>val</strong> (<em>float</em>) – variable value</p></li>
+<li><p><strong>units</strong> (<em>str</em>) – variable units (optional)</p></li>
+<li><p><strong>comment</strong> (<em>str</em>) – comment (optional)</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="qmix.misc.terminal.title">
-<code class="descclassname">qmix.misc.terminal.</code><code class="descname">title</code><span class="sig-paren">(</span><em>title_string</em>, <em>color=None</em>, <em>total_len=60</em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.misc.terminal.title" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">qmix.misc.terminal.</code><code class="sig-name descname">title</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">title_string</span></em>, <em class="sig-param"><span class="n">color</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">total_len</span><span class="o">=</span><span class="default_value">60</span></em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.misc.terminal.title" title="Permalink to this definition">¶</a></dt>
 <dd><p>Print a nice title to the terminal.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>title_string</strong> (<em>str</em>) – title to print</li>
-<li><strong>color</strong> (<em>str</em>) – Color to print in</li>
-<li><strong>total_len</strong> (<em>int</em>) – Total length of title string (including stars)</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>title_string</strong> (<em>str</em>) – title to print</p></li>
+<li><p><strong>color</strong> (<em>str</em>) – Color to print in</p></li>
+<li><p><strong>total_len</strong> (<em>int</em>) – Total length of title string (including stars)</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 </div>
 <div class="section" id="module-qmix.misc">
-<span id="module-contents"></span><h2>2.1.3.4. Module contents<a class="headerlink" href="#module-qmix.misc" title="Permalink to this headline">¶</a></h2>
+<span id="module-contents"></span><h2><span class="section-number">2.1.3.4. </span>Module contents<a class="headerlink" href="#module-qmix.misc" title="Permalink to this headline">¶</a></h2>
 <p>This sub-package contains miscellaneous modules.</p>
 </div>
 </div>
@@ -373,7 +346,7 @@ terminal.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="single-tone-simple.html" class="btn btn-neutral float-right" title="3. Example #1: Creating a simple 1 tone simulation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="single-tone-simulation.html" class="btn btn-neutral float-right" title="3. Example #1: Creating a simple 1 tone simulation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="qmix.mathfn.html" class="btn btn-neutral" title="2.1.2. qmix.mathfn package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
@@ -407,10 +380,10 @@ terminal.</p>
     
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
     
 
   

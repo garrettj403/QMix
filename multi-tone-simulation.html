@@ -29,7 +29,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="5. Example #3: Analyzing experimental data" href="analyze-experimental-data.html" />
-    <link rel="prev" title="3. Example #1: Creating a simple 1 tone simulation" href="single-tone-simple.html" /> 
+    <link rel="prev" title="3. Example #1: Creating a simple 1 tone simulation" href="single-tone-simulation.html" /> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -85,7 +85,7 @@
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="setup.html">1. Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="qmix.html">2. Package API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="single-tone-simple.html">3. Example #1: Creating a simple 1 tone simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="single-tone-simulation.html">3. Example #1: Creating a simple 1 tone simulation</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">4. Example #2: Simulating an SIS mixer</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#Define-the-junction-properties">4.1. Define the junction properties</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#Define-the-embedding-circuit">4.2. Define the embedding circuit</a></li>
@@ -145,13 +145,13 @@
     
       <li><a href="index.html">Docs</a> &raquo;</li>
         
-      <li>4. Example #2: Simulating an SIS mixer</li>
+      <li><span class="section-number">4. </span>Example #2: Simulating an SIS mixer</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="_sources/multi-tone.ipynb.txt" rel="nofollow"> View page source</a>
+            <a href="_sources/multi-tone-simulation.ipynb.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -387,20 +387,22 @@ div.rendered_html tbody tr:hover {
 }
 </style>
 <div class="section" id="Example-#2:-Simulating-an-SIS-mixer">
-<h1>4. Example #2: Simulating an SIS mixer<a class="headerlink" href="#Example-#2:-Simulating-an-SIS-mixer" title="Permalink to this headline">¶</a></h1>
+<h1><span class="section-number">4. </span>Example #2: Simulating an SIS mixer<a class="headerlink" href="#Example-#2:-Simulating-an-SIS-mixer" title="Permalink to this headline">¶</a></h1>
 <ul class="simple">
-<li>This example will simulate a simple SIS mixer.</li>
-<li>The input will consists of 3 signals:<ul>
-<li>a strong local-osciallator (LO) signal at 230 GHz,</li>
-<li>a weak RF signal at 232 GHz, and</li>
-<li>an IF output at 2 GHz.</li>
+<li><p>This example will simulate a simple SIS mixer.</p></li>
+<li><p>The input will consists of 3 signals:</p>
+<ul>
+<li><p>a strong local-osciallator (LO) signal at 230 GHz,</p></li>
+<li><p>a weak RF signal at 232 GHz, and</p></li>
+<li><p>an IF output at 2 GHz.</p></li>
 </ul>
 </li>
-<li>An arbitrary embedding circuit is included (therefore, harmonic balance is required).</li>
-<li>The response function is generated from an experimental DC I-V curve.</li>
-<li>This simulation will calculate:<ul>
-<li>the pumped I-V curve, and</li>
-<li>the mixer’s gain.</li>
+<li><p>An arbitrary embedding circuit is included (therefore, harmonic balance is required).</p></li>
+<li><p>The response function is generated from an experimental DC I-V curve.</p></li>
+<li><p>This simulation will calculate:</p>
+<ul>
+<li><p>the pumped I-V curve, and</p></li>
+<li><p>the mixer’s gain.</p></li>
 </ul>
 </li>
 </ul>
@@ -412,18 +414,21 @@ div.rendered_html tbody tr:hover {
 <span></span><span class="o">%</span><span class="k">matplotlib</span> inline
 
 <span class="kn">import</span> <span class="nn">qmix</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">scipy.constants</span> <span class="kn">as</span> <span class="nn">sc</span>
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">scipy.constants</span> <span class="k">as</span> <span class="nn">sc</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 
 <span class="kn">from</span> <span class="nn">qmix.mathfn.misc</span> <span class="kn">import</span> <span class="n">slope</span>
+
+<span class="c1"># https://github.com/garrettj403/SciencePlots</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">use</span><span class="p">([</span><span class="s1">&#39;science&#39;</span><span class="p">,</span> <span class="s1">&#39;notebook&#39;</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="Define-the-junction-properties">
-<h2>4.1. Define the junction properties<a class="headerlink" href="#Define-the-junction-properties" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">4.1. </span>Define the junction properties<a class="headerlink" href="#Define-the-junction-properties" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li>These are common parameters that describe the electrical properties of SIS junctions. QMix only uses normalized values, so these values will be used to de-normalize whatever voltages, currents and frequencies that QMix calculates.</li>
+<li><p>These are common parameters that describe the electrical properties of SIS junctions. QMix only uses normalized values, so these values will be used to de-normalize whatever voltages, currents and frequencies that QMix calculates.</p></li>
 </ul>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
@@ -439,24 +444,27 @@ div.rendered_html tbody tr:hover {
 </div>
 </div>
 <div class="section" id="Define-the-embedding-circuit">
-<h2>4.2. Define the embedding circuit<a class="headerlink" href="#Define-the-embedding-circuit" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">4.2. </span>Define the embedding circuit<a class="headerlink" href="#Define-the-embedding-circuit" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li>We will load the <code class="docutils literal notranslate"><span class="pre">EmbeddingCircuit</span></code> class with all of the information about the embedding circuit. This includes the Thevenin voltage, the Thevenin impedance, and the frequency of each signal that is applied to the junction.</li>
-<li>Note:<ul>
-<li>All of the circuit properties are normalized:<ul>
-<li>voltages are normalized to the gap voltage (<code class="docutils literal notranslate"><span class="pre">vgap</span></code>),</li>
-<li>resistances to the normal resistance (<code class="docutils literal notranslate"><span class="pre">rn</span></code>),</li>
-<li>currents to the gap current (<code class="docutils literal notranslate"><span class="pre">igap</span> <span class="pre">=</span> <span class="pre">vgap</span> <span class="pre">/</span> <span class="pre">rn</span></code>), and</li>
-<li>frequencies to the gap frequency (<code class="docutils literal notranslate"><span class="pre">fgap</span></code>).</li>
+<li><p>We will load the <code class="docutils literal notranslate"><span class="pre">EmbeddingCircuit</span></code> class with all of the information about the embedding circuit. This includes the Thevenin voltage, the Thevenin impedance, and the frequency of each signal that is applied to the junction.</p></li>
+<li><p>Note:</p>
+<ul>
+<li><p>All of the circuit properties are normalized:</p>
+<ul>
+<li><p>voltages are normalized to the gap voltage (<code class="docutils literal notranslate"><span class="pre">vgap</span></code>),</p></li>
+<li><p>resistances to the normal resistance (<code class="docutils literal notranslate"><span class="pre">rn</span></code>),</p></li>
+<li><p>currents to the gap current (<code class="docutils literal notranslate"><span class="pre">igap</span> <span class="pre">=</span> <span class="pre">vgap</span> <span class="pre">/</span> <span class="pre">rn</span></code>), and</p></li>
+<li><p>frequencies to the gap frequency (<code class="docutils literal notranslate"><span class="pre">fgap</span></code>).</p></li>
 </ul>
 </li>
-<li>This example includes the embedding circuit. Each tone/harmonic requires:<ul>
-<li>the Thevenin voltage (normalized to <code class="docutils literal notranslate"><span class="pre">vgap</span></code>)</li>
-<li>the Thevenin impedance (normalized to <code class="docutils literal notranslate"><span class="pre">rn</span></code>)</li>
-<li>the frequency (normalized to <code class="docutils literal notranslate"><span class="pre">fgap</span></code>).</li>
+<li><p>This example includes the embedding circuit. Each tone/harmonic requires:</p>
+<ul>
+<li><p>the Thevenin voltage (normalized to <code class="docutils literal notranslate"><span class="pre">vgap</span></code>)</p></li>
+<li><p>the Thevenin impedance (normalized to <code class="docutils literal notranslate"><span class="pre">rn</span></code>)</p></li>
+<li><p>the frequency (normalized to <code class="docutils literal notranslate"><span class="pre">fgap</span></code>).</p></li>
 </ul>
 </li>
-<li>The normalized frequency is the same thing as the normalized photon voltage.</li>
+<li><p>The normalized frequency is the same thing as the normalized photon voltage.</p></li>
 </ul>
 </li>
 </ul>
@@ -473,12 +481,12 @@ div.rendered_html tbody tr:hover {
 <span class="c1"># LO signal</span>
 <span class="n">f_lo</span>         <span class="o">=</span> <span class="mf">230e9</span> <span class="o">/</span> <span class="n">fgap</span>      <span class="c1"># frequency (normalized value)</span>
 <span class="n">alpha_lo</span>     <span class="o">=</span> <span class="mf">1.2</span>               <span class="c1"># junction drive level (normalized value)</span>
-<span class="n">impedance_lo</span> <span class="o">=</span> <span class="mf">0.3</span> <span class="o">-</span> <span class="mf">0.3</span><span class="o">*</span><span class="mi">1j</span>      <span class="c1"># embedding impedance (normalized value)</span>
+<span class="n">impedance_lo</span> <span class="o">=</span> <span class="mf">0.3</span> <span class="o">-</span> <span class="mf">0.3</span><span class="o">*</span><span class="mi">1</span><span class="n">j</span>      <span class="c1"># embedding impedance (normalized value)</span>
 
 <span class="c1"># RF signal</span>
 <span class="n">f_rf</span>         <span class="o">=</span> <span class="mf">232e9</span> <span class="o">/</span> <span class="n">fgap</span>      <span class="c1"># frequency (normalized value)</span>
 <span class="n">alpha_rf</span>     <span class="o">=</span> <span class="mf">0.012</span>             <span class="c1"># junction drive level (normalized value)</span>
-<span class="n">impedance_rf</span> <span class="o">=</span> <span class="mf">0.3</span> <span class="o">-</span> <span class="mf">0.3</span><span class="o">*</span><span class="mi">1j</span>      <span class="c1"># embedding impedance (normalized value)</span>
+<span class="n">impedance_rf</span> <span class="o">=</span> <span class="mf">0.3</span> <span class="o">-</span> <span class="mf">0.3</span><span class="o">*</span><span class="mi">1</span><span class="n">j</span>      <span class="c1"># embedding impedance (normalized value)</span>
 
 <span class="c1"># IF signal</span>
 <span class="n">f_if</span>         <span class="o">=</span> <span class="mf">2e9</span> <span class="o">/</span> <span class="n">fgap</span>        <span class="c1"># frequency (normalized value)</span>
@@ -538,9 +546,9 @@ Embedding circuit (Tones:3, Harmonics:1)
 </div>
 </div>
 <div class="section" id="Generate-the-response-function">
-<h2>4.3. Generate the response function<a class="headerlink" href="#Generate-the-response-function" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">4.3. </span>Generate the response function<a class="headerlink" href="#Generate-the-response-function" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li>Here, the response function is generated from an experimental DC I-V curve.</li>
+<li><p>Here, the response function is generated from an experimental DC I-V curve.</p></li>
 </ul>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
@@ -563,17 +571,17 @@ Embedding circuit (Tones:3, Harmonics:1)
 <span class="ansi-magenta-fg">
 DC I-V data:</span>
         Vgap:             2.72  mV
-        fgap:           658.44  GHz
+        fgap:           658.72  GHz
 
         Rn:              13.41  ohms
-        Rsg:            364.09  ohms
-        Q:               27.15
+        Rsg:            368.05  ohms
+        Q:               27.44
 
-        Jc:              13.53  kA/cm^2
-        Ileak:            8.70  uA
+        Jc:              13.54  kA/cm^2
+        Ileak:            8.71  uA
 
         Offset:           0.10  mV
-                          9.68  uA
+                          9.67  uA
 
         Vint:             0.45  mV
 
@@ -594,14 +602,14 @@ DC I-V data:</span>
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="_images/multi-tone_8_0.png" src="_images/multi-tone_8_0.png" />
+<img alt="_images/multi-tone-simulation_8_0.png" src="_images/multi-tone-simulation_8_0.png" />
 </div>
 </div>
 </div>
 <div class="section" id="Perform-harmonic-balance">
-<h2>4.4. Perform harmonic balance<a class="headerlink" href="#Perform-harmonic-balance" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">4.4. </span>Perform harmonic balance<a class="headerlink" href="#Perform-harmonic-balance" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li>Calculate the voltage drop across the junction for each tone/harmonic using harmonic balance.</li>
+<li><p>Calculate the voltage drop across the junction for each tone/harmonic using harmonic balance.</p></li>
 </ul>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
@@ -619,52 +627,47 @@ DC I-V data:</span>
 <div class="highlight"><pre>
 Running harmonic balance:
  - 3 tone(s) and 1 harmonic(s)
- - 7 calls to the tunneling current function per iteration
+ - 7 calls to the quasiparticle tunneling current (qtc) function per iteration
+ - max. iterations: 10
 Estimated time:
- - time per iteration:    2.03 s /   0.03 min /  0.00 hrs
- - max time:             20.30 s /   0.34 min /  0.01 hrs
+ - time per qtc call:     0.21 s /   0.00 min /  0.00 hrs
+ - time per iteration:    1.45 s /   0.02 min /  0.00 hrs
+ - max sim time:         14.50 s /   0.24 min /  0.00 hrs
 Error after 0 iteration(s):
-        f:1, p:1,   med. rel. error:     0.795,   max. rel. error:     1.827,     0.0 % complete
-        f:2, p:1,   med. rel. error:     0.795,   max. rel. error:     1.673,     0.0 % complete
+        f:1, p:1,   med. rel. error:     0.248,   max. rel. error:     1.013,     0.0 % complete
+        f:2, p:1,   med. rel. error:     0.213,   max. rel. error:     0.768,     0.0 % complete
         f:3, p:1,   med. rel. error: 99999.999,   max. rel. error: 99999.999,     0.0 % complete
 Calculating inverse Jacobian |--------------------| 100.0% Complete
 Applying correction
 Error after 1 iteration(s):
-        f:1, p:1,   med. rel. error:     0.010,   max. rel. error:     0.200,    11.9 % complete
-        f:2, p:1,   med. rel. error:     0.034,   max. rel. error:     0.366,     2.5 % complete
-        f:3, p:1,   med. rel. error:     0.706,   max. rel. error:   119.897,     0.0 % complete
+        f:1, p:1,   med. rel. error:     0.003,   max. rel. error:     0.134,    29.4 % complete
+        f:2, p:1,   med. rel. error:     0.011,   max. rel. error:     0.235,    14.9 % complete
+        f:3, p:1,   med. rel. error:     0.117,   max. rel. error:    18.770,     0.0 % complete
 Calculating inverse Jacobian |--------------------| 100.0% Complete
 Applying correction
 Error after 2 iteration(s):
-        f:1, p:1,   med. rel. error:     0.000,   max. rel. error:     0.006,    97.5 % complete
-        f:2, p:1,   med. rel. error:     0.000,   max. rel. error:     0.018,    90.5 % complete
-        f:3, p:1,   med. rel. error:     0.000,   max. rel. error:     1.056,    63.2 % complete
+        f:1, p:1,   med. rel. error:     0.000,   max. rel. error:     0.003,    99.5 % complete
+        f:2, p:1,   med. rel. error:     0.000,   max. rel. error:     0.005,    98.0 % complete
+        f:3, p:1,   med. rel. error:     0.000,   max. rel. error:     0.304,    88.1 % complete
 Calculating inverse Jacobian |--------------------| 100.0% Complete
 Applying correction
 Error after 3 iteration(s):
         f:1, p:1,   med. rel. error:     0.000,   max. rel. error:     0.000,   100.0 % complete
         f:2, p:1,   med. rel. error:     0.000,   max. rel. error:     0.000,   100.0 % complete
-        f:3, p:1,   med. rel. error:     0.000,   max. rel. error:     0.001,    99.0 % complete
-Calculating inverse Jacobian |--------------------| 100.0% Complete
-Applying correction
-Error after 4 iteration(s):
-        f:1, p:1,   med. rel. error:     0.000,   max. rel. error:     0.000,   100.0 % complete
-        f:2, p:1,   med. rel. error:     0.000,   max. rel. error:     0.000,   100.0 % complete
         f:3, p:1,   med. rel. error:     0.000,   max. rel. error:     0.000,   100.0 % complete
 Done: Minimum error target was achieved.
- - time: 8.63 s / 0.14 min.
- - 4 iterations required
-        - 2.16 s / iteration
-        - 0.04 min / iteration
+ - sim time:               4.48 s /   0.07 min /  0.00 hrs
+ - 3 iterations required
+ - time per iteration:     1.49 s /   0.02 min /  0.00 hrs
 </pre></div></div>
 </div>
 </div>
 <div class="section" id="Calculate-tunnelling-currents">
-<h2>4.5. Calculate tunnelling currents<a class="headerlink" href="#Calculate-tunnelling-currents" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">4.5. </span>Calculate tunnelling currents<a class="headerlink" href="#Calculate-tunnelling-currents" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li><code class="docutils literal notranslate"><span class="pre">idc</span></code> is the DC tunneling current</li>
-<li><code class="docutils literal notranslate"><span class="pre">ilo</span></code> is the AC tunneling current at the LO frequency</li>
-<li><code class="docutils literal notranslate"><span class="pre">iif</span></code> is the AC tunneling current at the IF frequency</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">idc</span></code> is the DC tunneling current</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ilo</span></code> is the AC tunneling current at the LO frequency</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">iif</span></code> is the AC tunneling current at the IF frequency</p></li>
 </ul>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
@@ -676,7 +679,7 @@ Done: Minimum error target was achieved.
 </div>
 </div>
 <div class="section" id="Calculate-mixer-gain">
-<h3>4.5.1. Calculate mixer gain<a class="headerlink" href="#Calculate-mixer-gain" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">4.5.1. </span>Calculate mixer gain<a class="headerlink" href="#Calculate-mixer-gain" title="Permalink to this headline">¶</a></h3>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
@@ -697,7 +700,7 @@ Done: Minimum error target was achieved.
 </div>
 </div>
 <div class="section" id="Plot-Results">
-<h2>4.6. Plot Results<a class="headerlink" href="#Plot-Results" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">4.6. </span>Plot Results<a class="headerlink" href="#Plot-Results" title="Permalink to this headline">¶</a></h2>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
@@ -714,14 +717,14 @@ Done: Minimum error target was achieved.
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">fig</span><span class="p">,</span> <span class="p">((</span><span class="n">ax1</span><span class="p">,</span> <span class="n">ax2</span><span class="p">),</span> <span class="p">(</span><span class="n">ax3</span><span class="p">,</span> <span class="n">ax4</span><span class="p">))</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">10</span><span class="p">))</span>
+<span></span><span class="n">fig</span><span class="p">,</span> <span class="p">((</span><span class="n">ax1</span><span class="p">,</span> <span class="n">ax2</span><span class="p">),</span> <span class="p">(</span><span class="n">ax3</span><span class="p">,</span> <span class="n">ax4</span><span class="p">))</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span><span class="mi">14</span><span class="p">))</span>
 
 <span class="c1"># Plot I-V curves</span>
 <span class="n">ax1</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">resp</span><span class="o">.</span><span class="n">voltage</span><span class="o">*</span><span class="n">vmv</span><span class="p">,</span> <span class="n">resp</span><span class="o">.</span><span class="n">current</span><span class="o">*</span><span class="n">iua</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Unpumped&#39;</span><span class="p">)</span>
 <span class="n">ax1</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">cct</span><span class="o">.</span><span class="n">vb</span><span class="o">*</span><span class="n">vmv</span><span class="p">,</span> <span class="n">idc</span><span class="o">*</span><span class="n">iua</span><span class="p">,</span> <span class="s1">&#39;r--&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Pumped&#39;</span><span class="p">)</span>
 <span class="n">ax1</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">xlim</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mf">4.5</span><span class="p">),</span> <span class="n">xlabel</span><span class="o">=</span><span class="s1">&#39;Bias Voltage (mV)&#39;</span><span class="p">)</span>
 <span class="n">ax1</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">ylim</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">300</span><span class="p">),</span> <span class="n">ylabel</span><span class="o">=</span><span class="s1">&#39;DC Current (uA)&#39;</span><span class="p">)</span>
-<span class="n">ax1</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">frameon</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+<span class="n">ax1</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">frameon</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
 <span class="c1"># Plot AC currents at LO frequency</span>
 <span class="n">ax2</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">cct</span><span class="o">.</span><span class="n">vb</span><span class="o">*</span><span class="n">vmv</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">ilo</span><span class="p">),</span> <span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Absolute&#39;</span><span class="p">)</span>
@@ -729,7 +732,7 @@ Done: Minimum error target was achieved.
 <span class="n">ax2</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">cct</span><span class="o">.</span><span class="n">vb</span><span class="o">*</span><span class="n">vmv</span><span class="p">,</span> <span class="n">ilo</span><span class="o">.</span><span class="n">imag</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;-.&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Imaginary&#39;</span><span class="p">)</span>
 <span class="n">ax2</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">xlim</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mf">4.5</span><span class="p">),</span> <span class="n">xlabel</span><span class="o">=</span><span class="s1">&#39;Bias Voltage (mV)&#39;</span><span class="p">)</span>
 <span class="n">ax2</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">ylabel</span><span class="o">=</span><span class="s1">&#39;AC Current (uA)&#39;</span><span class="p">)</span>
-<span class="n">ax2</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">frameon</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;@ LO frequency&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">9</span><span class="p">)</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">frameon</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;@ LO frequency&quot;</span><span class="p">)</span>
 
 <span class="c1"># Plot AC currents at IF frequency</span>
 <span class="n">ax3</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">cct</span><span class="o">.</span><span class="n">vb</span><span class="o">*</span><span class="n">vmv</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">iif</span><span class="p">),</span> <span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Absolute&#39;</span><span class="p">)</span>
@@ -737,7 +740,7 @@ Done: Minimum error target was achieved.
 <span class="n">ax3</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">cct</span><span class="o">.</span><span class="n">vb</span><span class="o">*</span><span class="n">vmv</span><span class="p">,</span> <span class="n">iif</span><span class="o">.</span><span class="n">imag</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;-.&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Imaginary&#39;</span><span class="p">)</span>
 <span class="n">ax3</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">xlim</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mf">4.5</span><span class="p">),</span> <span class="n">xlabel</span><span class="o">=</span><span class="s1">&#39;Bias Voltage (mV)&#39;</span><span class="p">)</span>
 <span class="n">ax3</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">ylabel</span><span class="o">=</span><span class="s1">&#39;AC Current (uA)&#39;</span><span class="p">)</span>
-<span class="n">ax3</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">frameon</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;@ IF frequency&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">9</span><span class="p">)</span>
+<span class="n">ax3</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">frameon</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;@ IF frequency&quot;</span><span class="p">)</span>
 
 <span class="c1"># Plot gain of SIS junction</span>
 <span class="n">ax4</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">cct</span><span class="o">.</span><span class="n">vb</span><span class="o">*</span><span class="n">vmv</span><span class="p">,</span> <span class="n">gain</span><span class="o">*</span><span class="mi">100</span><span class="p">)</span>
@@ -745,7 +748,7 @@ Done: Minimum error target was achieved.
 <span class="n">ax4</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">ylabel</span><span class="o">=</span><span class="s1">&#39;Gain (%)&#39;</span><span class="p">)</span>
 <span class="n">ax4</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">bottom</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 
-<span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s1">&#39;../example.png&#39;</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s1">&#39;tight&#39;</span><span class="p">);</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s1">&#39;multi-tone-results.png&#39;</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s1">&#39;tight&#39;</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
@@ -753,7 +756,7 @@ Done: Minimum error target was achieved.
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="_images/multi-tone_17_0.png" src="_images/multi-tone_17_0.png" />
+<img alt="_images/multi-tone-simulation_17_0.png" src="_images/multi-tone-simulation_17_0.png" />
 </div>
 </div>
 </div>
@@ -770,7 +773,7 @@ Done: Minimum error target was achieved.
         <a href="analyze-experimental-data.html" class="btn btn-neutral float-right" title="5. Example #3: Analyzing experimental data" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="single-tone-simple.html" class="btn btn-neutral" title="3. Example #1: Creating a simple 1 tone simulation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="single-tone-simulation.html" class="btn btn-neutral" title="3. Example #1: Creating a simple 1 tone simulation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -801,10 +804,10 @@ Done: Minimum error target was achieved.
     
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
     
 
   

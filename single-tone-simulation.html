@@ -28,7 +28,7 @@
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="4. Example #2: Simulating an SIS mixer" href="multi-tone.html" />
+    <link rel="next" title="4. Example #2: Simulating an SIS mixer" href="multi-tone-simulation.html" />
     <link rel="prev" title="2.1.3. qmix.misc package" href="qmix.misc.html" /> 
 
   
@@ -93,7 +93,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#Plot-the-AC-tunneling-currents">3.5. Plot the AC tunneling currents</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="multi-tone.html">4. Example #2: Simulating an SIS mixer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multi-tone-simulation.html">4. Example #2: Simulating an SIS mixer</a></li>
 <li class="toctree-l1"><a class="reference internal" href="analyze-experimental-data.html">5. Example #3: Analyzing experimental data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="references.html">6. References</a></li>
 </ul>
@@ -141,13 +141,13 @@
     
       <li><a href="index.html">Docs</a> &raquo;</li>
         
-      <li>3. Example #1: Creating a simple 1 tone simulation</li>
+      <li><span class="section-number">3. </span>Example #1: Creating a simple 1 tone simulation</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="_sources/single-tone-simple.ipynb.txt" rel="nofollow"> View page source</a>
+            <a href="_sources/single-tone-simulation.ipynb.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -383,17 +383,19 @@ div.rendered_html tbody tr:hover {
 }
 </style>
 <div class="section" id="Example-#1:-Creating-a-simple-1-tone-simulation">
-<h1>3. Example #1: Creating a simple 1 tone simulation<a class="headerlink" href="#Example-#1:-Creating-a-simple-1-tone-simulation" title="Permalink to this headline">¶</a></h1>
+<h1><span class="section-number">3. </span>Example #1: Creating a simple 1 tone simulation<a class="headerlink" href="#Example-#1:-Creating-a-simple-1-tone-simulation" title="Permalink to this headline">¶</a></h1>
 <ul class="simple">
-<li>This notebook contains a very simple SIS simulation:<ul>
-<li>The input consists of only one tone and one harmonic</li>
-<li>The embedding circuit is ignored (i.e., no harmonic balance is required)</li>
-<li>The DC current-voltage relationship is generated through a polynomial model</li>
+<li><p>This notebook contains a very simple SIS simulation:</p>
+<ul>
+<li><p>The input consists of only one tone and one harmonic</p></li>
+<li><p>The embedding circuit is ignored (i.e., no harmonic balance is required)</p></li>
+<li><p>The DC current-voltage relationship is generated through a polynomial model</p></li>
 </ul>
 </li>
-<li>The simulation then calculates:<ul>
-<li>The DC tunneling current (i.e., the pumped I-V curve)</li>
-<li>The AC tunneling current</li>
+<li><p>The simulation then calculates:</p>
+<ul>
+<li><p>The DC tunneling current (i.e., the pumped I-V curve)</p></li>
+<li><p>The AC tunneling current</p></li>
 </ul>
 </li>
 </ul>
@@ -405,16 +407,19 @@ div.rendered_html tbody tr:hover {
 <span></span><span class="o">%</span><span class="k">matplotlib</span> inline
 
 <span class="kn">import</span> <span class="nn">qmix</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<span class="c1"># https://github.com/garrettj403/SciencePlots</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">use</span><span class="p">([</span><span class="s1">&#39;science&#39;</span><span class="p">,</span> <span class="s1">&#39;notebook&#39;</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="Generate-the-response-function">
-<h2>3.1. Generate the response function<a class="headerlink" href="#Generate-the-response-function" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">3.1. </span>Generate the response function<a class="headerlink" href="#Generate-the-response-function" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li>Here we will generate the response function using the polynomial model from Kennedy (1999).</li>
-<li>The <code class="docutils literal notranslate"><span class="pre">RespFnPolynomial</span></code> class will automatically generate the Kramers-Kronig transform of the DC I-V curve, and then setup the interpolation.</li>
+<li><p>Here we will generate the response function using the polynomial model from Kennedy (1999).</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">RespFnPolynomial</span></code> class will automatically generate the Kramers-Kronig transform of the DC I-V curve, and then setup the interpolation.</p></li>
 </ul>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
@@ -443,7 +448,7 @@ Generating response function:
         - KK curve:
                 - npts for KK I-V: 330
                 - avg. error: 6.1923E-07
-                - max. error: {:.4f} at v=1.11
+                - max. error: 0.0001 at v=1.11
 
 </pre></div></div>
 </div>
@@ -451,20 +456,22 @@ Generating response function:
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="_images/single-tone-simple_3_1.png" src="_images/single-tone-simple_3_1.png" />
+<img alt="_images/single-tone-simulation_3_1.png" src="_images/single-tone-simulation_3_1.png" />
 </div>
 </div>
 </div>
 <div class="section" id="Define-embedding-circuit">
-<h2>3.2. Define embedding circuit<a class="headerlink" href="#Define-embedding-circuit" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">3.2. </span>Define embedding circuit<a class="headerlink" href="#Define-embedding-circuit" title="Permalink to this headline">¶</a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">EmbeddingCircuit</span></code> class contains all of the information about the embedding circuit. This includes the Thevenin voltages, the Thevening impedances, and the frequencies of the applied signals. In this notebook, the Thevenin impedance is ignored. This means that the AC voltage across the junction is equal to the Thevenin voltage of the embedding circuit (no harmonic balance required).</p>
 <ul class="simple">
-<li>Note:<ul>
-<li>All of the circuit properties are normalized:<ul>
-<li>voltages are normalized to the gap voltage (<code class="docutils literal notranslate"><span class="pre">vgap</span></code>),</li>
-<li>resistances to the normal resistance (<code class="docutils literal notranslate"><span class="pre">rn</span></code>),</li>
-<li>currents to the gap current (<code class="docutils literal notranslate"><span class="pre">igap</span> <span class="pre">=</span> <span class="pre">vgap</span> <span class="pre">/</span> <span class="pre">rn</span></code>), and</li>
-<li>frequencies to the gap frequency (<code class="docutils literal notranslate"><span class="pre">fgap</span></code>).</li>
+<li><p>Note:</p>
+<ul>
+<li><p>All of the circuit properties are normalized:</p>
+<ul>
+<li><p>voltages are normalized to the gap voltage (<code class="docutils literal notranslate"><span class="pre">vgap</span></code>),</p></li>
+<li><p>resistances to the normal resistance (<code class="docutils literal notranslate"><span class="pre">rn</span></code>),</p></li>
+<li><p>currents to the gap current (<code class="docutils literal notranslate"><span class="pre">igap</span> <span class="pre">=</span> <span class="pre">vgap</span> <span class="pre">/</span> <span class="pre">rn</span></code>), and</p></li>
+<li><p>frequencies to the gap frequency (<code class="docutils literal notranslate"><span class="pre">fgap</span></code>).</p></li>
 </ul>
 </li>
 </ul>
@@ -502,13 +509,15 @@ Done.
 </div>
 </div>
 <div class="section" id="Calculate-desired-tunnelling-currents">
-<h2>3.3. Calculate desired tunnelling currents<a class="headerlink" href="#Calculate-desired-tunnelling-currents" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">3.3. </span>Calculate desired tunnelling currents<a class="headerlink" href="#Calculate-desired-tunnelling-currents" title="Permalink to this headline">¶</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">qmix.qtcurrent.qtcurrent</span></code> will calculate the quasiparticle tunnelling current based on the voltage across the junction <code class="docutils literal notranslate"><span class="pre">vj</span></code>, the simulation parameters contained within <code class="docutils literal notranslate"><span class="pre">cct</span></code>, and the response function <code class="docutils literal notranslate"><span class="pre">resp</span></code>.</p>
 <ul class="simple">
-<li>Note:<ul>
-<li>The frequency that it solves for is the last argument passed to the function below. For example,<ul>
-<li><code class="docutils literal notranslate"><span class="pre">0</span></code> corresponds to the DC quasiparticle tunnelling current</li>
-<li><code class="docutils literal notranslate"><span class="pre">cct.vph[1]</span></code> corresponds to the AC quasiparticle tunnelling current of the first tone and first harmonic</li>
+<li><p>Note:</p>
+<ul>
+<li><p>The frequency that it solves for is the last argument passed to the function below. For example,</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">0</span></code> corresponds to the DC quasiparticle tunnelling current</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">cct.vph[1]</span></code> corresponds to the AC quasiparticle tunnelling current of the first tone and first harmonic</p></li>
 </ul>
 </li>
 </ul>
@@ -536,19 +545,19 @@ Calculating tunneling current...
  - 1 tone(s)
  - 1 harmonic(s)
 Done.
-Time: 0.0277 s
+Time: 0.0137 s
 
 Calculating tunneling current...
  - 1 tone(s)
  - 1 harmonic(s)
 Done.
-Time: 0.0033 s
+Time: 0.0060 s
 
 </pre></div></div>
 </div>
 </div>
 <div class="section" id="Plot-the-pumped-I-V-curve">
-<h2>3.4. Plot the pumped I-V curve<a class="headerlink" href="#Plot-the-pumped-I-V-curve" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">3.4. </span>Plot the pumped I-V curve<a class="headerlink" href="#Plot-the-pumped-I-V-curve" title="Permalink to this headline">¶</a></h2>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
@@ -568,20 +577,20 @@ Time: 0.0033 s
 <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">lbl</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span> <span class="p">[</span><span class="s1">&#39;1st&#39;</span><span class="p">,</span> <span class="s1">&#39;2nd&#39;</span><span class="p">,</span> <span class="s1">&#39;3rd&#39;</span><span class="p">]):</span>
     <span class="n">vtmp</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mf">0.5</span><span class="p">)</span> <span class="o">*</span> <span class="n">cct</span><span class="o">.</span><span class="n">vph</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
     <span class="n">itmp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">vtmp</span><span class="p">,</span> <span class="n">cct</span><span class="o">.</span><span class="n">vb</span><span class="p">,</span> <span class="n">idc</span><span class="p">)</span>
-    <span class="n">ax</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="s2">&quot;{}</span><span class="se">\n</span><span class="s2">step&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">lbl</span><span class="p">),</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="se">\n</span><span class="s2">step&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">lbl</span><span class="p">),</span>
                 <span class="n">xy</span><span class="o">=</span><span class="p">(</span><span class="n">vtmp</span><span class="p">,</span> <span class="n">itmp</span><span class="o">+</span><span class="mf">0.15</span><span class="p">),</span>
                 <span class="n">xytext</span><span class="o">=</span><span class="p">(</span><span class="n">vtmp</span><span class="p">,</span> <span class="n">itmp</span><span class="o">+</span><span class="mf">0.15</span><span class="p">),</span>
                 <span class="n">va</span><span class="o">=</span><span class="s1">&#39;center&#39;</span><span class="p">,</span> <span class="n">ha</span><span class="o">=</span><span class="s1">&#39;center&#39;</span><span class="p">,</span>
-                <span class="n">fontsize</span><span class="o">=</span><span class="mi">7</span><span class="p">)</span>
+                <span class="n">fontsize</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span>
 <span class="c1"># hw/e label</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">cct</span><span class="o">.</span><span class="n">vph</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="mf">1.1</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;$\hbar\omega/e$&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">ha</span><span class="o">=</span><span class="s1">&#39;center&#39;</span><span class="p">,</span> <span class="n">va</span><span class="o">=</span><span class="s1">&#39;bottom&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">cct</span><span class="o">.</span><span class="n">vph</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="mf">1.1</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;$\hbar\omega/e$&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span> <span class="n">ha</span><span class="o">=</span><span class="s1">&#39;center&#39;</span><span class="p">,</span> <span class="n">va</span><span class="o">=</span><span class="s1">&#39;bottom&#39;</span><span class="p">)</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">xy</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">cct</span><span class="o">.</span><span class="n">vph</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">1</span><span class="p">),</span> <span class="n">xytext</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
     <span class="n">arrowprops</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">arrowstyle</span><span class="o">=</span><span class="s2">&quot;&lt;-&gt;&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">))</span>
 
 <span class="c1"># other labels</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">xlabel</span><span class="o">=</span><span class="s1">&#39;Bias voltage / Vgap&#39;</span><span class="p">,</span> <span class="n">xlim</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">])</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">ylabel</span><span class="o">=</span><span class="s1">&#39;DC current / Igap&#39;</span><span class="p">,</span> <span class="n">ylim</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">])</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">frameon</span><span class="o">=</span><span class="bp">True</span><span class="p">);</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">frameon</span><span class="o">=</span><span class="kc">True</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
@@ -589,12 +598,12 @@ Time: 0.0033 s
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="_images/single-tone-simple_10_0.png" src="_images/single-tone-simple_10_0.png" />
+<img alt="_images/single-tone-simulation_10_0.png" src="_images/single-tone-simulation_10_0.png" />
 </div>
 </div>
 </div>
 <div class="section" id="Plot-the-AC-tunneling-currents">
-<h2>3.5. Plot the AC tunneling currents<a class="headerlink" href="#Plot-the-AC-tunneling-currents" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">3.5. </span>Plot the AC tunneling currents<a class="headerlink" href="#Plot-the-AC-tunneling-currents" title="Permalink to this headline">¶</a></h2>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
@@ -607,7 +616,7 @@ Time: 0.0033 s
 <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">cct</span><span class="o">.</span><span class="n">vb</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">imag</span><span class="p">(</span><span class="n">iac</span><span class="p">),</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;Imaginary&quot;</span><span class="p">)</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">xlabel</span><span class="o">=</span><span class="s1">&#39;Bias voltage / Vgap&#39;</span><span class="p">,</span> <span class="n">xlim</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">])</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">ylabel</span><span class="o">=</span><span class="s1">&#39;AC current / Igap&#39;</span><span class="p">,</span> <span class="n">ylim</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mf">1.2</span><span class="p">])</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">frameon</span><span class="o">=</span><span class="bp">False</span><span class="p">);</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">frameon</span><span class="o">=</span><span class="kc">False</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
@@ -615,7 +624,7 @@ Time: 0.0033 s
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="_images/single-tone-simple_12_0.png" src="_images/single-tone-simple_12_0.png" />
+<img alt="_images/single-tone-simulation_12_0.png" src="_images/single-tone-simulation_12_0.png" />
 </div>
 </div>
 </div>
@@ -629,7 +638,7 @@ Time: 0.0033 s
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="multi-tone.html" class="btn btn-neutral float-right" title="4. Example #2: Simulating an SIS mixer" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="multi-tone-simulation.html" class="btn btn-neutral float-right" title="4. Example #2: Simulating an SIS mixer" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="qmix.misc.html" class="btn btn-neutral" title="2.1.3. qmix.misc package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
@@ -663,10 +672,10 @@ Time: 0.0033 s
     
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
     
 
   
