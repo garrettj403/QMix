@@ -28,21 +28,33 @@ The easiest way to install QMix is using ``pip``:
 
 Take a look at the [QMix website](https://garrettj403.github.io/QMix/) for more information on how to use the QMix package and examples showing how to simulate SIS junctions. If you run into any problems, please create a new issue through the [issue tracker](https://github.com/garrettj403/QMix/issues) with the ``help wanted`` or ``question`` tag. In your message, make sure to include your operating system, Python version, and package versions for QMix, Numpy, SciPy and Matplotlib.
 
+Contributing to QMix
+--------------------
+
+[![GitHub issues](https://img.shields.io/github/issues-raw/garrettj403/QMix.svg)](https://github.com/garrettj403/QMix/issues)
+[![GitHub commits since latest release](https://img.shields.io/github/commits-since/garrettj403/QMix/latest.svg)](https://github.com/garrettj403/QMix/commits/master)
+
+If you would like to contribute to the QMix project, please take a look at the [contribution instructions](https://github.com/garrettj403/QMix/blob/master/CONTRIBUTING.md). This document includes information on reporting bugs, requesting new features, creating pull requests and contributing new code.
+
+To get a local copy of QMix running:
+
+    # Download QMix
+    git clone https://github.com/garrettj403/QMix.git QMix
+    cd QMix/
+
+    # Create a virtual environment using Anaconda
+    conda env create -f environment.yml
+    conda activate qmix
+
+    # Test installation
+    pytest --verbose --color=yes tests/
+
 Examples
 --------
 
 QMix can be used to simulate a wide variety of SIS junction behavior. A simple example is shown below for simulating an SIS mixer at 230 GHz. You can find more examples in the ``QMix/notebooks/`` directory or on the [QMix website](https://garrettj403.github.io/QMix/single-tone-simple.html). 
 
 ![](https://raw.githubusercontent.com/garrettj403/QMix/master/notebooks/multi-tone-results.png)
-
-Contributing to QMix
---------------------
-
-[![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/garrettj403/QMix/blob/master/CONTRIBUTING.md)
-[![GitHub commits since latest release](https://img.shields.io/github/commits-since/garrettj403/QMix/latest.svg)](https://github.com/garrettj403/QMix/commits/master)
-[![GitHub issues](https://img.shields.io/github/issues-raw/garrettj403/QMix.svg)](https://github.com/garrettj403/QMix/issues)
-
-If you would like to contribute to the QMix project, please take a look at the [contribution instructions](https://github.com/garrettj403/QMix/blob/master/CONTRIBUTING.md). This document includes information on reporting bugs, requesting new features, creating pull requests and contributing new code.
 
 Citing QMix
 -----------
