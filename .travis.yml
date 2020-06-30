@@ -21,7 +21,6 @@ install:
   - pip install ipykernel
   - pip install jupyter
   - pip install nbconvert
-  - pip install nb_conda
   - pip install pandoc
   - pip install sphinx>=1.6
   - pip install sphinx_rtd_theme
