@@ -2,7 +2,6 @@
 """Install QMix."""
 
 import io
-import os
 import sys
 
 from os import path
@@ -13,6 +12,7 @@ import qmix
 
 root = path.abspath(path.dirname(__file__))
 
+
 def read(*filenames, **kwargs):
     encoding = kwargs.get('encoding', 'utf-8')
     sep = kwargs.get('sep', '\n')
@@ -22,8 +22,10 @@ def read(*filenames, **kwargs):
             buf.append(f.read())
     return sep.join(buf)
 
+
 long_description = read('README.md')
 print(long_description)
+
 
 class PyTest(TestCommand):
     def finalize_options(self):
@@ -36,30 +38,30 @@ class PyTest(TestCommand):
         errcode = pytest.main(self.test_args)
         sys.exit(errcode)
 
+
 setup(
-    name = "QMix",
-    version = qmix.__version__,
-    author = "John Garrett",
-    author_email = "garrettj403@gmail.com",
-    url = "https://garrettj403.github.io/QMix/",
-    description = "Simulate SIS mixer operation",
-    license = "GPL v3",
-    keywords = [
+    name="qmix",
+    version=qmix.__version__,
+    author="John Garrett",
+    author_email="garrettj403@gmail.com",
+    url="https://garrettj403.github.io/QMix/",
+    description="Simulate SIS mixer operation",
+    license="GPL v3",
+    keywords=[
         "SIS mixers",
         "radio astronomy",
         "superconducting detectors",
         "terahertz instrumentation",
         "Python"
     ],
-    packages=find_packages('qmix'),
-    package_dir={'': 'qmix'},
+    packages=find_packages(),
     install_requires=[
         'matplotlib',
         'numba',
         'numpy',
-        'scipy'
+        'scipy',
     ],
-    extras_require={'test': ['pytest'],},
+    extras_require={'test': ['pytest'], },
     tests_require=['pytest', 'pytest-cov'],
     cmdclass={'test': PyTest},
     long_description=long_description,
