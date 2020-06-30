@@ -22,6 +22,9 @@ install:
   - pip install sphinx>=1.6
   - pip install sphinx_rtd_theme
   - pip install nbsphinx
+addons:
+  apt_packages:
+    - pandoc
 script: 
   # run tests
   - py.test ./tests/ --verbose --doctest-modules --color=yes --cov=./qmix/ --cov-report=term-missing
