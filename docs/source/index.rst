@@ -16,9 +16,9 @@ Contents
    
    setup
    qmix
-   single-tone-simulation
-   multi-tone-simulation
-   analyze-experimental-data
+   single-tone-simulation.ipynb
+   multi-tone-simulation.ipynb
+   analyze-experimental-data.ipynb
    references
 
 Indices and tables
