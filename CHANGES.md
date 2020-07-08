@@ -1,3 +1,28 @@
+v1.0.6 (unreleased)
+===================
+
+Optimization
+------------
+
+- Added more detailed benchmarking and profiling scripts (found in ``QMix/profile/``).
+- ``qmix.qtcurrent.qtcurrent`` is ~20% faster for 1 tone.
+- ``qmix.harmonic_balance.harmonic_balance`` is ~20% faster for 1 or 2 tones, and ~10% faster for 3 tones.
+
+Documentation
+-------------
+
+- Travis CI now automatically rebuilds the online documentation on each new commit.
+- Added information on how to contribute to QMix to README.
+- Added docstrings to many private functions. This should allow new users to understand the inner workings a bit better.
+
+Miscellaneous Minor Changes
+---------------------------
+
+- Command line scripts were dropped (i.e., ``plot_if_response``).
+- ``QMix/examples/`` renamed ``QMix/notebooks/``
+- Removed ``codemeta.json`` and ``setup.cfg``. 
+- Fixed several bugs with Travis CI.
+
 v1.0.5 (30-Jul-2019)
 ====================
 
