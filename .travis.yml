@@ -12,7 +12,7 @@ install:
   # install testing dependencies
   - pip install pytest>=3.0
   - pip install pytest-cov==2.5.0
-  - pip install python-coveralls
+  - pip install coveralls
   # install documentation dependencies
   - pip install ipython
   - pip install ipykernel
