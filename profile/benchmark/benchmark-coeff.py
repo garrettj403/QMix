@@ -7,9 +7,10 @@ import socket
 import timeit
 
 import numpy as np
+import matplotlib.pyplot as plt 
 
 import qmix
-from qmix.qtcurrent import _convolution_coefficient
+from qmix.qtcurrent import calculate_phase_factor_coeff
 
 # Arguments
 parser = argparse.ArgumentParser()
@@ -39,12 +40,12 @@ if args.tone is None or args.tone == 1:
 
     def one_tone():
 
-        _convolution_coefficient(vj, cct.vph, 1, 2, num_b)
+        calculate_phase_factor_coeff(vj, cct.vph, 1, 2, num_b)
 
     t_1tone = min(timeit.Timer(one_tone).repeat(1000, 1))
     print("1 tone:\t\t{:.2f} ms".format(t_1tone*1000))
 
-    ccc1 = _convolution_coefficient(vj, cct.vph, 1, 2, num_b)
+    ccc1 = calculate_phase_factor_coeff(vj, cct.vph, 1, 2, num_b)
     if args.overwrite:
         print(" -> Save ccc1")
         with open('data/coeff1.data', 'wb') as f:
@@ -53,7 +54,11 @@ if args.tone is None or args.tone == 1:
         print(" -> Load ccc1")
         with open('data/coeff1.data', 'rb') as f:
             ccc1_test = pickle.load(f)
-        np.testing.assert_equal(ccc1, ccc1_test)
+        np.testing.assert_allclose(ccc1, ccc1_test, atol=1e-7)
+        # plt.plot(ccc1)
+        # plt.plot(ccc1_test)
+        # plt.show()
+
 
 # 2 tone ---------------------------------------------------------------------
 
@@ -64,19 +69,19 @@ if args.tone is None or args.tone == 2:
     cct.vph[2] = 0.33
 
     vj = cct.initialize_vj()
-    vj[1,1,:] = 0.3
-    vj[2,1,:] = 0.1
-    vj[1,2,:] = 0.03
-    vj[2,2,:] = 0.01
+    vj[1, 1, :] = 0.3
+    vj[2, 1, :] = 0.1
+    vj[1, 2, :] = 0.03
+    vj[2, 2, :] = 0.01
 
     def two_tone():
 
-        _convolution_coefficient(vj, cct.vph, 2, 2, num_b)
+        calculate_phase_factor_coeff(vj, cct.vph, 2, 2, num_b)
 
     t_2tone = min(timeit.Timer(two_tone).repeat(600, 1))
     print("2 tones:\t{:.2f} ms".format(t_2tone*1000))
 
-    ccc2 = _convolution_coefficient(vj, cct.vph, 2, 2, num_b)
+    ccc2 = calculate_phase_factor_coeff(vj, cct.vph, 2, 2, num_b)
     if args.overwrite:
         print(" -> Save ccc2")
         with open('data/coeff2.data', 'wb') as f:
@@ -85,7 +90,7 @@ if args.tone is None or args.tone == 2:
         print(" -> Load ccc2")
         with open('data/coeff2.data', 'rb') as f:
             ccc2_test = pickle.load(f)
-        np.testing.assert_equal(ccc2, ccc2_test)
+        np.testing.assert_allclose(ccc2, ccc2_test, atol=1e-7)
 
 # 3 tone ---------------------------------------------------------------------
 
@@ -97,21 +102,21 @@ if args.tone is None or args.tone == 3:
     cct.vph[3] = 0.27
 
     vj = cct.initialize_vj()
-    vj[1,1,:] = 0.3
-    vj[2,1,:] = 0.1
-    vj[3,1,:] = 0.1
-    vj[1,2,:] = 0.03
-    vj[2,2,:] = 0.01
-    vj[3,2,:] = 0.01
+    vj[1, 1, :] = 0.3
+    vj[2, 1, :] = 0.1
+    vj[3, 1, :] = 0.1
+    vj[1, 2, :] = 0.03
+    vj[2, 2, :] = 0.01
+    vj[3, 2, :] = 0.01
 
     def three_tone():
 
-        _convolution_coefficient(vj, cct.vph, 3, 2, num_b)
+        calculate_phase_factor_coeff(vj, cct.vph, 3, 2, num_b)
 
     t_3tone = min(timeit.Timer(three_tone).repeat(400, 1))
     print("3 tones:\t{:.2f} ms".format(t_3tone*1000))
 
-    ccc3 = _convolution_coefficient(vj, cct.vph, 3, 2, num_b)
+    ccc3 = calculate_phase_factor_coeff(vj, cct.vph, 3, 2, num_b)
     if args.overwrite:
         print(" -> Save ccc3")
         with open('data/coeff3.data', 'wb') as f:
@@ -120,7 +125,7 @@ if args.tone is None or args.tone == 3:
         print(" -> Load ccc3")
         with open('data/coeff3.data', 'rb') as f:
             ccc3_test = pickle.load(f)
-        np.testing.assert_equal(ccc3, ccc3_test)
+        np.testing.assert_allclose(ccc3, ccc3_test, atol=1e-7)
 
 # 4 tone ---------------------------------------------------------------------
 
@@ -133,23 +138,23 @@ if args.tone is None or args.tone == 4:
     cct.vph[4] = 0.03
 
     vj = cct.initialize_vj()
-    vj[1,1,:] = 0.3
-    vj[2,1,:] = 0.1
-    vj[3,1,:] = 0.1
-    vj[4,1,:] = 0.0
-    vj[1,2,:] = 0.03
-    vj[2,2,:] = 0.01
-    vj[3,2,:] = 0.01
-    vj[4,2,:] = 0.00
+    vj[1, 1, :] = 0.3
+    vj[2, 1, :] = 0.1
+    vj[3, 1, :] = 0.1
+    vj[4, 1, :] = 0.0
+    vj[1, 2, :] = 0.03
+    vj[2, 2, :] = 0.01
+    vj[3, 2, :] = 0.01
+    vj[4, 2, :] = 0.00
 
     def four_tone():
 
-        _convolution_coefficient(vj, cct.vph, 4, 2, num_b)
+        calculate_phase_factor_coeff(vj, cct.vph, 4, 2, num_b)
 
     t_4tone = min(timeit.Timer(four_tone).repeat(200, 1))
     print("4 tones:\t{:.2f} ms".format(t_4tone*1000))
 
-    ccc4 = _convolution_coefficient(vj, cct.vph, 4, 2, num_b)
+    ccc4 = calculate_phase_factor_coeff(vj, cct.vph, 4, 2, num_b)
     if args.overwrite:
         print(" -> Save ccc4")
         with open('data/coeff4.data', 'wb') as f:
@@ -158,7 +163,7 @@ if args.tone is None or args.tone == 4:
         print(" -> Load ccc4")
         with open('data/coeff4.data', 'rb') as f:
             ccc4_test = pickle.load(f)
-        np.testing.assert_equal(ccc4, ccc4_test)
+        np.testing.assert_allclose(ccc4, ccc4_test, atol=1e-7)
 
     print("")
 
