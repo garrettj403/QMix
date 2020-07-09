@@ -8,13 +8,13 @@ We welcome contributions via [pull requests](#contributing-new-code). You can al
 Reporting Bugs 
 --------------
 
-If you find any bugs in QMix, please create a new issue through the [GitHub Issue tracker](https://github.com/garrettj403/QMix/issues) with the ``bug`` label. In your message, please include:
-   - your operating system,
-   - your Python version,
-   - your package versions (Numpy, SciPy and Matplotlib), and
-   - if applicable, a small code snippet that recreates the error.
+If you find any bugs in QMix, please create a new issue through the [GitHub Issue tracker](https://github.com/garrettj403/QMix/issues) with the ``bug`` label. In your message, please include your:
+   - operating system
+   - Python version
+   - package versions (Numpy, SciPy and Matplotlib)
+   - if applicable, a small code snippet that recreates the error
 
-**Note:** Before reporting a bug, please ensure that you are using the latest version of QMix and that you are using the QMix virtual environment (``QMix/environment-qmix.yaml``).
+**Note:** Before reporting a bug, please ensure that you are using the latest version of QMix and that you are using the QMix virtual environment (``QMix/environment.yml``).
 
 Requesting New Features
 -----------------------
@@ -29,12 +29,8 @@ If you would like to contribute new code to the QMix project, you can fork the r
 Seeking Support
 ---------------
 
-If you are having any problems installing QMix or setting up your simulation, please create a new issue through the [GitHub Issue tracker](https://github.com/garrettj403/QMix/issues) with the ``help wanted`` or ``question`` tag.  In your message, please include:
-   - your operating system,
-   - your Python version, and
-   - your package versions (Numpy, SciPy and Matplotlib).
+If you are having any problems installing QMix or setting up your simulation, please create a new issue through the [GitHub Issue tracker](https://github.com/garrettj403/QMix/issues) with the ``help wanted`` or ``question`` tag.  In your message, please include your:
+   - operating system
+   - Python version
+   - package versions (Numpy, SciPy and Matplotlib)
 
-Code of Conduct
----------------
-
-If you participate in the QMix project, you must follow our [Code of Conduct](https://github.com/garrettj403/QMix/blob/master/CODE_OF_CONDUCT.md).

@@ -4,6 +4,7 @@ v1.0.6 (unreleased)
 Functionality Changes
 ---------------------
 
+- Renamed ``cct.vph`` to ``cct.freq`` (in ``qmix.circuit.EmbeddingCircuit``). The normalized photon voltage is equivalent to the normalized frequency. I think frequency is easier to understand so I changed it.
 - Deleted the command line scripts (``bin/``). There was only one script and it was pretty obscure so I descided to delete it.
 - Moved ``qtcurrent_all_freq()`` function from ``qmix.qtcurrent`` to ``qmix.harmonic_balance``. Again, it's a pretty obscure function and it's only used in the ``harmonic_balance`` module, so I moved it.
 - Deleted ``qtcurrent_std`` from ``qmix.qtcurrent``. This function calculated the "standard" output values, but this was pretty arbitrary. It also didn't really simplify the package at all so I deleted it.

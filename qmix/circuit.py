@@ -567,6 +567,16 @@ class EmbeddingCircuit(object):
         self.zt.flags.writeable = True
         self.vb.flags.writeable = True
 
+    @property
+    def vph(self):
+        """Get photon voltage.
+
+        For backwards compatibility.
+
+        """
+
+        return self.cct
+
 
 def read_circuit(filename):
     """Build an embedding circuit from an embedding circuit file.

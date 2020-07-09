@@ -74,13 +74,9 @@ Other Notes
 -----------
 
 - For matrix indices, follow this order:
-    - frequency (`f`), harmonic (`p`), Bessel function index (`k`), voltage point (`i`)
+    - frequency (`f`), harmonic (`p`), summation index (`k`), voltage point (`i`)
     - e.g., for the Thevenin voltage: `vt[f, p]`
     - e.g., for the Convolution coefficient: `ckh[f, p, k, i]`
 - Use American spelling everywhere to be consistent with the rest of Python.
-    - For example:
-        - color, not colour (CAN/UK)
-        - tunneling, not tunnelling (CAN/UK)
-        - meter, not metre (CAN/UK)
     - Note: If you have Aspell installed, you can check your spelling against the American dictionary using: 
         - `aspell -c -d en_US <filename>`

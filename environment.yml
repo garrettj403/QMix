@@ -39,6 +39,7 @@ dependencies:
     - gprof2dot
     - memory_profiler
     - line_profiler
+    - pycallgraph
   # for testing
   - pytest>=3.0
   - pip:
