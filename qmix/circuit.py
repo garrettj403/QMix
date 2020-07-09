@@ -53,7 +53,7 @@ class EmbeddingCircuit(object):
         set manually. In this way, this class is sort of like a fancy struct.
         The class attributes that have to be set manually are:
 
-           - ``vph``:  photon voltage (normalized to the gap voltage)
+           - ``freq``:  frequencies (normalized to the gap frequency)
            - ``vt``:  Thevenin voltage (normalized to the gap voltage)
            - ``zt``:  Thevenin impedance (normalized to the normal resistance)
 
@@ -70,11 +70,10 @@ class EmbeddingCircuit(object):
         Embedding circuit (Tones:2, Harmonics:3): Test 1
 
         Once initialized, we can begin defining the properties of the
-        embedding circuit. I normally start with the photon voltages (or,
-        equivalently, the normalized frequencies):
+        embedding circuit. I normally start with the frequencies:
 
-        >>> cct1.vph[1] = 0.30  # first tone
-        >>> cct1.vph[2] = 0.32  # second tone
+        >>> cct1.freq[1] = 0.30  # first tone
+        >>> cct1.freq[2] = 0.32  # second tone
 
         Then, we have to set the voltages and impedances for all of the
         different signals. For example, for the 1st harmonic of the 1st tone:
@@ -90,11 +89,10 @@ class EmbeddingCircuit(object):
 
         >>> cct2 = EmbeddingCircuit(1, 1, vgap=2.8e-3, rn=14.)
 
-        You can now set the photon voltage using the frequency of the applied
-        signal. E.g.:
+        You can now set the frequencies. E.g.:
 
-        >>> cct2.set_vph(250, f=1, units='GHz')
-        >>> round(cct2.vph[1], 4)
+        >>> cct2.set_freq(250, f=1, units='GHz')
+        >>> round(cct2.freq[1], 4)
         0.3693
 
         Once an impedance has been set, you can also set the power of the
@@ -133,18 +131,17 @@ class EmbeddingCircuit(object):
         name (str, optional): Name used to describe this specific instance.
 
     Attributes:
-        vph (numpy.ndarray): An array for the photon voltage normalized to the
-            gap voltage. This is a 1-dimensional array of real numbers. It
-            contains photon voltages for all of the fundamental tones that
-            are applied to the junction. The photon voltage is defined as
-            ``hf/e``, where ``h`` is the Planck constant, ``f`` is the
-            frequency of the fundamental tone, and ``e`` is the charge of an
-            electron. Since this value is normalized to the gap
-            voltage, the photon voltage is also equal to the normalized
-            frequency, ``f/fgap``, where ``fgap`` is the gap frequency. Note
-            that this array is 1-based, meaning that the photon voltage of the
-            1st tone is located in ``.vph[1]``. (The index represents the tone
-            number.) **This attribute must be set after initialization!**
+        freq (numpy.ndarray): An array for the frequencies normalized to the
+            gap frequency. This is a 1-dimensional array of real numbers. It
+            contains the frequencies of all of the fundamental tones that
+            are applied to the junction. The normalized frequency is
+            equivalent to the normalized photon voltage. The photon voltage is
+            defined as ``hf/e``, where ``h`` is the Planck constant, ``f`` is
+            the frequency of the fundamental tone, and ``e`` is the charge of
+            an electron. Note that this array is 1-based, meaning that the
+            frequency of the 1st tone is found in ``.freq[1]``. (The index
+            represents the tone number.) **This attribute must be set after
+            initialization!**
         vt (numpy.ndarray): An array for the Thevenin voltage normalized to the
             gap voltage. This is a 2-dimensional array of complex values. It
             contains the voltages for all of the Thevenin equivalent circuits
@@ -202,10 +199,14 @@ class EmbeddingCircuit(object):
         self.name = name  # used to identify the instance
 
         # Check input
-        assert num_f in [1, 2, 3, 4], "Number of tones (num_f) must be equal to 1, 2, 3, or 4."
-        assert num_p >= 1 and isinstance(num_p, int), "Number of harmonics (num_p) must be an integer equal or greater than 1."
-        assert isinstance(vb_npts, int) and vb_npts >= 1, "Number of bias points (vb_npts) must be an integer greater or equal to 1."
-        assert vb_max >= vb_min, "Maximum voltage (vb_max) must be larger than the minimum voltage (vb_min)."
+        assert num_f in [1, 2, 3, 4], \
+            "Number of tones (num_f) must be equal to 1, 2, 3, or 4."
+        assert num_p >= 1 and isinstance(num_p, int), \
+            "Number of harmonics (num_p) must be an integer equal or greater than 1."
+        assert isinstance(vb_npts, int) and vb_npts >= 1, \
+            "Number of bias points (vb_npts) must be an integer greater or equal to 1."
+        assert vb_max >= vb_min, \
+            "Maximum voltage (vb_max) must be larger than the minimum voltage (vb_min)."
 
         # Number of tones/harmonics
         self.num_f = int(num_f)
@@ -234,7 +235,7 @@ class EmbeddingCircuit(object):
             self.igap = vgap / rn
 
         # Initialize embedding circuit
-        self.vph = np.zeros((num_f + 1), dtype=float)
+        self.freq = np.zeros((num_f + 1), dtype=float)
         self.vt = np.zeros((num_f + 1, num_p + 1), dtype=complex)
         self.zt = np.zeros((num_f + 1, num_p + 1), dtype=complex)
 
@@ -388,7 +389,7 @@ class EmbeddingCircuit(object):
 
         Note: 
 
-            Photon voltage and Thevenin impedance must be set prior to using
+            Frequency and Thevenin impedance must be set prior to using
             this method. Otherwise, an assertion error will be raised.
 
         Args:
@@ -402,24 +403,24 @@ class EmbeddingCircuit(object):
         """
 
         assert self.zt[f, p] != 0, 'Embedding impedance must be defined!'
-        assert self.vph[f] != 0, 'Photon voltage must be defined!'
+        assert self.freq[f] != 0, 'Frequency must be defined!'
 
-        self.vt[f, p] = alpha * self.vph[f] * (self.zt[f, p] / zj + 1) 
+        self.vt[f, p] = alpha * self.freq[f] * (self.zt[f, p] / zj + 1) 
 
-    def set_vph(self, value, f=1, units='Hz'):
-        """Set the photon voltage of tone ``f``.
+    def set_freq(self, value, f=1, units='Hz'):
+        """Set the frequency of tone ``f``.
 
         Normally, this can be done by setting the value of the attribute
         directly. E.g.:
 
         >>> cct = EmbeddingCircuit(1, 1, vgap=2.8e-3, rn=14.)
-        >>> cct.vph[1] = 0.5
+        >>> cct.freq[1] = 0.5
 
         However, if you would instead like to use non-normalized units, this
         method can be very handy. E.g.:
 
-        >>> cct.set_vph(350, f=1, units='GHz')
-        >>> round(cct.vph[1], 2)
+        >>> cct.set_freq(350, f=1, units='GHz')
+        >>> round(cct.freq[1], 2)
         0.52
 
         Note:
@@ -442,19 +443,19 @@ class EmbeddingCircuit(object):
             assert self.fgap is not None, 'Gap frequency must be defined!'
 
         if units.lower() == 'hz':
-            self.vph[f] = value / self.fgap
+            self.freq[f] = value / self.fgap
         elif units.lower() == 'mhz':
-            self.vph[f] = value * sc.mega / self.fgap
+            self.freq[f] = value * sc.mega / self.fgap
         elif units.lower() == 'ghz':
-            self.vph[f] = value * sc.giga / self.fgap
+            self.freq[f] = value * sc.giga / self.fgap
         elif units.lower() == 'thz':
-            self.vph[f] = value * sc.tera / self.fgap
+            self.freq[f] = value * sc.tera / self.fgap
         elif units.lower() == 'v':
-            self.vph[f] = value / self.vgap
+            self.freq[f] = value / self.vgap
         elif units.lower() == 'mv':
-            self.vph[f] = value * sc.milli / self.vgap
+            self.freq[f] = value * sc.milli / self.vgap
         elif units.lower() == 'norm':
-            self.vph[f] = value
+            self.freq[f] = value
         else:
             raise ValueError('Units not recognized.')
 
@@ -478,7 +479,7 @@ class EmbeddingCircuit(object):
 
         print(self)
 
-        str1 = "   f={0}, p={1}\t\t\tvph = {2:.4f} x {1}\t\t{3}"
+        str1 = "   f={0}, p={1}\t\t\tfreq = {2:.4f} x {1}\t\t{3}"
         str2 = "   f={0}, p={1}\t\t\t{2:.1f} GHz x {1}\t\t{3}"
         str3 = "\tThev. voltage:\t\t{:.4f} * Vgap"
         str6 = "\t              \t\t{:.4f} * Vph"
@@ -489,16 +490,16 @@ class EmbeddingCircuit(object):
         if self.fgap is None or self.vgap is None or self.rn is None:
             for f in range(1, self.num_f + 1):
                 for p in range(1, self.num_p + 1):
-                    vph = self.vph[f]
+                    freq = self.freq[f]
                     vt = self.vt[f, p]
                     zt = self.zt[f, p]
-                    cprint(str1.format(f, p, vph, self.comment[f][p]), 'GREEN')
+                    cprint(str1.format(f, p, freq, self.comment[f][p]), 'GREEN')
                     print(str3.format(float(vt.real)))
                     print(str4.format(zt))
         else:
             for f in range(1, self.num_f + 1):
                 for p in range(1, self.num_p + 1):
-                    fq = self.vph[f] * self.fgap / 1e9
+                    fq = self.freq[f] * self.fgap / 1e9
                     vt = self.vt[f, p]
                     zt = self.zt[f, p]
                     with np.errstate(divide='ignore'):
@@ -506,7 +507,7 @@ class EmbeddingCircuit(object):
                         power_dbm = self.available_power(f, p, units='dBm')
                     cprint(str2.format(f, p, fq, self.comment[f][p]), 'GREEN')
                     print(str3.format(float(vt.real)))
-                    print(str6.format(float(vt.real / (self.vph[f] * p))))
+                    print(str6.format(float(vt.real / (self.freq[f] * p))))
                     print(str4.format(zt))
                     print(str7.format(power_w))
                     print(str8.format(power_dbm))
@@ -523,7 +524,7 @@ class EmbeddingCircuit(object):
 
         """
 
-        str1 = "   f={0}, p={1}\t\t\tvph = {2:.4f} x {1}\n"
+        str1 = "   f={0}, p={1}\t\t\tfreq = {2:.4f} x {1}\n"
         str2 = "\tThev. voltage:\t\t{:.4f} V / V_gap\n"
         str3 = "\tThev. impedance:\t{:.2f} ohms / R_N\n"
 
@@ -534,10 +535,10 @@ class EmbeddingCircuit(object):
 
             for f in range(1, self.num_f + 1):
                 for p in range(1, self.num_p + 1):
-                    vph = self.vph[f]
+                    freq = self.freq[f]
                     vt = self.vt[f, p]
                     zt = self.zt[f, p]
-                    fout.write(str1.format(f, p, vph))
+                    fout.write(str1.format(f, p, freq))
                     fout.write(str2.format(vt))
                     fout.write(str3.format(zt))
 
@@ -549,7 +550,7 @@ class EmbeddingCircuit(object):
 
         """
 
-        self.vph.flags.writeable = False
+        self.freq.flags.writeable = False
         self.vt.flags.writeable = False
         self.zt.flags.writeable = False
         self.vb.flags.writeable = False
@@ -561,7 +562,7 @@ class EmbeddingCircuit(object):
 
         """
 
-        self.vph.flags.writeable = True
+        self.freq.flags.writeable = True
         self.vt.flags.writeable = True
         self.zt.flags.writeable = True
         self.vb.flags.writeable = True
@@ -597,10 +598,10 @@ def read_circuit(filename):
         if split_line[0][0] == 'f':
             f = int(re.search(r'\d+', split_line[0]).group())
             p = int(re.search(r'\d+', split_line[1]).group())
-            vph = float(split_line[4])
+            freq = float(split_line[4])
             vt = complex(data[i + 1].split()[2])
             zt = complex(data[i + 2].split()[2])
-            cct.vph[f] = vph
+            cct.freq[f] = freq
             cct.vt[f, p] = vt
             cct.zt[f, p] = zt
 

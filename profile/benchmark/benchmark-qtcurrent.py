@@ -30,7 +30,7 @@ print("\n\tRUNNING SPEED TEST:\n")
 if args.tone is None or args.tone == 1:
 
     cct = qmix.circuit.EmbeddingCircuit(1, 1)
-    cct.vph[1] = 0.3
+    cct.freq[1] = 0.3
 
     vj = cct.initialize_vj()
     vj[1,1,:] = 0.3
@@ -59,8 +59,8 @@ if args.tone is None or args.tone == 1:
 if args.tone is None or args.tone == 2:
 
     cct = qmix.circuit.EmbeddingCircuit(2, 1)
-    cct.vph[1] = 0.30
-    cct.vph[2] = 0.33
+    cct.freq[1] = 0.30
+    cct.freq[2] = 0.33
 
     vj = cct.initialize_vj()
     vj[1,1,:] = 0.3
@@ -90,9 +90,9 @@ if args.tone is None or args.tone == 2:
 if args.tone is None or args.tone == 3:
 
     cct = qmix.circuit.EmbeddingCircuit(3, 1)
-    cct.vph[1] = 0.30
-    cct.vph[2] = 0.33
-    cct.vph[3] = 0.27
+    cct.freq[1] = 0.30
+    cct.freq[2] = 0.33
+    cct.freq[3] = 0.27
 
     vj = cct.initialize_vj()
     vj[1,1,:] = 0.3
@@ -123,10 +123,10 @@ if args.tone is None or args.tone == 3:
 if args.tone is None or args.tone == 4:
 
     cct = qmix.circuit.EmbeddingCircuit(4, 1)
-    cct.vph[1] = 0.30
-    cct.vph[2] = 0.33
-    cct.vph[3] = 0.27
-    cct.vph[4] = 0.03
+    cct.freq[1] = 0.30
+    cct.freq[2] = 0.33
+    cct.freq[3] = 0.27
+    cct.freq[4] = 0.03
 
     vj = cct.initialize_vj()
     vj[1,1,:] = 0.3

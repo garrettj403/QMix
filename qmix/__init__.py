@@ -1,9 +1,9 @@
 """Quantum Mixing Software
 
-QMix is a software package that can be used to simulate Superconductor/
-Insulator/Superconductor (SIS) mixers. It uses multi-tone spectral domain 
-analysis, which makes QMix ideal for simulating higher-order harmonics, power 
-saturation and wide IF bandwidth devices. 
+QMix is used to simulate Superconductor/Insulator/Superconductor (SIS) mixers.
+It uses multi-tone spectral domain analysis, which makes QMix ideal for
+simulating higher-order harmonics, power saturation and wide IF bandwidth
+devices.
 
 """
 
@@ -22,7 +22,7 @@ import qmix.mathfn.kktrans
 
 from qmix.misc.terminal import print_intro
 
-# Suppress future warnings from scipy
+# Suppress future warnings from SciPy
 import warnings
 warnings.simplefilter(action='ignore', category=FutureWarning)
 

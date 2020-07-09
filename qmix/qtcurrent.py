@@ -26,14 +26,14 @@ import numpy as np
 from scipy.special import jv as bessel
 
 
-# round vph values to this number of decimal places
-# required when comparing vph to vph_list
-ROUND_VPH = 4  
+# round frequency values to this number of decimal places
+# required when comparing frequency to frequency_list
+ROUND_FREQ = 4  
 
 
 # Determine the dc/ac tunneling currents -------------------------------------
 
-def qtcurrent(vj, cct, resp, vph_list, num_b=15, verbose=True, resp_matrix=None):
+def qtcurrent(vj, cct, resp, freq_list, num_b=15, verbose=True, resp_matrix=None):
     """Calculate the quasiparticle tunneling current.
 
     This function uses multi-tone spectral domain analysis (MTSDA; see 
@@ -43,10 +43,10 @@ def qtcurrent(vj, cct, resp, vph_list, num_b=15, verbose=True, resp_matrix=None)
     Note:
 
         This function will return the tunneling current for all of the 
-        normalized photon voltages listed in vph_list. E.g., to solve for the 
-        dc tunneling current and the ac tunneling current at 230 GHz, the 
-        ``vph_list`` would  be ``[0, 230e9 / fgap]`` where ``fgap`` is the gap
-        frequency.
+        frequencies listed in freq_list (normalized to the gap frequency).
+        E.g., to solve for the dc tunneling current and the ac tunneling
+        current at 230 GHz, the ``freq_list`` would  be ``[0, 230e9 / fgap]``
+        where ``fgap`` is the gap frequency.
 
         Maximum of 4 non-harmonically related tones.
 
@@ -54,8 +54,8 @@ def qtcurrent(vj, cct, resp, vph_list, num_b=15, verbose=True, resp_matrix=None)
         vj (ndarray): Voltage across the SIS junction
         cct (qmix.circuit.EmbeddingCircuit): Embedding circuit
         resp (qmix.respfn.RespFn): Response function
-        vph_list: Calculate the tunneling currents for these photon voltages 
-            (i.e., frequencies)
+        freq_list: Calculate the tunneling currents for these frequencies
+            (normalized to the gap frequency)
         num_b (float/tuple, optional): Summation limits for phase factor
             coefficients, default is 15
         verbose (bool, optional): Print info to the terminal if true, default
@@ -74,22 +74,22 @@ def qtcurrent(vj, cct, resp, vph_list, num_b=15, verbose=True, resp_matrix=None)
     num_p = cct.num_p   # number of harmonics
     npts = cct.vb_npts  # number of bias voltages
 
-    assert cct.vph[1:].min() > 0., "All vph must be > 0!"
+    assert cct.freq[1:].min() > 0., "All freq must be > 0!"
 
     # TODO: there must be a better way...
     try:
-        vph_list = list(vph_list)
-        vph_is_list = True
+        freq_list = list(freq_list)
+        freq_is_list = True
     except TypeError:
-        vph_list = [float(vph_list)]
-        vph_is_list = False
+        freq_list = [float(freq_list)]
+        freq_is_list = False
 
     # TODO: there must be a better way...
-    for i, vph_val in enumerate(vph_list):
-        vph_list[i] = round(vph_val, ROUND_VPH)
-    vph_npts = len(vph_list)
+    for i, freq_val in enumerate(freq_list):
+        freq_list[i] = round(freq_val, ROUND_FREQ)
+    freq_npts = len(freq_list)
 
-    vph = cct.vph
+    freq = cct.freq
 
     nb_list = _unpack_num_b(num_b, num_f)
 
@@ -101,7 +101,7 @@ def qtcurrent(vj, cct, resp, vph_list, num_b=15, verbose=True, resp_matrix=None)
 
     # Convolution coefficients ------------------------------------------------
 
-    ccc = calculate_phase_factor_coeff(vj, vph, num_f, num_p, num_b)
+    ccc = calculate_phase_factor_coeff(vj, freq, num_f, num_p, num_b)
 
     # Interpolate response function ------------------------------------------
 
@@ -113,20 +113,20 @@ def qtcurrent(vj, cct, resp, vph_list, num_b=15, verbose=True, resp_matrix=None)
 
     # Call the correct function depending on the number of tones---------------
 
-    current_out = np.zeros((vph_npts, cct.vb_npts), dtype=complex)
+    current_out = np.zeros((freq_npts, cct.vb_npts), dtype=complex)
 
     if num_f == 1:
-        for i in range(vph_npts):
-            current_out[i] = _current_1_tone(vph_list[i], ccc, vph, resp_matrix, num_p, npts, *nb_list)
+        for i in range(freq_npts):
+            current_out[i] = _current_1_tone(freq_list[i], ccc, freq, resp_matrix, num_p, npts, *nb_list)
     elif num_f == 2:
-        for i in range(vph_npts):
-            current_out[i] = _current_2_tones(vph_list[i], ccc, vph, resp_matrix, num_p, npts, *nb_list)
+        for i in range(freq_npts):
+            current_out[i] = _current_2_tones(freq_list[i], ccc, freq, resp_matrix, num_p, npts, *nb_list)
     elif num_f == 3:
-        for i in range(vph_npts):
-            current_out[i] = _current_3_tones(vph_list[i], ccc, vph, resp_matrix, num_p, npts, *nb_list)
+        for i in range(freq_npts):
+            current_out[i] = _current_3_tones(freq_list[i], ccc, freq, resp_matrix, num_p, npts, *nb_list)
     elif num_f == 4:
-        for i in range(vph_npts):
-            current_out[i] = _current_4_tones(vph_list[i], ccc, vph, resp_matrix, num_p, npts, *nb_list)
+        for i in range(freq_npts):
+            current_out[i] = _current_4_tones(freq_list[i], ccc, freq, resp_matrix, num_p, npts, *nb_list)
 
     # Done --------------------------------------------------------------------
 
@@ -134,10 +134,10 @@ def qtcurrent(vj, cct, resp, vph_list, num_b=15, verbose=True, resp_matrix=None)
         print("Done.")
         print("Time: {0:.4f} s\n".format(timer() - start_time))
 
-    if vph_is_list:
+    if freq_is_list:
         return current_out
     else:
-        if vph_list[0] == 0.:
+        if freq_list[0] == 0.:
             return current_out[0].real
         else:
             return current_out[0]
@@ -181,13 +181,13 @@ def interpolate_respfn(cct, resp, num_b):
     nb_list = _unpack_num_b(num_b, cct.num_f)
 
     if cct.num_f == 1:
-        resp_matrix = _interpolate_respfn_1_tone(resp, cct.vb, cct.vph, *nb_list)
+        resp_matrix = _interpolate_respfn_1_tone(resp, cct.vb, cct.freq, *nb_list)
     elif cct.num_f == 2:
-        resp_matrix = _interpolate_respfn_2_tone(resp, cct.vb, cct.vph, *nb_list)
+        resp_matrix = _interpolate_respfn_2_tone(resp, cct.vb, cct.freq, *nb_list)
     elif cct.num_f == 3:
-        resp_matrix = _interpolate_respfn_3_tone(resp, cct.vb, cct.vph, *nb_list)
+        resp_matrix = _interpolate_respfn_3_tone(resp, cct.vb, cct.freq, *nb_list)
     elif cct.num_f == 4:
-        resp_matrix = _interpolate_respfn_4_tone(resp, cct.vb, cct.vph, *nb_list)
+        resp_matrix = _interpolate_respfn_4_tone(resp, cct.vb, cct.freq, *nb_list)
     else:
         print("num_f must be 1, 2, 3 or 4!")
         raise ValueError
@@ -195,13 +195,13 @@ def interpolate_respfn(cct, resp, num_b):
     return resp_matrix
 
 
-def _interpolate_respfn_1_tone(resp, vb, vph, num_b1):
+def _interpolate_respfn_1_tone(resp, vb, freq, num_b1):
     """Interpolate the response function (1 tone).
 
     Args:
         resp (qmix.respfn.RespFn): Response function
         vb (ndarray): Bias voltages, normalized
-        vph (ndarray): Photon voltages, normalized
+        freq (ndarray): Frequencies, normalized
         num_b1 (int): Summation limits for phase factor coefficients
 
     Returns:
@@ -214,7 +214,7 @@ def _interpolate_respfn_1_tone(resp, vb, vph, num_b1):
     vb_tmp = vb[None, :] * np.ones(k_npts)[:, None]
     ind = np.r_[np.arange(0, num_b1+1), np.arange(-num_b1, 0)]
     k_array = ind[:, None] * np.ones(npts, dtype=int)[None, :]
-    resp_out = resp(vb_tmp + k_array * vph[1])
+    resp_out = resp(vb_tmp + k_array * freq[1])
 
     # # DEBUG
     # print k_array[:,0]
@@ -226,13 +226,13 @@ def _interpolate_respfn_1_tone(resp, vb, vph, num_b1):
     return resp_out
 
 
-def _interpolate_respfn_2_tone(resp, vb, vph, num_b1, num_b2):
+def _interpolate_respfn_2_tone(resp, vb, freq, num_b1, num_b2):
     """Interpolate the response function (2 tones).
 
     Args:
         resp (qmix.respfn.RespFn): Response function
         vb (ndarray): Bias voltages, normalized
-        vph (ndarray): Photon voltages, normalized
+        freq (ndarray): Frequencies, normalized
         num_b1 (int): Summation limits for phase factor coefficients (tone 1)
         num_b2 (int): Summation limits for phase factor coefficients (tone 2)
 
@@ -252,7 +252,7 @@ def _interpolate_respfn_2_tone(resp, vb, vph, num_b1, num_b2):
     l_array = ind[None, :, None] * np.ones((k_npts, npts), dtype=int)[:, None, :] 
 
     vb_tmp = vb[None, None, :] * np.ones((k_npts, l_npts))[:, :, None]
-    resp_out = resp(vb_tmp + k_array * vph[1] + l_array * vph[2])
+    resp_out = resp(vb_tmp + k_array * freq[1] + l_array * freq[2])
 
     # # DEBUG
     # print k_array[:,0,0]
@@ -267,13 +267,13 @@ def _interpolate_respfn_2_tone(resp, vb, vph, num_b1, num_b2):
     return resp_out
 
 
-def _interpolate_respfn_3_tone(resp, vb, vph, num_b1, num_b2, num_b3):
+def _interpolate_respfn_3_tone(resp, vb, freq, num_b1, num_b2, num_b3):
     """Interpolate the response function (3 tones).
 
     Args:
         resp (qmix.respfn.RespFn): Response function
         vb (ndarray): Bias voltages, normalized
-        vph (ndarray): Photon voltages, normalized
+        freq (ndarray): Frequencies, normalized
         num_b1 (int): Summation limits for phase factor coefficients (tone 1)
         num_b2 (int): Summation limits for phase factor coefficients (tone 2)
         num_b3 (int): Summation limits for phase factor coefficients (tone 3)
@@ -288,19 +288,19 @@ def _interpolate_respfn_3_tone(resp, vb, vph, num_b1, num_b2, num_b3):
     for k in range(-num_b1, num_b1 + 1):
         for l in range(-num_b2, num_b2 + 1):
             for m in range(-num_b3, num_b3 + 1):
-                voltage[k, l, m] = vb + k * vph[1] + l * vph[2] + m * vph[3]
+                voltage[k, l, m] = vb + k * freq[1] + l * freq[2] + m * freq[3]
     resp_out = resp(voltage)
 
     return resp_out
 
 
-def _interpolate_respfn_4_tone(resp, vb, vph, num_b1, num_b2, num_b3, num_b4):
+def _interpolate_respfn_4_tone(resp, vb, freq, num_b1, num_b2, num_b3, num_b4):
     """Interpolate the response function (3 tones).
 
     Args:
         resp (qmix.respfn.RespFn): Response function
         vb (ndarray): Bias voltages, normalized
-        vph (ndarray): Photon voltages, normalized
+        freq (ndarray): Frequencies, normalized
         num_b1 (int): Summation limits for phase factor coefficients (tone 1)
         num_b2 (int): Summation limits for phase factor coefficients (tone 2)
         num_b3 (int): Summation limits for phase factor coefficients (tone 3)
@@ -317,7 +317,7 @@ def _interpolate_respfn_4_tone(resp, vb, vph, num_b1, num_b2, num_b3, num_b4):
         for l in range(-num_b2, num_b2 + 1):
             for m in range(-num_b3, num_b3 + 1):
                 for n in range(-num_b4, num_b4 + 1):
-                    voltage[k, l, m, n, :] = vb + k * vph[1] + l * vph[2] + m * vph[3] + n * vph[4]
+                    voltage[k, l, m, n, :] = vb + k * freq[1] + l * freq[2] + m * freq[3] + n * freq[4]
     resp_out = resp(voltage)
 
     return resp_out
@@ -325,7 +325,7 @@ def _interpolate_respfn_4_tone(resp, vb, vph, num_b1, num_b2, num_b3, num_b4):
 
 # Calculate the overall phase factor spectrum coefficients -------------------
 
-def calculate_phase_factor_coeff(vj, vph, num_f, num_p, num_b):
+def calculate_phase_factor_coeff(vj, freq, num_f, num_p, num_b):
     """Calculate the overall phase factor spectrum coefficients.
 
     Runs once per qtcurrent function call.
@@ -334,7 +334,7 @@ def calculate_phase_factor_coeff(vj, vph, num_f, num_p, num_b):
 
     Args:
         vj (ndarray): Voltage across the SIS junction
-        vph (ndarray): Photon voltages
+        freq (ndarray): Frequencies
         num_f (int): Number of non-harmonically related frequencies
         num_p (int): Number of harmonics
         num_b (int): Summation limits for phase factor coefficients
@@ -357,7 +357,7 @@ def calculate_phase_factor_coeff(vj, vph, num_f, num_p, num_b):
     alpha = np.zeros_like(vj, dtype=float)
     for f in range(1, num_f + 1):
         for p in range(1, num_p + 1):
-            alpha[f, p, :] = np.abs(vj[f, p, :]) / (p * vph[f])
+            alpha[f, p, :] = np.abs(vj[f, p, :]) / (p * freq[f])
 
     # Junction voltage phase:
     # phi[f, p, i] in R^(num_f+1)(num_p+1)(npts)
@@ -434,20 +434,19 @@ def _convolve_coefficients(jac):  # pragma: no cover
 # all built the same way except that every additional tone will add another
 # layer of coefficients and for-loops.
 # TODO: optimize further, vectorize for loops (?)
-# TODO:
+# TODO: write general function, for any number of tones
 
-def _current_1_tone(vph_out, ccc, vph, resp_matrix, num_p, npts, num_b1):
+def _current_1_tone(freq_out, ccc, freq, resp_matrix, num_p, npts, num_b1):
     """Calculate the tunneling current at a specific frequency.
 
     One tone.
 
-    Frequency is specified as a photon voltage (i.e., frequency normalized by 
-    the gap frequency).
+    Frequency is normalized to the gap frequency.
 
     Args:
-        vph_out (float): photon voltage, frequency to solve for
+        freq_out (float): frequencies of output values
         ccc (ndarray): convolution coefficients
-        vph (ndarray): photon voltages
+        freq (ndarray): frequencies
         resp_matrix (ndarray): Response function matrix, generated by 
             interpolate_respfn
         num_p (int): Number of harmonics
@@ -459,14 +458,14 @@ def _current_1_tone(vph_out, ccc, vph, resp_matrix, num_p, npts, num_b1):
 
     """
 
-    vph_out = round(vph_out, ROUND_VPH)
+    freq_out = round(freq_out, ROUND_FREQ)
     current_out = np.zeros(npts, dtype=complex)
     
     for a in range(num_p, -(num_p + 1), -1):
 
-        vph_a = round(a * vph[1], ROUND_VPH)
+        freq_a = round(a * freq[1], ROUND_FREQ)
 
-        if vph_a == vph_out:
+        if freq_a == freq_out:
 
             current_out += _current_coeff_1_tone(a, ccc, resp_matrix, num_b1, npts)
 
@@ -513,18 +512,17 @@ def _current_coeff_1_tone(a, ccc, resp_matrix, num_b1, npts):  # pragma: no cove
         return (rs_p.imag + rs_m.imag) - 1j * (rs_p.real - rs_m.real)
 
 
-def _current_2_tones(vph_out, ccc, vph, resp_matrix, num_p, npts, num_b1, num_b2):
+def _current_2_tones(freq_out, ccc, freq, resp_matrix, num_p, npts, num_b1, num_b2):
     """Calculate the tunneling current at a specific frequency.
 
     Two tones.
 
-    Frequency is specified as a photon voltage (i.e., frequency normalized by 
-    the gap frequency).
+    Frequency is normalized to the gap frequency.
 
     Args:
-        vph_out (float): photon voltage, frequency to solve for
+        freq_out (float): frequency to solve for
         ccc (ndarray): convolution coefficients
-        vph (ndarray): photon voltages
+        freq (ndarray): frequencies
         resp_matrix (ndarray): Response function matrix, generated by 
             interpolate_respfn
         num_p (int): Number of harmonics
@@ -537,15 +535,15 @@ def _current_2_tones(vph_out, ccc, vph, resp_matrix, num_p, npts, num_b1, num_b2
         
     """
 
-    vph_out = round(vph_out, ROUND_VPH)
+    freq_out = round(freq_out, ROUND_FREQ)
     current_out = np.zeros(npts, dtype=complex)
     
     for a in range(num_p, -(num_p + 1), -1):
         for b in range(num_p, -(num_p + 1), -1):
 
-            vph_ab = round(a * vph[1] + b * vph[2], ROUND_VPH)
+            freq_ab = round(a * freq[1] + b * freq[2], ROUND_FREQ)
 
-            if vph_ab == vph_out:
+            if freq_ab == freq_out:
 
                 current_out += _current_coeff_2_tones(a, b, ccc, resp_matrix, num_b1, num_b2, npts)
 
@@ -602,18 +600,17 @@ def _current_coeff_2_tones(a, b, ccc, resp_matrix, num_b1, num_b2, npts):  # pra
         return (rs_p.imag + rs_m.imag) - 1j * (rs_p.real - rs_m.real)
 
 
-def _current_3_tones(vph_out, ccc, vph, resp_matrix, num_p, npts, num_b1, num_b2, num_b3):
+def _current_3_tones(freq_out, ccc, freq, resp_matrix, num_p, npts, num_b1, num_b2, num_b3):
     """Calculate the tunneling current at a specific frequency.
 
     Three tones.
 
-    Frequency is specified as a photon voltage (i.e., frequency normalized by 
-    the gap frequency).
+    Frequency is normalized to the gap frequency.
 
     Args:
-        vph_out (float): photon voltage, frequency to solve for
+        freq_out (float): frequency to solve for
         ccc (ndarray): convolution coefficients
-        vph (ndarray): photon voltages
+        freq (ndarray): frequencies
         resp_matrix (ndarray): Response function matrix, generated by 
             interpolate_respfn
         num_p (int): Number of harmonics
@@ -627,30 +624,30 @@ def _current_3_tones(vph_out, ccc, vph, resp_matrix, num_p, npts, num_b1, num_b2
         
     """
 
-    vph_out = round(vph_out, ROUND_VPH)
+    freq_out = round(freq_out, ROUND_FREQ)
     current_out = np.zeros(npts, dtype=complex)
 
     for a in range(num_p, -(num_p + 1), -1):
         for b in range(num_p, -(num_p + 1), -1):
             for c in range(num_p, -(num_p + 1), -1):
 
-                vph_abc = round(a * vph[1] + b * vph[2] + c * vph[3], ROUND_VPH)
+                freq_abc = round(a * freq[1] + b * freq[2] + c * freq[3], ROUND_FREQ)
 
                 # # Debug
-                # match = vph_abc == vph_out
+                # match = freq_abc == freq_out
                 # if not match:
                 #     match = ''
                 # else:
                 #     match = 'match!'
-                # print "{:+d} {:+d} {:+d} {:+7.4f} {}".format(a, b, c, vph_abc, match)
+                # print "{:+d} {:+d} {:+d} {:+7.4f} {}".format(a, b, c, freq_abc, match)
 
-                if vph_abc == vph_out:
+                if freq_abc == freq_out:
 
                     # # Debug
                     # msg = "\t -> {:+d}*{:.4f} {:+d}*{:.4f} {:+d}*{:10.4f} = {:.4f}"
-                    # print msg.format(a, vph[1], 
-                    #                  b, vph[2],
-                    #                  c, vph[3], vph_out)
+                    # print msg.format(a, freq[1], 
+                    #                  b, freq[2],
+                    #                  c, freq[3], freq_out)
 
                     current_out += _current_coeff_3_tones(a, b, c, ccc, resp_matrix,
                                                           num_b1, num_b2, num_b3)
@@ -726,18 +723,17 @@ def _current_coeff_3_tones(a, b, c, ccc, resp_matrix, num_b1, num_b2, num_b3):  
 
 
 # @nb.njit("c16[:](f4, c16[:,:,:], f8[:], c16[:,:,:,:,:], i4, i4, i4, i4, i4, i4)")
-def _current_4_tones(vph_out, ccc, vph, resp_matrix, num_p, npts, num_b1, num_b2, num_b3, num_b4):  # pragma: no cover
+def _current_4_tones(freq_out, ccc, freq, resp_matrix, num_p, npts, num_b1, num_b2, num_b3, num_b4):  # pragma: no cover
     """Calculate the tunneling current at a specific frequency.
 
     Four tones.
 
-    Frequency is specified as a photon voltage (i.e., frequency normalized by 
-    the gap frequency).
+    Frequency is normalized to the gap frequency.
 
     Args:
-        vph_out (float): photon voltage, frequency to solve for
+        freq_out (float): frequency to solve for
         ccc (ndarray): convolution coefficients
-        vph (ndarray): photon voltages
+        freq (ndarray): frequencies
         resp_matrix (ndarray): Response function matrix, generated by 
             interpolate_respfn
         num_p (int): Number of harmonics
@@ -752,7 +748,7 @@ def _current_4_tones(vph_out, ccc, vph, resp_matrix, num_p, npts, num_b1, num_b2
         
     """
 
-    vph_out = round(vph_out, ROUND_VPH)
+    freq_out = round(freq_out, ROUND_FREQ)
     current_out = np.zeros(npts, dtype=np.complex128)
 
     for a in range(num_p, -(num_p + 1), -1):
@@ -760,9 +756,9 @@ def _current_4_tones(vph_out, ccc, vph, resp_matrix, num_p, npts, num_b1, num_b2
             for c in range(num_p, -(num_p + 1), -1):
                 for d in range(num_p, -(num_p + 1), -1):
 
-                    vph_abcd = round(a * vph[1] + b * vph[2] + c * vph[3] + d * vph[4], ROUND_VPH)
+                    freq_abcd = round(a * freq[1] + b * freq[2] + c * freq[3] + d * freq[4], ROUND_FREQ)
 
-                    if vph_abcd == vph_out:
+                    if freq_abcd == freq_out:
 
                         current_out += _current_coeff_4_tones(a, b, c, d, ccc, resp_matrix, 
                                                               num_b1, num_b2, num_b3, num_b4, npts)

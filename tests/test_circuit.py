@@ -50,14 +50,14 @@ def test_saving_and_importing_methods():
     # Try locking arrays
     cct.lock()
     with pytest.raises(ValueError):
-        cct.vph[1] = 0.5
+        cct.freq[1] = 0.5
     cct.unlock()
 
     # Read from file
     cct2 = read_circuit(path)
 
     # Compare values
-    np.testing.assert_array_equal(cct.vph, cct2.vph)
+    np.testing.assert_array_equal(cct.freq, cct2.freq)
     np.testing.assert_array_equal(cct.vt, cct2.vt)
     np.testing.assert_array_equal(cct.zt, cct2.zt)
     assert cct.num_f == cct2.num_f
@@ -83,30 +83,30 @@ def test_power_settings():
     # Signal names
     cct.set_name('LO', 1, 1)
     cct.set_name('RF', 2, 1)
-    # Set photon voltage
-    cct.set_vph(400e9, 1, units='Hz')
-    cct.set_vph(700e9, 2, units='Hz')
+    # Set frequency
+    cct.set_freq(400e9, 1, units='Hz')
+    cct.set_freq(700e9, 2, units='Hz')
 
-    # Try setting photon voltage with different units
-    vph1 = cct.vph[1]
-    cct.set_vph(400e9 / sc.tera, 1, units='THz')
-    assert vph1 == pytest.approx(cct.vph[1])
-    cct.set_vph(400e9 / sc.giga, 1, units='GHz')
-    assert vph1 == pytest.approx(cct.vph[1])
-    cct.set_vph(400e9 / sc.mega, 1, units='MHz')
-    assert vph1 == pytest.approx(cct.vph[1])
-    cct.set_vph(vph1, 1, units='norm')
-    assert vph1 == pytest.approx(cct.vph[1])
-    cct.set_vph(vph1 * 3e-3, 1, units='V')
-    assert vph1 == pytest.approx(cct.vph[1])
-    cct.set_vph(vph1 * 3, 1, units='mV')
-    assert vph1 == pytest.approx(cct.vph[1])
+    # Try setting frequency with different units
+    freq1 = cct.freq[1]
+    cct.set_freq(400e9 / sc.tera, 1, units='THz')
+    assert freq1 == pytest.approx(cct.freq[1])
+    cct.set_freq(400e9 / sc.giga, 1, units='GHz')
+    assert freq1 == pytest.approx(cct.freq[1])
+    cct.set_freq(400e9 / sc.mega, 1, units='MHz')
+    assert freq1 == pytest.approx(cct.freq[1])
+    cct.set_freq(freq1, 1, units='norm')
+    assert freq1 == pytest.approx(cct.freq[1])
+    cct.set_freq(freq1 * 3e-3, 1, units='V')
+    assert freq1 == pytest.approx(cct.freq[1])
+    cct.set_freq(freq1 * 3, 1, units='mV')
+    assert freq1 == pytest.approx(cct.freq[1])
     # Also try non-sense units
     with pytest.raises(ValueError):
-        cct.set_vph(1, 1, units='GV')
+        cct.set_freq(1, 1, units='GV')
 
-    # Test normalized photon voltage (recall fgap=700e9)
-    assert cct.vph[2] == 1.
+    # Test normalized frequency (recall fgap=700e9)
+    assert cct.freq[2] == 1.
 
     # Try printing
     cct.print_info()
@@ -168,7 +168,7 @@ def test_setting_alpha():
 
     # Build embedding circuit
     cct = EmbeddingCircuit(1, 1)
-    cct.vph[1] = 0.3
+    cct.freq[1] = 0.3
     cct.zt[1, 1] = 0.3 - 1j * 0.3
 
     # Set drive level to alpha=1
@@ -179,8 +179,8 @@ def test_setting_alpha():
     vj = qmix.harmonic_balance.harmonic_balance(cct, resp)
 
     # Check value in middle of first photon step
-    idx = np.abs(cct.vb - (1 - cct.vph[1]/2)).argmin()
-    alpha = np.abs(vj[1, 1, idx]) / cct.vph[1]
+    idx = np.abs(cct.vb - (1 - cct.freq[1] / 2)).argmin()
+    alpha = np.abs(vj[1, 1, idx]) / cct.freq[1]
     assert 0.9 < alpha < 1.1  # only has to be approximate
 
 

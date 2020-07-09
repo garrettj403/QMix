@@ -46,8 +46,8 @@ def slope_span_n(x, y, n=11, nozeros=True):
     Args:
         x (ndarray): x data
         y (ndarray): y data
-        n (int): span, must be odd
-        nozeros (bool): don't allow der=0 results
+        n (int, optional): span, must be odd, default is 11
+        nozeros (bool, optional): don't allow der=0 results, default is True
 
     Returns:
         ndarray: derivative
@@ -60,14 +60,14 @@ def slope_span_n(x, y, n=11, nozeros=True):
     der = np.zeros(len(x), dtype=float)
 
     rise = y[2 * n + 1:] - y[:-2 * n - 1]
-    run  = x[2 * n + 1:] - x[:-2 * n - 1]
+    run = x[2 * n + 1:] - x[:-2 * n - 1]
 
     with np.errstate(divide='ignore'):
         der[n + 1:-n] = rise / run
         for n in range(1, n + 1):
             rise = y[2 * n + 1:] - y[:-2 * n - 1]
-            run  = x[2 * n + 1:] - x[:-2 * n - 1]
-            der[n]  = rise[n]  / run[n]
+            run = x[2 * n + 1:] - x[:-2 * n - 1]
+            der[n] = rise[n] / run[n]
             der[-n] = rise[-n] / run[-n]
 
     der[0] = der[1]

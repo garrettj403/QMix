@@ -37,13 +37,13 @@ def test_relative_error_in_hb_solution():
     # Generate embedding circuit
     circuit = qmix.circuit.EmbeddingCircuit(NF, NP)
     # Photon voltage
-    circuit.vph[1] = 0.30
-    circuit.vph[2] = 0.32
+    circuit.freq[1] = 0.30
+    circuit.freq[2] = 0.32
     # Embedding voltage
-    circuit.vt[1, 1] = circuit.vph[1] * 1.5
-    circuit.vt[1, 2] = circuit.vph[1] * 0.1
-    circuit.vt[2, 1] = circuit.vph[2] * 0.1
-    circuit.vt[2, 2] = circuit.vph[2] * 0.01
+    circuit.vt[1, 1] = circuit.freq[1] * 1.5
+    circuit.vt[1, 2] = circuit.freq[1] * 0.1
+    circuit.vt[2, 1] = circuit.freq[2] * 0.1
+    circuit.vt[2, 2] = circuit.freq[2] * 0.01
     # Embedding impedance
     circuit.zt[1, 1] = 0.3 - 1j*0.3
     circuit.zt[1, 2] = 0.3 - 1j*0.3
@@ -80,8 +80,8 @@ def test_error_handling():
 
     # Embedding circuit
     circuit = qmix.circuit.EmbeddingCircuit(NF, NP)
-    circuit.vph[1] = 0.30
-    circuit.vt[1, 1] = circuit.vph[1] * 1.5
+    circuit.freq[1] = 0.30
+    circuit.vt[1, 1] = circuit.freq[1] * 1.5
     circuit.zt[1, 1] = 0.3 - 1j*0.3
 
     # Run test ---------------------------------------------------------------
@@ -108,9 +108,9 @@ def test_when_zthev_is_zero():
 
     # Embedding circuit
     circuit = qmix.circuit.EmbeddingCircuit(NF, NP)
-    circuit.vph[1] = 0.30
-    circuit.vph[2] = 0.32
-    circuit.vt[1, 1] = circuit.vph[1] * 1.5
+    circuit.freq[1] = 0.30
+    circuit.freq[2] = 0.32
+    circuit.vt[1, 1] = circuit.freq[1] * 1.5
 
     # Calculate junction voltage (should be equal to Thevenin voltage)
     vj = harmonic_balance(circuit, RESP, NB)

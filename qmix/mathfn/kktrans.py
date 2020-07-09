@@ -43,7 +43,7 @@ def kk_trans_trapz(v, i):
     """Calculate the Kramers-Kronig transform using a simple trapezoidal 
     summation.
 
-    This function isn't really used anymore, but it is nice to use it to 
+    This function isn't used anymore, but it is nice to use it to
     compare against qmix.mathfn.kktrans.kk_trans.
 
     Note: 

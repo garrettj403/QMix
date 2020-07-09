@@ -5,8 +5,6 @@
 import numpy as np
 
 
-# Filters -------------------------------------------------------------------
-
 def gauss_conv(x, sigma=10, ext_x=3):
     """Smooth data using a Gaussian convolution.
 

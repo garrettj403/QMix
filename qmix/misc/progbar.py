@@ -17,12 +17,11 @@ def progress_bar(iteration, total, prefix='Progress:', suffix='Complete',
     Args:
         iteration (int): current iteration
         total (int): total iterations
-
-    Keyword Args:
-        prefix (str): prefix string
-        suffix (str): suffix string
-        decimals (int): number of decimals in percent complete
-        bar_length (int): character length of bar
+        prefix (str, optional): prefix string, default is "Progress:"
+        suffix (str, optional): suffix string, default is "Complete"
+        decimals (int, optional): number of decimals in percent complete,
+            default is 2
+        bar_length (int, optional): character length of bar, default is 20
 
     """
 

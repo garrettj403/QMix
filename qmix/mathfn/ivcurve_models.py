@@ -36,10 +36,14 @@ def perfect(voltage):
         current[np.abs(voltage) < 1] = 0
         return current
     elif isinstance(voltage, float) or isinstance(voltage, int):
-        if np.abs(voltage) < 1: return 0
-        if np.abs(voltage) > 1: return voltage
-        if voltage == 1.: return 0.5
-        if voltage == -1.: return -0.5
+        if np.abs(voltage) < 1:
+            return 0
+        if np.abs(voltage) > 1:
+            return voltage
+        if voltage == 1.:
+            return 0.5
+        if voltage == -1.:
+            return -0.5
 
 
 def perfect_kk(voltage, max_kk=100.):
@@ -49,9 +53,8 @@ def perfect_kk(voltage, max_kk=100.):
 
     Args:
         voltage (ndarray): normalized bias voltage
-
-    Keyword Args:
-        max_kk (float): if output is NaN, use this max value instead
+        max_kk (float, optional): if output is NaN, use this max value
+            instead, default is 100
 
     Returns:
         ndarray: kk-transform of perfect i-v curve
@@ -63,9 +66,7 @@ def perfect_kk(voltage, max_kk=100.):
         kk = np.empty_like(voltage, dtype=float)
 
         mask = np.abs(voltage) != 1.
-        kk[mask] = (-1 / np.pi * (2 + voltage[mask] * 
-                   (np.log(np.abs((voltage[mask] - 1) / 
-                   (voltage[mask] + 1))))))
+        kk[mask] = (-1 / np.pi * (2 + voltage[mask] * (np.log(np.abs((voltage[mask] - 1) / (voltage[mask] + 1))))))
 
         # np.log(v-1) will cause result=Nan at v=-1 and v=1
         # replace with max value instead
@@ -75,11 +76,10 @@ def perfect_kk(voltage, max_kk=100.):
 
     elif isinstance(voltage, float) or isinstance(voltage, int):
 
-        if abs(voltage) == 1.: return max_kk
+        if abs(voltage) == 1.:
+            return max_kk
         else:
-            return (-1 / np.pi * (2 + voltage * 
-                   (np.log(abs((voltage - 1) / 
-                   (voltage + 1))))))
+            return -1 / np.pi * (2 + voltage * (np.log(abs((voltage - 1) / (voltage + 1)))))
 
 
 def polynomial(voltage, order=50):
@@ -119,13 +119,15 @@ def exponential(voltage, vgap=2.8e-3, rn=14., rsg=300., agap=4e4, model='fixed')
 
     Args:
         voltage (ndarray): normalized bias voltage
-
-    Keyword Args:
-        vgap (float): gap voltage, in units [V]
-        rn (float): normal resistance, in units [ohms]
-        rsg (float): sub-gap resistance, in units [ohms]
-        agap (float): gap linearity coefficient (typically around 4e4)
-        model (str): model to used (either 'fixed' or 'original')
+        vgap (float, optional): gap voltage, in units [V], default is 2.8e-3
+        rn (float, optional): normal resistance, in units [ohms], default
+            is 14
+        rsg (float, optional): sub-gap resistance, in units [ohms], default
+            is 300
+        agap (float, optional): gap linearity coefficient (typically around
+            4e4), default is 4e4
+        model (str, optional): model to used (either 'fixed' or 'original'),
+            default is "fixed"
 
     Returns:
         ndarray: normalized current
@@ -140,22 +142,22 @@ def exponential(voltage, vgap=2.8e-3, rn=14., rsg=300., agap=4e4, model='fixed')
         i_a = (
                # Sub-gap resistance
                v_v / (rsg * 2) * (1 / (1 + np.exp(-agap * (v_v + vgap)))) -
-               v_v / (rsg * 2) * (1 / (1 + np.exp( agap * (v_v + vgap)))) -
+               v_v / (rsg * 2) * (1 / (1 + np.exp(agap * (v_v + vgap)))) -
                v_v / (rsg * 2) * (1 / (1 + np.exp(-agap * (v_v - vgap)))) +
-               v_v / (rsg * 2) * (1 / (1 + np.exp( agap * (v_v - vgap)))) +
+               v_v / (rsg * 2) * (1 / (1 + np.exp(agap * (v_v - vgap)))) +
                # Normal resistance
-               v_v / rn  * (1 / (1 + np.exp( agap * (v_v + vgap)))) +
-               v_v / rn  * (1 / (1 + np.exp(-agap * (v_v - vgap)))))
+               v_v / rn * (1 / (1 + np.exp(agap * (v_v + vgap)))) +
+               v_v / rn * (1 / (1 + np.exp(-agap * (v_v - vgap)))))
         return i_a / igap
     elif model.lower() == 'original':
         np.seterr(over='ignore')
         i_a = (
                # Sub-gap resistance
                v_v / rsg * (1 / (1 + np.exp(-agap * (v_v + vgap)))) +
-               v_v / rsg * (1 / (1 + np.exp( agap * (v_v - vgap)))) +
+               v_v / rsg * (1 / (1 + np.exp(agap * (v_v - vgap)))) +
                # Normal resistance
-               v_v / rn  * (1 / (1 + np.exp( agap * (v_v + vgap)))) + 
-               v_v / rn  * (1 / (1 + np.exp(-agap * (v_v - vgap)))))
+               v_v / rn * (1 / (1 + np.exp(agap * (v_v + vgap)))) +
+               v_v / rn * (1 / (1 + np.exp(-agap * (v_v - vgap)))))
         return i_a / igap
     else:
         raise ValueError("Model not recognized.")
@@ -173,18 +175,21 @@ def expanded(voltage, vgap=2.8e-3, rn=14., rsg=5e2, agap=4e4, a0=1e4,
 
     Args:
         voltage (ndarray): normalized bias voltage
-
-    Keyword Args:
-        vgap (float): gap voltage, in units [V]
-        rn (float): normal resistance, in units [ohms]
-        rsg (float): sub-gap resistance, in units [ohms]
-        agap (float): gap linearity coefficient (typically around 4e4)
-        a0 (float): linearity coefficient at the origin
-        ileak (float): amplitude of leakage current
-        vnot (float): notch location, in units [V]
-        inot (float): notch current amplitude, in units [A]
-        anot (float): linearity of notch
-        ioff (float): current offset
+        vgap (float, optional): gap voltage, in units [V], default is 2.8e-3
+        rn (float, optional): normal resistance, in units [ohms], default
+            is 14
+        rsg (float, optional): sub-gap resistance, in units [ohms], default
+            is 5e2
+        agap (float, optional): gap linearity coefficient, default is 4e4
+        a0 (float, optional): linearity coefficient at the origin, default
+            is 1e4
+        ileak (float, optional): amplitude of leakage current, default is 5e-6
+        vnot (float, optional): notch location, in units [V], default
+            is 2.85e-3
+        inot (float, optional): notch current amplitude, in units [A], default
+            is 1e-5
+        anot (float, optional): linearity of notch, default is 2e4
+        ioff (float, optional): current offset, default is 1e-5
 
     Returns:
         ndarray: normalized current
@@ -200,14 +205,14 @@ def expanded(voltage, vgap=2.8e-3, rn=14., rsg=5e2, agap=4e4, a0=1e4,
         ileak * 2 * (1 / (1 + np.exp(-a0 * v_v))) -
         ileak * np.ones_like(voltage) -
         ileak * (1 / (1 + np.exp(-agap * (v_v - vgap)))) +
-        ileak * (1 / (1 + np.exp( agap * (v_v + vgap)))) +
+        ileak * (1 / (1 + np.exp(agap * (v_v + vgap)))) +
         # Sub-gap resistance
         v_v / (rsg * 2) * (1 / (1 + np.exp(-agap * (v_v + vgap)))) -
-        v_v / (rsg * 2) * (1 / (1 + np.exp( agap * (v_v + vgap)))) -
+        v_v / (rsg * 2) * (1 / (1 + np.exp(agap * (v_v + vgap)))) -
         v_v / (rsg * 2) * (1 / (1 + np.exp(-agap * (v_v - vgap)))) +
-        v_v / (rsg * 2) * (1 / (1 + np.exp( agap * (v_v - vgap)))) +
+        v_v / (rsg * 2) * (1 / (1 + np.exp(agap * (v_v - vgap)))) +
         # Transition and normal resistance
-        v_v / rn * (1 / (1 + np.exp( agap * (v_v + vgap)))) +
+        v_v / rn * (1 / (1 + np.exp(agap * (v_v + vgap)))) +
         v_v / rn * (1 / (1 + np.exp(-agap * (v_v - vgap)))) +
         # Notch above gap (proximity effect)
         inot / (1 + np.exp(anot * (v_v - vnot))) +

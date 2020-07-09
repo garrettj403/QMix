@@ -1652,13 +1652,13 @@ class RawData(object):
 
         # Build embedding circuit
         cct = qmix.circuit.EmbeddingCircuit(1, 1)
-        cct.vph[1] = vph
+        cct.freq[1] = vph
         cct.zt[1, 1] = self.zt
         cct.vt[1, 1] = self.vt
 
         # Simulate pumped I-V curve
         vj = harmonic_balance(cct, resp, num_b=30, verbose=False)
-        vph_list = [0, cct.vph[1]]
+        vph_list = [0, cct.freq[1]]
         current = qtcurrent(vj, cct, resp, vph_list, num_b=30, verbose=False)
 
         # De-normalize

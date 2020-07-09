@@ -26,7 +26,7 @@ print("\n\tRUNNING SPEED TEST: harmonic_balance\n")
 # 1 tone ---------------------------------------------------------------------
 
 cct = qmix.circuit.EmbeddingCircuit(1, 1)
-cct.vph[1] = 0.3
+cct.freq[1] = 0.3
 cct.vt[1,1] = 0.3
 cct.zt[1,1] = 0.5 - 1j*0.3
 
@@ -44,8 +44,8 @@ print("\t -> {} iterations".format(it))
 # 2 tone ---------------------------------------------------------------------
 
 cct = qmix.circuit.EmbeddingCircuit(2, 1)
-cct.vph[1] = 0.30
-cct.vph[2] = 0.33
+cct.freq[1] = 0.30
+cct.freq[2] = 0.33
 cct.vt[1,1] = 0.3
 cct.vt[2,1] = 0.03
 cct.zt[1,1] = 0.5 - 1j*0.3
@@ -64,9 +64,9 @@ print("\t -> {} iterations".format(it))
 # 3 tone ---------------------------------------------------------------------
 
 cct = qmix.circuit.EmbeddingCircuit(3, 1)
-cct.vph[1] = 0.30
-cct.vph[2] = 0.33
-cct.vph[3] = 0.27
+cct.freq[1] = 0.30
+cct.freq[2] = 0.33
+cct.freq[3] = 0.27
 cct.vt[1,1] = 0.3
 cct.vt[2,1] = 0.03
 cct.vt[3,1] = 0.03
@@ -87,10 +87,10 @@ print("\t -> {} iterations".format(it))
 # 4 tone ---------------------------------------------------------------------
 
 cct = qmix.circuit.EmbeddingCircuit(4, 1)
-cct.vph[1] = 0.30
-cct.vph[2] = 0.33
-cct.vph[3] = 0.27
-cct.vph[4] = 0.03
+cct.freq[1] = 0.30
+cct.freq[2] = 0.33
+cct.freq[3] = 0.27
+cct.freq[4] = 0.03
 cct.vt[1,1] = 0.3
 cct.vt[2,1] = 0.03
 cct.vt[3,1] = 0.03

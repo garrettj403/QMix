@@ -32,7 +32,7 @@ print("\n\tRUNNING SPEED TEST:\n")
 if args.tone is None or args.tone == 1:
 
     cct = qmix.circuit.EmbeddingCircuit(1, 2)
-    cct.vph[1] = 0.3
+    cct.freq[1] = 0.3
 
     vj = cct.initialize_vj()
     vj[1, 1, :] = 0.3
@@ -40,12 +40,12 @@ if args.tone is None or args.tone == 1:
 
     def one_tone():
 
-        calculate_phase_factor_coeff(vj, cct.vph, 1, 2, num_b)
+        calculate_phase_factor_coeff(vj, cct.freq, 1, 2, num_b)
 
     t_1tone = min(timeit.Timer(one_tone).repeat(1000, 1))
     print("1 tone:\t\t{:.2f} ms".format(t_1tone*1000))
 
-    ccc1 = calculate_phase_factor_coeff(vj, cct.vph, 1, 2, num_b)
+    ccc1 = calculate_phase_factor_coeff(vj, cct.freq, 1, 2, num_b)
     if args.overwrite:
         print(" -> Save ccc1")
         with open('data/coeff1.data', 'wb') as f:
@@ -65,8 +65,8 @@ if args.tone is None or args.tone == 1:
 if args.tone is None or args.tone == 2:
 
     cct = qmix.circuit.EmbeddingCircuit(2, 2)
-    cct.vph[1] = 0.30
-    cct.vph[2] = 0.33
+    cct.freq[1] = 0.30
+    cct.freq[2] = 0.33
 
     vj = cct.initialize_vj()
     vj[1, 1, :] = 0.3
@@ -76,12 +76,12 @@ if args.tone is None or args.tone == 2:
 
     def two_tone():
 
-        calculate_phase_factor_coeff(vj, cct.vph, 2, 2, num_b)
+        calculate_phase_factor_coeff(vj, cct.freq, 2, 2, num_b)
 
     t_2tone = min(timeit.Timer(two_tone).repeat(600, 1))
     print("2 tones:\t{:.2f} ms".format(t_2tone*1000))
 
-    ccc2 = calculate_phase_factor_coeff(vj, cct.vph, 2, 2, num_b)
+    ccc2 = calculate_phase_factor_coeff(vj, cct.freq, 2, 2, num_b)
     if args.overwrite:
         print(" -> Save ccc2")
         with open('data/coeff2.data', 'wb') as f:
@@ -97,9 +97,9 @@ if args.tone is None or args.tone == 2:
 if args.tone is None or args.tone == 3:
 
     cct = qmix.circuit.EmbeddingCircuit(3, 2)
-    cct.vph[1] = 0.30
-    cct.vph[2] = 0.33
-    cct.vph[3] = 0.27
+    cct.freq[1] = 0.30
+    cct.freq[2] = 0.33
+    cct.freq[3] = 0.27
 
     vj = cct.initialize_vj()
     vj[1, 1, :] = 0.3
@@ -111,12 +111,12 @@ if args.tone is None or args.tone == 3:
 
     def three_tone():
 
-        calculate_phase_factor_coeff(vj, cct.vph, 3, 2, num_b)
+        calculate_phase_factor_coeff(vj, cct.freq, 3, 2, num_b)
 
     t_3tone = min(timeit.Timer(three_tone).repeat(400, 1))
     print("3 tones:\t{:.2f} ms".format(t_3tone*1000))
 
-    ccc3 = calculate_phase_factor_coeff(vj, cct.vph, 3, 2, num_b)
+    ccc3 = calculate_phase_factor_coeff(vj, cct.freq, 3, 2, num_b)
     if args.overwrite:
         print(" -> Save ccc3")
         with open('data/coeff3.data', 'wb') as f:
@@ -132,10 +132,10 @@ if args.tone is None or args.tone == 3:
 if args.tone is None or args.tone == 4:
 
     cct = qmix.circuit.EmbeddingCircuit(4, 2)
-    cct.vph[1] = 0.30
-    cct.vph[2] = 0.33
-    cct.vph[3] = 0.27
-    cct.vph[4] = 0.03
+    cct.freq[1] = 0.30
+    cct.freq[2] = 0.33
+    cct.freq[3] = 0.27
+    cct.freq[4] = 0.03
 
     vj = cct.initialize_vj()
     vj[1, 1, :] = 0.3
@@ -149,12 +149,12 @@ if args.tone is None or args.tone == 4:
 
     def four_tone():
 
-        calculate_phase_factor_coeff(vj, cct.vph, 4, 2, num_b)
+        calculate_phase_factor_coeff(vj, cct.freq, 4, 2, num_b)
 
     t_4tone = min(timeit.Timer(four_tone).repeat(200, 1))
     print("4 tones:\t{:.2f} ms".format(t_4tone*1000))
 
-    ccc4 = calculate_phase_factor_coeff(vj, cct.vph, 4, 2, num_b)
+    ccc4 = calculate_phase_factor_coeff(vj, cct.freq, 4, 2, num_b)
     if args.overwrite:
         print(" -> Save ccc4")
         with open('data/coeff4.data', 'wb') as f:

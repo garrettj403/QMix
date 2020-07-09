@@ -35,7 +35,7 @@ def cprint(text, color='HEADER'):  # pragma: no cover
 
     Args:
         text (str): Text to print
-        color (str): Color/style to print in
+        color (str, optional): Color/style to print in, default is "HEADER"
 
     """
 
@@ -59,8 +59,9 @@ def title(title_string, color=None, total_len=60):  # pragma: no cover
 
     Args:
         title_string (str): title to print
-        color (str): Color to print in
-        total_len (int): Total length of title string (including stars)
+        color (str, optional): Color to print in, default is None
+        total_len (int, optional): Total length of title string (including
+            stars), default is 60
 
     """
 
@@ -83,7 +84,7 @@ def header(header_string, color=None):  # pragma: no cover
 
     Args:
         header_string (str): Header title to print
-        color (str): Color to print in
+        color (str, optional): Color to print in, default is None
 
     """
 
@@ -99,8 +100,9 @@ def pvalf(name, val, units='', comment='', color=None):  # pragma: no cover
     Args:
         name (str): variable name
         val (float): variable value
-        units (str): variable units (optional)
-        comment (str): comment (optional)
+        units (str, optional): variable units, default is ""
+        comment (str, optional): comment, default is ""
+        color (str, optional): color, default is None
 
     """
 
@@ -129,8 +131,9 @@ def pvale(name, val, units='', comment='', color=None):  # pragma: no cover
     Args:
         name (str): variable name
         val (float): variable value
-        units (str): variable units (optional)
-        comment (str): comment (optional)
+        units (str, optional): variable units, default is ""
+        comment (str, optional): comment, default is ""
+        color (str, optional): color, default is None
 
     """
 

@@ -34,21 +34,21 @@ def test_compare_qtcurrent_to_tucker_theory():
 
     # Build embedding circuit
     cct = EmbeddingCircuit(1, 1, vb_min=0, vb_npts=101)
-    vph = 0.33
-    cct.vph[1] = vph
+    freq = 0.33
+    cct.freq[1] = freq
 
     # Set voltage across junction to Vph * 0.8
     alpha = 0.8
     vj = cct.initialize_vj()
-    vj[1, 1, :] = cct.vph[1] * alpha
+    vj[1, 1, :] = cct.freq[1] * alpha
 
     # Calculate QTC using QMix
     idc_qmix = qtcurrent(vj, cct, RESP, 0.)  # DC
-    iac_qmix = qtcurrent(vj, cct, RESP, cct.vph[1])  # AC
+    iac_qmix = qtcurrent(vj, cct, RESP, cct.freq[1])  # AC
 
     # Calculate QTC using Tucker theory
-    idc_tucker = _tucker_dc_current(VBIAS, RESP, alpha, vph)  # DC
-    iac_tucker = _tucker_ac_current(VBIAS, RESP, alpha, vph)  # AC
+    idc_tucker = _tucker_dc_current(VBIAS, RESP, alpha, freq)  # DC
+    iac_tucker = _tucker_ac_current(VBIAS, RESP, alpha, freq)  # AC
 
     # Compare methods
     np.testing.assert_almost_equal(idc_qmix, idc_tucker, decimal=15)
@@ -77,7 +77,7 @@ def test_effect_of_adding_more_tones():
     num_b = (9, 2, 2, 2)
 
     alpha1 = 0.8  # drive level, tone 1
-    vph1 = 0.33  # photon voltage, tone 1
+    freq1 = 0.33  # frequency, tone 1
 
     # Setup 1st tone for comparison ------------------------------------------
 
@@ -85,11 +85,11 @@ def test_effect_of_adding_more_tones():
     num_p = 1
     cct1 = EmbeddingCircuit(num_f, num_p)
 
-    cct1.vph[1] = vph1
+    cct1.freq[1] = freq1
     vj = cct1.initialize_vj()
-    vj[1, 1, :] = cct1.vph[1] * alpha1
+    vj[1, 1, :] = cct1.freq[1] * alpha1
 
-    i1 = qtcurrent(vj, cct1, RESP, cct1.vph, num_b)
+    i1 = qtcurrent(vj, cct1, RESP, cct1.freq, num_b)
     idc1 = np.real(i1[0, :])
     iac1 = i1[1, :]
 
@@ -98,12 +98,12 @@ def test_effect_of_adding_more_tones():
     num_f = 2
     cct = EmbeddingCircuit(num_f, num_p)
 
-    cct.vph[1] = cct1.vph[1]
-    cct.vph[2] = cct1.vph[1] + 0.05
+    cct.freq[1] = cct1.freq[1]
+    cct.freq[2] = cct1.freq[1] + 0.05
     vj = cct.initialize_vj()
-    vj[1, 1, :] = cct1.vph[1] * alpha1
+    vj[1, 1, :] = cct1.freq[1] * alpha1
 
-    i2 = qtcurrent(vj, cct, RESP, cct.vph, num_b)
+    i2 = qtcurrent(vj, cct, RESP, cct.freq, num_b)
     idc2 = np.real(i2[0, :])
     iac2 = i2[1, :]
 
@@ -112,13 +112,13 @@ def test_effect_of_adding_more_tones():
     num_f = 3
     cct = EmbeddingCircuit(num_f, num_p)
 
-    cct.vph[1] = cct1.vph[1]
-    cct.vph[2] = cct1.vph[1] + 0.05
-    cct.vph[3] = cct1.vph[1] + 0.10
+    cct.freq[1] = cct1.freq[1]
+    cct.freq[2] = cct1.freq[1] + 0.05
+    cct.freq[3] = cct1.freq[1] + 0.10
     vj = cct.initialize_vj()
-    vj[1, 1, :] = cct1.vph[1] * alpha1
+    vj[1, 1, :] = cct1.freq[1] * alpha1
 
-    i3 = qtcurrent(vj, cct, RESP, cct.vph, num_b)
+    i3 = qtcurrent(vj, cct, RESP, cct.freq, num_b)
     idc3 = np.real(i3[0, :])
     iac3 = i3[1, :]
 
@@ -127,15 +127,15 @@ def test_effect_of_adding_more_tones():
     num_f = 4
     cct = EmbeddingCircuit(num_f, num_p)
 
-    cct.vph[1] = cct1.vph[1]
-    cct.vph[2] = cct1.vph[1] + 0.05
-    cct.vph[3] = cct1.vph[1] + 0.10
-    cct.vph[4] = cct1.vph[1] + 0.15
+    cct.freq[1] = cct1.freq[1]
+    cct.freq[2] = cct1.freq[1] + 0.05
+    cct.freq[3] = cct1.freq[1] + 0.10
+    cct.freq[4] = cct1.freq[1] + 0.15
 
     vj = cct.initialize_vj()
-    vj[1, 1, :] = cct.vph[1] * alpha1
+    vj[1, 1, :] = cct.freq[1] * alpha1
 
-    i4 = qtcurrent(vj, cct, RESP, cct.vph, num_b)
+    i4 = qtcurrent(vj, cct, RESP, cct.freq, num_b)
     idc4 = np.real(i4[0, :])
     iac4 = i4[1, :]
 
@@ -168,7 +168,7 @@ def test_effect_of_adding_more_harmonics():
     num_b = 9
 
     alpha1 = 0.8  # drive level, harmonic 1
-    vph1 = 0.33   # photon voltage, harmonic 1
+    freq1 = 0.33   # frequency, harmonic 1
 
     # Setup 1st tone for comparison ------------------------------------------
 
@@ -176,12 +176,12 @@ def test_effect_of_adding_more_harmonics():
     num_p = 1
     cct1 = EmbeddingCircuit(num_f, num_p)
 
-    cct1.vph[1] = vph1
+    cct1.freq[1] = freq1
     vj = cct1.initialize_vj()
-    vj[1, 1, :] = cct1.vph[1] * alpha1
+    vj[1, 1, :] = cct1.freq[1] * alpha1
 
-    vph_list = [0, vph1]
-    i1 = qtcurrent(vj, cct1, RESP, vph_list, num_b)
+    freq_list = [0, freq1]
+    i1 = qtcurrent(vj, cct1, RESP, freq_list, num_b)
     idc1 = i1[0, :].real
 
     # 2 harmonics ------------------------------------------------------------
@@ -189,12 +189,12 @@ def test_effect_of_adding_more_harmonics():
     num_p = 2
     cct = EmbeddingCircuit(num_f, num_p)
 
-    cct.vph[1] = cct1.vph[1]
+    cct.freq[1] = cct1.freq[1]
     vj = cct.initialize_vj()
-    vj[1, 1, :] = cct1.vph[1] * alpha1
+    vj[1, 1, :] = cct1.freq[1] * alpha1
 
-    vph_list = [0, vph1, vph1*2]
-    i2 = qtcurrent(vj, cct, RESP, vph_list, num_b)
+    freq_list = [0, freq1, freq1*2]
+    i2 = qtcurrent(vj, cct, RESP, freq_list, num_b)
     idc2 = i2[0, :].real
 
     # 3 harmonics ------------------------------------------------------------
@@ -202,12 +202,12 @@ def test_effect_of_adding_more_harmonics():
     num_p = 3
     cct = EmbeddingCircuit(num_f, num_p)
 
-    cct.vph[1] = cct1.vph[1]
+    cct.freq[1] = cct1.freq[1]
     vj = cct.initialize_vj()
-    vj[1, 1, :] = cct1.vph[1] * alpha1
+    vj[1, 1, :] = cct1.freq[1] * alpha1
 
-    vph_list = [0, vph1, vph1*2, vph1*3]
-    i3 = qtcurrent(vj, cct, RESP, vph_list, num_b)
+    freq_list = [0, freq1, freq1*2, freq1*3]
+    i3 = qtcurrent(vj, cct, RESP, freq_list, num_b)
     idc3 = i3[0, :].real
 
     # 4 harmonics ------------------------------------------------------------
@@ -215,12 +215,12 @@ def test_effect_of_adding_more_harmonics():
     num_p = 4
     cct = EmbeddingCircuit(num_f, num_p)
 
-    cct.vph[1] = cct1.vph[1]
+    cct.freq[1] = cct1.freq[1]
     vj = cct.initialize_vj()
-    vj[1, 1, :] = cct1.vph[1] * alpha1
+    vj[1, 1, :] = cct1.freq[1] * alpha1
 
-    vph_list = [0, vph1, vph1*2, vph1*3, vph1*4]
-    i4 = qtcurrent(vj, cct, RESP, vph_list, num_b)
+    freq_list = [0, freq1, freq1*2, freq1*3, freq1*4]
+    i4 = qtcurrent(vj, cct, RESP, freq_list, num_b)
     idc4 = i4[0, :].real
 
     # Compare results --------------------------------------------------------
@@ -252,7 +252,7 @@ def test_setting_up_simulation_using_different_harmonic():
     num_b = 15   # number of Bessel functions to include
     num_f = 1    # number of frequencies
 
-    vph = 0.3    # photon voltage, normalized
+    freq = 0.3    # frequency, normalized
     alpha = 0.8  # drive level
 
     # Basic simulation for comparison ----------------------------------------
@@ -260,11 +260,11 @@ def test_setting_up_simulation_using_different_harmonic():
     num_p = 1
     cct = EmbeddingCircuit(num_f, num_p)
 
-    cct.vph[1] = vph
+    cct.freq[1] = freq
     vj = cct.initialize_vj()
-    vj[1, 1, :] = vph * alpha
+    vj[1, 1, :] = freq * alpha
 
-    i1 = qtcurrent(vj, cct, RESP, cct.vph, num_b)
+    i1 = qtcurrent(vj, cct, RESP, cct.freq, num_b)
     i1_dc = i1[0].real
     i1_ac = i1[-1]
 
@@ -272,12 +272,12 @@ def test_setting_up_simulation_using_different_harmonic():
 
     num_p = 2
     cct = EmbeddingCircuit(num_f, num_p)
-    cct.vph[1] = vph / 2.
+    cct.freq[1] = freq / 2.
     vj = cct.initialize_vj()
-    vj[1, 2, :] = vph * alpha
-    vph_list = [0, vph/2., vph]
+    vj[1, 2, :] = freq * alpha
+    freq_list = [0, freq/2., freq]
 
-    i2 = qtcurrent(vj, cct, RESP, vph_list, num_b*2)
+    i2 = qtcurrent(vj, cct, RESP, freq_list, num_b*2)
     i2_dc = i2[0].real
     i2_ac = i2[-1]
 
@@ -296,9 +296,9 @@ def test_effect_of_adding_more_tones_on_if():
     have any effect on the IF results."""
 
     alpha1 = 0.8
-    vph1 = 0.3
-    vph2 = 0.35
-    vph_list = [0, vph1, vph2]  
+    freq1 = 0.3
+    freq2 = 0.35
+    freq_list = [0, freq1, freq2]  
 
     num_b = (9, 5, 5, 5)
 
@@ -308,27 +308,27 @@ def test_effect_of_adding_more_tones_on_if():
     num_p = 1
     cct = EmbeddingCircuit(num_f, num_p)
 
-    cct.vph[1] = vph1
-    cct.vph[2] = vph2
+    cct.freq[1] = freq1
+    cct.freq[2] = freq2
     vj = cct.initialize_vj()
-    vj[1, 1, :] = cct.vph[1] * alpha1
+    vj[1, 1, :] = cct.freq[1] * alpha1
     vj[2, 1, :] = 1e-5
 
-    idc2, ilo2, iif2 = qtcurrent(vj, cct, RESP, vph_list, num_b)
+    idc2, ilo2, iif2 = qtcurrent(vj, cct, RESP, freq_list, num_b)
 
     # 3 tones ----------------------------------------------------------------
 
     num_f = 3
     cct = EmbeddingCircuit(num_f, num_p)
 
-    cct.vph[1] = vph1
-    cct.vph[2] = vph2
-    cct.vph[3] = abs(vph1 - vph2)
+    cct.freq[1] = freq1
+    cct.freq[2] = freq2
+    cct.freq[3] = abs(freq1 - freq2)
     vj = cct.initialize_vj()
-    vj[1, 1, :] = cct.vph[1] * alpha1
+    vj[1, 1, :] = cct.freq[1] * alpha1
     vj[2, 1, :] = 1e-5
 
-    idc3, ilo3, iif3 = qtcurrent(vj, cct, RESP, vph_list, num_b)
+    idc3, ilo3, iif3 = qtcurrent(vj, cct, RESP, freq_list, num_b)
 
     # Compare results --------------------------------------------------------
 
@@ -350,10 +350,10 @@ def test_excite_different_tones():
     num_p = 1
     num_b = (9, 3, 3, 3)
     cct = EmbeddingCircuit(num_f, num_p)
-    cct.vph[1] = 0.3
-    cct.vph[2] = 0.4
-    cct.vph[3] = 0.5
-    cct.vph[4] = 0.6
+    cct.freq[1] = 0.3
+    cct.freq[2] = 0.4
+    cct.freq[3] = 0.5
+    cct.freq[4] = 0.6
     vj = cct.initialize_vj()
     vj[1, 1, :] = vj_set
     idc1 = qtcurrent(vj, cct, RESP, 0, num_b)
@@ -363,10 +363,10 @@ def test_excite_different_tones():
     num_p = 1
     num_b = (3, 9, 3, 3)
     cct = EmbeddingCircuit(num_f, num_p)
-    cct.vph[1] = 0.4
-    cct.vph[2] = 0.3
-    cct.vph[3] = 0.5
-    cct.vph[4] = 0.6
+    cct.freq[1] = 0.4
+    cct.freq[2] = 0.3
+    cct.freq[3] = 0.5
+    cct.freq[4] = 0.6
     vj = cct.initialize_vj()
     vj[2, 1, :] = vj_set
     idc2 = qtcurrent(vj, cct, RESP, 0, num_b)
@@ -376,10 +376,10 @@ def test_excite_different_tones():
     num_p = 1
     num_b = (3, 3, 9, 3)
     cct = EmbeddingCircuit(num_f, num_p)
-    cct.vph[1] = 0.5
-    cct.vph[2] = 0.4
-    cct.vph[3] = 0.3
-    cct.vph[4] = 0.6
+    cct.freq[1] = 0.5
+    cct.freq[2] = 0.4
+    cct.freq[3] = 0.3
+    cct.freq[4] = 0.6
     vj = cct.initialize_vj()
     vj[3, 1, :] = vj_set
     idc3 = qtcurrent(vj, cct, RESP, 0, num_b)
@@ -389,10 +389,10 @@ def test_excite_different_tones():
     num_p = 1
     num_b = (3, 3, 3, 9)
     cct = EmbeddingCircuit(num_f, num_p)
-    cct.vph[1] = 0.6
-    cct.vph[2] = 0.4
-    cct.vph[3] = 0.5
-    cct.vph[4] = 0.3
+    cct.freq[1] = 0.6
+    cct.freq[2] = 0.4
+    cct.freq[3] = 0.5
+    cct.freq[4] = 0.3
     vj = cct.initialize_vj()
     vj[4, 1, :] = vj_set
     idc4 = qtcurrent(vj, cct, RESP, 0, num_b)
@@ -416,10 +416,10 @@ def test_interpolation_of_respfn():
 
     num_f = 1
     cct = EmbeddingCircuit(num_f, num_p)
-    cct.vph[1] = 0.30
+    cct.freq[1] = 0.30
 
     interp_matrix = interpolate_respfn(cct, RESP, num_b=5)
-    vtest = cct.vb + a * cct.vph[1]
+    vtest = cct.vb + a * cct.freq[1]
 
     np.testing.assert_equal(interp_matrix[a, :], RESP(vtest))
 
@@ -427,11 +427,11 @@ def test_interpolation_of_respfn():
 
     num_f = 2
     cct = EmbeddingCircuit(num_f, num_p)
-    cct.vph[1] = 0.30
-    cct.vph[2] = 0.35
+    cct.freq[1] = 0.30
+    cct.freq[2] = 0.35
 
     interp_matrix = interpolate_respfn(cct, RESP, num_b=5)
-    vtest = cct.vb + a * cct.vph[1] + b * cct.vph[2]
+    vtest = cct.vb + a * cct.freq[1] + b * cct.freq[2]
 
     np.testing.assert_equal(interp_matrix[a, b, :], RESP(vtest))
 
@@ -440,12 +440,12 @@ def test_interpolation_of_respfn():
     num_f = 3
     num_p = 2
     cct = EmbeddingCircuit(num_f, num_p)
-    cct.vph[1] = 0.30
-    cct.vph[2] = 0.35
-    cct.vph[3] = 0.40
+    cct.freq[1] = 0.30
+    cct.freq[2] = 0.35
+    cct.freq[3] = 0.40
 
     interp_matrix = interpolate_respfn(cct, RESP, num_b=5)
-    vtest = cct.vb + a * cct.vph[1] + b * cct.vph[2] + c * cct.vph[3]
+    vtest = cct.vb + a * cct.freq[1] + b * cct.freq[2] + c * cct.freq[3]
 
     np.testing.assert_equal(interp_matrix[a, b, c, :], RESP(vtest))
 
@@ -454,13 +454,13 @@ def test_interpolation_of_respfn():
     num_f = 4
     num_p = 2
     cct = EmbeddingCircuit(num_f, num_p)
-    cct.vph[1] = 0.30
-    cct.vph[2] = 0.35
-    cct.vph[3] = 0.40
-    cct.vph[4] = 0.45
+    cct.freq[1] = 0.30
+    cct.freq[2] = 0.35
+    cct.freq[3] = 0.40
+    cct.freq[4] = 0.45
 
     interp_matrix = interpolate_respfn(cct, RESP, num_b=5)
-    vtest = cct.vb + a * cct.vph[1] + b * cct.vph[2] + c * cct.vph[3] + d * cct.vph[4]
+    vtest = cct.vb + a * cct.freq[1] + b * cct.freq[2] + c * cct.freq[3] + d * cct.freq[4]
 
     np.testing.assert_equal(interp_matrix[a, b, c, d, :], RESP(vtest))
 
@@ -491,10 +491,10 @@ def test_phase_factor_coefficients():
     num_b = 15  # Number of Bessel functions
 
     cct = EmbeddingCircuit(num_f, num_p)
-    cct.vph[1] = 0.30  # LO
-    cct.vph[2] = 0.33  # USB
-    cct.vph[3] = 0.27  # LSB
-    cct.vph[4] = 0.03  # IF
+    cct.freq[1] = 0.30  # LO
+    cct.freq[2] = 0.33  # USB
+    cct.freq[3] = 0.27  # LSB
+    cct.freq[4] = 0.03  # IF
 
     vj = cct.initialize_vj()
     vj[1, 1, :] = 0.30 * np.exp(1j * 2.0)
@@ -506,9 +506,9 @@ def test_phase_factor_coefficients():
     vj[3, 2, :] = 0.01 * np.exp(1j * -0.2)
     vj[4, 2, :] = 0.00 * np.exp(1j * -1.5)
 
-    ckh_known = _calculate_phase_factor_coeff(vj, cct.vph, num_f, num_p, num_b)
+    ckh_known = _calculate_phase_factor_coeff(vj, cct.freq, num_f, num_p, num_b)
 
-    ckh_qmix = calculate_phase_factor_coeff(vj, cct.vph, num_f, num_p, num_b)
+    ckh_qmix = calculate_phase_factor_coeff(vj, cct.freq, num_f, num_p, num_b)
 
     np.testing.assert_almost_equal(ckh_qmix, ckh_known, decimal=12)
 
@@ -527,7 +527,7 @@ def _tucker_dc_current(voltage, resp, alpha, v_ph, num_b=20):
         voltage: normalized bias voltage
         resp: response function, instance of qmix.respfn.RespFn class
         alpha: junction drive level
-        v_ph: equivalent photon voltage
+        v_ph: equivalent frequency
         num_b: number of Bessel functions to include
 
     Returns:
@@ -550,7 +550,7 @@ def _tucker_ac_current(voltage, resp, alpha, v_ph, num_b=20):
         voltage: normalized bias voltage
         resp: response function, instance of qmix.respfn.RespFn class
         alpha: junction drive level
-        v_ph: photon voltage
+        v_ph: frequency
         num_b: truncate the bessel functions at this order
 
     Returns:
@@ -580,7 +580,7 @@ def _tucker_ac_current(voltage, resp, alpha, v_ph, num_b=20):
 # values. That way, I can optimize the function in QMix and know that it still
 # produces good values.
 
-def _calculate_phase_factor_coeff(vj, vph, num_f, num_p, num_b):
+def _calculate_phase_factor_coeff(vj, freq, num_f, num_p, num_b):
     """Calculate the convolution coefficients for each tone.
 
     This code was taken from qmix.qtcurrent.calculate_phase_factor_coeff()
@@ -591,7 +591,7 @@ def _calculate_phase_factor_coeff(vj, vph, num_f, num_p, num_b):
 
     Args:
         vj (ndarray): Voltage across the SIS junction
-        vph (ndarray): Photon voltages
+        freq (ndarray): Photon voltages
         num_f (int): Number of non-harmonically related frequencies
         num_p (int): Number of harmonics
         num_b (int): Number of Bessel functions
@@ -613,7 +613,7 @@ def _calculate_phase_factor_coeff(vj, vph, num_f, num_p, num_b):
     alpha = np.zeros_like(vj, dtype=float)
     for f in range(1, num_f + 1):
         for H in range(1, num_p + 1):
-            alpha[f, H, :] = np.abs(vj[f, H, :]) / (H * vph[f])
+            alpha[f, H, :] = np.abs(vj[f, H, :]) / (H * freq[f])
 
     # Junction voltage phase:
     # phi[f, p, i] in R^(num_f+1)(num_p+1)(npts)
@@ -649,7 +649,7 @@ def _calculate_phase_factor_coeff(vj, vph, num_f, num_p, num_b):
     # import matplotlib.pyplot as plt
     # plt.figure()
     # for f in range(1, num_f+1):
-    #     # plt.stem(vph[f]*np.arange(-num_b, num_b+1), np.abs(cc_out[f, :, 70]))
+    #     # plt.stem(freq[f]*np.arange(-num_b, num_b+1), np.abs(cc_out[f, :, 70]))
     #     plt.stem(np.abs(cc_out[f, :, 70]))
     # plt.show()
 

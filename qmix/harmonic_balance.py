@@ -27,8 +27,8 @@ from qmix.qtcurrent import interpolate_respfn, qtcurrent
 MIN_VT = 1e-10
 # voltage step for numerical derivatives
 DV = 1e-3
-# round vph values to this number of decimal places when comparing
-ROUND_VPH = 4
+# round frequency values to this number of decimal places when comparing
+ROUND_FREQ = 4
 
 
 # Harmonic Balance ----------------------------------------------------------
@@ -48,15 +48,19 @@ def harmonic_balance(cct, resp, num_b=15, max_it=10, stop_rerror=0.001, vj_initi
     Args:
         cct (qmix.circuit.EmbeddingCircuit): Embedding circuit
         resp (qmix.respfn.RespFn): Response function
-
-    Keyword arguments:
-        num_b (int/tuple): Summation limits for phase factor coefficients
-        max_it (int): Maximum number of iterations
-        stop_rerror (float): Maximum acceptable relative error
-        vj_initial (ndarray): Initial guess of junction voltage (vj)
-        damp_coeff (float): Dampening coefficient for correction factor (0-1)
-        mode (string): output vj ('o'), print ('p'), output extra data ('x')
-        verbose (bool): print info to terminal if true
+        num_b (int/tuple, optional): Summation limits for phase factor
+            coefficients, default is 15
+        max_it (int, optional): Maximum number of iterations, default is 10
+        stop_rerror (float, optional): Maximum acceptable relative error,
+            default is 0.001
+        vj_initial (ndarray, optional): Initial guess of junction voltage
+            (vj), default is None
+        damp_coeff (float, optional): Dampening coefficient for correction
+            factor (0-1), default is 1
+        mode (string, optional): output vj ('o'), print ('p'), output extra
+            data ('x'), default is "o"
+        verbose (bool, optional): print info to terminal if true, default is
+            True
 
     Returns:
         ndarray: junction voltage that satisfies the circuit
@@ -133,11 +137,14 @@ def harmonic_balance(cct, resp, num_b=15, max_it=10, stop_rerror=0.001, vj_initi
         if iteration == 0 and verbose:
             print("Estimated time:")
             call_time = timer() - time_current
-            print((' - time per qtc call:  {:7.2f} s / {:6.2f} min / {:5.2f} hrs'.format(call_time, call_time/60., call_time/3600.)))
+            msg = ' - time per qtc call:  {:7.2f} s / {:6.2f} min / {:5.2f} hrs'
+            print((msg.format(call_time, call_time/60., call_time/3600.)))
             it_time = call_time * (num_n * 2 + 1)
-            print((' - time per iteration: {:7.2f} s / {:6.2f} min / {:5.2f} hrs'.format(it_time, it_time/60., it_time/3600.)))
+            msg = ' - time per iteration: {:7.2f} s / {:6.2f} min / {:5.2f} hrs'
+            print((msg.format(it_time, it_time/60., it_time/3600.)))
             max_time = it_time * max_it
-            print((' - max sim time:       {:7.2f} s / {:6.2f} min / {:5.2f} hrs'.format(max_time, max_time/60., max_time/3600.)))
+            msg = ' - max sim time:       {:7.2f} s / {:6.2f} min / {:5.2f} hrs'
+            print((msg.format(max_time, max_time/60., max_time/3600.)))
 
         # Error vector
         err_all = vt_2d[:, None] - zt_2d[:, None] * ij_2d - vj_2d
@@ -236,10 +243,10 @@ def check_hb_error(vj_check, cct, resp, num_b=15, stop_rerror=0.001):
         vj_check (ndarray): The voltage across junction to check
         cct (qmix.circuit.EmbeddingCircuit): Embedding circuit
         resp (qmix.respfn.RespFn): Response function
-
-    Keyword arguments:
-        num_b: Summation limits for phase factor coefficients
-        stop_rerror (float): Maximum acceptable relative error
+        num_b (optional): Summation limits for phase factor coefficients,
+            default is 15
+        stop_rerror (float, optional): Maximum acceptable relative error,
+            default is 0.001
 
     Raises:
         AssertionError: If the stop error is not met
@@ -295,10 +302,10 @@ def _qtcurrent_all_freq(vj, cct, resp, num_b=15):
     num_p = cct.num_p
     npts = cct.vb_npts
 
-    # Get vph list with all tones/harmonics represented
-    vph_list = (cct.vph[1:, None] * np.arange(1, num_p+1)).flatten()
+    # Get frequency list with all tones/harmonics represented
+    freq_list = (cct.freq[1:, None] * np.arange(1, num_p + 1)).flatten()
 
-    current = qtcurrent(vj, cct, resp, vph_list, num_b, verbose=False)
+    current = qtcurrent(vj, cct, resp, freq_list, num_b, verbose=False)
 
     # Arrange back into a 3D matrix (f x p x vb)
     current_out = np.zeros((num_f + 1, num_p + 1, npts), dtype=complex)
@@ -350,7 +357,7 @@ def _inv_jacobian(error_all, vj_2d, vt_2d, zt_2d, cct, resp, num_b, resp_matrix=
         progress_bar(num_n, num_n, prefix="Calculating inverse Jacobian")
 
     # Invert the Jacobian matrix
-    # https://stackoverflow.com/a/49582794
+    # See: https://stackoverflow.com/a/49582794
     inv_jacobian = np.linalg.inv(jacobian.transpose(2,0,1)).transpose(1,2,0)
 
     return inv_jacobian
@@ -382,12 +389,12 @@ def _qt_current_for_hb(vj_2d, cct, resp, num_b, resp_matrix=None):
     vj = np.zeros((cct.num_f + 1, cct.num_p + 1, cct.vb_npts), dtype=complex)
     vj[1:, 1:, :] = vj_2d.reshape((cct.num_f, cct.num_p, cct.vb_npts))
 
-    vph_list = []
+    freq_list = []
     for ft in range(1, cct.num_f + 1):
         for pt in range(1, cct.num_p + 1):
-            vph_list.append(round(cct.vph[ft] * pt, ROUND_VPH))
+            freq_list.append(round(cct.freq[ft] * pt, ROUND_FREQ))
 
-    current_out = qtcurrent(vj, cct, resp, vph_list, num_b, verbose=False, resp_matrix=resp_matrix)
+    current_out = qtcurrent(vj, cct, resp, freq_list, num_b, verbose=False, resp_matrix=resp_matrix)
 
     return current_out
 
