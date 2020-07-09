@@ -20,7 +20,7 @@ import qmix
 import numpy as np
 from timeit import default_timer as timer
 from qmix.misc.progbar import progress_bar
-from qmix.qtcurrent import qtcurrent_all_freq, interpolate_respfn
+from qmix.qtcurrent import interpolate_respfn, qtcurrent
 
 
 # minimum Thevenin voltage (required to avoid div by 0 errors)
@@ -50,7 +50,7 @@ def harmonic_balance(cct, resp, num_b=15, max_it=10, stop_rerror=0.001, vj_initi
         resp (qmix.respfn.RespFn): Response function
 
     Keyword arguments:
-        num_b (int_or_tuple): Number of Bessel functions to include
+        num_b (int/tuple): Summation limits for phase factor coefficients
         max_it (int): Maximum number of iterations
         stop_rerror (float): Maximum acceptable relative error
         vj_initial (ndarray): Initial guess of junction voltage (vj)
@@ -238,7 +238,7 @@ def check_hb_error(vj_check, cct, resp, num_b=15, stop_rerror=0.001):
         resp (qmix.respfn.RespFn): Response function
 
     Keyword arguments:
-        num_b: Number of Bessel functions to include
+        num_b: Summation limits for phase factor coefficients
         stop_rerror (float): Maximum acceptable relative error
 
     Raises:
@@ -250,8 +250,8 @@ def check_hb_error(vj_check, cct, resp, num_b=15, stop_rerror=0.001):
 
     print("Double-checking harmonic balance error:")
 
-    # Tunnelling current for all tones/harmonics
-    ij_all = qtcurrent_all_freq(vj_check, cct, resp, num_b)
+    # Tunnelling current for all tones/harmonics (see below)
+    ij_all = _qtcurrent_all_freq(vj_check, cct, resp, num_b)
 
     for f in range(1, cct.num_f + 1):
         for p in range(1, cct.num_p + 1):
@@ -269,6 +269,42 @@ def check_hb_error(vj_check, cct, resp, num_b=15, stop_rerror=0.001):
             print((msg.format(f, p, max_rel_error, err_str)))
             assert good_error
     print("")
+
+
+def _qtcurrent_all_freq(vj, cct, resp, num_b=15):
+    """Calculate the AC tunneling current for all tones and all harmonics.
+
+    This function will return the tunneling current in a 3-D array: 
+    (num_f+1) x (num_p+1) x (npts).
+
+    This is used in the harmonic balance procedure.
+
+    Args:
+        vj (ndarray): Voltage across the junction
+        cct (qmix.circuit.EmbeddingCircuit): Embedding circuit class
+        resp (qmix.respfn.RespFn): Response function
+        num_b (int/tuple, optional): Summation limits for phase factor 
+            coefficients, default is 15
+
+    Returns:
+        ndarray: Quasiparticle tunneling current
+
+    """
+
+    num_f = cct.num_f
+    num_p = cct.num_p
+    npts = cct.vb_npts
+
+    # Get vph list with all tones/harmonics represented
+    vph_list = (cct.vph[1:, None] * np.arange(1, num_p+1)).flatten()
+
+    current = qtcurrent(vj, cct, resp, vph_list, num_b, verbose=False)
+
+    # Arrange back into a 3D matrix (f x p x vb)
+    current_out = np.zeros((num_f + 1, num_p + 1, npts), dtype=complex)
+    current_out[1:, 1:] = current.reshape((num_f, num_p, npts))
+
+    return current_out
 
 
 # Calculate Jacobian matrix and its inverse ----------------------------------
@@ -334,7 +370,7 @@ def _qt_current_for_hb(vj_2d, cct, resp, num_b, resp_matrix=None):
         vj_2d (ndarray): Junction voltage in a 2-D matrix
         cct (class): Embedding circuit
         resp (class): Response function
-        num_b (int/tuple): Number of Bessel functions to include
+        num_b (int/tuple): Summation limits for phase factor coefficients
         resp_matrix (ndarray): The interpolate response function matrix
 
     Returns:
@@ -351,7 +387,7 @@ def _qt_current_for_hb(vj_2d, cct, resp, num_b, resp_matrix=None):
         for pt in range(1, cct.num_p + 1):
             vph_list.append(round(cct.vph[ft] * pt, ROUND_VPH))
 
-    current_out = qmix.qtcurrent.qtcurrent(vj, cct, resp, vph_list, num_b, verbose=False, resp_matrix=resp_matrix)
+    current_out = qtcurrent(vj, cct, resp, vph_list, num_b, verbose=False, resp_matrix=resp_matrix)
 
     return current_out
 

@@ -7,11 +7,13 @@ to compare against.
 
 """
 
+import pytest
 import numpy as np
 from scipy.special import jv
 
 import qmix
-from qmix.qtcurrent import qtcurrent
+from qmix.qtcurrent import qtcurrent, interpolate_respfn, calculate_phase_factor_coeff
+from qmix.circuit import EmbeddingCircuit
 
 
 RESP = qmix.respfn.RespFnPolynomial(50)  # response function for testing
@@ -31,7 +33,7 @@ def test_compare_qtcurrent_to_tucker_theory():
     work for a single tone/single harmonic simulation."""
 
     # Build embedding circuit
-    cct = qmix.circuit.EmbeddingCircuit(1, 1, vb_min=0, vb_npts=101)
+    cct = EmbeddingCircuit(1, 1, vb_min=0, vb_npts=101)
     vph = 0.33
     cct.vph[1] = vph
 
@@ -81,7 +83,7 @@ def test_effect_of_adding_more_tones():
 
     num_f = 1
     num_p = 1
-    cct1 = qmix.circuit.EmbeddingCircuit(num_f, num_p)
+    cct1 = EmbeddingCircuit(num_f, num_p)
 
     cct1.vph[1] = vph1
     vj = cct1.initialize_vj()
@@ -94,7 +96,7 @@ def test_effect_of_adding_more_tones():
     # 2 tones ----------------------------------------------------------------
 
     num_f = 2
-    cct = qmix.circuit.EmbeddingCircuit(num_f, num_p)
+    cct = EmbeddingCircuit(num_f, num_p)
 
     cct.vph[1] = cct1.vph[1]
     cct.vph[2] = cct1.vph[1] + 0.05
@@ -108,7 +110,7 @@ def test_effect_of_adding_more_tones():
     # 3 tones ----------------------------------------------------------------
 
     num_f = 3
-    cct = qmix.circuit.EmbeddingCircuit(num_f, num_p)
+    cct = EmbeddingCircuit(num_f, num_p)
 
     cct.vph[1] = cct1.vph[1]
     cct.vph[2] = cct1.vph[1] + 0.05
@@ -123,7 +125,7 @@ def test_effect_of_adding_more_tones():
     # 4 tones ----------------------------------------------------------------
 
     num_f = 4
-    cct = qmix.circuit.EmbeddingCircuit(num_f, num_p)
+    cct = EmbeddingCircuit(num_f, num_p)
 
     cct.vph[1] = cct1.vph[1]
     cct.vph[2] = cct1.vph[1] + 0.05
@@ -172,7 +174,7 @@ def test_effect_of_adding_more_harmonics():
 
     num_f = 1
     num_p = 1
-    cct1 = qmix.circuit.EmbeddingCircuit(num_f, num_p)
+    cct1 = EmbeddingCircuit(num_f, num_p)
 
     cct1.vph[1] = vph1
     vj = cct1.initialize_vj()
@@ -185,7 +187,7 @@ def test_effect_of_adding_more_harmonics():
     # 2 harmonics ------------------------------------------------------------
 
     num_p = 2
-    cct = qmix.circuit.EmbeddingCircuit(num_f, num_p)
+    cct = EmbeddingCircuit(num_f, num_p)
 
     cct.vph[1] = cct1.vph[1]
     vj = cct.initialize_vj()
@@ -198,7 +200,7 @@ def test_effect_of_adding_more_harmonics():
     # 3 harmonics ------------------------------------------------------------
 
     num_p = 3
-    cct = qmix.circuit.EmbeddingCircuit(num_f, num_p)
+    cct = EmbeddingCircuit(num_f, num_p)
 
     cct.vph[1] = cct1.vph[1]
     vj = cct.initialize_vj()
@@ -211,7 +213,7 @@ def test_effect_of_adding_more_harmonics():
     # 4 harmonics ------------------------------------------------------------
 
     num_p = 4
-    cct = qmix.circuit.EmbeddingCircuit(num_f, num_p)
+    cct = EmbeddingCircuit(num_f, num_p)
 
     cct.vph[1] = cct1.vph[1]
     vj = cct.initialize_vj()
@@ -256,7 +258,7 @@ def test_setting_up_simulation_using_different_harmonic():
     # Basic simulation for comparison ----------------------------------------
 
     num_p = 1
-    cct = qmix.circuit.EmbeddingCircuit(num_f, num_p)
+    cct = EmbeddingCircuit(num_f, num_p)
 
     cct.vph[1] = vph
     vj = cct.initialize_vj()
@@ -269,7 +271,7 @@ def test_setting_up_simulation_using_different_harmonic():
     # Using a fundamental tone that is half the original frequency -----------
 
     num_p = 2
-    cct = qmix.circuit.EmbeddingCircuit(num_f, num_p)
+    cct = EmbeddingCircuit(num_f, num_p)
     cct.vph[1] = vph / 2.
     vj = cct.initialize_vj()
     vj[1, 2, :] = vph * alpha
@@ -304,7 +306,7 @@ def test_effect_of_adding_more_tones_on_if():
 
     num_f = 2
     num_p = 1
-    cct = qmix.circuit.EmbeddingCircuit(num_f, num_p)
+    cct = EmbeddingCircuit(num_f, num_p)
 
     cct.vph[1] = vph1
     cct.vph[2] = vph2
@@ -317,7 +319,7 @@ def test_effect_of_adding_more_tones_on_if():
     # 3 tones ----------------------------------------------------------------
 
     num_f = 3
-    cct = qmix.circuit.EmbeddingCircuit(num_f, num_p)
+    cct = EmbeddingCircuit(num_f, num_p)
 
     cct.vph[1] = vph1
     cct.vph[2] = vph2
@@ -347,7 +349,7 @@ def test_excite_different_tones():
     num_f = 4
     num_p = 1
     num_b = (9, 3, 3, 3)
-    cct = qmix.circuit.EmbeddingCircuit(num_f, num_p)
+    cct = EmbeddingCircuit(num_f, num_p)
     cct.vph[1] = 0.3
     cct.vph[2] = 0.4
     cct.vph[3] = 0.5
@@ -360,7 +362,7 @@ def test_excite_different_tones():
     num_f = 4
     num_p = 1
     num_b = (3, 9, 3, 3)
-    cct = qmix.circuit.EmbeddingCircuit(num_f, num_p)
+    cct = EmbeddingCircuit(num_f, num_p)
     cct.vph[1] = 0.4
     cct.vph[2] = 0.3
     cct.vph[3] = 0.5
@@ -373,7 +375,7 @@ def test_excite_different_tones():
     num_f = 4
     num_p = 1
     num_b = (3, 3, 9, 3)
-    cct = qmix.circuit.EmbeddingCircuit(num_f, num_p)
+    cct = EmbeddingCircuit(num_f, num_p)
     cct.vph[1] = 0.5
     cct.vph[2] = 0.4
     cct.vph[3] = 0.3
@@ -386,7 +388,7 @@ def test_excite_different_tones():
     num_f = 4
     num_p = 1
     num_b = (3, 3, 3, 9)
-    cct = qmix.circuit.EmbeddingCircuit(num_f, num_p)
+    cct = EmbeddingCircuit(num_f, num_p)
     cct.vph[1] = 0.6
     cct.vph[2] = 0.4
     cct.vph[3] = 0.5
@@ -413,10 +415,10 @@ def test_interpolation_of_respfn():
     # test 1 tone ------------------------------------------------------------
 
     num_f = 1
-    cct = qmix.circuit.EmbeddingCircuit(num_f, num_p)
+    cct = EmbeddingCircuit(num_f, num_p)
     cct.vph[1] = 0.30
 
-    interp_matrix = qmix.qtcurrent.interpolate_respfn(cct, RESP, num_b=5)
+    interp_matrix = interpolate_respfn(cct, RESP, num_b=5)
     vtest = cct.vb + a * cct.vph[1]
 
     np.testing.assert_equal(interp_matrix[a, :], RESP(vtest))
@@ -424,11 +426,11 @@ def test_interpolation_of_respfn():
     # test 2 tones -----------------------------------------------------------
 
     num_f = 2
-    cct = qmix.circuit.EmbeddingCircuit(num_f, num_p)
+    cct = EmbeddingCircuit(num_f, num_p)
     cct.vph[1] = 0.30
     cct.vph[2] = 0.35
 
-    interp_matrix = qmix.qtcurrent.interpolate_respfn(cct, RESP, num_b=5)
+    interp_matrix = interpolate_respfn(cct, RESP, num_b=5)
     vtest = cct.vb + a * cct.vph[1] + b * cct.vph[2]
 
     np.testing.assert_equal(interp_matrix[a, b, :], RESP(vtest))
@@ -437,12 +439,12 @@ def test_interpolation_of_respfn():
 
     num_f = 3
     num_p = 2
-    cct = qmix.circuit.EmbeddingCircuit(num_f, num_p)
+    cct = EmbeddingCircuit(num_f, num_p)
     cct.vph[1] = 0.30
     cct.vph[2] = 0.35
     cct.vph[3] = 0.40
 
-    interp_matrix = qmix.qtcurrent.interpolate_respfn(cct, RESP, num_b=5)
+    interp_matrix = interpolate_respfn(cct, RESP, num_b=5)
     vtest = cct.vb + a * cct.vph[1] + b * cct.vph[2] + c * cct.vph[3]
 
     np.testing.assert_equal(interp_matrix[a, b, c, :], RESP(vtest))
@@ -451,16 +453,24 @@ def test_interpolation_of_respfn():
 
     num_f = 4
     num_p = 2
-    cct = qmix.circuit.EmbeddingCircuit(num_f, num_p)
+    cct = EmbeddingCircuit(num_f, num_p)
     cct.vph[1] = 0.30
     cct.vph[2] = 0.35
     cct.vph[3] = 0.40
     cct.vph[4] = 0.45
 
-    interp_matrix = qmix.qtcurrent.interpolate_respfn(cct, RESP, num_b=5)
+    interp_matrix = interpolate_respfn(cct, RESP, num_b=5)
     vtest = cct.vb + a * cct.vph[1] + b * cct.vph[2] + c * cct.vph[3] + d * cct.vph[4]
 
     np.testing.assert_equal(interp_matrix[a, b, c, d, :], RESP(vtest))
+
+    # test 5 tones -----------------------------------------------------------
+
+    # should raise an error
+    cct.num_f = 5
+    with pytest.raises(ValueError):
+        _ = interpolate_respfn(cct, RESP, num_b=5)
+
 
 
 def test_phase_factor_coefficients():
@@ -480,7 +490,7 @@ def test_phase_factor_coefficients():
     num_p = 2   # Number of harmonics
     num_b = 15  # Number of Bessel functions
 
-    cct = qmix.circuit.EmbeddingCircuit(num_f, num_p)
+    cct = EmbeddingCircuit(num_f, num_p)
     cct.vph[1] = 0.30  # LO
     cct.vph[2] = 0.33  # USB
     cct.vph[3] = 0.27  # LSB
@@ -498,7 +508,7 @@ def test_phase_factor_coefficients():
 
     ckh_known = _calculate_phase_factor_coeff(vj, cct.vph, num_f, num_p, num_b)
 
-    ckh_qmix = qmix.qtcurrent.calculate_phase_factor_coeff(vj, cct.vph, num_f, num_p, num_b)
+    ckh_qmix = calculate_phase_factor_coeff(vj, cct.vph, num_f, num_p, num_b)
 
     np.testing.assert_almost_equal(ckh_qmix, ckh_known, decimal=12)
 

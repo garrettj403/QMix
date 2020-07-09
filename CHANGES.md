@@ -1,11 +1,18 @@
 v1.0.6 (unreleased)
 ===================
 
+Functionality Changes
+---------------------
+
+- Deleted the command line scripts (``bin/``). There was only one script and it was pretty obscure so I descided to delete it.
+- Moved ``qtcurrent_all_freq()`` function from ``qmix.qtcurrent`` to ``qmix.harmonic_balance``. Again, it's a pretty obscure function and it's only used in the ``harmonic_balance`` module, so I moved it.
+- Deleted ``qtcurrent_std`` from ``qmix.qtcurrent``. This function calculated the "standard" output values, but this was pretty arbitrary. It also didn't really simplify the package at all so I deleted it.
+
 Optimization
 ------------
 
 - Added more detailed benchmarking and profiling scripts (found in ``QMix/profile/``).
-- ``qmix.qtcurrent.qtcurrent`` is ~20% faster for 1 tone.
+- ``qmix.qtcurrent.qtcurrent`` is now ~20% faster for 1 tone.
 - ``qmix.harmonic_balance.harmonic_balance`` is ~20% faster for 1 or 2 tones, and ~10% faster for 3 tones.
 
 Documentation
@@ -18,7 +25,6 @@ Documentation
 Miscellaneous Minor Changes
 ---------------------------
 
-- Command line scripts were dropped (i.e., ``plot_if_response``).
 - ``QMix/examples/`` renamed ``QMix/notebooks/``
 - Removed ``codemeta.json`` and ``setup.cfg``. 
 - Fixed several bugs with Travis CI.

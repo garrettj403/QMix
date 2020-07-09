@@ -56,8 +56,8 @@ def qtcurrent(vj, cct, resp, vph_list, num_b=15, verbose=True, resp_matrix=None)
         resp (qmix.respfn.RespFn): Response function
         vph_list: Calculate the tunneling currents for these photon voltages 
             (i.e., frequencies)
-        num_b (float_or_tuple, optional): Number of Bessel functions to
-            include, default is 15
+        num_b (float/tuple, optional): Summation limits for phase factor
+            coefficients, default is 15
         verbose (bool, optional): Print info to the terminal if true, default
             is True
         resp_matrix (ndarray, optional): The interpolated response function
@@ -76,6 +76,7 @@ def qtcurrent(vj, cct, resp, vph_list, num_b=15, verbose=True, resp_matrix=None)
 
     assert cct.vph[1:].min() > 0., "All vph must be > 0!"
 
+    # TODO: there must be a better way...
     try:
         vph_list = list(vph_list)
         vph_is_list = True
@@ -142,86 +143,6 @@ def qtcurrent(vj, cct, resp, vph_list, num_b=15, verbose=True, resp_matrix=None)
             return current_out[0]
 
 
-# Other tunneling current functions ------------------------------------------
-# All of the functions below use qtcurrent, but they return the
-# tunneling current for different frequencies or in different formats (based
-# on the needs of other functions/modules).
-
-# TODO: drop this function in a future release
-def qtcurrent_all_freq(vj, cct, resp, num_b=15):
-    """Calculate the AC tunneling current for all tones and all harmonics.
-
-    This function will return the tunneling current in a 3-D array: 
-    (num_f+1) x (num_p+1) x (npts).
-
-    This is used in the harmonic balance procedure.
-
-    Args:
-        vj (ndarray): Voltage across the junction
-        cct (qmix.circuit.EmbeddingCircuit): Embedding circuit class
-        resp (qmix.respfn.RespFn): Response function
-        num_b (int_or_tuple, optional): Number of Bessel functions to include,
-            default is 15
-
-    Returns:
-        ndarray: Quasiparticle tunneling current
-
-    """
-
-    num_f = cct.num_f
-    num_p = cct.num_p
-    npts = cct.vb_npts
-
-    # Get vph list with all tones/harmonics represented
-    vph_list = (cct.vph[1:, None] * np.arange(1, num_p+1)).flatten()
-
-    current = qtcurrent(vj, cct, resp, vph_list, num_b, verbose=False)
-
-    # Arrange back into a 3D matrix (f x p x vb)
-    current_out = np.zeros((num_f + 1, num_p + 1, npts), dtype=complex)
-    current_out[1:, 1:] = current.reshape((num_f, num_p, npts))
-
-    return current_out
-
-
-# TODO: drop this function in a future release
-def qtcurrent_std(vj, cct, resp, num_b=15):
-    """Calculate the 'standard' tunneling currents: DC, LO and IF.
-
-    Assumes that ``cct.vph[1]`` is the LO signal, 
-    ``cct.vph[2]`` is the RF signal, and that
-    ``cct.vph[2] - cct.vph[1]`` is the frequency of the IF signal.
-
-    The simulation can have 2, 3, or 4 tones.
-
-    Args:
-        vj (ndarray): Voltage across the junction
-        cct (qmix.circuit.EmbeddingCircuit): Embedding circuit
-        resp (qmix.respfn.RespFn): Response function
-        num_b (int_or_tuple, optional): Number of Bessel functions to include,
-            default is 15
-
-    Returns:
-        ndarray: DC tunneling current
-        ndarray: AC tunneling current at f = LO
-        ndarray: AC tunneling current at f = IF
-
-    """
-
-    vph_lo = cct.vph[1]
-    vph_rf = cct.vph[2]
-    vph_if = abs(vph_lo - vph_rf)
-
-    vph_list = [0, vph_lo, vph_if]
-    results = qtcurrent(vj, cct, resp, vph_list, num_b, verbose=False)
-
-    current_dc = results[0, :].real
-    current_lo = results[1, :]
-    current_if = results[2, :]
-
-    return current_dc, current_lo, current_if
-
-
 # Response function matrices --------------------------------------------------
 # The response function (the dc I-V curve and it's KK transform) needs to be
 # repeatedly interpolated in this module. The functions below do all of the
@@ -250,7 +171,7 @@ def interpolate_respfn(cct, resp, num_b):
     Args:
         cct (qmix.circuit.EmbeddingCircuit): Embedding circuit
         resp (qmix.respfn.RespFn): Response function
-        num_b (int/tuple): Number of Bessel functions to include.
+        num_b (int/tuple): Summation limits for phase factor coefficients
 
     Returns:
         ndarray: The interpolated response function as a matrix.
@@ -281,7 +202,7 @@ def _interpolate_respfn_1_tone(resp, vb, vph, num_b1):
         resp (qmix.respfn.RespFn): Response function
         vb (ndarray): Bias voltages, normalized
         vph (ndarray): Photon voltages, normalized
-        num_b1 (int): Number of Bessel functions to include
+        num_b1 (int): Summation limits for phase factor coefficients
 
     Returns:
         ndarray: Response function, interpolated
@@ -312,8 +233,8 @@ def _interpolate_respfn_2_tone(resp, vb, vph, num_b1, num_b2):
         resp (qmix.respfn.RespFn): Response function
         vb (ndarray): Bias voltages, normalized
         vph (ndarray): Photon voltages, normalized
-        num_b1 (int): Number of Bessel functions to include for tone 1
-        num_b2 (int): Number of Bessel functions to include for tone 2
+        num_b1 (int): Summation limits for phase factor coefficients (tone 1)
+        num_b2 (int): Summation limits for phase factor coefficients (tone 2)
 
     Returns:
         ndarray: Response function, interpolated
@@ -353,9 +274,9 @@ def _interpolate_respfn_3_tone(resp, vb, vph, num_b1, num_b2, num_b3):
         resp (qmix.respfn.RespFn): Response function
         vb (ndarray): Bias voltages, normalized
         vph (ndarray): Photon voltages, normalized
-        num_b1 (int): Number of Bessel functions to include for tone 1
-        num_b2 (int): Number of Bessel functions to include for tone 2
-        num_b3 (int): Number of Bessel functions to include for tone 3
+        num_b1 (int): Summation limits for phase factor coefficients (tone 1)
+        num_b2 (int): Summation limits for phase factor coefficients (tone 2)
+        num_b3 (int): Summation limits for phase factor coefficients (tone 3)
 
     Returns:
         ndarray: Response function, interpolated
@@ -380,10 +301,10 @@ def _interpolate_respfn_4_tone(resp, vb, vph, num_b1, num_b2, num_b3, num_b4):
         resp (qmix.respfn.RespFn): Response function
         vb (ndarray): Bias voltages, normalized
         vph (ndarray): Photon voltages, normalized
-        num_b1 (int): Number of Bessel functions to include for tone 1
-        num_b2 (int): Number of Bessel functions to include for tone 2
-        num_b3 (int): Number of Bessel functions to include for tone 3
-        num_b4 (int): Number of Bessel functions to include for tone 4
+        num_b1 (int): Summation limits for phase factor coefficients (tone 1)
+        num_b2 (int): Summation limits for phase factor coefficients (tone 2)
+        num_b3 (int): Summation limits for phase factor coefficients (tone 3)
+        num_b4 (int): Summation limits for phase factor coefficients (tone 4)
 
     Returns:
         ndarray: Response function, interpolated
@@ -416,7 +337,7 @@ def calculate_phase_factor_coeff(vj, vph, num_f, num_p, num_b):
         vph (ndarray): Photon voltages
         num_f (int): Number of non-harmonically related frequencies
         num_p (int): Number of harmonics
-        num_b (int): Number of Bessel functions
+        num_b (int): Summation limits for phase factor coefficients
 
     Returns:
         ndarray: Phase factor spectrum coefficients (C_k(H) in Kittara)
@@ -426,7 +347,7 @@ def calculate_phase_factor_coeff(vj, vph, num_f, num_p, num_b):
     # Number of bias voltage points
     npts = len(vj[0, 0, :])
 
-    # Number of Bessel functions to include
+    # Summation limits for phase factor coefficients
     if isinstance(num_b, int):
         num_b = tuple([num_b] * num_f)
 
@@ -531,7 +452,7 @@ def _current_1_tone(vph_out, ccc, vph, resp_matrix, num_p, npts, num_b1):
             interpolate_respfn
         num_p (int): Number of harmonics
         npts (int): Number of bias voltage points
-        num_b1 (int): Number of Bessel functions to include for tone 1
+        num_b1 (int): Summation limits for phase factor coefficients (tone 1)
 
     Returns:
         ndarray: Tunneling current at specified frequency
@@ -565,7 +486,7 @@ def _current_coeff_1_tone(a, ccc, resp_matrix, num_b1, npts):  # pragma: no cove
         ccc (ndarray): Convolution coefficient
         resp_matrix (ndarray): Response function matrix, generated by 
             interpolate_respfn
-        num_b1 (int): Number of Bessel functions to include for tone 1
+        num_b1 (int): Summation limits for phase factor coefficients (tone 1)
         npts (int): Number of bias voltage points
 
     Returns:
@@ -608,8 +529,8 @@ def _current_2_tones(vph_out, ccc, vph, resp_matrix, num_p, npts, num_b1, num_b2
             interpolate_respfn
         num_p (int): Number of harmonics
         npts (int): Number of bias voltage points
-        num_b1 (int): Number of Bessel functions to include for tone 1
-        num_b2 (int): Number of Bessel functions to include for tone 2
+        num_b1 (int): Summation limits for phase factor coefficients (tone 1)
+        num_b2 (int): Summation limits for phase factor coefficients (tone 2)
 
     Returns:
         ndarray: Tunneling current at specified frequency
@@ -646,8 +567,8 @@ def _current_coeff_2_tones(a, b, ccc, resp_matrix, num_b1, num_b2, npts):  # pra
         ccc (ndarray): Convolution coefficient
         resp_matrix (ndarray): Response function matrix, generated by 
             interpolate_respfn
-        num_b1 (int): Number of Bessel functions to include for tone 1
-        num_b2 (int): Number of Bessel functions to include for tone 2
+        num_b1 (int): Summation limits for phase factor coefficients (tone 1)
+        num_b2 (int): Summation limits for phase factor coefficients (tone 2)
         npts (int): Number of bias voltage points
 
     Returns:
@@ -697,9 +618,9 @@ def _current_3_tones(vph_out, ccc, vph, resp_matrix, num_p, npts, num_b1, num_b2
             interpolate_respfn
         num_p (int): Number of harmonics
         npts (int): Number of bias voltage points
-        num_b1 (int): Number of Bessel functions to include for tone 1
-        num_b2 (int): Number of Bessel functions to include for tone 2
-        num_b3 (int): Number of Bessel functions to include for tone 3
+        num_b1 (int): Summation limits for phase factor coefficients (tone 1)
+        num_b2 (int): Summation limits for phase factor coefficients (tone 2)
+        num_b3 (int): Summation limits for phase factor coefficients (tone 3)
 
     Returns:
         ndarray: Tunneling current at specified frequency
@@ -753,9 +674,9 @@ def _current_coeff_3_tones(a, b, c, ccc, resp_matrix, num_b1, num_b2, num_b3):  
         ccc (ndarray): Convolution coefficient
         resp_matrix (ndarray): Response function matrix, generated by 
             interpolate_respfn
-        num_b1 (int): Number of Bessel functions to include for tone 1
-        num_b2 (int): Number of Bessel functions to include for tone 2
-        num_b3 (int): Number of Bessel functions to include for tone 3
+        num_b1 (int): Summation limits for phase factor coefficients (tone 1)
+        num_b2 (int): Summation limits for phase factor coefficients (tone 2)
+        num_b3 (int): Summation limits for phase factor coefficients (tone 3)
 
     Returns:
         ndarray: Tunneling current coefficient
@@ -821,10 +742,10 @@ def _current_4_tones(vph_out, ccc, vph, resp_matrix, num_p, npts, num_b1, num_b2
             interpolate_respfn
         num_p (int): Number of harmonics
         npts (int): Number of bias voltage points
-        num_b1 (int): Number of Bessel functions to include for tone 1
-        num_b2 (int): Number of Bessel functions to include for tone 2
-        num_b3 (int): Number of Bessel functions to include for tone 3
-        num_b4 (int): Number of Bessel functions to include for tone 4
+        num_b1 (int): Summation limits for phase factor coefficients (tone 1)
+        num_b2 (int): Summation limits for phase factor coefficients (tone 2)
+        num_b3 (int): Summation limits for phase factor coefficients (tone 3)
+        num_b4 (int): Summation limits for phase factor coefficients (tone 4)
 
     Returns:
         ndarray: Tunneling current at specified frequency
@@ -866,10 +787,10 @@ def _current_coeff_4_tones(a, b, c, d, ccc, resp_matrix, num_b1, num_b2, num_b3,
         ccc (ndarray): Convolution coefficient
         resp_matrix (ndarray): Response function matrix, generated by 
             interpolate_respfn
-        num_b1 (int): Number of Bessel functions to include for tone 1
-        num_b2 (int): Number of Bessel functions to include for tone 2
-        num_b3 (int): Number of Bessel functions to include for tone 3
-        num_b4 (int): Number of Bessel functions to include for tone 4
+        num_b1 (int): Summation limits for phase factor coefficients (tone 1)
+        num_b2 (int): Summation limits for phase factor coefficients (tone 2)
+        num_b3 (int): Summation limits for phase factor coefficients (tone 3)
+        num_b4 (int): Summation limits for phase factor coefficients (tone 4)
         npts (int): Number of bias voltage points
 
     Returns:
@@ -932,15 +853,15 @@ def _current_coeff_4_tones(a, b, c, d, ccc, resp_matrix, num_b1, num_b2, num_b3,
 # Helper functions -----------------------------------------------------------
 
 def _unpack_num_b(num_b, num_f):
-    """Unpack num_b (the number of Bessel functions to include).
+    """Unpack num_b (summation limits for phase factor coefficients).
 
     Args:
-        num_b: Number of Bessel functions to include
+        num_b: Summation limits for phase factor coefficients
         num_f: Number of frequencies
 
     Returns:
-        tuple: Number of Bessel functions in tuple form, with one value for
-        each tone
+        tuple: Summation limits for phase factor coefficients in tuple form, 
+        with one value for each tone
 
     """
 

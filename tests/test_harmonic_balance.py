@@ -12,8 +12,8 @@ import numpy as np
 import pytest
 
 import qmix
-from qmix.harmonic_balance import check_hb_error, harmonic_balance
-from qmix.qtcurrent import qtcurrent, qtcurrent_all_freq
+from qmix.harmonic_balance import check_hb_error, harmonic_balance, _qtcurrent_all_freq
+from qmix.qtcurrent import qtcurrent
 from qmix.respfn import RespFnPolynomial
 
 # Response function and voltage sweep to use for all tests
