@@ -508,7 +508,7 @@ div.rendered_html tbody tr:hover {
 <li><p>The normalized frequency is the same thing as the normalized photon voltage.</p></li>
 </ul>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -538,13 +538,13 @@ div.rendered_html tbody tr:hover {
 <span class="n">cct</span><span class="o">.</span><span class="n">comment</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;IF&#39;</span>
 
 <span class="c1"># photon voltages (same as normalized frequency)</span>
-<span class="n">cct</span><span class="o">.</span><span class="n">vph</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">f_lo</span>
-<span class="n">cct</span><span class="o">.</span><span class="n">vph</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">f_rf</span>
-<span class="n">cct</span><span class="o">.</span><span class="n">vph</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">f_if</span>
+<span class="n">cct</span><span class="o">.</span><span class="n">freq</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">f_lo</span>
+<span class="n">cct</span><span class="o">.</span><span class="n">freq</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">f_rf</span>
+<span class="n">cct</span><span class="o">.</span><span class="n">freq</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">f_if</span>
 
 <span class="c1"># Thevenin voltages</span>
-<span class="n">cct</span><span class="o">.</span><span class="n">vt</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">cct</span><span class="o">.</span><span class="n">vph</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">alpha_lo</span>
-<span class="n">cct</span><span class="o">.</span><span class="n">vt</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">cct</span><span class="o">.</span><span class="n">vph</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">*</span> <span class="n">alpha_rf</span>
+<span class="n">cct</span><span class="o">.</span><span class="n">vt</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">cct</span><span class="o">.</span><span class="n">freq</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">alpha_lo</span>
+<span class="n">cct</span><span class="o">.</span><span class="n">vt</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">cct</span><span class="o">.</span><span class="n">freq</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">*</span> <span class="n">alpha_rf</span>
 <span class="n">cct</span><span class="o">.</span><span class="n">vt</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.</span>
 
 <span class="c1"># Thevenin impedances</span>
@@ -590,7 +590,7 @@ Embedding circuit (Tones:3, Harmonics:1)
 <li><p>Here, the response function is generated from an experimental DC I-V curve.</p></li>
 </ul>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -627,7 +627,7 @@ DC I-V data:</span>
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -651,7 +651,7 @@ DC I-V data:</span>
 <li><p>Calculate the voltage drop across the junction for each tone/harmonic using harmonic balance.</p></li>
 </ul>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -670,8 +670,8 @@ Running harmonic balance:
  - max. iterations: 10
 Estimated time:
  - time per qtc call:     0.09 s /   0.00 min /  0.00 hrs
- - time per iteration:    0.62 s /   0.01 min /  0.00 hrs
- - max sim time:          6.23 s /   0.10 min /  0.00 hrs
+ - time per iteration:    0.61 s /   0.01 min /  0.00 hrs
+ - max sim time:          6.07 s /   0.10 min /  0.00 hrs
 Error after 0 iteration(s):
         f:1, p:1,   med. rel. error:     0.248,   max. rel. error:     1.013,     0.0 % complete
         f:2, p:1,   med. rel. error:     0.213,   max. rel. error:     0.768,     0.0 % complete
@@ -695,9 +695,9 @@ Error after 3 iteration(s):
         f:2, p:1,   med. rel. error:     0.000,   max. rel. error:     0.000,   100.0 % complete
         f:3, p:1,   med. rel. error:     0.000,   max. rel. error:     0.000,   100.0 % complete
 Done: Minimum error target was achieved.
- - sim time:               2.10 s /   0.04 min /  0.00 hrs
+ - sim time:               2.08 s /   0.03 min /  0.00 hrs
  - 3 iterations required
- - time per iteration:     0.70 s /   0.01 min /  0.00 hrs
+ - time per iteration:     0.69 s /   0.01 min /  0.00 hrs
 </pre></div></div>
 </div>
 </div>
@@ -709,12 +709,12 @@ Done: Minimum error target was achieved.
 <li><p><code class="docutils literal notranslate"><span class="pre">iif</span></code> is the AC tunneling current at the IF frequency</p></li>
 </ul>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">vph_list</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.</span><span class="p">,</span> <span class="n">f_lo</span><span class="p">,</span> <span class="n">f_if</span><span class="p">]</span>
-<span class="n">idc</span><span class="p">,</span> <span class="n">ilo</span><span class="p">,</span> <span class="n">iif</span> <span class="o">=</span> <span class="n">qtcurrent</span><span class="p">(</span><span class="n">vj</span><span class="p">,</span> <span class="n">cct</span><span class="p">,</span> <span class="n">resp</span><span class="p">,</span> <span class="n">vph_list</span><span class="p">,</span> <span class="n">num_b</span><span class="o">=</span><span class="n">num_b</span><span class="p">)</span>
+<span></span><span class="n">freq_list</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.</span><span class="p">,</span> <span class="n">f_lo</span><span class="p">,</span> <span class="n">f_if</span><span class="p">]</span>
+<span class="n">idc</span><span class="p">,</span> <span class="n">ilo</span><span class="p">,</span> <span class="n">iif</span> <span class="o">=</span> <span class="n">qtcurrent</span><span class="p">(</span><span class="n">vj</span><span class="p">,</span> <span class="n">cct</span><span class="p">,</span> <span class="n">resp</span><span class="p">,</span> <span class="n">freq_list</span><span class="p">,</span> <span class="n">num_b</span><span class="o">=</span><span class="n">num_b</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -727,14 +727,14 @@ Calculating tunneling current...
  - 3 tone(s)
  - 1 harmonic(s)
 Done.
-Time: 0.2044 s
+Time: 0.2079 s
 
 </pre></div></div>
 </div>
 <div class="section" id="Calculate-mixer-gain">
 <h3><span class="section-number">4.5.1. </span>Calculate mixer gain<a class="headerlink" href="#Calculate-mixer-gain" title="Permalink to this headline">¶</a></h3>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -755,7 +755,7 @@ Time: 0.2044 s
 <div class="section" id="Plot-Results">
 <h2><span class="section-number">4.6. </span>Plot Results<a class="headerlink" href="#Plot-Results" title="Permalink to this headline">¶</a></h2>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -766,7 +766,7 @@ Time: 0.2044 s
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>

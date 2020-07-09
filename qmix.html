@@ -279,7 +279,7 @@ set manually. In this way, this class is sort of like a fancy struct.
 The class attributes that have to be set manually are:</p>
 <blockquote>
 <div><ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">vph</span></code>:  photon voltage (normalized to the gap voltage)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">freq</span></code>:  frequencies (normalized to the gap frequency)</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">vt</span></code>:  Thevenin voltage (normalized to the gap voltage)</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">zt</span></code>:  Thevenin impedance (normalized to the normal resistance)</p></li>
 </ul>
@@ -296,10 +296,9 @@ this.</p>
 </pre></div>
 </div>
 <p>Once initialized, we can begin defining the properties of the
-embedding circuit. I normally start with the photon voltages (or,
-equivalently, the normalized frequencies):</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">cct1</span><span class="o">.</span><span class="n">vph</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.30</span>  <span class="c1"># first tone</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">cct1</span><span class="o">.</span><span class="n">vph</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.32</span>  <span class="c1"># second tone</span>
+embedding circuit. I normally start with the frequencies:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">cct1</span><span class="o">.</span><span class="n">freq</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.30</span>  <span class="c1"># first tone</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cct1</span><span class="o">.</span><span class="n">freq</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.32</span>  <span class="c1"># second tone</span>
 </pre></div>
 </div>
 <p>Then, we have to set the voltages and impedances for all of the
@@ -315,10 +314,9 @@ the junction during initialization. For example:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">cct2</span> <span class="o">=</span> <span class="n">EmbeddingCircuit</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">vgap</span><span class="o">=</span><span class="mf">2.8e-3</span><span class="p">,</span> <span class="n">rn</span><span class="o">=</span><span class="mf">14.</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>You can now set the photon voltage using the frequency of the applied
-signal. E.g.:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">cct2</span><span class="o">.</span><span class="n">set_vph</span><span class="p">(</span><span class="mi">250</span><span class="p">,</span> <span class="n">f</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="s1">&#39;GHz&#39;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">round</span><span class="p">(</span><span class="n">cct2</span><span class="o">.</span><span class="n">vph</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">4</span><span class="p">)</span>
+<p>You can now set the frequencies. E.g.:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">cct2</span><span class="o">.</span><span class="n">set_freq</span><span class="p">(</span><span class="mi">250</span><span class="p">,</span> <span class="n">f</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="s1">&#39;GHz&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">round</span><span class="p">(</span><span class="n">cct2</span><span class="o">.</span><span class="n">freq</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">4</span><span class="p">)</span>
 <span class="go">0.3693</span>
 </pre></div>
 </div>
@@ -362,20 +360,19 @@ dynamic resistance of the DC I-V curve above the gap voltage.</p></li>
 </dd>
 </dl>
 <dl class="py attribute">
-<dt id="qmix.circuit.EmbeddingCircuit.vph">
-<code class="sig-name descname">vph</code><a class="headerlink" href="#qmix.circuit.EmbeddingCircuit.vph" title="Permalink to this definition">¶</a></dt>
-<dd><p>An array for the photon voltage normalized to the
-gap voltage. This is a 1-dimensional array of real numbers. It
-contains photon voltages for all of the fundamental tones that
-are applied to the junction. The photon voltage is defined as
-<code class="docutils literal notranslate"><span class="pre">hf/e</span></code>, where <code class="docutils literal notranslate"><span class="pre">h</span></code> is the Planck constant, <code class="docutils literal notranslate"><span class="pre">f</span></code> is the
-frequency of the fundamental tone, and <code class="docutils literal notranslate"><span class="pre">e</span></code> is the charge of an
-electron. Since this value is normalized to the gap
-voltage, the photon voltage is also equal to the normalized
-frequency, <code class="docutils literal notranslate"><span class="pre">f/fgap</span></code>, where <code class="docutils literal notranslate"><span class="pre">fgap</span></code> is the gap frequency. Note
-that this array is 1-based, meaning that the photon voltage of the
-1st tone is located in <code class="docutils literal notranslate"><span class="pre">.vph[1]</span></code>. (The index represents the tone
-number.) <strong>This attribute must be set after initialization!</strong></p>
+<dt id="qmix.circuit.EmbeddingCircuit.freq">
+<code class="sig-name descname">freq</code><a class="headerlink" href="#qmix.circuit.EmbeddingCircuit.freq" title="Permalink to this definition">¶</a></dt>
+<dd><p>An array for the frequencies normalized to the
+gap frequency. This is a 1-dimensional array of real numbers. It
+contains the frequencies of all of the fundamental tones that
+are applied to the junction. The normalized frequency is
+equivalent to the normalized photon voltage. The photon voltage is
+defined as <code class="docutils literal notranslate"><span class="pre">hf/e</span></code>, where <code class="docutils literal notranslate"><span class="pre">h</span></code> is the Planck constant, <code class="docutils literal notranslate"><span class="pre">f</span></code> is
+the frequency of the fundamental tone, and <code class="docutils literal notranslate"><span class="pre">e</span></code> is the charge of
+an electron. Note that this array is 1-based, meaning that the
+frequency of the 1st tone is found in <code class="docutils literal notranslate"><span class="pre">.freq[1]</span></code>. (The index
+represents the tone number.) <strong>This attribute must be set after
+initialization!</strong></p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>numpy.ndarray</p>
@@ -645,7 +642,7 @@ the desired drive level, but you won’t actually know what the drive
 level is until you run the simulation.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Photon voltage and Thevenin impedance must be set prior to using
+<p>Frequency and Thevenin impedance must be set prior to using
 this method. Otherwise, an assertion error will be raised.</p>
 </div>
 <dl class="field-list simple">
@@ -688,36 +685,19 @@ be raised.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="qmix.circuit.EmbeddingCircuit.set_name">
-<code class="sig-name descname">set_name</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">f</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">p</span><span class="o">=</span><span class="default_value">1</span></em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.circuit.EmbeddingCircuit.set_name" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set a name for a given tone and harmonic combination.</p>
-<p>This has no effect on the simulation. It’s just nice for keeping track
-of the different signals.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>name</strong> (<em>str</em>) – name of tone/harmonic</p></li>
-<li><p><strong>f</strong> (<em>int</em><em>, </em><em>optional</em><em>, </em><em>default is 1</em>) – frequency number to set</p></li>
-<li><p><strong>p</strong> (<em>int</em><em>, </em><em>optional</em><em>, </em><em>default is 1</em>) – harmonic number to set</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="qmix.circuit.EmbeddingCircuit.set_vph">
-<code class="sig-name descname">set_vph</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em>, <em class="sig-param"><span class="n">f</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">units</span><span class="o">=</span><span class="default_value">'Hz'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.circuit.EmbeddingCircuit.set_vph" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set the photon voltage of tone <code class="docutils literal notranslate"><span class="pre">f</span></code>.</p>
+<dt id="qmix.circuit.EmbeddingCircuit.set_freq">
+<code class="sig-name descname">set_freq</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em>, <em class="sig-param"><span class="n">f</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">units</span><span class="o">=</span><span class="default_value">'Hz'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.circuit.EmbeddingCircuit.set_freq" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the frequency of tone <code class="docutils literal notranslate"><span class="pre">f</span></code>.</p>
 <p>Normally, this can be done by setting the value of the attribute
 directly. E.g.:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">cct</span> <span class="o">=</span> <span class="n">EmbeddingCircuit</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">vgap</span><span class="o">=</span><span class="mf">2.8e-3</span><span class="p">,</span> <span class="n">rn</span><span class="o">=</span><span class="mf">14.</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">cct</span><span class="o">.</span><span class="n">vph</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.5</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cct</span><span class="o">.</span><span class="n">freq</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.5</span>
 </pre></div>
 </div>
 <p>However, if you would instead like to use non-normalized units, this
 method can be very handy. E.g.:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">cct</span><span class="o">.</span><span class="n">set_vph</span><span class="p">(</span><span class="mi">350</span><span class="p">,</span> <span class="n">f</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="s1">&#39;GHz&#39;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">round</span><span class="p">(</span><span class="n">cct</span><span class="o">.</span><span class="n">vph</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">2</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">cct</span><span class="o">.</span><span class="n">set_freq</span><span class="p">(</span><span class="mi">350</span><span class="p">,</span> <span class="n">f</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="s1">&#39;GHz&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">round</span><span class="p">(</span><span class="n">cct</span><span class="o">.</span><span class="n">freq</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">2</span><span class="p">)</span>
 <span class="go">0.52</span>
 </pre></div>
 </div>
@@ -736,6 +716,23 @@ for frequency in units Hz, ‘V’ for photon voltage in units V,
 and ‘norm’ for either normalized photon voltage or normalized
 frequency. SI prefixes can also be included: ‘MHz’, ‘GHz’,
 ‘THz’, and ‘mV’.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="qmix.circuit.EmbeddingCircuit.set_name">
+<code class="sig-name descname">set_name</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">f</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">p</span><span class="o">=</span><span class="default_value">1</span></em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.circuit.EmbeddingCircuit.set_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set a name for a given tone and harmonic combination.</p>
+<p>This has no effect on the simulation. It’s just nice for keeping track
+of the different signals.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – name of tone/harmonic</p></li>
+<li><p><strong>f</strong> (<em>int</em><em>, </em><em>optional</em><em>, </em><em>default is 1</em>) – frequency number to set</p></li>
+<li><p><strong>p</strong> (<em>int</em><em>, </em><em>optional</em><em>, </em><em>default is 1</em>) – harmonic number to set</p></li>
 </ul>
 </dd>
 </dl>
@@ -798,16 +795,14 @@ uses Newton’s method to find the solution numerically.</p>
 <li><p><strong>vj_check</strong> (<em>ndarray</em>) – The voltage across junction to check</p></li>
 <li><p><strong>cct</strong> (<a class="reference internal" href="#qmix.circuit.EmbeddingCircuit" title="qmix.circuit.EmbeddingCircuit"><em>qmix.circuit.EmbeddingCircuit</em></a>) – Embedding circuit</p></li>
 <li><p><strong>resp</strong> (<a class="reference internal" href="#qmix.respfn.RespFn" title="qmix.respfn.RespFn"><em>qmix.respfn.RespFn</em></a>) – Response function</p></li>
+<li><p><strong>num_b</strong> (<em>optional</em>) – Summation limits for phase factor coefficients,
+default is 15</p></li>
+<li><p><strong>stop_rerror</strong> (<em>float</em><em>, </em><em>optional</em>) – Maximum acceptable relative error,
+default is 0.001</p></li>
 </ul>
 </dd>
-<dt class="field-even">Keyword Arguments</dt>
-<dd class="field-even"><ul class="simple">
-<li><p><strong>num_b</strong> – Summation limits for phase factor coefficients</p></li>
-<li><p><strong>stop_rerror</strong> (<em>float</em>) – Maximum acceptable relative error</p></li>
-</ul>
-</dd>
-<dt class="field-odd">Raises</dt>
-<dd class="field-odd"><p><strong>AssertionError</strong> – If the stop error is not met</p>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>AssertionError</strong> – If the stop error is not met</p>
 </dd>
 </dl>
 </dd></dl>
@@ -825,24 +820,26 @@ Withington, Kittara &amp; Yassin (2003). [Full references in online docs.]</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>cct</strong> (<a class="reference internal" href="#qmix.circuit.EmbeddingCircuit" title="qmix.circuit.EmbeddingCircuit"><em>qmix.circuit.EmbeddingCircuit</em></a>) – Embedding circuit</p></li>
 <li><p><strong>resp</strong> (<a class="reference internal" href="#qmix.respfn.RespFn" title="qmix.respfn.RespFn"><em>qmix.respfn.RespFn</em></a>) – Response function</p></li>
+<li><p><strong>num_b</strong> (<em>int/tuple</em><em>, </em><em>optional</em>) – Summation limits for phase factor
+coefficients, default is 15</p></li>
+<li><p><strong>max_it</strong> (<em>int</em><em>, </em><em>optional</em>) – Maximum number of iterations, default is 10</p></li>
+<li><p><strong>stop_rerror</strong> (<em>float</em><em>, </em><em>optional</em>) – Maximum acceptable relative error,
+default is 0.001</p></li>
+<li><p><strong>vj_initial</strong> (<em>ndarray</em><em>, </em><em>optional</em>) – Initial guess of junction voltage
+(vj), default is None</p></li>
+<li><p><strong>damp_coeff</strong> (<em>float</em><em>, </em><em>optional</em>) – Dampening coefficient for correction
+factor (0-1), default is 1</p></li>
+<li><p><strong>mode</strong> (<em>string</em><em>, </em><em>optional</em>) – output vj (‘o’), print (‘p’), output extra
+data (‘x’), default is “o”</p></li>
+<li><p><strong>verbose</strong> (<em>bool</em><em>, </em><em>optional</em>) – print info to terminal if true, default is
+True</p></li>
 </ul>
 </dd>
-<dt class="field-even">Keyword Arguments</dt>
-<dd class="field-even"><ul class="simple">
-<li><p><strong>num_b</strong> (<em>int/tuple</em>) – Summation limits for phase factor coefficients</p></li>
-<li><p><strong>max_it</strong> (<em>int</em>) – Maximum number of iterations</p></li>
-<li><p><strong>stop_rerror</strong> (<em>float</em>) – Maximum acceptable relative error</p></li>
-<li><p><strong>vj_initial</strong> (<em>ndarray</em>) – Initial guess of junction voltage (vj)</p></li>
-<li><p><strong>damp_coeff</strong> (<em>float</em>) – Dampening coefficient for correction factor (0-1)</p></li>
-<li><p><strong>mode</strong> (<em>string</em>) – output vj (‘o’), print (‘p’), output extra data (‘x’)</p></li>
-<li><p><strong>verbose</strong> (<em>bool</em>) – print info to terminal if true</p></li>
-</ul>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>junction voltage that satisfies the circuit</p>
 </dd>
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>junction voltage that satisfies the circuit</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>ndarray</p>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>ndarray</p>
 </dd>
 </dl>
 </dd></dl>
@@ -869,7 +866,7 @@ frequency, etc.</p>
 </div>
 <dl class="py function">
 <dt id="qmix.qtcurrent.calculate_phase_factor_coeff">
-<code class="sig-prename descclassname">qmix.qtcurrent.</code><code class="sig-name descname">calculate_phase_factor_coeff</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">vj</span></em>, <em class="sig-param"><span class="n">vph</span></em>, <em class="sig-param"><span class="n">num_f</span></em>, <em class="sig-param"><span class="n">num_p</span></em>, <em class="sig-param"><span class="n">num_b</span></em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.qtcurrent.calculate_phase_factor_coeff" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">qmix.qtcurrent.</code><code class="sig-name descname">calculate_phase_factor_coeff</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">vj</span></em>, <em class="sig-param"><span class="n">freq</span></em>, <em class="sig-param"><span class="n">num_f</span></em>, <em class="sig-param"><span class="n">num_p</span></em>, <em class="sig-param"><span class="n">num_b</span></em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.qtcurrent.calculate_phase_factor_coeff" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate the overall phase factor spectrum coefficients.</p>
 <p>Runs once per qtcurrent function call.</p>
 <p>Eqns. 5.7 and 5.12 in Kittara’s thesis.</p>
@@ -877,7 +874,7 @@ frequency, etc.</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>vj</strong> (<em>ndarray</em>) – Voltage across the SIS junction</p></li>
-<li><p><strong>vph</strong> (<em>ndarray</em>) – Photon voltages</p></li>
+<li><p><strong>freq</strong> (<em>ndarray</em>) – Frequencies</p></li>
 <li><p><strong>num_f</strong> (<em>int</em>) – Number of non-harmonically related frequencies</p></li>
 <li><p><strong>num_p</strong> (<em>int</em>) – Number of harmonics</p></li>
 <li><p><strong>num_b</strong> (<em>int</em>) – Summation limits for phase factor coefficients</p></li>
@@ -919,7 +916,7 @@ function.</p>
 
 <dl class="py function">
 <dt id="qmix.qtcurrent.qtcurrent">
-<code class="sig-prename descclassname">qmix.qtcurrent.</code><code class="sig-name descname">qtcurrent</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">vj</span></em>, <em class="sig-param"><span class="n">cct</span></em>, <em class="sig-param"><span class="n">resp</span></em>, <em class="sig-param"><span class="n">vph_list</span></em>, <em class="sig-param"><span class="n">num_b</span><span class="o">=</span><span class="default_value">15</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">resp_matrix</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.qtcurrent.qtcurrent" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">qmix.qtcurrent.</code><code class="sig-name descname">qtcurrent</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">vj</span></em>, <em class="sig-param"><span class="n">cct</span></em>, <em class="sig-param"><span class="n">resp</span></em>, <em class="sig-param"><span class="n">freq_list</span></em>, <em class="sig-param"><span class="n">num_b</span><span class="o">=</span><span class="default_value">15</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">resp_matrix</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.qtcurrent.qtcurrent" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate the quasiparticle tunneling current.</p>
 <p>This function uses multi-tone spectral domain analysis (MTSDA; see
 references in online docs). The current is calculated based on the
@@ -927,10 +924,10 @@ voltage applied across the junction (vj).</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>This function will return the tunneling current for all of the
-normalized photon voltages listed in vph_list. E.g., to solve for the
-dc tunneling current and the ac tunneling current at 230 GHz, the
-<code class="docutils literal notranslate"><span class="pre">vph_list</span></code> would  be <code class="docutils literal notranslate"><span class="pre">[0,</span> <span class="pre">230e9</span> <span class="pre">/</span> <span class="pre">fgap]</span></code> where <code class="docutils literal notranslate"><span class="pre">fgap</span></code> is the gap
-frequency.</p>
+frequencies listed in freq_list (normalized to the gap frequency).
+E.g., to solve for the dc tunneling current and the ac tunneling
+current at 230 GHz, the <code class="docutils literal notranslate"><span class="pre">freq_list</span></code> would  be <code class="docutils literal notranslate"><span class="pre">[0,</span> <span class="pre">230e9</span> <span class="pre">/</span> <span class="pre">fgap]</span></code>
+where <code class="docutils literal notranslate"><span class="pre">fgap</span></code> is the gap frequency.</p>
 <p>Maximum of 4 non-harmonically related tones.</p>
 </div>
 <dl class="field-list simple">
@@ -939,8 +936,8 @@ frequency.</p>
 <li><p><strong>vj</strong> (<em>ndarray</em>) – Voltage across the SIS junction</p></li>
 <li><p><strong>cct</strong> (<a class="reference internal" href="#qmix.circuit.EmbeddingCircuit" title="qmix.circuit.EmbeddingCircuit"><em>qmix.circuit.EmbeddingCircuit</em></a>) – Embedding circuit</p></li>
 <li><p><strong>resp</strong> (<a class="reference internal" href="#qmix.respfn.RespFn" title="qmix.respfn.RespFn"><em>qmix.respfn.RespFn</em></a>) – Response function</p></li>
-<li><p><strong>vph_list</strong> – Calculate the tunneling currents for these photon voltages
-(i.e., frequencies)</p></li>
+<li><p><strong>freq_list</strong> – Calculate the tunneling currents for these frequencies
+(normalized to the gap frequency)</p></li>
 <li><p><strong>num_b</strong> (<em>float/tuple</em><em>, </em><em>optional</em>) – Summation limits for phase factor
 coefficients, default is 15</p></li>
 <li><p><strong>verbose</strong> (<em>bool</em><em>, </em><em>optional</em>) – Print info to the terminal if true, default
@@ -1548,10 +1545,10 @@ a Gaussian dist. with this std. dev.</p></li>
 <div class="section" id="module-qmix">
 <span id="module-contents"></span><h2><span class="section-number">2.7. </span>Module contents<a class="headerlink" href="#module-qmix" title="Permalink to this headline">¶</a></h2>
 <p>Quantum Mixing Software</p>
-<p>QMix is a software package that can be used to simulate Superconductor/
-Insulator/Superconductor (SIS) mixers. It uses multi-tone spectral domain
-analysis, which makes QMix ideal for simulating higher-order harmonics, power
-saturation and wide IF bandwidth devices.</p>
+<p>QMix is used to simulate Superconductor/Insulator/Superconductor (SIS) mixers.
+It uses multi-tone spectral domain analysis, which makes QMix ideal for
+simulating higher-order harmonics, power saturation and wide IF bandwidth
+devices.</p>
 </div>
 </div>
 

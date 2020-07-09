@@ -227,14 +227,11 @@ terminal.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>iteration</strong> (<em>int</em>) – current iteration</p></li>
 <li><p><strong>total</strong> (<em>int</em>) – total iterations</p></li>
-</ul>
-</dd>
-<dt class="field-even">Keyword Arguments</dt>
-<dd class="field-even"><ul class="simple">
-<li><p><strong>prefix</strong> (<em>str</em>) – prefix string</p></li>
-<li><p><strong>suffix</strong> (<em>str</em>) – suffix string</p></li>
-<li><p><strong>decimals</strong> (<em>int</em>) – number of decimals in percent complete</p></li>
-<li><p><strong>bar_length</strong> (<em>int</em>) – character length of bar</p></li>
+<li><p><strong>prefix</strong> (<em>str</em><em>, </em><em>optional</em>) – prefix string, default is “Progress:”</p></li>
+<li><p><strong>suffix</strong> (<em>str</em><em>, </em><em>optional</em>) – suffix string, default is “Complete”</p></li>
+<li><p><strong>decimals</strong> (<em>int</em><em>, </em><em>optional</em>) – number of decimals in percent complete,
+default is 2</p></li>
+<li><p><strong>bar_length</strong> (<em>int</em><em>, </em><em>optional</em>) – character length of bar, default is 20</p></li>
 </ul>
 </dd>
 </dl>
@@ -253,7 +250,7 @@ terminal.</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>text</strong> (<em>str</em>) – Text to print</p></li>
-<li><p><strong>color</strong> (<em>str</em>) – Color/style to print in</p></li>
+<li><p><strong>color</strong> (<em>str</em><em>, </em><em>optional</em>) – Color/style to print in, default is “HEADER”</p></li>
 </ul>
 </dd>
 </dl>
@@ -267,7 +264,7 @@ terminal.</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>header_string</strong> (<em>str</em>) – Header title to print</p></li>
-<li><p><strong>color</strong> (<em>str</em>) – Color to print in</p></li>
+<li><p><strong>color</strong> (<em>str</em><em>, </em><em>optional</em>) – Color to print in, default is None</p></li>
 </ul>
 </dd>
 </dl>
@@ -299,8 +296,9 @@ terminal.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>name</strong> (<em>str</em>) – variable name</p></li>
 <li><p><strong>val</strong> (<em>float</em>) – variable value</p></li>
-<li><p><strong>units</strong> (<em>str</em>) – variable units (optional)</p></li>
-<li><p><strong>comment</strong> (<em>str</em>) – comment (optional)</p></li>
+<li><p><strong>units</strong> (<em>str</em><em>, </em><em>optional</em>) – variable units, default is “”</p></li>
+<li><p><strong>comment</strong> (<em>str</em><em>, </em><em>optional</em>) – comment, default is “”</p></li>
+<li><p><strong>color</strong> (<em>str</em><em>, </em><em>optional</em>) – color, default is None</p></li>
 </ul>
 </dd>
 </dl>
@@ -315,8 +313,9 @@ terminal.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>name</strong> (<em>str</em>) – variable name</p></li>
 <li><p><strong>val</strong> (<em>float</em>) – variable value</p></li>
-<li><p><strong>units</strong> (<em>str</em>) – variable units (optional)</p></li>
-<li><p><strong>comment</strong> (<em>str</em>) – comment (optional)</p></li>
+<li><p><strong>units</strong> (<em>str</em><em>, </em><em>optional</em>) – variable units, default is “”</p></li>
+<li><p><strong>comment</strong> (<em>str</em><em>, </em><em>optional</em>) – comment, default is “”</p></li>
+<li><p><strong>color</strong> (<em>str</em><em>, </em><em>optional</em>) – color, default is None</p></li>
 </ul>
 </dd>
 </dl>
@@ -330,8 +329,9 @@ terminal.</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>title_string</strong> (<em>str</em>) – title to print</p></li>
-<li><p><strong>color</strong> (<em>str</em>) – Color to print in</p></li>
-<li><p><strong>total_len</strong> (<em>int</em>) – Total length of title string (including stars)</p></li>
+<li><p><strong>color</strong> (<em>str</em><em>, </em><em>optional</em>) – Color to print in, default is None</p></li>
+<li><p><strong>total_len</strong> (<em>int</em><em>, </em><em>optional</em>) – Total length of title string (including
+stars), default is 60</p></li>
 </ul>
 </dd>
 </dl>

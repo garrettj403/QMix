@@ -255,27 +255,30 @@ above the gap. It is able to recreate experimental data very well, but it
 is very complex.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>voltage</strong> (<em>ndarray</em>) – normalized bias voltage</p>
-</dd>
-<dt class="field-even">Keyword Arguments</dt>
-<dd class="field-even"><ul class="simple">
-<li><p><strong>vgap</strong> (<em>float</em>) – gap voltage, in units [V]</p></li>
-<li><p><strong>rn</strong> (<em>float</em>) – normal resistance, in units [ohms]</p></li>
-<li><p><strong>rsg</strong> (<em>float</em>) – sub-gap resistance, in units [ohms]</p></li>
-<li><p><strong>agap</strong> (<em>float</em>) – gap linearity coefficient (typically around 4e4)</p></li>
-<li><p><strong>a0</strong> (<em>float</em>) – linearity coefficient at the origin</p></li>
-<li><p><strong>ileak</strong> (<em>float</em>) – amplitude of leakage current</p></li>
-<li><p><strong>vnot</strong> (<em>float</em>) – notch location, in units [V]</p></li>
-<li><p><strong>inot</strong> (<em>float</em>) – notch current amplitude, in units [A]</p></li>
-<li><p><strong>anot</strong> (<em>float</em>) – linearity of notch</p></li>
-<li><p><strong>ioff</strong> (<em>float</em>) – current offset</p></li>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>voltage</strong> (<em>ndarray</em>) – normalized bias voltage</p></li>
+<li><p><strong>vgap</strong> (<em>float</em><em>, </em><em>optional</em>) – gap voltage, in units [V], default is 2.8e-3</p></li>
+<li><p><strong>rn</strong> (<em>float</em><em>, </em><em>optional</em>) – normal resistance, in units [ohms], default
+is 14</p></li>
+<li><p><strong>rsg</strong> (<em>float</em><em>, </em><em>optional</em>) – sub-gap resistance, in units [ohms], default
+is 5e2</p></li>
+<li><p><strong>agap</strong> (<em>float</em><em>, </em><em>optional</em>) – gap linearity coefficient, default is 4e4</p></li>
+<li><p><strong>a0</strong> (<em>float</em><em>, </em><em>optional</em>) – linearity coefficient at the origin, default
+is 1e4</p></li>
+<li><p><strong>ileak</strong> (<em>float</em><em>, </em><em>optional</em>) – amplitude of leakage current, default is 5e-6</p></li>
+<li><p><strong>vnot</strong> (<em>float</em><em>, </em><em>optional</em>) – notch location, in units [V], default
+is 2.85e-3</p></li>
+<li><p><strong>inot</strong> (<em>float</em><em>, </em><em>optional</em>) – notch current amplitude, in units [A], default
+is 1e-5</p></li>
+<li><p><strong>anot</strong> (<em>float</em><em>, </em><em>optional</em>) – linearity of notch, default is 2e4</p></li>
+<li><p><strong>ioff</strong> (<em>float</em><em>, </em><em>optional</em>) – current offset, default is 1e-5</p></li>
 </ul>
 </dd>
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>normalized current</p>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>normalized current</p>
 </dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>ndarray</p>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>ndarray</p>
 </dd>
 </dl>
 </dd></dl>
@@ -300,22 +303,24 @@ setting <code class="docutils literal notranslate"><span class="pre">model='orig
 </div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>voltage</strong> (<em>ndarray</em>) – normalized bias voltage</p>
-</dd>
-<dt class="field-even">Keyword Arguments</dt>
-<dd class="field-even"><ul class="simple">
-<li><p><strong>vgap</strong> (<em>float</em>) – gap voltage, in units [V]</p></li>
-<li><p><strong>rn</strong> (<em>float</em>) – normal resistance, in units [ohms]</p></li>
-<li><p><strong>rsg</strong> (<em>float</em>) – sub-gap resistance, in units [ohms]</p></li>
-<li><p><strong>agap</strong> (<em>float</em>) – gap linearity coefficient (typically around 4e4)</p></li>
-<li><p><strong>model</strong> (<em>str</em>) – model to used (either ‘fixed’ or ‘original’)</p></li>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>voltage</strong> (<em>ndarray</em>) – normalized bias voltage</p></li>
+<li><p><strong>vgap</strong> (<em>float</em><em>, </em><em>optional</em>) – gap voltage, in units [V], default is 2.8e-3</p></li>
+<li><p><strong>rn</strong> (<em>float</em><em>, </em><em>optional</em>) – normal resistance, in units [ohms], default
+is 14</p></li>
+<li><p><strong>rsg</strong> (<em>float</em><em>, </em><em>optional</em>) – sub-gap resistance, in units [ohms], default
+is 300</p></li>
+<li><p><strong>agap</strong> (<em>float</em><em>, </em><em>optional</em>) – gap linearity coefficient (typically around
+4e4), default is 4e4</p></li>
+<li><p><strong>model</strong> (<em>str</em><em>, </em><em>optional</em>) – model to used (either ‘fixed’ or ‘original’),
+default is “fixed”</p></li>
 </ul>
 </dd>
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>normalized current</p>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>normalized current</p>
 </dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>ndarray</p>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>ndarray</p>
 </dd>
 </dl>
 </dd></dl>
@@ -350,16 +355,17 @@ the normal resistance.</p>
 <p>This is an analytic solution.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>voltage</strong> (<em>ndarray</em>) – normalized bias voltage</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>voltage</strong> (<em>ndarray</em>) – normalized bias voltage</p></li>
+<li><p><strong>max_kk</strong> (<em>float</em><em>, </em><em>optional</em>) – if output is NaN, use this max value
+instead, default is 100</p></li>
+</ul>
 </dd>
-<dt class="field-even">Keyword Arguments</dt>
-<dd class="field-even"><p><strong>max_kk</strong> (<em>float</em>) – if output is NaN, use this max value instead</p>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>kk-transform of perfect i-v curve</p>
 </dd>
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>kk-transform of perfect i-v curve</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>ndarray</p>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>ndarray</p>
 </dd>
 </dl>
 </dd></dl>
@@ -422,7 +428,7 @@ curve.</p>
 <code class="sig-prename descclassname">qmix.mathfn.kktrans.</code><code class="sig-name descname">kk_trans_trapz</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">v</span></em>, <em class="sig-param"><span class="n">i</span></em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.mathfn.kktrans.kk_trans_trapz" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate the Kramers-Kronig transform using a simple trapezoidal
 summation.</p>
-<p>This function isn’t really used anymore, but it is nice to use it to
+<p>This function isn’t used anymore, but it is nice to use it to
 compare against qmix.mathfn.kktrans.kk_trans.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -487,8 +493,8 @@ errors).</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>x</strong> (<em>ndarray</em>) – x data</p></li>
 <li><p><strong>y</strong> (<em>ndarray</em>) – y data</p></li>
-<li><p><strong>n</strong> (<em>int</em>) – span, must be odd</p></li>
-<li><p><strong>nozeros</strong> (<em>bool</em>) – don’t allow der=0 results</p></li>
+<li><p><strong>n</strong> (<em>int</em><em>, </em><em>optional</em>) – span, must be odd, default is 11</p></li>
+<li><p><strong>nozeros</strong> (<em>bool</em><em>, </em><em>optional</em>) – don’t allow der=0 results, default is True</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
