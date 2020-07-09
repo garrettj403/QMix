@@ -4,6 +4,8 @@ import argparse
 import datetime
 import socket
 import timeit
+import pickle 
+import numpy
 
 import qmix
 from qmix.qtcurrent import qtcurrent
@@ -12,6 +14,7 @@ from qmix.qtcurrent import qtcurrent
 parser = argparse.ArgumentParser()
 parser.add_argument('-s', '--save', action="store_true", help="save speed run?")
 parser.add_argument('-t', '--tone', type=int, help="tone to run")
+parser.add_argument('-o', '--overwrite', action="store_true", help="overwrite stored value")
 args = parser.parse_args()
 
 # Setup ----------------------------------------------------------------------
@@ -34,10 +37,22 @@ if args.tone is None or args.tone == 1:
 
     def one_tone():
 
-        qtcurrent(vj, cct, resp, 0., num_b=num_b, verbose=False)
+        current = qtcurrent(vj, cct, resp, 0., num_b=num_b, verbose=False)
 
     t_1tone = min(timeit.Timer(one_tone).repeat(3000, 1))
-    print("1 tone:\t\t", t_1tone)
+    print("1 tone:\t\t{:7.2f} ms".format(t_1tone * 1000))
+
+    # Compare to previously calculated values
+    current_test = qtcurrent(vj, cct, resp, 0., num_b=num_b, verbose=False)
+    if args.overwrite:
+        print(" -> Saving current")
+        with open('data/qtcurrent1.data', 'wb') as f:
+            pickle.dump(current_test, f)
+    else:
+        print(" -> Checking current")
+        with open('data/qtcurrent1.data', 'rb') as f:
+            current_known = pickle.load(f)
+        numpy.testing.assert_almost_equal(current_test, current_known, decimal=15)
 
 # 2 tone ---------------------------------------------------------------------
 
@@ -56,7 +71,19 @@ if args.tone is None or args.tone == 2:
         qtcurrent(vj, cct, resp, 0., num_b=num_b, verbose=False)
 
     t_2tone = min(timeit.Timer(two_tone).repeat(200, 1))
-    print("2 tones:\t", t_2tone)
+    print("2 tones:\t{:7.2f} ms".format(t_2tone * 1000))
+
+    # Compare to previously calculated values
+    current_test = qtcurrent(vj, cct, resp, 0., num_b=num_b, verbose=False)
+    if args.overwrite:
+        print(" -> Saving current")
+        with open('data/qtcurrent2.data', 'wb') as f:
+            pickle.dump(current_test, f)
+    else:
+        print(" -> Checking current")
+        with open('data/qtcurrent2.data', 'rb') as f:
+            current_known = pickle.load(f)
+        numpy.testing.assert_almost_equal(current_test, current_known, decimal=15)
 
 # 3 tone ---------------------------------------------------------------------
 
@@ -77,7 +104,19 @@ if args.tone is None or args.tone == 3:
         qtcurrent(vj, cct, resp, 0., num_b=num_b, verbose=False)
 
     t_3tone = min(timeit.Timer(three_tone).repeat(50, 1))
-    print("3 tones:\t", t_3tone)
+    print("3 tones:\t{:7.2f} ms".format(t_3tone * 1000))
+
+    # Compare to previously calculated values
+    current_test = qtcurrent(vj, cct, resp, 0., num_b=num_b, verbose=False)
+    if args.overwrite:
+        print(" -> Saving current")
+        with open('data/qtcurrent3.data', 'wb') as f:
+            pickle.dump(current_test, f)
+    else:
+        print(" -> Checking current")
+        with open('data/qtcurrent3.data', 'rb') as f:
+            current_known = pickle.load(f)
+        numpy.testing.assert_almost_equal(current_test, current_known, decimal=15)
 
 # 4 tone ---------------------------------------------------------------------
 
@@ -100,7 +139,19 @@ if args.tone is None or args.tone == 4:
         qtcurrent(vj, cct, resp, 0., num_b=num_b, verbose=False)
 
     t_4tone = min(timeit.Timer(four_tone).repeat(10, 1))
-    print("4 tones:\t", t_4tone)
+    print("4 tones:\t{:7.2f} ms".format(t_4tone * 1000))
+
+    # Compare to previously calculated values
+    current_test = qtcurrent(vj, cct, resp, 0., num_b=num_b, verbose=False)
+    if args.overwrite:
+        print(" -> Saving current")
+        with open('data/qtcurrent4.data', 'wb') as f:
+            pickle.dump(current_test, f)
+    else:
+        print(" -> Checking current")
+        with open('data/qtcurrent4.data', 'rb') as f:
+            current_known = pickle.load(f)
+        numpy.testing.assert_almost_equal(current_test, current_known, decimal=15)
 
 print("")
 
