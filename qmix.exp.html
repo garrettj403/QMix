@@ -1545,7 +1545,7 @@ before filtering (in radians).</p></li>
 </li>
 <li><dl class="simple">
 <dt>Analyzing the DC I-V curve:</dt><dd><ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">vgap_threshold</span> <span class="pre">=</span> <span class="pre">105e-6</span></code> : Threshold current, in units [A], at
+<li><p><code class="docutils literal notranslate"><span class="pre">vgap_threshold</span> <span class="pre">=</span> <span class="pre">None</span></code> : Threshold current, in units [A], at
 which to measure the gap voltage. (Note: the gap voltage is defined
 here as the voltage at which the DC I-V curve crosses this current
 value.)</p></li>
@@ -1696,7 +1696,7 @@ function.</p></li>
 </div></blockquote>
 <dl class="py data">
 <dt id="qmix.exp.parameters.params">
-<code class="sig-prename descclassname">qmix.exp.parameters.</code><code class="sig-name descname">params</code><em class="property"> = {'alpha_max': 1.5, 'analyze': True, 'analyze_if': True, 'analyze_iv': True, 'area': 1.5, 'best_pt': 'Max Gain', 'comment': '', 'debug': False, 'delimiter': ',', 'filter_data': True, 'filter_npoly': 3, 'filter_nwind': 21, 'filter_theta': 0.785, 'fit_range': (0.25, 0.8), 'freq': None, 'i_fmt': 'mA', 'i_multiplier': 1.0, 'ifdata_npts': 3000, 'ifdata_sigma': 1e-05, 'ifresp_delimiter': '\t', 'ifresp_maxtn': 1000000.0, 'ifresp_skipheader': 1, 'ifresp_usecols': (0, 1, 2), 'ioffset': None, 'npts': 6001, 'num_b': 20, 'remb_range': (0, 1), 'rseries': None, 'skip_header': 1, 't_cold': 78.0, 't_hot': 293.0, 'usecols': (0, 1), 'v_fmt': 'mV', 'v_multiplier': 1.0, 'v_smear': 0.02, 'vbest': None, 'verbose': True, 'vgap_threshold': 0.000105, 'vleak': 0.002, 'vmax': 0.006, 'vmax_plot': 4.0, 'voffset': None, 'voffset_range': (-0.0003, 0.0003), 'voffset_sigma': 1e-05, 'vrn': (0.0035, 0.0045), 'vrsg': 0.002, 'vshot': None, 'xemb_range': (-1, 1), 'zemb': None}</em><a class="headerlink" href="#qmix.exp.parameters.params" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">qmix.exp.parameters.</code><code class="sig-name descname">params</code><em class="property"> = {'alpha_max': 1.5, 'analyze': True, 'analyze_if': True, 'analyze_iv': True, 'area': 1.5, 'best_pt': 'Max Gain', 'comment': '', 'debug': False, 'delimiter': ',', 'filter_data': True, 'filter_npoly': 3, 'filter_nwind': 21, 'filter_theta': 0.785, 'fit_range': (0.25, 0.8), 'freq': None, 'i_fmt': 'mA', 'i_multiplier': 1.0, 'ifdata_npts': 3000, 'ifdata_sigma': 1e-05, 'ifresp_delimiter': '\t', 'ifresp_maxtn': 1000000.0, 'ifresp_skipheader': 1, 'ifresp_usecols': (0, 1, 2), 'ioffset': None, 'npts': 6001, 'num_b': 20, 'remb_range': (0, 1), 'rseries': None, 'skip_header': 1, 't_cold': 78.0, 't_hot': 293.0, 'usecols': (0, 1), 'v_fmt': 'mV', 'v_multiplier': 1.0, 'v_smear': 0.02, 'vbest': None, 'verbose': True, 'vgap_threshold': None, 'vleak': 0.002, 'vmax': 0.006, 'vmax_plot': 4.0, 'voffset': None, 'voffset_range': (-0.0003, 0.0003), 'voffset_sigma': 1e-05, 'vrn': (0.0035, 0.0045), 'vrsg': 0.002, 'vshot': None, 'xemb_range': (-1, 1), 'zemb': None}</em><a class="headerlink" href="#qmix.exp.parameters.params" title="Permalink to this definition">¶</a></dt>
 <dd><p>Default parameters for importing experimental data.</p>
 </dd></dl>
 
