@@ -82,7 +82,7 @@ values.
         - ``filter_nwind = 21`` : Width of the Savitzky-Golay filter.
         - ``filter_npoly = 3`` : Order of the Savitzky-Golay filter.
     - Analyzing the DC I-V curve:
-        - ``vgap_threshold = 105e-6`` : Threshold current, in units [A], at 
+        - ``vgap_threshold = None`` : Threshold current, in units [A], at 
           which to measure the gap voltage. (Note: the gap voltage is defined
           here as the voltage at which the DC I-V curve crosses this current 
           value.)
@@ -212,7 +212,7 @@ params = dict(
               area =           1.5,
               freq =           None,
               # Analyzing DC I-V curve
-              vgap_threshold = 105e-6,
+              vgap_threshold = None,  # e.g.: 105e-6
               vrn =            (3.5e-3, 4.5e-3),
               vrsg =           2e-3,
               vleak =          2e-3,
