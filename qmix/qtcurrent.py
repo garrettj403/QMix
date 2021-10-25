@@ -574,23 +574,28 @@ def _current_coeff_2_tones(a, b, ccc, resp_matrix, num_b1, num_b2, npts):  # pra
 
     """
 
+    # Recast coefficients
+    ccc1 = ccc[1]
+    ccc2 = ccc[2]
+
     # Equation 5.25
     rs_p = np.zeros(npts, dtype=np.complex128)
     rs_m = np.zeros(npts, dtype=np.complex128)
-    ccc_conj = np.conj(ccc)
     for k in range(-num_b1, num_b1 + 1):
         for l in range(-num_b2, num_b2 + 1):
 
             if -num_b1 <= k + a <= num_b1 and \
                -num_b2 <= l + b <= num_b2:
-                rs_p += ccc[1, k, :] * ccc_conj[1, k + a, :] * \
-                        ccc[2, l, :] * ccc_conj[2, l + b, :] * \
+               
+                rs_p += ccc1[k, :] * np.conj(ccc1[k + a, :]) * \
+                        ccc2[l, :] * np.conj(ccc2[l + b, :]) * \
                         resp_matrix[k, l]
 
             if -num_b1 <= k - a <= num_b1 and \
                -num_b2 <= l - b <= num_b2:
-                rs_m += ccc[1, k, :] * ccc_conj[1, k - a, :] * \
-                        ccc[2, l, :] * ccc_conj[2, l - b, :] * \
+
+                rs_m += ccc1[k, :] * np.conj(ccc1[k - a, :]) * \
+                        ccc2[l, :] * np.conj(ccc2[l - b, :]) * \
                         resp_matrix[k, l]
 
     # Calculate current coefficient: equation 5.26
