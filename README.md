@@ -3,7 +3,7 @@ QMix
 
 **Quantum Mixing software**
 
-[![PyPI version](https://badge.fury.io/py/QMix.svg)](https://badge.fury.io/py/QMix)
+[![PyPI version](https://badge.fury.io/py/qmix.svg)](https://badge.fury.io/py/qmix)
 [![ci](https://github.com/garrettj403/QMix/actions/workflows/ci.yml/badge.svg)](https://github.com/garrettj403/QMix/actions/workflows/ci.yml)
 [![flake8](https://github.com/garrettj403/QMix/actions/workflows/linter.yml/badge.svg)](https://github.com/garrettj403/QMix/actions/workflows/linter.yml)
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://github.com/garrettj403/QMix/blob/master/LICENSE)
