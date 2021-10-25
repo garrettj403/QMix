@@ -8,8 +8,6 @@ from os import path
 from setuptools import setup, find_packages
 from setuptools.command.test import test as TestCommand
 
-import qmix
-
 root = path.abspath(path.dirname(__file__))
 
 
@@ -41,7 +39,7 @@ class PyTest(TestCommand):
 
 setup(
     name="qmix",
-    version=qmix.__version__,
+    version="1.0.6",
     author="John Garrett",
     author_email="garrettj403@gmail.com",
     url="https://garrettj403.github.io/QMix/",
