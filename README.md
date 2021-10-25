@@ -4,12 +4,11 @@ QMix
 **Quantum Mixing software**
 
 [![PyPI version](https://badge.fury.io/py/QMix.svg)](https://badge.fury.io/py/QMix)
-[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/QMix.svg)](https://pypi.org/project/QMix/)
-[![Build Status](https://travis-ci.org/garrettj403/QMix.svg?branch=master)](https://travis-ci.org/garrettj403/QMix)
-[![Coverage Status](https://coveralls.io/repos/github/garrettj403/QMix/badge.svg?branch=master)](https://coveralls.io/github/garrettj403/QMix?branch=master)
+[![ci](https://github.com/garrettj403/QMix/actions/workflows/ci.yml/badge.svg)](https://github.com/garrettj403/QMix/actions/workflows/ci.yml)
+[![flake8](https://github.com/garrettj403/QMix/actions/workflows/linter.yml/badge.svg)](https://github.com/garrettj403/QMix/actions/workflows/linter.yml)
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://github.com/garrettj403/QMix/blob/master/LICENSE)
 
-QMix is used to simulate the quasiparticle tunneling currents in Superconductor/Insulator/Superconductor (SIS) junctions. In radio astronomy, these junctions are used for heterodyne mixing at millimeter and submillimeter wavelengths. QMix can be used to simulate the behavior of SIS mixers, optimize their performance and investigate experimental results.
+QMix is used to simulate the quasiparticle tunneling currents in Superconductor/Insulator/Superconductor (SIS) junctions. In radio astronomy, these junctions are used for heterodyne mixing at millimeter and submillimeter wavelengths. QMix can be used to simulate the behavior of SIS mixers, optimize their performance and analyze experimental data.
 
 In order to calculate the quasiparticle tunneling currents, QMix uses *multi-tone spectral domain analysis* (see [references](https://garrettj403.github.io/QMix/references.html#references-related-to-multi-tone-spectral-domain-analysis)). Among other applications, this makes QMix ideal for simulating power saturation, higher-order harmonics, sub-harmonic pumping, harmonic mixing and frequency multiplication.
 
@@ -20,11 +19,13 @@ Getting Started
 
 The easiest way to install QMix is using ``pip``:
 
-    # for latest release
-    python -m pip install QMix
+```bash
+# for latest release
+python -m pip install QMix
 
-    # for latest commit
-    python -m pip install git+https://github.com/garrettj403/QMix.git
+# for latest commit
+python -m pip install git+https://github.com/garrettj403/QMix.git
+```
 
 Take a look at the [QMix website](https://garrettj403.github.io/QMix/) for more information on how to use the QMix package and examples showing how to simulate SIS junctions. If you run into any problems, please create a new issue through the [issue tracker](https://github.com/garrettj403/QMix/issues) with the ``help wanted`` or ``question`` tag. In your message, make sure to include your operating system, Python version, and package versions for QMix, Numpy, SciPy and Matplotlib.
 
@@ -38,24 +39,26 @@ If you would like to contribute to the QMix project, please take a look at the [
 
 To get a local copy of QMix running:
 
-    # Download QMix
-    git clone https://github.com/garrettj403/QMix.git QMix
-    cd QMix/
+```bash
+# Download QMix
+git clone https://github.com/garrettj403/QMix.git QMix
+cd QMix/
 
-    # Create a virtual environment using Anaconda
-    conda env create -f environment.yml
-    conda activate qmix
+# Create a virtual environment using Anaconda
+conda env create -f environment.yml
+conda activate qmix
 
-    # Install QMix
-    python -m pip install -e .
+# Install QMix
+python -m pip install -e .
 
-    # Test installation
-    pytest --verbose --color=yes tests/
+# Test installation
+pytest --verbose --color=yes tests/
+```
 
 Examples
 --------
 
-QMix can be used to simulate a wide variety of SIS junction behavior. A simple example is shown below for simulating an SIS mixer at 230 GHz. You can find more examples in the ``QMix/notebooks/`` directory or on the [QMix website](https://garrettj403.github.io/QMix/single-tone-simple.html). 
+QMix can be used to simulate a wide variety of SIS junction behavior. A simple example is shown below for simulating an SIS mixer at 230 GHz. You can find more examples in the ``QMix/notebooks/`` directory or on the [QMix website](https://garrettj403.github.io/QMix/single-tone-simulation.html). 
 
 ![](https://raw.githubusercontent.com/garrettj403/QMix/master/notebooks/results/multi-tone-results.png)
 
