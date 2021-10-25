@@ -1,27 +1,26 @@
-""" This module contains functions to perform harmonic balance of non-linear 
-SIS mixer circuits. 
+""" This module contains functions to perform harmonic balance of non-linear
+SIS mixer circuits.
 
 **Description**
 
-    Each signal that is applied to an SIS junction can be represented by a 
-    Thevenin equivalent circuit (see qmix.circuit). This circuit will then 
-    induce a voltage across the SIS junction. The exact voltage that is 
-    induced depends on the impedance of the SIS junction. However, this 
-    impedance changes depending on the other signals that are applied to 
-    the junction. 
+    Each signal that is applied to an SIS junction can be represented by a
+    Thevenin equivalent circuit (see qmix.circuit). This circuit will then
+    induce a voltage across the SIS junction. The exact voltage that is
+    induced depends on the impedance of the SIS junction. However, this
+    impedance changes depending on the other signals that are applied to
+    the junction.
 
     Harmonic balance is a procedure to solve for the voltage across the SIS
-    junction for each signal that is applied to the junction. This techniques 
+    junction for each signal that is applied to the junction. This techniques
     uses Newton's method to find the solution numerically.
 
 """
 
-import qmix
+# import qmix
 import numpy as np
 from timeit import default_timer as timer
 from qmix.misc.progbar import progress_bar
 from qmix.qtcurrent import interpolate_respfn, qtcurrent
-
 
 # minimum Thevenin voltage (required to avoid div by 0 errors)
 MIN_VT = 1e-10
@@ -37,12 +36,13 @@ ROUND_FREQ = 4
 # method to find the solution to the highly non-linear equation.
 
 
-def harmonic_balance(cct, resp, num_b=15, max_it=10, stop_rerror=0.001, vj_initial=None, damp_coeff=1., mode="o", verbose=True, zj_guess=0.67,):
+def harmonic_balance(cct, resp, num_b=15, max_it=10, stop_rerror=0.001, vj_initial=None, damp_coeff=1., mode="o",
+                     verbose=True, zj_guess=0.67, ):
     """Perform harmonic balance.
 
-    Determine the harmonic balance of the junction + embedding circuit system. 
-    Uses Newton's method to find the solution. For more information, see 
-    Garrett (2018); Kittara (2002); Kittara, Winthington & Yassin (2007); or 
+    Determine the harmonic balance of the junction + embedding circuit system.
+    Uses Newton's method to find the solution. For more information, see
+    Garrett (2018); Kittara (2002); Kittara, Winthington & Yassin (2007); or
     Withington, Kittara & Yassin (2003). [Full references in online docs.]
 
     Args:
@@ -97,7 +97,6 @@ def harmonic_balance(cct, resp, num_b=15, max_it=10, stop_rerror=0.001, vj_initi
     # Initial guess of the junction voltage (vj) -----------------------------
 
     if vj_initial is None:
-
         vj_initial = vt[:, :, None] * \
                      zj_guess / (zj_guess + zt[:, :, None]) * \
                      np.ones(npts, dtype=complex)
@@ -138,13 +137,13 @@ def harmonic_balance(cct, resp, num_b=15, max_it=10, stop_rerror=0.001, vj_initi
             print("Estimated time:")
             call_time = timer() - time_current
             msg = ' - time per qtc call:  {:7.2f} s / {:6.2f} min / {:5.2f} hrs'
-            print((msg.format(call_time, call_time/60., call_time/3600.)))
+            print((msg.format(call_time, call_time / 60., call_time / 3600.)))
             it_time = call_time * (num_n * 2 + 1)
             msg = ' - time per iteration: {:7.2f} s / {:6.2f} min / {:5.2f} hrs'
-            print((msg.format(it_time, it_time/60., it_time/3600.)))
+            print((msg.format(it_time, it_time / 60., it_time / 3600.)))
             max_time = it_time * max_it
             msg = ' - max sim time:       {:7.2f} s / {:6.2f} min / {:5.2f} hrs'
-            print((msg.format(max_time, max_time/60., max_time/3600.)))
+            print((msg.format(max_time, max_time / 60., max_time / 3600.)))
 
         # Error vector
         err_all = vt_2d[:, None] - zt_2d[:, None] * ij_2d - vj_2d
@@ -179,7 +178,7 @@ def harmonic_balance(cct, resp, num_b=15, max_it=10, stop_rerror=0.001, vj_initi
                     _rel_error = 99999.999
                 else:
                     _rel_error = np.max(rel_error)
-                    
+
                 print((msg.format(int(f), int(p), _med_rel_error, _rel_error, complete * 100)))
 
         # Exit if the error is good enough
@@ -194,15 +193,16 @@ def harmonic_balance(cct, resp, num_b=15, max_it=10, stop_rerror=0.001, vj_initi
             break
 
         # Update junction voltages (i.e., the business end of this function)
-        inv_j = _inv_jacobian(err_all, vj_2d, vt_2d, zt_2d, cct, resp, num_b, resp_matrix=respfn_interp, verbose=verbose)
+        inv_j = _inv_jacobian(err_all, vj_2d, vt_2d, zt_2d, cct, resp, num_b, resp_matrix=respfn_interp,
+                              verbose=verbose)
         if verbose:
             print("Applying correction")
         corr = np.zeros((num_n, npts), dtype=complex)
         for p in range(num_n):
             for q in range(num_n):
-                corr[p, :] -=      (inv_j[p * 2,     q * 2    ] * np.real(err_all[q]) +
-                                    inv_j[p * 2,     q * 2 + 1] * np.imag(err_all[q]))
-                corr[p, :] -= 1j * (inv_j[p * 2 + 1, q * 2    ] * np.real(err_all[q]) +
+                corr[p, :] -= (inv_j[p * 2, q * 2] * np.real(err_all[q]) +
+                               inv_j[p * 2, q * 2 + 1] * np.imag(err_all[q]))
+                corr[p, :] -= 1j * (inv_j[p * 2 + 1, q * 2] * np.real(err_all[q]) +
                                     inv_j[p * 2 + 1, q * 2 + 1] * np.imag(err_all[q]))
         vj_2d += corr * damp_coeff
 
@@ -212,12 +212,12 @@ def harmonic_balance(cct, resp, num_b=15, max_it=10, stop_rerror=0.001, vj_initi
 
     time = timer() - start_time
     if verbose:
-        print((" - sim time:\t\t{:7.2f} s / {:6.2f} min / {:5.2f} hrs".format(time, time/60., time/3600.)))
+        print((" - sim time:\t\t{:7.2f} s / {:6.2f} min / {:5.2f} hrs".format(time, time / 60., time / 3600.)))
         if iteration >= 1:
             tit = time / iteration  # time per iteration
             msg = " - {} iterations required"
             print((msg.format(iteration)))
-            print((" - time per iteration:\t{:7.2f} s / {:6.2f} min / {:5.2f} hrs".format(tit, tit/60., tit/3600.)))
+            print((" - time per iteration:\t{:7.2f} s / {:6.2f} min / {:5.2f} hrs".format(tit, tit / 60., tit / 3600.)))
 
     if mode == "o":  # return vj
         return vj_out
@@ -263,8 +263,8 @@ def check_hb_error(vj_check, cct, resp, num_b=15, stop_rerror=0.001):
     for f in range(1, cct.num_f + 1):
         for p in range(1, cct.num_p + 1):
             error_fp = cct.vt[f, p] - \
-                cct.zt[f, p] * ij_all[f, p, :] - \
-                vj_check[f, p, :]
+                       cct.zt[f, p] * ij_all[f, p, :] - \
+                       vj_check[f, p, :]
             max_rel_error = np.max(np.abs(error_fp) /
                                    np.abs(vj_check[f, p, :]))
             good_error = max_rel_error < stop_rerror
@@ -281,7 +281,7 @@ def check_hb_error(vj_check, cct, resp, num_b=15, stop_rerror=0.001):
 def _qtcurrent_all_freq(vj, cct, resp, num_b=15):
     """Calculate the AC tunneling current for all tones and all harmonics.
 
-    This function will return the tunneling current in a 3-D array: 
+    This function will return the tunneling current in a 3-D array:
     (num_f+1) x (num_p+1) x (npts).
 
     This is used in the harmonic balance procedure.
@@ -290,7 +290,7 @@ def _qtcurrent_all_freq(vj, cct, resp, num_b=15):
         vj (ndarray): Voltage across the junction
         cct (qmix.circuit.EmbeddingCircuit): Embedding circuit class
         resp (qmix.respfn.RespFn): Response function
-        num_b (int/tuple, optional): Summation limits for phase factor 
+        num_b (int/tuple, optional): Summation limits for phase factor
             coefficients, default is 15
 
     Returns:
@@ -358,7 +358,7 @@ def _inv_jacobian(error_all, vj_2d, vt_2d, zt_2d, cct, resp, num_b, resp_matrix=
 
     # Invert the Jacobian matrix
     # See: https://stackoverflow.com/a/49582794
-    inv_jacobian = np.linalg.inv(jacobian.transpose(2,0,1)).transpose(1,2,0)
+    inv_jacobian = np.linalg.inv(jacobian.transpose(2, 0, 1)).transpose(1, 2, 0)
 
     return inv_jacobian
 

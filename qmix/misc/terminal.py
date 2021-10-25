@@ -1,4 +1,4 @@
-""" This sub-module contains functions for printing numbers and text to the 
+""" This sub-module contains functions for printing numbers and text to the
 terminal.
 
 """

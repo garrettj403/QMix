@@ -1,11 +1,11 @@
-""" This module contains classes and functions to describe the embedding 
+""" This module contains classes and functions to describe the embedding
 circuit.
 
 **Description:**
-    
-    In experimental systems, SIS junctions are embedded within complex RF 
+
+    In experimental systems, SIS junctions are embedded within complex RF
     networks. These networks are referred to as the embedding circuit. Since
-    all of the components in these embedding circuits are **linear**, the 
+    all of the components in these embedding circuits are **linear**, the
     embedding circuit can be reduced to a **Thevenin equivalent circuit**, with
     one for **each tone and harmonic.**
 
@@ -16,9 +16,9 @@ circuit.
         2. the Thevenin voltage of the embedding circuit at this freq., and
         3. the Thevenin impedance of the embedding circuit at this freq.
 
-The main class in this module (``EmbeddingCircuit``) allows the user to 
+The main class in this module (``EmbeddingCircuit``) allows the user to
 build an embedding circuit in the proper format.
-    
+
 """
 
 import re
@@ -34,9 +34,9 @@ from qmix.misc.terminal import cprint
 # TODO: Use @property decorators to avoid setters/getters
 
 class EmbeddingCircuit(object):
-    """Class for building and describing the embedding circuit. 
+    """Class for building and describing the embedding circuit.
 
-    This includes the frequencies, Thevenin voltages and Thevenin impedances 
+    This includes the frequencies, Thevenin voltages and Thevenin impedances
     of all signals applied to the junction.
 
     Note:
@@ -122,11 +122,11 @@ class EmbeddingCircuit(object):
             constant. ``fgap`` is used to normalize and de-normalize frequency
             values (that't it!).
         vgap (float, optional): Gap voltage of the junction in units [V]. This is the
-            voltage where the sharp non-linearity in the DC I-V curve occurs 
+            voltage where the sharp non-linearity in the DC I-V curve occurs
             (a.k.a., the transition voltage).
         rn (float, optional): Normal-state resistance of the junction in units [ohms].
-            This is the resistance of the junction at a temperature slight 
-            above the critical temperature. It is found by calculating the 
+            This is the resistance of the junction at a temperature slight
+            above the critical temperature. It is found by calculating the
             dynamic resistance of the DC I-V curve above the gap voltage.
         name (str, optional): Name used to describe this specific instance.
 
@@ -159,28 +159,28 @@ class EmbeddingCircuit(object):
             that the impedance for tone number 2, and harmonic number 3 is
             stored in ``zt[2,3]``. **This attribute must be set after
             initialization!**
-        num_f (int): Number of fundamental frequencies (tones) applied to the 
+        num_f (int): Number of fundamental frequencies (tones) applied to the
             junction.
         num_p (int): Number of harmonics included for each tone.
         num_n (int): Total number of signals. This is equal to ``num_f*num_p``.
-        fgap (float): Gap frequency of the junction in units [Hz]. This is 
-            equal to ``e*Vgap/h``, where ``e`` is the charge of an electron, 
+        fgap (float): Gap frequency of the junction in units [Hz]. This is
+            equal to ``e*Vgap/h``, where ``e`` is the charge of an electron,
             ``Vgap`` is the gap voltage, and ``h`` is the Planck constant. Note
             that ``E=fgap*e`` is the energy required to break Cooper pairs, so
             at frequencies above the ``fgap`` the superconductors will begin to
             become lossy. Here, ``fgap`` is used to normalize and de-normalize
             frequency values (that't it).
-        vgap (float): Gap voltage of the junction in units [V]. This is the 
-            voltage where the sharp non-linearity in the DC I-V curve occurs 
+        vgap (float): Gap voltage of the junction in units [V]. This is the
+            voltage where the sharp non-linearity in the DC I-V curve occurs
             (i.e., the transition voltage). This value is used to normalize
             and de-normalize voltages.
-        igap (float): Gap current of the junction in units [A]. This is equal 
-            to ``vgap/rn``. This value is used to normalize and de-normalize 
+        igap (float): Gap current of the junction in units [A]. This is equal
+            to ``vgap/rn``. This value is used to normalize and de-normalize
             currents.
-        rn (float): Normal-state resistance of the junction in units [ohms]. 
+        rn (float): Normal-state resistance of the junction in units [ohms].
             This is the resistance of the junction at a temperature slightly
-            above the critical temperature. It is found by calculating the 
-            dynamic resistance of the DC I-V curve above the gap voltage. This 
+            above the critical temperature. It is found by calculating the
+            dynamic resistance of the DC I-V curve above the gap voltage. This
             value is used to normalize and de-normalize resistances.
         vb (numpy.ndarray): Array for the DC bias voltage sweep. This value is
             normalized to the gap voltage.
@@ -245,7 +245,7 @@ class EmbeddingCircuit(object):
 
         # Initialize comment list to label tones/harmonics (optional)
         self.comment = []
-        for f in range(num_f + 1):
+        for _ in range(num_f + 1):
             self.comment.append(['' for _ in range(num_p + 1)])
 
     def __str__(self):
@@ -269,7 +269,7 @@ class EmbeddingCircuit(object):
         saved within this class, but it is okay for this class to initialize
         ``vj`` since it has all the data about what the matrix sizes should be.
 
-        This function is useful when you want to set the voltage across the 
+        This function is useful when you want to set the voltage across the
         junction directly (skipping the harmonic balance procedure).
 
         Returns:
@@ -282,8 +282,8 @@ class EmbeddingCircuit(object):
     def available_power(self, f=1, p=1, units='W'):
         """Return available power of tone ``f`` and harmonic ``p``.
 
-        Note: 
-        
+        Note:
+
             Gap voltage and normal resistance must be set prior to using this
             method. If they are not, an error will be raised.
 
@@ -331,12 +331,12 @@ class EmbeddingCircuit(object):
     def set_available_power(self, power, f=1, p=1, units='W'):
         """Set available power of tone ``f`` and harmonic ``p``.
 
-        This method will set the Thevenin voltage in order to provide the 
+        This method will set the Thevenin voltage in order to provide the
         correct power level.
 
-        Note: 
+        Note:
 
-            The gap voltage, normal resistance and Thevenin impedance must be 
+            The gap voltage, normal resistance and Thevenin impedance must be
             set prior to using this method. Otherwise, an assertion error will
             be raised.
 
@@ -387,7 +387,7 @@ class EmbeddingCircuit(object):
         the desired drive level, but you won't actually know what the drive
         level is until you run the simulation.
 
-        Note: 
+        Note:
 
             Frequency and Thevenin impedance must be set prior to using
             this method. Otherwise, an assertion error will be raised.
@@ -405,7 +405,7 @@ class EmbeddingCircuit(object):
         assert self.zt[f, p] != 0, 'Embedding impedance must be defined!'
         assert self.freq[f] != 0, 'Frequency must be defined!'
 
-        self.vt[f, p] = alpha * self.freq[f] * (self.zt[f, p] / zj + 1) 
+        self.vt[f, p] = alpha * self.freq[f] * (self.zt[f, p] / zj + 1)
 
     def set_freq(self, value, f=1, units='Hz'):
         """Set the frequency of tone ``f``.
@@ -432,8 +432,8 @@ class EmbeddingCircuit(object):
             value (float): value to set using given units
             f (int, optional, default is 1): tone number
             units (str, optional, default is 'Hz'): units for input value, 'Hz'
-                for frequency in units Hz, 'V' for photon voltage in units V, 
-                and 'norm' for either normalized photon voltage or normalized 
+                for frequency in units Hz, 'V' for photon voltage in units V,
+                and 'norm' for either normalized photon voltage or normalized
                 frequency. SI prefixes can also be included: 'MHz', 'GHz',
                 'THz', and 'mV'.
 
@@ -557,7 +557,7 @@ class EmbeddingCircuit(object):
 
     def unlock(self):
         """Make all Numpy arrays contained within this class writeable.
-        
+
         This can be useful for debugging.
 
         """
@@ -581,7 +581,7 @@ class EmbeddingCircuit(object):
 def read_circuit(filename):
     """Build an embedding circuit from an embedding circuit file.
 
-    This function will build an instance of the ``EmbeddingCircuit`` class 
+    This function will build an instance of the ``EmbeddingCircuit`` class
     based on a file previously generated by the
     ``EmbeddingCircuit.save_info`` method.
 

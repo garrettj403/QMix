@@ -1,13 +1,13 @@
-"""This sub-module contains functions for importing and analyzing the IF 
-response. 
+"""This sub-module contains functions for importing and analyzing the IF
+response.
 
-These are hot/cold load measurements that were measured using a spectrum 
+These are hot/cold load measurements that were measured using a spectrum
 analyzer. From this, we calculate the noise temperature versus IF frequency
 (i.e., the IF response).
 
 """
 
-import numpy as np 
+import numpy as np
 
 from qmix.exp.parameters import params as PARAMS
 
@@ -17,15 +17,15 @@ def if_response(if_data, **kw):
 
     This is the IF output power (versus IF frequency) that is measured from
     hot and cold blackbody loads. This data is used to calculate the noise
-    temperature versus IF frequency, sometimes referred to as the IF 
+    temperature versus IF frequency, sometimes referred to as the IF
     response.
-    
+
     Args:
         if_data: IF response data. This can either be in the form of a CSV
-            file, or a Numpy array. Either way, the data should have 3 
+            file, or a Numpy array. Either way, the data should have 3
             columns: frequency, in units [GHz], hot IF power, in units
             [dBm], and cold IF power, in units [dBm].
-        
+
     Keyword Args:
         t_hot: hot blackbody load temperature
         t_cold: cold blackbody load temperature
@@ -34,7 +34,7 @@ def if_response(if_data, **kw):
         ifresp_skipheader: how many rows to skip at the beginning of IF
             response files.
 
-    Returns: 
+    Returns:
         ndarray: frequency, noise temp, hot power, cold power
 
     """
@@ -49,9 +49,9 @@ def if_response(if_data, **kw):
 
     # Import IF spectrum measurements
     if isinstance(if_data, str):  # input is a CSV file
-        f, ph_db, pc_db = np.genfromtxt(if_data, 
+        f, ph_db, pc_db = np.genfromtxt(if_data,
                                         delimiter=ifresp_delimiter,
-                                        usecols=ifresp_usecols, 
+                                        usecols=ifresp_usecols,
                                         skip_header=ifresp_skipheader).T
     elif isinstance(if_data, np.ndarray):  # input is a Numpy array
         assert if_data.ndim == 2, \
@@ -82,7 +82,7 @@ def if_response(if_data, **kw):
 
 def _db_to_lin(db):
     """dB to linear units.
-    
+
     Args:
         db: value in decibels
 

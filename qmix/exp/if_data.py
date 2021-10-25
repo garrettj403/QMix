@@ -1,4 +1,4 @@
-""" This sub-module contains functions for importing and analyzing 
+""" This sub-module contains functions for importing and analyzing
 experimental IF power measurements.
 
 The "IF data" is the IF output power from the SIS device versus bias voltage.
@@ -6,11 +6,11 @@ The term "DC IF data" is used for IF power with no LO injection, and "IF data"
 is used for IF power with LO injection.
 
 Note:
-    
-    The IF data is expected either in the form of a CSV file or a Numpy 
-    array. Either way the data should have two columns: the first for voltage 
+
+    The IF data is expected either in the form of a CSV file or a Numpy
+    array. Either way the data should have two columns: the first for voltage
     and the second for current.
-    
+
 """
 
 from collections import namedtuple
@@ -37,7 +37,7 @@ Struct for DC IF metadata.
 
 Args:
     if_noise (float): IF noise in units K, derived from the shot noise.
-    corr (float): The correction required to transform the measured IF power 
+    corr (float): The correction required to transform the measured IF power
         (measured in arbitrary units, A.U.) to units K.
     if_fit (bool): Is the estimated IF noise a reasonable value?
     shot_slope (float): The slope of the line fit to the shot noise.
@@ -50,13 +50,13 @@ def dcif_data(ifdata, dc, **kwargs):
     """Analyze DC IF measurements.
 
     This is the IF data that is measured with no LO present. This data is
-    used to analyze the shot noise, which can then be used to convert the IF 
+    used to analyze the shot noise, which can then be used to convert the IF
     data into units 'K' and estimate the IF noise component.
-            
+
     Args:
         ifdata: IF data. Either a CSV data file or a Numpy array. The data
             should have two columns: the first for voltage, and the second
-            for IF power. If you are passing a CSV file, the properties of 
+            for IF power. If you are passing a CSV file, the properties of
             the CSV file can be set through additional keyword arguments
             (see below).
         dc (qmix.exp.iv_data.DCIVData): DC I-V metadata.
@@ -67,13 +67,13 @@ def dcif_data(ifdata, dc, **kwargs):
         skip_header (int): Number of rows to skip, used to skip the header.
         v_fmt (str): Units for voltage ('uV', 'mV', or 'V').
         i_fmt (str): Units for current ('uA', 'mA', or 'A').
-        rseries (float): Series resistance in experimental measurement 
+        rseries (float): Series resistance in experimental measurement
             system, in units [ohms].
         v_multiplier (float): Multiply the imported voltage by this value.
         ifdata_npts (int): Number of points for interpolation.
-        ifdata_sigma (float): Standard deviation of Gaussian used for 
+        ifdata_sigma (float): Standard deviation of Gaussian used for
             filtering, in units [V]
-        vshot (list): Voltage range over which to fit shot noise slope, in 
+        vshot (list): Voltage range over which to fit shot noise slope, in
             units [V]. Can be a list of lists to define multiple ranges.
         verbose (bool): Print to terminal.
 
@@ -103,8 +103,8 @@ def if_data(if_hot, if_cold, dc, **kwargs):
         if_hot: Hot IF data. Either a CSV data file or a Numpy array. The data
             should have two columns: the first for voltage, and the second
             for IF power.
-        if_cold: Cold IF data. Either a CSV data file or a Numpy array. The 
-            data should have two columns: the first for voltage, and the 
+        if_cold: Cold IF data. Either a CSV data file or a Numpy array. The
+            data should have two columns: the first for voltage, and the
             second for IF power.
         dc (qmix.exp.iv_data.DCIVData): DC I-V metadata.
 
@@ -114,12 +114,12 @@ def if_data(if_hot, if_cold, dc, **kwargs):
         skip_header (int): Number of rows to skip, used to skip the header.
         v_fmt (str): Units for voltage ('uV', 'mV', or 'V').
         i_fmt (str): Units for current ('uA', 'mA', or 'A').
-        rseries (float): Series resistance in experimental measurement 
+        rseries (float): Series resistance in experimental measurement
             system, in units [ohms].
         v_multiplier (float): Multiply the imported voltage by this value.
         ifdata_max (float): Maximum IF voltage to import.
         ifdata_npts (int): Number of points for interpolation.
-        ifdata_sigma (float): Standard deviation of Gaussian used for 
+        ifdata_sigma (float): Standard deviation of Gaussian used for
             filtering, in units [V]
         t_cold (float): Temperature of cold blackbody load.
         t_hot (float): Temperature of hot blackbody load.
@@ -128,8 +128,8 @@ def if_data(if_hot, if_cold, dc, **kwargs):
         verbose (bool): Print to terminal.
 
     Returns:
-        tuple: Hot IF data, Cold IF data, Noise temperature, Gain, Index of 
-            best noise temperature, IF noise contribution, Good fit to IF 
+        tuple: Hot IF data, Cold IF data, Noise temperature, Gain, Index of
+            best noise temperature, IF noise contribution, Good fit to IF
             noise?, shot noise slope
 
     """
@@ -158,9 +158,9 @@ def if_data(if_hot, if_cold, dc, **kwargs):
 
     # Calculate noise temperature + gain
     tn, gain, idx_best = _find_tn_gain(if_hot, if_cold, dc, **kwargs)
-    results = np.vstack((if_hot[:,0], if_hot[:,1], if_cold[:,1], tn, gain)).T
+    results = np.vstack((if_hot[:, 0], if_hot[:, 1], if_cold[:, 1], tn, gain)).T
 
-    vmax = if_hot[:,0].max() * dc.vgap
+    vmax = if_hot[:, 0].max() * dc.vgap
     dcif_out = DCIFData(if_noise=if_noise, corr=corr, if_fit=if_fit,
                         shot_slope=shot_slope, vmax=vmax)
 
@@ -185,7 +185,7 @@ def _find_tn_gain(if_data_hot, if_data_cold, dc, **kw):
         if_data_hot: Hot IF data
         if_data_cold: Cold IF data
         dc: DC I-V metadata
-        
+
     Keyword Args:
         freq: Frequency in GHz
         t_hot (float): hot load temperature
@@ -267,10 +267,10 @@ def _find_if_noise(if_data, dc, **kw):
         dc: DC I-V metadata
 
     Keyword Args:
-        vshot (list): Voltage range over which to fit shot noise slope, in 
+        vshot (list): Voltage range over which to fit shot noise slope, in
             units [V]. Can be a list of lists to define multiple ranges.
-        
-    Returns: 
+
+    Returns:
         tuple: IF noise, correction factor, linear fit
 
     """
@@ -316,7 +316,7 @@ def _find_if_noise(if_data, dc, **kw):
         assert isinstance(vshot, tuple) or isinstance(vshot, list)
         if not isinstance(vshot[0], tuple) and not isinstance(vshot[0], list):
             vshot = (vshot,)
-        # Build mask    
+        # Build mask
         mask = np.zeros_like(x, dtype=bool)
         for vrange in vshot:
             mask_tmp = (vrange[0] < x * dc.vgap) & (x * dc.vgap < vrange[1])
@@ -375,18 +375,18 @@ def _load_if(ifdata, dc, **kwargs):
     Args:
         ifdata: IF data. Either a CSV data file or a Numpy array. The data
             should have two columns: the first for voltage, and the second
-            for IF power. If you are using a CSV file, the properties of 
+            for IF power. If you are using a CSV file, the properties of
             the CSV file can be set through additional keyword arguments
             (see below).
-        dc (qmix.exp.iv_data.DCIVData): DC I-V metadata. 
+        dc (qmix.exp.iv_data.DCIVData): DC I-V metadata.
 
     Keyword arguments:
         delimiter (str): delimiter used in data files
         v_fmt (str): units for voltage ('V', 'mV', 'uV')
         usecols (tuple): columns for voltage and current (e.g., ``(0,1)``)
-        ifdata_sigma (float): Standard deviation of Gaussian used for 
+        ifdata_sigma (float): Standard deviation of Gaussian used for
             filtering, in units [V]
-        ifdata_npts (float): evenly interpolate data to have this many data 
+        ifdata_npts (float): evenly interpolate data to have this many data
             points
         rseries (float): series resistance of measurement system
         skip_header: number of rows to skip at the beginning of the file
@@ -427,7 +427,7 @@ def _load_if(ifdata, dc, **kwargs):
 
     # Correct errors in experimental system
     ifdata[:, 0] *= v_multiplier
-    
+
     # Correct for offset
     ifdata[:, 0] = ifdata[:, 0] - dc.offset[0]
 
@@ -441,7 +441,7 @@ def _load_if(ifdata, dc, **kwargs):
         rj = rstatic - rseries
         v0 = iraw * rj
         ifdata[:, 0] = v0
-        
+
     # Normalize voltage to gap voltage
     ifdata[:, 0] /= dc.vgap
 

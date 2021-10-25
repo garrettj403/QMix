@@ -1,4 +1,4 @@
-""" This sub-package contains mathematical functions. 
+""" This sub-package contains mathematical functions.
 
 This includes numerical differentiation, I-V curve models, Kramers-Kronig
 transforms and various filters.

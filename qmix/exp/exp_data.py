@@ -1,9 +1,9 @@
-""" This module contains classes for importing, filtering and 
+""" This module contains classes for importing, filtering and
 analyzing raw I-V and IF data obtained from SIS mixer experiments.
 
-Two classes (``RawData0`` and ``RawData``) are provided to help manage the 
-data. ``RawData0`` is intended for data that was collected with no LO 
-injection (i.e., unpumped data), and ``RawData`` is intended for data that was 
+Two classes (``RawData0`` and ``RawData``) are provided to help manage the
+data. ``RawData0`` is intended for data that was collected with no LO
+injection (i.e., unpumped data), and ``RawData`` is intended for data that was
 collected with LO injection (i.e., pumped data).
 
 Note:
@@ -12,13 +12,13 @@ Note:
     data files or Numpy arrays. In both bases, the data should have two
     columns: the first for voltage, and the second for current or IF power,
     depending on the file type.
-    
+
     For CSV files, you can define the delimiter using the keyword
-    argument ``delimiter=','``, the number of rows to skip for the header 
-    using ``skip_header=1``, and which columns to import using 
-    ``usecols=(0,1)``. Take a look at the data in 
-    ``QMix/notebooks/eg-230-data/`` for an example. Also, take a look at 
-    ``QMix/notebooks/analyze-experimental-data.ipynb`` for an example of how 
+    argument ``delimiter=','``, the number of rows to skip for the header
+    using ``skip_header=1``, and which columns to import using
+    ``usecols=(0,1)``. Take a look at the data in
+    ``QMix/notebooks/eg-230-data/`` for an example. Also, take a look at
+    ``QMix/notebooks/analyze-experimental-data.ipynb`` for an example of how
     to use this module.
 
 """
@@ -60,7 +60,7 @@ _step = 1e-5
 # Parameters for saving figures
 _plot_params = {'dpi': 500, 'bbox_inches': 'tight'}
 
-# Note: All plotting functions are excluded from coverage tests 
+# Note: All plotting functions are excluded from coverage tests
 # by using:  "# pragma: no cover"
 
 
@@ -85,31 +85,31 @@ class RawData0(object):
 
     Note:
 
-        Experimental data can be passed to this class either in the form of 
-        CSV data files or Numpy arrays. In both cases, the data should have 
-        two columns: the first for voltage, and the second for current or IF 
+        Experimental data can be passed to this class either in the form of
+        CSV data files or Numpy arrays. In both cases, the data should have
+        two columns: the first for voltage, and the second for current or IF
         power, depending on the file type.
-        
+
         For CSV files, you can define the delimiter using the keyword
-        argument ``delimiter=','``, the number of rows to skip for the header 
-        using ``skip_header=1``, and which columns to import using 
-        ``usecols=(0,1)``. Take a look at the data in 
-        ``QMix/notebooks/eg-230-data/`` for an example. Also, take a look at 
-        ``QMix/notebooks/analyze-experimental-data.ipynb`` for an example of 
+        argument ``delimiter=','``, the number of rows to skip for the header
+        using ``skip_header=1``, and which columns to import using
+        ``usecols=(0,1)``. Take a look at the data in
+        ``QMix/notebooks/eg-230-data/`` for an example. Also, take a look at
+        ``QMix/notebooks/analyze-experimental-data.ipynb`` for an example of
         how to use this module.
-        
+
         See ``qmix.exp.parameters.params`` for all possible keyword arguments.
         These parameters control how the data is imported and analyzed.
-    
+
     Args:
         dciv: DC I-V curve. Either a CSV data file or a Numpy array. The data
             should have two columns: the first for voltage, and the second
-            for current. If you are using CSV files, the properties of 
+            for current. If you are using CSV files, the properties of
             the CSV file can be set through additional keyword arguments
             (see below).
-        dcif: DC IF data. Either a CSV data file or a Numpy array. The 
-            data should have two columns: the first for voltage, and the 
-            second for IF power. If you are using CSV files, the properties of 
+        dcif: DC IF data. Either a CSV data file or a Numpy array. The
+            data should have two columns: the first for voltage, and the
+            second for IF power. If you are using CSV files, the properties of
             the CSV file can be set through additional keyword arguments
             (see below).
 
@@ -126,9 +126,9 @@ class RawData0(object):
         ioffset (float): Current offset, in units [A].
         voffset_range (float): Voltage range over which to search for offset,
             in units [V].
-        voffset_sigma (float): Standard deviation of Gaussian filter when 
+        voffset_sigma (float): Standard deviation of Gaussian filter when
             searching for offset.
-        rseries (float): Series resistance in experimental measurement 
+        rseries (float): Series resistance in experimental measurement
             system, in units [ohms].
         i_multiplier (float): Multiply the imported current by this value.
         v_multiplier (float): Multiply the imported voltage by this value.
@@ -139,25 +139,25 @@ class RawData0(object):
             normalize while filtering. Given in units [V].
         igap_guess (float): Guess of gap current. Used to temporarily
             normalize while filtering. Given in units [A].
-        filter_theta (float): Angle by which to the rotate data while 
+        filter_theta (float): Angle by which to the rotate data while
             filtering. Given in radians.
         filter_nwind (int): Window size for Savitsky-Golay filter.
         filter_npoly (int): Order of Savitsky-Golay filter.
-        ifdata_sigma (float): Standard deviation of Gaussian used for 
+        ifdata_sigma (float): Standard deviation of Gaussian used for
             filtering, in units [V]
         area (float): Area of the junction in um^2.
         vgap_threshold (float): The current to measure the gap voltage at.
         rn_vmin (float): Lower voltage range to determine the normal resistance
         rn_vmax (float): Upper voltage range to determine the normal resistance
-        vrsg (float): The voltage at which to calculate the subgap 
+        vrsg (float): The voltage at which to calculate the subgap
             resistance.
         vleak (float): The voltage at which to calculate the subgap leakage
             current.
-        vshot (list): Voltage range over which to fit shot noise slope, in 
+        vshot (list): Voltage range over which to fit shot noise slope, in
             units [V]. Can be a list of lists to define multiple ranges.
         comment (str): Comment to describe this instance.
         verbose (bool): Print to terminal.
-        
+
     """
 
     def __init__(self, dciv, dcif=None, **kw):
@@ -278,13 +278,13 @@ class RawData0(object):
 
         Some additional labels will be added as well, including normal-state
         resistance, subgap resistance, gap voltage, and gap current.
-        
-        Note: If ``fig_name`` is provided, this method will save the plot 
+
+        Note: If ``fig_name`` is provided, this method will save the plot
         to the specified folder and then close the plot. This means
         that the Matplotlib axis object will not be returned in this
-        case. This is done to prevent too many plots from being open 
+        case. This is done to prevent too many plots from being open
         at the time.
-        
+
         Args:
             fig_name (str): figure filename
             ax: Matplotlib axis
@@ -356,12 +356,12 @@ class RawData0(object):
     def plot_offset(self, fig_name=None, ax=None, **kw):  # pragma: no cover
         """Plot DC I-V curve at the origin to see if there is an offset.
 
-        Note: If ``fig_name`` is provided, this method will save the plot 
+        Note: If ``fig_name`` is provided, this method will save the plot
         to the specified folder and then close the plot. This means
         that the Matplotlib axis object will not be returned in this
-        case. This is done to prevent too many plots from being open 
+        case. This is done to prevent too many plots from being open
         at the time.
-        
+
         Args:
             fig_name (str): figure filename
             ax: Matplotlib axis
@@ -401,16 +401,16 @@ class RawData0(object):
 
     def plot_rdyn(self, fig_name=None, ax=None, vmax_plot=4., **kw):  # pragma: no cover
         """Plot dynamic resistance of the DC I-V curve.
-        
+
         The dynamic resistance is the derivative of the I-V data, inverted to
         get resistance.
 
-        Note: If ``fig_name`` is provided, this method will save the plot 
+        Note: If ``fig_name`` is provided, this method will save the plot
         to the specified folder and then close the plot. This means
         that the Matplotlib axis object will not be returned in this
-        case. This is done to prevent too many plots from being open 
+        case. This is done to prevent too many plots from being open
         at the time.
-        
+
         Args:
             fig_name: figure filename
             ax: Matplotlib axis
@@ -448,15 +448,15 @@ class RawData0(object):
 
     def plot_rstat(self, fig_name=None, ax=None, vmax_plot=4., **kw):  # pragma: no cover
         """Plot static resistance of DC I-V data.
-        
+
         The static resistance is the DC voltage divided by the DC current.
 
-        Note: If ``fig_name`` is provided, this method will save the plot 
+        Note: If ``fig_name`` is provided, this method will save the plot
         to the specified folder and then close the plot. This means
         that the Matplotlib axis object will not be returned in this
-        case. This is done to prevent too many plots from being open 
+        case. This is done to prevent too many plots from being open
         at the time.
-        
+
         Args:
             fig_name: figure filename
             ax: Matplotlib axis
@@ -499,15 +499,15 @@ class RawData0(object):
 
     def plot_if_noise(self, fig_name=None, ax=None, **kw):  # pragma: no cover
         """Plot IF noise.
-        
+
         The IF noise is calculated from the slope of the shot noise.
 
-        Note: If ``fig_name`` is provided, this method will save the plot 
+        Note: If ``fig_name`` is provided, this method will save the plot
         to the specified folder and then close the plot. This means
         that the Matplotlib axis object will not be returned in this
-        case. This is done to prevent too many plots from being open 
+        case. This is done to prevent too many plots from being open
         at the time.
-        
+
         Args:
             fig_name: figure filename
             ax: Matplotlib axis (should be tuple with two axes)
@@ -576,13 +576,13 @@ class RawData0(object):
     def plot_all(self, fig_folder, sub_folder=None, **kw):  # pragma: no cover
         """Plot all DC data and save it to a specified directory.
 
-        This method will call the following methods: ``plot_dciv``, 
+        This method will call the following methods: ``plot_dciv``,
         ``plot_offset``, ``plot_rdyn`` and ``plot_if_noise``.
-        
+
         These figures will be put in ``fig_folder/sub_folder``. Note that if
-        ``sub_folder`` is left as ``None``, this method will use the default 
-        file structure (see ``qmix.exp.exp_data._file_structure``). If you 
-        would instead like the figures to go into ``fig_folder``, set this 
+        ``sub_folder`` is left as ``None``, this method will use the default
+        file structure (see ``qmix.exp.exp_data._file_structure``). If you
+        would instead like the figures to go into ``fig_folder``, set this
         argument as an empty string ("").
 
         Args:
@@ -621,26 +621,26 @@ class RawData(object):
 
     Note:
 
-        Experimental data can be passed to this class either in the form of 
-        CSV data files or Numpy arrays. In both bases, the data should have 
-        two columns: the first for voltage, and the second for current or IF 
+        Experimental data can be passed to this class either in the form of
+        CSV data files or Numpy arrays. In both bases, the data should have
+        two columns: the first for voltage, and the second for current or IF
         power, depending on the file type.
-        
+
         For CSV files, you can define the delimiter using the keyword
-        argument ``delimiter=','``, the number of rows to skip for the header 
-        using ``skip_header=1``, and which columns to import using 
-        ``usecols=(0,1)``. Take a look at the data in 
-        ``QMix/notebooks/eg-230-data/`` for an example. Also, take a look at 
-        ``QMix/notebooks/analyze-experimental-data.ipynb`` for an example of 
+        argument ``delimiter=','``, the number of rows to skip for the header
+        using ``skip_header=1``, and which columns to import using
+        ``usecols=(0,1)``. Take a look at the data in
+        ``QMix/notebooks/eg-230-data/`` for an example. Also, take a look at
+        ``QMix/notebooks/analyze-experimental-data.ipynb`` for an example of
         how to use this module.
-        
+
         See ``qmix.exp.parameters.params`` for all possible keyword arguments.
         These parameters control how the data is imported and analyzed.
 
     Args:
         ivdata: I-V data. Either a CSV data file or a Numpy array. The data
             should have two columns: the first for voltage, and the second
-            for current. If you are using CSV files, the properties of 
+            for current. If you are using CSV files, the properties of
             the CSV file can be set through additional keyword arguments
             (see below).
         dciv (qmix.exp.iv_data.DCIVData): DC I-V metadata
@@ -658,9 +658,9 @@ class RawData(object):
         ioffset (float): Current offset, in units [A].
         voffset_range (float): Voltage range over which to search for offset,
             in units [V].
-        voffset_sigma (float): Standard deviation of Gaussian filter when 
+        voffset_sigma (float): Standard deviation of Gaussian filter when
             searching for offset.
-        rseries (float): Series resistance in experimental measurement 
+        rseries (float): Series resistance in experimental measurement
             system, in units [ohms].
         i_multiplier (float): Multiply the imported current by this value.
         v_multiplier (float): Multiply the imported voltage by this value.
@@ -671,11 +671,11 @@ class RawData(object):
             normalize while filtering. Given in units [V].
         igap_guess (float): Guess of gap current. Used to temporarily
             normalize while filtering. Given in units [A].
-        filter_theta (float): Angle by which to the rotate data while 
+        filter_theta (float): Angle by which to the rotate data while
             filtering. Given in radians.
         filter_nwind (int): Window size for Savitsky-Golay filter.
         filter_npoly (int): Order of Savitsky-Golay filter.
-        ifdata_sigma (float): Standard deviation of Gaussian used for 
+        ifdata_sigma (float): Standard deviation of Gaussian used for
             filtering, in units [V]
         analyze_iv (bool): Analyze I-V data?
         analyze_if (bool): Analyze IF data?
@@ -840,16 +840,16 @@ class RawData(object):
     def _recover_zemb(self):
         """Recover the embedding circuit (i.e., the Thevenin eqiv. circuit).
 
-        The technique used here is the RF voltage match method described by 
+        The technique used here is the RF voltage match method described by
         Skalare (1989) and Withington et al. (1995).
-            
-        Note: 
 
-            All currents and voltages are normalized to the gap voltage and 
-            to the normal resistance, respectively. 
-            
+        Note:
+
+            All currents and voltages are normalized to the gap voltage and
+            to the normal resistance, respectively.
+
         Keyword Args:
-            fit_range (list): Fit interval for impedance recovery, normalized 
+            fit_range (list): Fit interval for impedance recovery, normalized
                 to the width of the first photon step.
             cut_low (float): only fit over first photon step,
                 start at Vgap - vph + vph * cut_low (DEPRECATED)
@@ -962,12 +962,12 @@ class RawData(object):
     def plot_iv(self, fig_name=None, ax=None, vmax_plot=4.):  # pragma: no cover
         """Plot pumped I-V curve.
 
-        Note: If ``fig_name`` is provided, this method will save the plot 
+        Note: If ``fig_name`` is provided, this method will save the plot
         to the specified folder and then close the plot. This means
         that the Matplotlib axis object will not be returned in this
-        case. This is done to prevent too many plots from being open 
+        case. This is done to prevent too many plots from being open
         at the time.
-        
+
         Args:
             fig_name: figure filename
             ax: Matplotlib axis
@@ -1010,12 +1010,12 @@ class RawData(object):
     def plot_if(self, fig_name=None, ax=None, vmax_plot=4.):  # pragma: no cover
         """Plot IF power from hot and cold loads.
 
-        Note: If ``fig_name`` is provided, this method will save the plot 
+        Note: If ``fig_name`` is provided, this method will save the plot
         to the specified folder and then close the plot. This means
         that the Matplotlib axis object will not be returned in this
-        case. This is done to prevent too many plots from being open 
+        case. This is done to prevent too many plots from being open
         at the time.
-        
+
         Args:
             fig_name: figure filename
             ax: Matplotlib axis
@@ -1056,12 +1056,12 @@ class RawData(object):
     def plot_ivif(self, fig_name=None, ax=None, vmax_plot=4.):  # pragma: no cover
         """Plot IV and IF data on same plot.
 
-        Note: If ``fig_name`` is provided, this method will save the plot 
+        Note: If ``fig_name`` is provided, this method will save the plot
         to the specified folder and then close the plot. This means
         that the Matplotlib axis object will not be returned in this
-        case. This is done to prevent too many plots from being open 
+        case. This is done to prevent too many plots from being open
         at the time.
-        
+
         Args:
             fig_name: figure filename
             ax: Matplotlib axis (should be tuple with two axes)
@@ -1118,12 +1118,12 @@ class RawData(object):
     def plot_shapiro(self, fig_name=None, ax=None):  # pragma: no cover
         """Plot Shapiro steps.
 
-        Note: If ``fig_name`` is provided, this method will save the plot 
+        Note: If ``fig_name`` is provided, this method will save the plot
         to the specified folder and then close the plot. This means
         that the Matplotlib axis object will not be returned in this
-        case. This is done to prevent too many plots from being open 
+        case. This is done to prevent too many plots from being open
         at the time.
-        
+
         Args:
             fig_name: figure filename
             ax: Matplotlib axis
@@ -1165,12 +1165,12 @@ class RawData(object):
     def plot_if_noise(self, fig_name=None, ax=None):  # pragma: no cover
         """Plot IF noise.
 
-        Note: If ``fig_name`` is provided, this method will save the plot 
+        Note: If ``fig_name`` is provided, this method will save the plot
         to the specified folder and then close the plot. This means
         that the Matplotlib axis object will not be returned in this
-        case. This is done to prevent too many plots from being open 
+        case. This is done to prevent too many plots from being open
         at the time.
-        
+
         Args:
             fig_name: figure filename
             ax: Matplotlib axis (should be tuple with two axes)
@@ -1229,12 +1229,12 @@ class RawData(object):
     def plot_noise_temp(self, fig_name=None, ax=None, vmax_plot=4.):  # pragma: no cover
         """Plot noise temperature.
 
-        Note: If ``fig_name`` is provided, this method will save the plot 
+        Note: If ``fig_name`` is provided, this method will save the plot
         to the specified folder and then close the plot. This means
         that the Matplotlib axis object will not be returned in this
-        case. This is done to prevent too many plots from being open 
+        case. This is done to prevent too many plots from being open
         at the time.
-        
+
         Args:
             fig_name: figure filename
             ax: Matplotlib axis (should be tuple with two axes)
@@ -1279,9 +1279,9 @@ class RawData(object):
         ax2.grid(False)
 
         # Build legend
-        lns = l1 + l2 + l3 + l4
-        labs = [l.get_label() for l in lns]
-        ax2.legend(lns, labs, loc=2, frameon=True, framealpha=1.)
+        lines = l1 + l2 + l3 + l4
+        labs = [line.get_label() for line in lines]
+        ax2.legend(lines, labs, loc=2, frameon=True, framealpha=1.)
 
         if fig_name is not None:
             fig.savefig(fig_name, **_plot_params)
@@ -1293,12 +1293,12 @@ class RawData(object):
     def plot_yfac_noise_temp(self, fig_name=None, ax=None, vmax_plot=4.):  # pragma: no cover
         """Plot Y-factor and noise temperature.
 
-        Note: If ``fig_name`` is provided, this method will save the plot 
+        Note: If ``fig_name`` is provided, this method will save the plot
         to the specified folder and then close the plot. This means
         that the Matplotlib axis object will not be returned in this
-        case. This is done to prevent too many plots from being open 
+        case. This is done to prevent too many plots from being open
         at the time.
-        
+
         Args:
             fig_name: figure filename
             ax: Matplotlib axis
@@ -1359,12 +1359,12 @@ class RawData(object):
     def plot_gain_noise_temp(self, fig_name=None, ax=None, vmax_plot=4.):  # pragma: no cover
         """Plot gain and noise temperature.
 
-        Note: If ``fig_name`` is provided, this method will save the plot 
+        Note: If ``fig_name`` is provided, this method will save the plot
         to the specified folder and then close the plot. This means
         that the Matplotlib axis object will not be returned in this
-        case. This is done to prevent too many plots from being open 
+        case. This is done to prevent too many plots from being open
         at the time.
-        
+
         Args:
             fig_name: figure filename
             ax: Matplotlib axis
@@ -1431,12 +1431,12 @@ class RawData(object):
     def plot_rdyn(self, fig_name=None, ax=None, vmax_plot=4.):  # pragma: no cover
         """Plot dynamic resistance.
 
-        Note: If ``fig_name`` is provided, this method will save the plot 
+        Note: If ``fig_name`` is provided, this method will save the plot
         to the specified folder and then close the plot. This means
         that the Matplotlib axis object will not be returned in this
-        case. This is done to prevent too many plots from being open 
+        case. This is done to prevent too many plots from being open
         at the time.
-        
+
         Args:
             fig_name: figure filename
             ax: Matplotlib axis
@@ -1490,12 +1490,12 @@ class RawData(object):
     def plot_gain(self, fig_name=None, ax=None, vmax_plot=4.):  # pragma: no cover
         """Plot gain.
 
-        Note: If ``fig_name`` is provided, this method will save the plot 
+        Note: If ``fig_name`` is provided, this method will save the plot
         to the specified folder and then close the plot. This means
         that the Matplotlib axis object will not be returned in this
-        case. This is done to prevent too many plots from being open 
+        case. This is done to prevent too many plots from being open
         at the time.
-        
+
         Args:
             fig_name: figure filename
             ax: Matplotlib axis
@@ -1529,12 +1529,12 @@ class RawData(object):
     def plot_error_surface(self, fig_name=None, ax=None):  # pragma: no cover
         """Plot error surface (from impedance recovery).
 
-        Note: If ``fig_name`` is provided, this method will save the plot 
+        Note: If ``fig_name`` is provided, this method will save the plot
         to the specified folder and then close the plot. This means
         that the Matplotlib axis object will not be returned in this
-        case. This is done to prevent too many plots from being open 
+        case. This is done to prevent too many plots from being open
         at the time.
-        
+
         Args:
             fig_name: figure filename
             ax: Matplotlib axis
@@ -1615,12 +1615,12 @@ class RawData(object):
     def plot_simulated(self, fig_name=None, ax=None, vmax_plot=4.):  # pragma: no cover
         """Plot simulated I-V curve (from impedance recovery).
 
-        Note: If ``fig_name`` is provided, this method will save the plot 
+        Note: If ``fig_name`` is provided, this method will save the plot
         to the specified folder and then close the plot. This means
         that the Matplotlib axis object will not be returned in this
-        case. This is done to prevent too many plots from being open 
+        case. This is done to prevent too many plots from being open
         at the time.
-        
+
         Args:
             fig_name: figure filename
             ax: Matplotlib axis
@@ -1698,18 +1698,18 @@ class RawData(object):
 
     def plot_all(self, fig_folder, file_struc=None, **kw):  # pragma: no cover
         """Plot all pumped data and save to specified directory.
-        
-        This method will call the following methods: ``plot_iv``, 
-        ``plot_ivif``, ``plot_error_surface``, ``plot_simulated``, 
+
+        This method will call the following methods: ``plot_iv``,
+        ``plot_ivif``, ``plot_error_surface``, ``plot_simulated``,
         ``plot_simulated``, ``plot_noise_temp``, and ``plot_gain_noise_temp``.
 
-        The plots generated by the different methods will be placed in 
+        The plots generated by the different methods will be placed in
         different sub-directories. This is set by the ``file_struc`` argument.
-        This argument is a dictionary with the following keys: 
-        ``'Pumped IV data'``, ``'IF data'``, ``'Impedance recovery'``, and 
-        ``'Noise temperature'``. Set ``file_struc`` to an empty string ("") if 
+        This argument is a dictionary with the following keys:
+        ``'Pumped IV data'``, ``'IF data'``, ``'Impedance recovery'``, and
+        ``'Noise temperature'``. Set ``file_struc`` to an empty string ("") if
         you want all the figures to go into ``fig_folder``.
-                
+
         Args:
             fig_folder (str): folder where the figures go
             file_struc (dict): dictionary listing all the sub-folders
@@ -1773,7 +1773,7 @@ class RawData(object):
 
 def plot_if_spectrum(data_folder, fig_folder=None, figsize=None):  # pragma: no cover
     """Plot all IF spectra within data_folder.
-        
+
     Args:
         data_folder: data folder
         fig_folder: figure folder
@@ -1842,9 +1842,9 @@ def plot_overall_results(dciv, data_list, fig_folder, vmax_plot=4.,
                          figsize=None, tn_max=None,
                          f_range=None):  # pragma: no cover
     """Plot all results.
-    
-    This function is somewhat messy, but it will take in a list of RawData 
-    class instances, and plot the overall figures of merit (e.g., noise 
+
+    This function is somewhat messy, but it will take in a list of RawData
+    class instances, and plot the overall figures of merit (e.g., noise
     temperature vs LO frequency).
 
     Args:
@@ -1902,7 +1902,7 @@ def plot_overall_results(dciv, data_list, fig_folder, vmax_plot=4.,
     gain = np.array(gain)
     v = np.array(v)
 
-    # For normalizing data 
+    # For normalizing data
     mv = dciv.vgap * 1e3
     ua = dciv.igap * 1e6
     imax_plot = np.interp(vmax_plot, dciv.voltage * mv, dciv.current * ua)
@@ -2157,9 +2157,9 @@ def _error_function(vwi, zwi, zs):
 
     Equation 26 from:
 
-        S. Withington, K. G. Isaak, S. Kovtonyuk, R. Panhuyzen, and T. M. 
-        Klapwijk, "Direct detection at submillimetre wavelengths using 
-        superconducting tunnel junctions," Infrared Phys. Technol., vol. 36, 
+        S. Withington, K. G. Isaak, S. Kovtonyuk, R. Panhuyzen, and T. M.
+        Klapwijk, "Direct detection at submillimetre wavelengths using
+        superconducting tunnel junctions," Infrared Phys. Technol., vol. 36,
         no. 7, pp. 1059-1075, Dec. 1995.
 
     """
@@ -2176,9 +2176,9 @@ def _find_source_voltage(vwi, zwi, zs):
 
     Equation 27 from:
 
-        S. Withington, K. G. Isaak, S. Kovtonyuk, R. Panhuyzen, and T. M. 
-        Klapwijk, "Direct detection at submillimetre wavelengths using 
-        superconducting tunnel junctions," Infrared Phys. Technol., vol. 36, 
+        S. Withington, K. G. Isaak, S. Kovtonyuk, R. Panhuyzen, and T. M.
+        Klapwijk, "Direct detection at submillimetre wavelengths using
+        superconducting tunnel junctions," Infrared Phys. Technol., vol. 36,
         no. 7, pp. 1059-1075, Dec. 1995.
 
     """
@@ -2190,7 +2190,7 @@ def _find_source_voltage(vwi, zwi, zs):
 
 
 def _find_ac_current(resp, vb, vph, alpha, num_b=20, **kw):
-    """Calculate AC tunneling current. 
+    """Calculate AC tunneling current.
 
     This is the large-signal equation from Tucker theory.
 
@@ -2238,7 +2238,7 @@ def _find_alpha(dciv, vdc_exp, idc_exp, vph, alpha_max=1.5, num_b=20, **kw):
 
     # Refine alpha using an iterative technique
     alpha_step = alpha_max / 4.
-    for it in range(15):
+    for _ in range(15):
         idc_tmp = _find_pumped_iv_curve(resp, vdc_exp, vph, alpha, num_b=num_b, **kw)
         idc_err_tmp = idc_tmp - idc_exp
 
@@ -2255,8 +2255,8 @@ def _find_alpha(dciv, vdc_exp, idc_exp, vph, alpha_max=1.5, num_b=20, **kw):
 
 def initialize_dir(fig_folder):  # pragma: no cover
     """Initialize a new directory for storing results.
-    
-    If you use either 
+
+    If you use either
 
     Args:
         fig_folder: desired location
@@ -2278,24 +2278,24 @@ def initialize_dir(fig_folder):  # pragma: no cover
 def _get_freq_from_filename(file_path):
     """Get frequency from filename.
 
-    This is used by the ``RawData`` class if a frequency is not provided 
-    as an argument. 
+    This is used by the ``RawData`` class if a frequency is not provided
+    as an argument.
 
-    Note: 
-        
+    Note:
+
         This function assumes that the only numbers in the filename are there
         to represent the frequency. E.g., ``f230_0_iv.csv`` will be analyzed as
-        230.0 GHz, but ``f230_0_iv12.csv`` will be analyzed as 230.012 GHz. 
+        230.0 GHz, but ``f230_0_iv12.csv`` will be analyzed as 230.012 GHz.
         More importantly, ``no15_f230_iv.csv`` will be analyzed as 152.30 GHz.
-        This function also assumes that the first digit in the file name 
-        represents the hundreds (x100), so to represent a frequency below 
+        This function also assumes that the first digit in the file name
+        represents the hundreds (x100), so to represent a frequency below
         100 GHz, you should use a leading zero. E.g., 85 GHz should be saved as
         ``f085_0_iv.csv``, or something along those lines.
 
     Args:
         file_path: file path
 
-    Returns: 
+    Returns:
         float: Frequency, in units [GHz]
 
     """
@@ -2313,15 +2313,15 @@ def _get_freq_from_filename(file_path):
 
 def _get_freq(freq, filepath):
     """Get frequency.
-    
-    If ``freq`` is not ``None``, return ``freq``. Otherwise, if ``freq`` is 
-    ``None``, try to get it from the filename (see 
+
+    If ``freq`` is not ``None``, return ``freq``. Otherwise, if ``freq`` is
+    ``None``, try to get it from the filename (see
     ``_get_freq_from_filename()`` function).
-    
-    Also, return the frequency as a string, so that it can be used to name 
-    output files. But, replace periods with underscores. For example, 
+
+    Also, return the frequency as a string, so that it can be used to name
+    output files. But, replace periods with underscores. For example,
     represent a frequency of 230.0 GHz as ``230_0``.
-    
+
     Args:
         freq: frequency, in units GHz
         filepath: filename of pumped I-V data

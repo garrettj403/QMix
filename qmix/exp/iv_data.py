@@ -1,16 +1,16 @@
-"""This sub-module contains functions for importing and analyzing 
+"""This sub-module contains functions for importing and analyzing
 experimental current-voltage (I-V) data.
 
 "I-V data" is the DC tunneling current versus DC bias voltage that is measured
 from an SIS junction. In general, the term "DC I-V data" is used for I-V data
 that is collected with no local-oscillator (LO) injection, and "I-V data" is
-used for I-V data that is collected with LO injection (also known as the 
+used for I-V data that is collected with LO injection (also known as the
 "pumped I-V curve").
 
 Note:
-    
-    The I-V data is expected either in the form of a CSV file or a Numpy 
-    array. Either way the data should have two columns: the first for voltage 
+
+    The I-V data is expected either in the form of a CSV file or a Numpy
+    array. Either way the data should have two columns: the first for voltage
     and the second for current.
 
 """
@@ -43,9 +43,9 @@ DCIVData.__doc__ = """\
 Struct for DC I-V curve metadata.
 
 Args:
-    vraw (ndarray): DC bias voltage in units [V]. This data has been filtered 
+    vraw (ndarray): DC bias voltage in units [V]. This data has been filtered
         and the offset has been corrected.
-    iraw (ndarray): DC tunneling current in units [A]. This data has been 
+    iraw (ndarray): DC tunneling current in units [A]. This data has been
         filtered and the offset has been corrected.
     vnorm (ndarray): DC bias voltage, normalized to the gap voltage.
     inorm (ndarray): DC tunneling current, normalized to the gap current.
@@ -71,7 +71,7 @@ def dciv_curve(ivdata, **kwargs):
     Args:
         ivdata: DC I-V data. Either a CSV data file or a Numpy array. The data
             should have two columns: the first for voltage, and the second
-            for current. If you are using CSV files, the properties of 
+            for current. If you are using CSV files, the properties of
             the CSV file can be set through additional keyword arguments.
             (See below).
 
@@ -88,9 +88,9 @@ def dciv_curve(ivdata, **kwargs):
         ioffset (float): Current offset, in units [A].
         voffset_range (list): Voltage range over which to search for offset,
             in units [V].
-        voffset_sigma (float): Standard deviation of Gaussian filter when 
+        voffset_sigma (float): Standard deviation of Gaussian filter when
             searching for offset.
-        rseries (float): Series resistance in experimental measurement 
+        rseries (float): Series resistance in experimental measurement
             system, in units [ohms].
         i_multiplier (float): Multiply the imported current by this value.
         v_multiplier (float): Multiply the imported voltage by this value.
@@ -99,18 +99,18 @@ def dciv_curve(ivdata, **kwargs):
             normalize while filtering. Given in units [V].
         igap_guess (float): Guess of gap current. Used to temporarily
             normalize while filtering. Given in units [A].
-        filter_theta (float): Angle by which to the rotate data while 
+        filter_theta (float): Angle by which to the rotate data while
             filtering. Given in radians.
         filter_nwind (int): Window size for Savitsky-Golay filter.
         filter_npoly (int): Order of Savitsky-Golay filter.
         vgap_threshold (float): The current to measure the gap voltage at.
-        vrn (list): Voltage range over which to calculate the normal 
+        vrn (list): Voltage range over which to calculate the normal
             resistance, in units [V]
-        rn_vmin (float): Lower voltage range to determine the normal 
+        rn_vmin (float): Lower voltage range to determine the normal
             resistance, in units [V] (DEPRECATED)
-        rn_vmax (float): Upper voltage range to determine the normal 
+        rn_vmax (float): Upper voltage range to determine the normal
             resistance, in units [V] (DEPRECATED)
-        vrsg (float): The voltage at which to calculate the subgap 
+        vrsg (float): The voltage at which to calculate the subgap
             resistance.
         vleak (float): The voltage at which to calculate the subgap leakage
             current.
@@ -151,7 +151,7 @@ def dciv_curve(ivdata, **kwargs):
         plt.grid()
         plt.title('After correcting for the offset')
         plt.show()
-        
+
     # Filter I-V data
     volt_v, curr_a = _filter_iv_data(volt_v, curr_a, **kwargs)
 
@@ -215,10 +215,10 @@ def iv_curve(ivdata, dc, **kwargs):
     Args:
         ivdata: I-V data. Either a CSV data file or a Numpy array. The data
             should have two columns: the first for voltage, and the second
-            for current. If you are using a CSV file, the properties of 
+            for current. If you are using a CSV file, the properties of
             the CSV file can be set through additional keyword arguments
             (see below).
-        dc (qmix.exp.iv_data.DCIVData): DC I-V data metadata. Generated 
+        dc (qmix.exp.iv_data.DCIVData): DC I-V data metadata. Generated
             previously by ``dciv_curve``.
 
     Keyword Args:
@@ -234,9 +234,9 @@ def iv_curve(ivdata, dc, **kwargs):
         ioffset (float): Current offset, in units [A].
         voffset_range (list): Voltage range over which to search for offset,
             in units [V].
-        voffset_sigma (float): Standard deviation of Gaussian filter when 
+        voffset_sigma (float): Standard deviation of Gaussian filter when
             searching for offset.
-        rseries (float): Series resistance in experimental measurement 
+        rseries (float): Series resistance in experimental measurement
             system, in units [ohms].
         i_multiplier (float): Multiply the imported current by this value.
         v_multiplier (float): Multiply the imported voltage by this value.
@@ -245,7 +245,7 @@ def iv_curve(ivdata, dc, **kwargs):
             normalize while filtering. Given in units [V].
         igap_guess (float): Guess of gap current. Used to temporarily
             normalize while filtering. Given in units [A].
-        filter_theta (float): Angle by which to the rotate data while 
+        filter_theta (float): Angle by which to the rotate data while
             filtering. Given in radians.
         filter_nwind (int): Window size for Savitsky-Golay filter.
         filter_npoly (int): Order of Savitsky-Golay filter.
@@ -386,8 +386,8 @@ def _filter_iv_data(volt_v, curr_a, **kw):
 
     This is similar to the technique described in:
 
-        P. K. Grimes, S. Withington, G. Yassin, and P. Kittara, “Quantum 
-        multitone simulations of saturation in SIS mixers,” in Millimeter and
+        P. K. Grimes, S. Withington, G. Yassin, and P. Kittara, "Quantum
+        multitone simulations of saturation in SIS mixers," in Millimeter and
         Submillimeter Detectors for Astronomy II, 2004, vol. 5498, p. 158-167.
 
     Args:
@@ -573,11 +573,11 @@ def _find_normal_resistance(volt_v, curr_a, **kw):
         curr_a (ndarray): current, in A
 
     Keyword Args:
-        vrn (list): Voltage range over which to calculate the normal 
+        vrn (list): Voltage range over which to calculate the normal
             resistance, in units [V]
-        rn_vmin (float): Lower voltage range to determine the normal 
+        rn_vmin (float): Lower voltage range to determine the normal
             resistance, in units [V] (DEPRECATED)
-        rn_vmax (float): Upper voltage range to determine the normal 
+        rn_vmax (float): Upper voltage range to determine the normal
             resistance, in units [V] (DEPRECATED)
 
     Returns:

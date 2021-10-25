@@ -1,7 +1,7 @@
-""" This sub-module contains functions to generate the Kramers-Kronig 
+""" This sub-module contains functions to generate the Kramers-Kronig
 transform of DC I-V data.
 
-Used to find the real component of the response function from the DC I-V 
+Used to find the real component of the response function from the DC I-V
 curve.
 
 """
@@ -13,7 +13,7 @@ from scipy.signal import hilbert
 def kk_trans(v, i, n=50):
     """Calculate the Kramers-Kronig transform from DC I-V data.
 
-    Note: 
+    Note:
 
         Voltage spacing must be constant!
 
@@ -40,18 +40,18 @@ def kk_trans(v, i, n=50):
 
 
 def kk_trans_trapz(v, i):
-    """Calculate the Kramers-Kronig transform using a simple trapezoidal 
+    """Calculate the Kramers-Kronig transform using a simple trapezoidal
     summation.
 
     This function isn't used anymore, but it is nice to use it to
     compare against qmix.mathfn.kktrans.kk_trans.
 
-    Note: 
+    Note:
 
         Voltage spacing must be constant!
 
-    This function is (much!) slower than the Hilbert transform version (i.e., 
-    qmix.mathfn.kktrans.kk_trans). It also has problems with how it is 
+    This function is (much!) slower than the Hilbert transform version (i.e.,
+    qmix.mathfn.kktrans.kk_trans). It also has problems with how it is
     calculated around the singularity.
 
     Args:

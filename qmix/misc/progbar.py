@@ -1,4 +1,4 @@
-""" This sub-module contains a function for printing a progress bar to the 
+""" This sub-module contains a function for printing a progress bar to the
 terminal.
 
 Taken from:

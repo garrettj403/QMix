@@ -10,7 +10,7 @@ def gauss_conv(x, sigma=10, ext_x=3):
 
     Args:
         x (ndarray): noisy data
-        sigma (float): std. dev. of Gaussian curve, given as number of data 
+        sigma (float): std. dev. of Gaussian curve, given as number of data
                        points
         ext_x (float): Gaussian curve will extend from ext_x * sigma in each
                        direction
@@ -35,8 +35,8 @@ def gauss_conv(x, sigma=10, ext_x=3):
 
 
 def _gauss(sigma, n_sigma=3):
-    """Generate a discrete, normalized Gaussian centered on zero. 
-    
+    """Generate a discrete, normalized Gaussian centered on zero.
+
     Used for filtering data.
 
     Args:

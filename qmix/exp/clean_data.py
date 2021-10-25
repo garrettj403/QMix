@@ -24,8 +24,7 @@ def remove_nans_xy(x, y):
 
     """
 
-    mask = np.invert(np.isnan(x)) & \
-           np.invert(np.isnan(y))
+    mask = np.invert(np.isnan(x)) & np.invert(np.isnan(y))
 
     return x[mask], y[mask]
 
@@ -114,21 +113,20 @@ def xy_to_matrix(x, y):
 # Basic functions to clean x/y data in matrix form ---------------------------
 # Assuming that the matrix is in 2-column form
 
-def remove_nans_matrix(matrix):
+def remove_nans_matrix(mat):
     """Remove all NaN values data from a matrix
 
     Args:
-        matrix (ndarray): 2-column matrix
+        mat (ndarray): 2-column matrix
 
     Returns:
         2-column matrix with NaNs removed
 
     """
 
-    mask = np.invert(np.isnan(matrix[:, 0])) & \
-           np.invert(np.isnan(matrix[:, 1]))
+    mask = np.invert(np.isnan(mat[:, 0])) & np.invert(np.isnan(mat[:, 1]))
 
-    return matrix[mask]
+    return mat[mask]
 
 
 def sort_matrix(matrix, col=0):
@@ -156,7 +154,7 @@ def remove_doubles_matrix(matrix, col=0, check=True):
         col: column to remove doubles from (default 0)
         check (bool): check that x data is sorted
 
-    Returns: 
+    Returns:
         2-column matrix with double values of given column removed
 
     """

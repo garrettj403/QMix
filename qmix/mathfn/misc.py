@@ -1,4 +1,4 @@
-""" This sub-module contains various mathematical functions that do various 
+""" This sub-module contains various mathematical functions that do various
 things, variously.
 
 """
@@ -9,7 +9,7 @@ import numpy as np
 def slope(x, y):
     """ Take a simple derivative, dy/dx.
 
-    The derivative is centered and it has the same number of points as the 
+    The derivative is centered and it has the same number of points as the
     original x/y data.
 
     Args:
@@ -37,10 +37,10 @@ def slope(x, y):
 def slope_span_n(x, y, n=11, nozeros=True):
     """Simple derivative, except the derivative is over a -N/2 to N/2 span.
 
-    This helps with noisy data. 
+    This helps with noisy data.
 
     This function also deletes zero values since the results of this
-    function are usually used to divide other values (i.e., to avoid div. 0 
+    function are usually used to divide other values (i.e., to avoid div. 0
     errors).
 
     Args:

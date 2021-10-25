@@ -1,6 +1,6 @@
 """ This sub-module contains DC I-V curve models.
 
-These models range from simple (e.g., 'perfect' and 'polynomial') to 
+These models range from simple (e.g., 'perfect' and 'polynomial') to
 complex (e.g., 'exponential' and 'expanded').
 
 """
@@ -13,12 +13,12 @@ import numpy as np
 def perfect(voltage):
     """Generate a perfect I-V curve.
 
-    This is the ideal I-V curve. The current is equal to 0 when the normalized 
+    This is the ideal I-V curve. The current is equal to 0 when the normalized
     bias voltage is less than 1, equal to 0.5 when the normalized bias voltage
     is equal to 1, and equal to the normalized bias voltage otherwise.
-    
-    The current and voltage are normalized to Igap and Vgap, respectively, 
-    where Igap=Vgap/Rn is the gap current, Vgap is the gap voltage, and Rn is 
+
+    The current and voltage are normalized to Igap and Vgap, respectively,
+    where Igap=Vgap/Rn is the gap current, Vgap is the gap voltage, and Rn is
     the normal resistance.
 
     Args:
@@ -62,7 +62,7 @@ def perfect_kk(voltage, max_kk=100.):
     """
 
     if isinstance(voltage, np.ndarray):
-    
+
         kk = np.empty_like(voltage, dtype=float)
 
         mask = np.abs(voltage) != 1.
@@ -102,7 +102,7 @@ def polynomial(voltage, order=50):
 
 
 def exponential(voltage, vgap=2.8e-3, rn=14., rsg=300., agap=4e4, model='fixed'):
-    """The exponential I-V curve model that is used in some papers from 
+    """The exponential I-V curve model that is used in some papers from
     Chalmers.
 
     From Rashid et al. (2016) [see full references in online docs].
@@ -112,8 +112,8 @@ def exponential(voltage, vgap=2.8e-3, rn=14., rsg=300., agap=4e4, model='fixed')
           subgap resistance that is half the value that it is supposed to be.
         - The normal resistance will also be slightly lower than it is
           supposed to be.
-        - I fixed this model. This model can be selected by setting 
-          ``model='fixed'``. The original model can be selected by 
+        - I fixed this model. This model can be selected by setting
+          ``model='fixed'``. The original model can be selected by
           setting ``model='original'``.
 
 
@@ -167,8 +167,8 @@ def expanded(voltage, vgap=2.8e-3, rn=14., rsg=5e2, agap=4e4, a0=1e4,
              ileak=5e-6, vnot=2.85e-3, inot=1e-5, anot=2e4, ioff=1e-5):
     """My "expanded" I-V curve model.
 
-    This model is based on the exponential I-V curve model, but I have added 
-    the ability to include leakage current, the proximity effect, the onset of 
+    This model is based on the exponential I-V curve model, but I have added
+    the ability to include leakage current, the proximity effect, the onset of
     thermal tunnelling, and the reduced current amplitude often seen
     above the gap. It is able to recreate experimental data very well, but it
     is very complex.

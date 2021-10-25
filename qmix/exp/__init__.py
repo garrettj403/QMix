@@ -1,4 +1,4 @@
-""" This sub-package contains functions for importing and analyzing 
+""" This sub-package contains functions for importing and analyzing
 experimental data. """
 
 from qmix.exp.exp_data import (RawData, RawData0,

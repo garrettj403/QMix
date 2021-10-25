@@ -4,18 +4,18 @@ SIS junction.
 There are several different types of response function classes:
 
    - Response functions generated directly from I-V data:
-   
-      - ``RespFn``: This is the base class for all of the other response 
-        function classes. This class will generate a response function 
-        based on a DC I-V curve (i.e., DC voltage and current data). Note that 
-        this class assumes that you have "pre-processed" the data. This means 
+
+      - ``RespFn``: This is the base class for all of the other response
+        function classes. This class will generate a response function
+        based on a DC I-V curve (i.e., DC voltage and current data). Note that
+        this class assumes that you have "pre-processed" the data. This means
         that it will use the voltage and current data to generate the
-        interpolation directly. Normally, you want to have more data points 
-        around curvier regions in order to minimize how much time the 
+        interpolation directly. Normally, you want to have more data points
+        around curvier regions in order to minimize how much time the
         interpolation takes. If you haven't done this, it is a good idea to use
         ``RespFnFromIVData`` instead.
 
-      - ``RespFnFromIVData``: This class will generate a response function 
+      - ``RespFnFromIVData``: This class will generate a response function
         based on a DC I-V curve (i.e., DC voltage and current data). Unlike
         ``RespFn``, this class will resample the response function in order to
         optimize the interpolation.
@@ -27,17 +27,17 @@ There are several different types of response function classes:
         below the gap voltage and exactly equal to the bias voltage above the
         gap, assuming normalized values). This DC I-V curve has an infinitely
         sharp transition. Note however that you can smear the transition using
-        the ``v_smear`` argument. This will convolve the ideal reasponse 
-        function with a Gaussian distribution, allowing you to control the 
+        the ``v_smear`` argument. This will convolve the ideal reasponse
+        function with a Gaussian distribution, allowing you to control the
         sharpness of the transition.
 
-      - ``RespFnPolynomial``: This class will generate a response function 
+      - ``RespFnPolynomial``: This class will generate a response function
         based on the polynomial model from Kennedy (1999). The order of the
         polynomial controls the sharpness of the transition, so this class can
-        be used to simulate the effect of the transition's sharpness (e.g., 
+        be used to simulate the effect of the transition's sharpness (e.g.,
         how does the gain change when the gap is more or less sharp?).
-        
-      - ``RespFnExponential``: This class will generate a response function 
+
+      - ``RespFnExponential``: This class will generate a response function
         based on the exponential model from Rashid *et al.* (2016). This model
         is very similar to ``RespFnPolynomial``, except that you can include a
         leakage current (i.e., a finite subgap resistance).
@@ -123,7 +123,7 @@ class RespFn(object):
     in the linear regions. Sampling in this way helps the interpolation run
     as quick as possible.
 
-    If you have not "pre-processed" your data, please use 
+    If you have not "pre-processed" your data, please use
     ``RespFnFromIVData``.
 
     Args:
@@ -132,16 +132,16 @@ class RespFn(object):
 
     Keyword Args:
         verbose (bool, default is True): print info to terminal?
-        max_npts_dc (int, default is 101): maximum number of points in DC I-V 
+        max_npts_dc (int, default is 101): maximum number of points in DC I-V
             curve
-        max_npts_kk (int, default is 151): maximum number of points in KK 
+        max_npts_kk (int, default is 151): maximum number of points in KK
             transform
         max_interp_error (float, default is 0.001): maximum interpolation error
             (in units of normalized current)
         check_error (bool, default is False): check interpolation error?
         v_smear (float, default is None): smear DC I-V curve by convolving with
             a Gaussian dist. with this std. dev.
-        kk_n (int, default is 50): padding for Hilbert transform 
+        kk_n (int, default is 50): padding for Hilbert transform
             (see ``qmix.mathfn.kktrans.kk_trans``)
         spline_order (int, default is 3): spline order for interpolations
 
@@ -172,7 +172,7 @@ class RespFn(object):
         # Smear DC I-V curve (optional)
         if params['v_smear'] is not None:
             v_step = voltage[1] - voltage[0]
-            current = gauss_conv(current - voltage, 
+            current = gauss_conv(current - voltage,
                                  sigma=params['v_smear'] / v_step) + voltage
             if params['verbose']:
                 print(" - Voltage smear: {:.4f}".format(params['v_smear']))
@@ -212,22 +212,22 @@ class RespFn(object):
 
         This can be used to check the interpolation of the response function.
         (Mostly just a sanity check.)
-        
-        Note: If ``fig_name`` is provided, this method will save the plot 
+
+        Note: If ``fig_name`` is provided, this method will save the plot
         to the specified folder and then close the plot. This means
         that the Matplotlib axis object will not be returned in this
-        case. This is done to prevent too many plots from being open 
+        case. This is done to prevent too many plots from being open
         at the time.
 
         Args:
-            fig_name (str, default is None): name of figure file name, if you 
+            fig_name (str, default is None): name of figure file name, if you
                 wish to save
-            ax (matplotlib.axes.Axes, default is None): figure axis, if you 
+            ax (matplotlib.axes.Axes, default is None): figure axis, if you
                 would like to add to an existing figure
 
         Returns:
             matplotlib.axes.Axes: figure axis
-            
+
         """
 
         # Figure labels
@@ -321,13 +321,13 @@ class RespFn(object):
         This can be used to check the interpolation of the response function.
         (Mostly just a sanity check.)
 
-        Note: If ``fig_name`` is provided, this method will save the plot 
+        Note: If ``fig_name`` is provided, this method will save the plot
         to the specified folder and then close the plot. This means
         that the Matplotlib axis object will not be returned in this
-        case. This is done to prevent too many plots from being open 
+        case. This is done to prevent too many plots from being open
         at the time.
 
-        Warning: 
+        Warning:
 
             This function is deprecated. Please use ``plot_interpolation``
             instead. I renamed this function to be more consistent across
@@ -459,9 +459,9 @@ class RespFn(object):
         return self._f_ikk(vbias) - 1j * self._f_idc(vbias)
 
     def resp_swap(self, vbias):
-        """Interpolate the response function, with the real and imaginary 
+        """Interpolate the response function, with the real and imaginary
         components swapped.
-        
+
         Note:
 
             This method is not used directly by QMix, but it can be useful if
@@ -477,7 +477,7 @@ class RespFn(object):
             vbias (ndarray): Bias voltage (normalized)
 
         Returns:
-            ndarray: Response function with the real and imaginary components 
+            ndarray: Response function with the real and imaginary components
                 swapped
 
         """
@@ -552,7 +552,7 @@ class RespFnFromIVData(RespFn):
 class RespFnPolynomial(RespFn):
     """Response function based on the polynomial I-V curve model.
 
-    This model is from Kennedy (1999). The order of the polynomial 
+    This model is from Kennedy (1999). The order of the polynomial
     (``p_order``) controls the sharpness of the non-linearity.
 
     See ``qmix.mathfn.ivcurve_models.polynomial`` for the model.
@@ -594,7 +594,7 @@ class RespFnPolynomial(RespFn):
 class RespFnExponential(RespFn):
     """Response function based on the exponential I-V curve model.
 
-    This model is from Rashid *et al.* (2016). Through this model you can 
+    This model is from Rashid *et al.* (2016). Through this model you can
     set the sharpness of the non-linearity *and* the subgap resistance.
 
     See ``qmix.mathfn.ivcurve_models.exponential`` for the model.
@@ -639,7 +639,7 @@ class RespFnExponential(RespFn):
 class RespFnPerfect(RespFn):
     """Response function based on the perfect I-V curve model.
 
-    The perfect I-V curve has zero subgap current below the transition, and 
+    The perfect I-V curve has zero subgap current below the transition, and
     a current exactly equal to ``vb * Rn``, where ``vb`` is the bias voltage
     and ``Rn`` is the normal resistance, above the transition.
 
@@ -701,8 +701,7 @@ class RespFnPerfect(RespFn):
             tmp[idx] = 1.
 
             v_step = voltage[1] - voltage[0]
-            current = gauss_conv(tmp, sigma=params['v_smear']/v_step) + \
-                      iv.perfect(voltage)
+            current = gauss_conv(tmp, sigma=params['v_smear']/v_step) + iv.perfect(voltage)
             if params['verbose']:
                 print(" - Voltage smear: {:.4f}".format(params['v_smear']))
 
