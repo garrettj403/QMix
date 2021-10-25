@@ -17,6 +17,7 @@
 qmix/exp/hfss_data.py
 
 bin/
+dev/
 misc/ 
 my-projects/
 old/
@@ -34,3 +35,5 @@ docs/source/multi-tone-simulation.ipynb
 docs/source/single-tone-simulation.ipynb
 
 Makefile
+
+TODO.md
