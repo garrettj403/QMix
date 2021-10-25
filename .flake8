@@ -1,4 +1,4 @@
 [flake8]
 filename = *.py
 max-line-length = 120
-extend-ignore=E221,E222,E251,E741,E201
+extend-ignore=E221,E222,E251,E741,E201,F401
