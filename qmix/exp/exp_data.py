@@ -658,8 +658,6 @@ class PumpedData(object):
         ioffset (float): Current offset, in units [A].
         voffset_range (float): Voltage range over which to search for offset,
             in units [V].
-        voffset_sigma (float): Standard deviation of Gaussian filter when
-            searching for offset.
         rseries (float): Series resistance in experimental measurement
             system, in units [ohms].
         i_multiplier (float): Multiply the imported current by this value.

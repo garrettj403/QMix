@@ -21,6 +21,7 @@ from warnings import filterwarnings
 import matplotlib.pyplot as plt
 import numpy as np
 import scipy.constants as sc
+from scipy.optimize import minimize
 from scipy.signal import savgol_filter
 
 from qmix.exp.clean_data import remove_doubles_xy, remove_nans_xy, sort_xy
@@ -517,7 +518,9 @@ def _take_one_pass(v, i):
 def _correct_offset(volt_v, curr_a, **kw):
     """Find and correct any I/V offset.
 
-    The experimental data often has an offset in both V and I.
+    The experimental data often has an offset in both V and I. To correct for
+    this, you can reflect the I-V data and find the offsets that make the
+    reflected and non-reflected data overlap.
 
     Args:
         volt_v (ndarray): voltage, in V
@@ -528,7 +531,6 @@ def _correct_offset(volt_v, curr_a, **kw):
         ioffset: current offset, in A
         voffset_range (list): Voltage range over which to search for offset,
             in units [V].
-        voffset_sigma: std dev of Gaussian filter when searching for offset
 
     Returns:
         tuple: corrected voltage, corrected current, I/V offset
@@ -537,36 +539,46 @@ def _correct_offset(volt_v, curr_a, **kw):
 
     # Unpack keyword arguments
     voffset_range = kw.get('voffset_range', PARAMS['voffset_range'])
-    voffset_sigma = kw.get('voffset_sigma', PARAMS['voffset_sigma'])
     voffset = kw.get('voffset', PARAMS['voffset'])
     ioffset = kw.get('ioffset', PARAMS['ioffset'])
 
-    if voffset is None:  # Find voffset and ioffset
+    if voffset is None:
+        voffset = 0
+    if ioffset is None:
+        ioffset = 0
 
-        # Search over a limited voltage range
-        if isinstance(voffset_range, tuple):
-            mask = (voffset_range[0] < volt_v) & (volt_v < voffset_range[1])
-        else:  # if int or float
-            mask = (-voffset_range < volt_v) & (volt_v < voffset_range)
-        v = volt_v[mask]
-        i = curr_a[mask]
+    # See if data is unipolar or bipolar
+    # i.e., does the bias voltage sweep from negative to positive values?
+    bipolar = (volt_v.min() < voffset_range[0]) & (voffset_range[1] < volt_v.max())
+    if not bipolar:
+        # Can't do much in this case
+        # Correct for the offset
+        volt_v -= voffset
+        curr_a -= ioffset
+        return volt_v, curr_a, (voffset, ioffset)
 
-        # Find derivative of I-V curve
-        vstep = v[1] - v[0]
-        sigma = voffset_sigma / vstep
-        der = slope(v, i)
-        der_smooth = gauss_conv(der, sigma=sigma)
+    # Take area around origin
+    mask = (voffset_range[0] <= volt_v) & (volt_v <= voffset_range[1])
+    volt_v_red, curr_a_red = volt_v[mask], curr_a[mask]
 
-        # Offset is at max derivative
-        idx = der_smooth.argmax()
-        voffset = v[idx]
-        # ioffset = np.interp(voffset, v, i)
-        ioffset = (np.interp(voffset - 0.1e-3, v, i) +
-                   np.interp(voffset + 0.1e-3, v, i)) / 2
+    # Offset model
+    def model(offset):
+        # I-V curve
+        vv1, ii1 = volt_v_red - offset[0], curr_a_red - offset[1]
+        # Flipped I-V curve
+        vv2, ii2 = -vv1[::-1], -ii1[::-1]
+        # Interpolate to common voltage
+        xx = np.linspace(voffset_range[0] / 2, voffset_range[1] / 2, 101)
+        yy1 = np.interp(xx, vv1, ii1)
+        yy2 = np.interp(xx, vv2, ii2)
+        # Find total error
+        return np.sum(np.abs(yy1 - yy2))
 
-    if ioffset is None:  # Find ioffset
-
-        ioffset = np.interp(voffset, volt_v, curr_a)
+    # Minimize to find I-V offsets
+    x0 = np.array([voffset, ioffset])
+    res = minimize(model, x0=x0)
+    voffset = res.x[0]
+    ioffset = res.x[1]
 
     # Correct for the offset
     volt_v -= voffset

@@ -55,13 +55,10 @@ values.
           units [A].
         - ``voffset = None`` : Offset of the DC bias voltage data in units
           [V].
-        - ``voffset_range = (-3e-4, 3e-4)`` : Voltage range over which to look
+        - ``voffset_range = (-5e-4, 5e-4)`` : Voltage range over which to look
           for the voltage offset in units [V]. The ``RawData0`` class will
           look from ``voffset_range[0]`` to ``+voffset_range[1]`` for the
           voltage offset.
-        - ``voffset_sigma = 1e-5`` : When looking for the voltage offset,
-          smooth the derivative of the DC I-V curve by convolving data with a
-          Gaussian distribution with this standard deviation.
     - Correcting experimental I-V data:
         - ``rseries = None`` : Correct for a series resistance in the DC
           measurement system using this resistance in units [ohms]. Leave as
@@ -193,8 +190,7 @@ params = dict(
               ioffset =        None,
               voffset =        None,
               # Find voltage offset automatically
-              voffset_range =  (-3e-4, 3e-4),
-              voffset_sigma =  1e-5,
+              voffset_range =  (-5e-4, 5e-4),
               # Correcting experimental I-V data
               rseries =        None,
               i_multiplier =   1.,
