@@ -190,7 +190,7 @@ params = dict(
               ioffset =        None,
               voffset =        None,
               # Find voltage offset automatically
-              voffset_range =  (-5e-4, 5e-4),
+              voffset_range =  (-1e-3, 1e-3),
               # Correcting experimental I-V data
               rseries =        None,
               i_multiplier =   1.,

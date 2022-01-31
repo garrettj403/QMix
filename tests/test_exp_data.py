@@ -21,8 +21,22 @@ extra_param = dict(vshot = (5.15e-3, 5.65e-3),
                    area = 1.5,
                    vgap_threshold = 105e-6, 
                    filter_data = True,
-                   filter_nwind = 21)
+                   filter_nwind = 21, 
+                   vrn = (3.5e-3, 4.5e-3))
 params = {**csv_param, **extra_param}
+
+
+def test_offset_correction(directory='tests/exp-data/'):
+    """Make sure that the offset algorithm corrects for the I/V offsets."""
+
+    dciv = qe.DCData(directory + 'dciv-data.csv',
+                      analyze=False, **params)
+
+    # Check offset values
+    voffset = dciv.offset[0] * 1e3
+    ioffset = dciv.offset[1] * 1e6
+    assert voffset == pytest.approx(0.10, abs=0.02)
+    assert ioffset == pytest.approx(9.72, abs=0.10)
 
 
 @pytest.mark.filterwarnings("ignore::FutureWarning")
@@ -180,9 +194,9 @@ def test_offset_methods():
     param = params.copy()
 
     # Automatic for voltage and current offset
-    param['voffset_range'] = 0.3e-3
+    param['voffset_range'] = 1e-3
     _, _, dc0 = iv.dciv_curve('tests/exp-data/dciv-data.csv', **param)
-    param['voffset_range'] = (-0.1e-3, 0.3e-3)
+    param['voffset_range'] = (-0.8e-3, 1e-3)
     _, _, dc1 = iv.dciv_curve('tests/exp-data/dciv-data.csv', **param)
 
     # Set voltage offset
@@ -206,11 +220,14 @@ def test_offset_methods():
 
 def test_try_importing_reflected_iv_data():
 
+    param = params.copy()
+    param['debug'] = True
+
     dciv_data = np.genfromtxt('tests/exp-data/dciv-data.csv', **csv_param)
     dciv_data.flags.writeable = False
 
-    v1, i1, dc1 = iv.dciv_curve(dciv_data, **params)
-    v2, i2, dc2 = iv.dciv_curve(dciv_data[::-1,:], **params)
+    v1, i1, dc1 = iv.dciv_curve(dciv_data, **param)
+    v2, i2, dc2 = iv.dciv_curve(dciv_data[::-1,:], **param)
 
     assert abs(dc1.vgap - dc2.vgap) < 0.05e-3
 
@@ -218,5 +235,11 @@ def test_try_importing_reflected_iv_data():
 # Main -----------------------------------------------------------------------
 
 if __name__ == "__main__":
-
+    
+    # test_offset_correction()
+    # test_importing_exp_data()
+    # test_dciv_importing_bad_units()
+    # test_try_loading_list()
+    # test_vgap_methods()
+    # test_offset_methods()
     test_try_importing_reflected_iv_data()

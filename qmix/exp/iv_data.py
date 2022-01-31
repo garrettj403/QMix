@@ -541,16 +541,19 @@ def _correct_offset(volt_v, curr_a, **kw):
     voffset_range = kw.get('voffset_range', PARAMS['voffset_range'])
     voffset = kw.get('voffset', PARAMS['voffset'])
     ioffset = kw.get('ioffset', PARAMS['ioffset'])
+    debug = kw.get('debug', PARAMS['debug'])
 
-    if voffset is None:
-        voffset = 0
-    if ioffset is None:
-        ioffset = 0
+    if isinstance(voffset_range, float) or isinstance(voffset_range, int):
+        voffset_range = [-voffset_range, voffset_range]
 
     # See if data is unipolar or bipolar
     # i.e., does the bias voltage sweep from negative to positive values?
     bipolar = (volt_v.min() < voffset_range[0]) & (voffset_range[1] < volt_v.max())
     if not bipolar:
+        if voffset is None:
+            voffset = 0
+        if ioffset is None:
+            ioffset = 0
         # Can't do much in this case
         # Correct for the offset
         volt_v -= voffset
@@ -573,6 +576,12 @@ def _correct_offset(volt_v, curr_a, **kw):
         yy2 = np.interp(xx, vv2, ii2)
         # Find total error
         return np.sum(np.abs(yy1 - yy2))
+
+    # Initial guess
+    if voffset is None:
+        voffset = 0
+    if ioffset is None:
+        ioffset = np.mean(curr_a_red)
 
     # Minimize to find I-V offsets
     x0 = np.array([voffset, ioffset])
@@ -606,23 +615,23 @@ def _find_normal_resistance(volt_v, curr_a, **kw):
     # Range of voltages over which to calculate the normal resistance
     vrn = kw.get('vrn', None)  # voltage range (list)
     if vrn is not None:
-        rn_vmin = vrn[0]
-        rn_vmax = vrn[1]
+        vmin = vrn[0]
+        vmax = vrn[1]
     else:
-        rn_vmin = 3e-3
-        rn_vmax = 1
+        vmin = 3e-3
+        vmax = 1
 
     # Range over which to fit normal resistance
-    mask = (rn_vmin < volt_v) & (volt_v < rn_vmax)
+    mask = (vmin < volt_v) & (volt_v < vmax)
     v, i = volt_v[mask], curr_a[mask]
 
     # Fit normal-state resistance
     p = np.polyfit(v, i, 1)
     rn_slope = p[0]
-    rn = 1 / rn_slope
-    vint = -p[1] / rn_slope
+    r_normal = 1 / rn_slope
+    v_intercept = -p[1] / rn_slope
 
-    return rn, vint
+    return r_normal, v_intercept
 
 
 def _find_gap_voltage(volt_v, curr_a, **kw):
