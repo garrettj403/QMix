@@ -66,15 +66,15 @@ _plot_params = {'dpi': 500, 'bbox_inches': 'tight'}
 
 # FILE HIERARCHY -------------------------------------------------------------
 
-_file_structure = {'DC IV data':          '01_dciv/',
-                   'Pumped IV data':      '02_iv_curves/',
-                   'IF data':             '03_if_data/',
-                   'Impedance recovery':  '04_impedance/',
-                   'IF noise':            '05_if_noise/',
-                   'Noise temperature':   '06_noise_temp/',
-                   'IF spectrum':         '07_spectrum/',
-                   'Overall performance': '08_overall_performance/',
-                   'CSV data':            '09_csv_data/'}
+_file_structure = {'DC IV data':          'results-dciv/',
+                   'Pumped IV data':      'results-iv-curves/',
+                   'IF data':             'results-if-data/',
+                   'Impedance recovery':  'results-impedance/',
+                   'IF noise':            'results-if-noise/',
+                   'Noise temperature':   'results-noise-temp/',
+                   'IF spectrum':         'results-if-spectrum/',
+                   'Overall performance': 'results/',
+                   'CSV data':            'results-csv/'}
 """Default file hierarchy to use when plotting experimental data."""
 
 
