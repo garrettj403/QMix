@@ -124,21 +124,26 @@ def dciv_curve(ivdata, **kwargs):
     # Use default values from qmix.exp.parameters if they aren't provided
     v_multiplier = kwargs.get('v_multiplier', PARAMS['v_multiplier'])
     i_multiplier = kwargs.get('i_multiplier', PARAMS['i_multiplier'])
+    filter_data = kwargs.get('filter_data', PARAMS['filter_data'])
     rseries = kwargs.get('rseries', PARAMS['rseries'])
     debug = kwargs.get('debug', PARAMS['debug'])
     vmax = kwargs.get('vmax', PARAMS['vmax'])
     npts = kwargs.get('npts', PARAMS['npts'])
 
-    # Import and do some basic cleaning (voltage in V, current in A)
+    # Import and do some basic cleaning (remove nans, sort by voltage, etc.)
+    # voltage in V, current in A
     volt_v, curr_a = _load_iv(ivdata, **kwargs)
 
     if debug:  # pragma: no cover
         plt.figure()
-        plt.plot(volt_v, curr_a)
-        plt.title('Initial import')
+        plt.plot(volt_v * 1e3, curr_a * 1e6)
+        plt.title('Initial import (raw data)')
+        plt.xlabel("Voltage (mV)")
+        plt.ylabel("Current (uA)")
+        plt.grid()
         plt.show()
 
-    # Correct for DC gain errors in experimental system (if needed)
+    # Correct for DC gain errors in experimental system (if required)
     volt_v *= v_multiplier
     curr_a *= i_multiplier
 
@@ -147,18 +152,23 @@ def dciv_curve(ivdata, **kwargs):
 
     if debug:  # pragma: no cover
         plt.figure()
-        plt.plot(volt_v, curr_a)
+        plt.plot(volt_v * 1e3, curr_a * 1e6)
+        plt.title('After correcting for the I/V offset')
+        plt.xlabel("Voltage (mV)")
+        plt.ylabel("Current (uA)")
         plt.grid()
-        plt.title('After correcting for the offset')
         plt.show()
 
     # Filter I-V data
     volt_v, curr_a = _filter_iv_data(volt_v, curr_a, **kwargs)
 
-    if debug:  # pragma: no cover
+    if debug and filter_data:  # pragma: no cover
         plt.figure()
-        plt.plot(volt_v, curr_a)
-        plt.title('After filtering')
+        plt.plot(volt_v * 1e3, curr_a * 1e6)
+        plt.title('After filtering I-V curve')
+        plt.xlabel("Voltage (mV)")
+        plt.ylabel("Current (uA)")
+        plt.grid()
         plt.show()
 
     # Save uncorrected data
@@ -169,9 +179,11 @@ def dciv_curve(ivdata, **kwargs):
 
     if debug:  # pragma: no cover
         plt.figure()
-        plt.plot(volt_v, curr_a)
+        plt.plot(volt_v * 1e3, curr_a * 1e6)
+        plt.title('After correcting for the series resistance')
+        plt.xlabel("Voltage (mV)")
+        plt.ylabel("Current (uA)")
         plt.grid()
-        plt.title('After fixing the series resistance')
         plt.show()
 
     # Analyze properties of DC I-V curve
@@ -505,9 +517,7 @@ def _take_one_pass(v, i):
 def _correct_offset(volt_v, curr_a, **kw):
     """Find and correct any I/V offset.
 
-    The experimental data often has an offset in both V and I. This can be
-    corrected by using the leakage current. This is found by looking at the
-    derivative and correcting based on where the peak of the derivative is.
+    The experimental data often has an offset in both V and I.
 
     Args:
         volt_v (ndarray): voltage, in V
