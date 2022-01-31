@@ -20,10 +20,10 @@ Getting Started
 The easiest way to install QMix is using ``pip``:
 
 ```bash
-# for latest release
+# for latest release (from PyPI)
 python -m pip install QMix
 
-# for latest commit
+# for latest commit (from GitHub)
 python -m pip install git+https://github.com/garrettj403/QMix.git
 ```
 
@@ -102,13 +102,13 @@ You can also cite a specific version of QMix by citing the appropriate Zenodo ar
 [![DOI3](https://img.shields.io/badge/DOI%203%3A-10.5281%2Fzenodo.2538162-blue)](https://doi.org/10.5281/zenodo.2538162)
 
     @article{Qmix3,
-      author       = {J. D. Garrett and G. Yassin},
-      title        = {{garrettj403/QMix  (Version v1.0.4)}},
-      month        = apr,
-      year         = 2019,
+      author       = {J. D. Garrett},
+      title        = {{QMix  (v1.0.6)}},
+      month        = jul,
+      year         = 2020,
       publisher    = {Zenodo},
-      doi          = {10.5281/zenodo.2640907},
-      url          = {http://doi.org/10.5281/zenodo.2640907}
+      doi          = {10.5281/zenodo.3936263},
+      url          = {http://doi.org/10.5281/zenodo.3936263}
     }
 
 License
