@@ -36,46 +36,46 @@ def test_importing_exp_data(directory='tests/exp-data/'):
 
     # Import DC data by passing file names -----------------------------------
 
-    dciv0 = qe.RawData0(directory+'dciv-data.csv', 
-                        directory+'dcif-data.csv',
-                        analyze=False, **params)
+    dciv0 = qe.DCData(directory + 'dciv-data.csv',
+                      directory +'dcif-data.csv',
+                      analyze=False, **params)
 
     # Import by passing Numpy arrays -----------------------------------------
 
     dciv_data = np.genfromtxt(directory+'dciv-data.csv', **csv_param)
     dcif_data = np.genfromtxt(directory+'dcif-data.csv', **csv_param)
-    dciv1 = qe.RawData0(dciv_data, dcif_data, **params)
+    dciv1 = qe.DCData(dciv_data, dcif_data, **params)
 
     # Import without defining vshot range ------------------------------------
 
     tmp_param = params.copy()
     tmp_param['vshot'] = None
-    dciv2 = qe.RawData0(directory+'dciv-data.csv', 
-                        directory+'dcif-data.csv',
-                        analyze=False, **tmp_param)
+    dciv2 = qe.DCData(directory + 'dciv-data.csv',
+                      directory +'dcif-data.csv',
+                      analyze=False, **tmp_param)
 
     # Check IF noise value when vshot range isn't defined
     assert abs(dciv1.if_noise - dciv2.if_noise) < 2
 
     # Import without DC IF file ----------------------------------------------
 
-    dciv3 = qe.RawData0(directory+'dciv-data.csv', 
-                        analyze=False, **params)
+    dciv3 = qe.DCData(directory + 'dciv-data.csv',
+                      analyze=False, **params)
 
     # Try including series resistance ----------------------------------------
 
-    dciv4 = qe.RawData0(directory+'dciv-data.csv', 
-                       directory+'dcif-data.csv',
-                       analyze=False, rseries=0.5, **params)
+    dciv4 = qe.DCData(directory + 'dciv-data.csv',
+                      directory +'dcif-data.csv',
+                      analyze=False, rseries=0.5, **params)
 
     # Try using lists (shouldn't work) ---------------------------------------
 
     with pytest.raises(ValueError):
-        dciv5 = qe.RawData0([1, 2, 3], analyze=False, **params)
+        dciv5 = qe.DCData([1, 2, 3], analyze=False, **params)
 
     with pytest.raises(ValueError):
-        dciv6 = qe.RawData0(directory+'dciv-data.csv',
-                            [1, 2, 3], analyze=False, **params)
+        dciv6 = qe.DCData(directory + 'dciv-data.csv',
+                          [1, 2, 3], analyze=False, **params)
 
     # Check some of the attributes -------------------------------------------
 
@@ -89,20 +89,20 @@ def test_importing_exp_data(directory='tests/exp-data/'):
 
     # Import pumped data by passing file name --------------------------------
 
-    pump1 = qe.RawData(directory+'f230_0_iv.csv', dciv1,
-                       directory+'f230_0_hot.csv',
-                       directory+'f230_0_cold.csv', 
-                       analyze_iv=False, **params)
+    pump1 = qe.PumpedData(directory + 'f230_0_iv.csv', dciv1,
+                          directory +'f230_0_hot.csv',
+                          directory +'f230_0_cold.csv',
+                          analyze_iv=False, **params)
 
     # Import without DC IF file information ----------------------------------
 
     # Without DC IF file
     tmp = params.copy()
     tmp['vshot'] = (5.05e-3, 5.5e-3)
-    pump2 = qe.RawData(directory+'f230_0_iv.csv', dciv3,
-                       directory+'f230_0_hot.csv',
-                       directory+'f230_0_cold.csv', 
-                       analyze_iv=False, **tmp)
+    pump2 = qe.PumpedData(directory + 'f230_0_iv.csv', dciv3,
+                          directory +'f230_0_hot.csv',
+                          directory +'f230_0_cold.csv',
+                          analyze_iv=False, **tmp)
     assert abs(pump1.if_noise - pump2.if_noise) < 3
 
     # Import pumped data by passing Numpy array ------------------------------
@@ -111,25 +111,25 @@ def test_importing_exp_data(directory='tests/exp-data/'):
     ivdata = np.genfromtxt(directory+'f230_0_iv.csv', **csv)
     hotdata = np.genfromtxt(directory+'f230_0_hot.csv', **csv)
     colddata = np.genfromtxt(directory+'f230_0_cold.csv', **csv)
-    pump = qe.RawData(ivdata, dciv1, hotdata, colddata, 
-                      freq=230.2, best_pt="Min Tn", **params)
+    pump = qe.PumpedData(ivdata, dciv1, hotdata, colddata,
+                         freq=230.2, best_pt="Min Tn", **params)
     assert pump.freq == 230.2, "Wrong frequency."
 
     # Try bad values ---------------------------------------------------------
 
     # Try importing without specifying the frequency
     with pytest.raises(ValueError):
-        pump = qe.RawData(ivdata, dciv1, hotdata, colddata, **params)
+        pump = qe.PumpedData(ivdata, dciv1, hotdata, colddata, **params)
 
     # Try bad value for best_pt
     with pytest.raises(ValueError):
-        pump = qe.RawData(ivdata, dciv1, hotdata, colddata, 
-                          freq=230.2, best_pt="Best value", **params)
+        pump = qe.PumpedData(ivdata, dciv1, hotdata, colddata,
+                             freq=230.2, best_pt="Best value", **params)
 
     # Try importing a list
     data = [1, 2, 3]
     with pytest.raises(ValueError):
-        pump = qe.RawData(data, dciv1, **params)
+        pump = qe.PumpedData(data, dciv1, **params)
 
     # Check some of the attributes -------------------------------------------
 
@@ -138,8 +138,8 @@ def test_importing_exp_data(directory='tests/exp-data/'):
     assert -1.2 < pump.g_db < -1.0, "Wrong conversion gain."
 
     # Check automatic frequency determination
-    pump = qe.RawData(directory + 'f230_0_iv.csv', dciv1, 
-                      analyze=False, **params)
+    pump = qe.PumpedData(directory + 'f230_0_iv.csv', dciv1,
+                         analyze=False, **params)
     assert pump.freq == 230.0, "Wrong frequency."
 
 

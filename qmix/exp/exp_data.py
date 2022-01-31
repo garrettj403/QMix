@@ -80,7 +80,7 @@ _file_structure = {'DC IV data':          '01_dciv/',
 
 # CLASSES FOR RAW DATA -------------------------------------------------------
 
-class RawData0(object):
+class DCData(object):
     """Class for importing and analyzing experimental DC data (with no LO).
 
     Note:
@@ -616,7 +616,7 @@ class RawData0(object):
         self.plot_if_noise(fig4, **kw)
 
 
-class RawData(object):
+class PumpedData(object):
     """Class for importing and analyzing experimental pumped data (LO present).
 
     Note:
