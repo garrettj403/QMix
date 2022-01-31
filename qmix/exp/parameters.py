@@ -1,17 +1,17 @@
 """ This module contains a dictionary of parameters (``params``) that is
-used by ``qmix.exp.RawData`` and ``qmix.exp.RawData0`` to control
+used by ``qmix.exp.PumpedData`` and ``qmix.exp.DCData`` to control
 how experimental data is loaded and analyzed.
 
 Note:
 
     This dictionary just contains the default values. You can overwrite these
-    values by passing keyword arguments to ``RawData`` or ``RawData0``. For
+    values by passing keyword arguments to ``PumpedData`` or ``DCData``. For
     example, the default value for voltage units is millivolts (``"mV"``).
     You can change this parameter to be microvolts (``"uV"``) by passing
-    ``v_fmt="uV"`` to ``RawData`` or ``RawData0``.
+    ``v_fmt="uV"`` to ``PumpedData`` or ``DCData``.
 
-    Also note that experimental data can be passed to ``RawData0`` and
-    ``RawData`` either as CSV data files or as Numpy arrays. In both
+    Also note that experimental data can be passed to ``DCData`` and
+    ``PumpedData`` either as CSV data files or as Numpy arrays. In both
     cases, the data should have two columns: one for voltage and one
     for current or IF power, depending on the file. See Example #3 on the
     QMix website for more information.
@@ -47,7 +47,7 @@ values.
         - **Note:** Sometimes there is an offset in the I-V data. The
           parameters below can be used to correct this. If you know the
           current and voltage offset, you can define ``ioffset`` and
-          ``voffset``, respectively. Otherwise, ``RawData0`` will attempt to
+          ``voffset``, respectively. Otherwise, ``DCData`` will attempt to
           find the offset on its own. This is done by taking the derivative
           of the DC I-V curve, and then finding the maximum derivative value
           between ``voffset_range[0]`` and ``voffset_range[1]``.
@@ -56,7 +56,7 @@ values.
         - ``voffset = None`` : Offset of the DC bias voltage data in units
           [V].
         - ``voffset_range = (-5e-4, 5e-4)`` : Voltage range over which to look
-          for the voltage offset in units [V]. The ``RawData0`` class will
+          for the voltage offset in units [V]. The ``DCData`` class will
           look from ``voffset_range[0]`` to ``+voffset_range[1]`` for the
           voltage offset.
     - Correcting experimental I-V data:
@@ -130,7 +130,7 @@ values.
         - ``t_hot = 293.`` : Temperature of the hot load (likely room
           temperature), in units [K].
         - ``vbest = None`` : Bias voltage at which to calculate the best noise
-          temperature value. If this value is set to ``None``, the ``RawData``
+          temperature value. If this value is set to ``None``, the ``PumpedData``
           class will determine the best bias voltage automatically.
         - ``best_pt = 'Max Gain'`` : Which bias voltage should we select as
           the best bias? Where the gain is the highest (``'Max Gain'``)? Or
@@ -146,7 +146,7 @@ values.
         - ``ifresp_maxtn = 1e6`` : Maximum noise temperature. All values above
           this value will be set to ``ifresp_maxtn``.
     - Response function:
-        - **Note:** The ``RawData0`` class generates a response function
+        - **Note:** The ``DCData`` class generates a response function
           based on the imported DC I-V data (using ``qmix.respfn.RespFn``).
           It also generates a second response function that is slightly
           smeared. This smeared response function is useful for simulations

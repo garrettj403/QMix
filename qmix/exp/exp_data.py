@@ -1,9 +1,9 @@
 """ This module contains classes for importing, filtering and
 analyzing raw I-V and IF data obtained from SIS mixer experiments.
 
-Two classes (``RawData0`` and ``RawData``) are provided to help manage the
-data. ``RawData0`` is intended for data that was collected with no LO
-injection (i.e., unpumped data), and ``RawData`` is intended for data that was
+Two classes (``DCData`` and ``PumpedData``) are provided to help manage the
+data. ``DCData`` is intended for data that was collected with no LO
+injection (i.e., unpumped data), and ``PumpedData`` is intended for data that was
 collected with LO injection (i.e., pumped data).
 
 Note:
@@ -1841,13 +1841,13 @@ def plot_overall_results(dciv, data_list, fig_folder, vmax_plot=4.,
                          f_range=None):  # pragma: no cover
     """Plot all results.
 
-    This function is somewhat messy, but it will take in a list of RawData
+    This function is somewhat messy, but it will take in a list of PumpedData
     class instances, and plot the overall figures of merit (e.g., noise
     temperature vs LO frequency).
 
     Args:
-        dciv: DC I-V data (instance of RawData0)
-        data_list: list of pumped data (instances of RawData)
+        dciv: DC I-V data (instance of DCData)
+        data_list: list of pumped data (instances of PumpedData)
         fig_folder: figure destination
 
     """
@@ -2276,7 +2276,7 @@ def initialize_dir(fig_folder):  # pragma: no cover
 def _get_freq_from_filename(file_path):
     """Get frequency from filename.
 
-    This is used by the ``RawData`` class if a frequency is not provided
+    This is used by the ``PumpedData`` class if a frequency is not provided
     as an argument.
 
     Note:
