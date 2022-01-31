@@ -211,7 +211,7 @@ params = dict(
               # Analyzing data
               analyze_iv =     True,
               analyze_if =     True,
-              analyze =        True,  # DEPRECATED
+              analyze =        None,  # DEPRECATED
               # Junction properties
               area =           1.5,
               freq =           None,
