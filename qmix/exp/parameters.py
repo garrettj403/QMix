@@ -79,14 +79,6 @@ values.
         - ``filter_nwind = 21`` : Width of the Savitzky-Golay filter.
         - ``filter_npoly = 3`` : Order of the Savitzky-Golay filter.
     - Analyzing the DC I-V curve:
-        - ``vgap_method = "threshold"``: Method for finding the gap voltage.
-          Options are "max_derivative" for using the maximum derivative of the
-          I-V curve, and "threshold" for using a current threshold value
-          (default, see "vgap_threshold").
-        - ``vgap_threshold = 105e-6`` : Threshold current, in units [A], at
-          which to measure the gap voltage. (Note: the gap voltage is defined
-          here as the voltage at which the DC I-V curve crosses this current
-          value.)
         - ``vrn = (3.5e-3, 4.5e-3)`` : Voltage range over which to calculate
           the normal-state resistance, in units [V].
         - ``vrsg = 2e-3`` : Voltage at which to measure the subgap resistance,
@@ -212,8 +204,7 @@ params = dict(
               area =           1.5,
               freq =           None,
               # Analyzing DC I-V curve
-              vgap_threshold = 105e-6,
-              vrn =            (3e-3, 1),
+              vrn =            (3.5e-3, 5e3),
               vrsg =           2e-3,
               vleak =          2e-3,
               # Analyzing DC IF data

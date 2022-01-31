@@ -29,8 +29,11 @@ params = {**csv_param, **extra_param}
 def test_offset_correction(directory='tests/exp-data/'):
     """Make sure that the offset algorithm corrects for the I/V offsets."""
 
+    param = params.copy()
+    # param['debug'] = True
+
     dciv = qe.DCData(directory + 'dciv-data.csv',
-                      analyze=False, **params)
+                      analyze=False, **param)
 
     # Check offset values
     voffset = dciv.offset[0] * 1e3
@@ -173,25 +176,24 @@ def test_try_loading_list():
         _, _, _ = iv.dciv_curve([1, 2, 3])
 
 
-def test_vgap_methods():
-    """Test methods for finding Vgap."""
+def test_vgap():
+    """Test method for finding Vgap."""
+
+    param = params.copy()
+    # param['debug'] = True
 
     # Method 1: Vgap is where the current passes
-    _, _, dc1 = iv.dciv_curve('tests/exp-data/dciv-data.csv', **params)
-
-    # Method 2: Vgap is where the derivative is the highest
-    tmp = params.copy()
-    tmp['vgap_threshold'] = None
-    _, _, dc2 = iv.dciv_curve('tests/exp-data/dciv-data.csv', **tmp)
+    _, _, dc1 = iv.dciv_curve('tests/exp-data/dciv-data.csv', **param)
 
     # Both methods should be within 0.05 mV
-    assert abs(dc1.vgap - dc2.vgap) < 0.05e-3
+    assert abs(dc1.vgap - 2.715e-3) < 0.05e-3
 
 
 def test_offset_methods():
     """Test methods for finding the voltage+current offsets."""
 
     param = params.copy()
+    # param['debug'] = True
 
     # Automatic for voltage and current offset
     param['voffset_range'] = 1e-3
@@ -221,7 +223,7 @@ def test_offset_methods():
 def test_try_importing_reflected_iv_data():
 
     param = params.copy()
-    param['debug'] = True
+    # param['debug'] = True
 
     dciv_data = np.genfromtxt('tests/exp-data/dciv-data.csv', **csv_param)
     dciv_data.flags.writeable = False
@@ -235,11 +237,11 @@ def test_try_importing_reflected_iv_data():
 # Main -----------------------------------------------------------------------
 
 if __name__ == "__main__":
-    
-    # test_offset_correction()
-    # test_importing_exp_data()
-    # test_dciv_importing_bad_units()
-    # test_try_loading_list()
-    # test_vgap_methods()
-    # test_offset_methods()
+
+    test_offset_correction()
+    test_importing_exp_data()
+    test_dciv_importing_bad_units()
+    test_try_loading_list()
+    test_vgap()
+    test_offset_methods()
     test_try_importing_reflected_iv_data()

@@ -104,7 +104,6 @@ def dciv_curve(ivdata, **kwargs):
             filtering. Given in radians.
         filter_nwind (int): Window size for Savitsky-Golay filter.
         filter_npoly (int): Order of Savitsky-Golay filter.
-        vgap_threshold (float): The current to measure the gap voltage at.
         vrn (list): Voltage range over which to calculate the normal
             resistance, in units [V]
         rn_vmin (float): Lower voltage range to determine the normal
@@ -188,9 +187,9 @@ def dciv_curve(ivdata, **kwargs):
         plt.show()
 
     # Analyze properties of DC I-V curve
+    vgap = _find_gap_voltage(volt_v, curr_a, **kwargs)
     rn, vint = _find_normal_resistance(volt_v, curr_a, **kwargs)
     rsg = _find_subgap_resistance(volt_v, curr_a, **kwargs)
-    vgap = _find_gap_voltage(volt_v, curr_a, **kwargs)
     fgap = sc.e * vgap / sc.h
     igap = vgap / rn
 
@@ -206,7 +205,7 @@ def dciv_curve(ivdata, **kwargs):
     voltage = volt_v / vgap
     current = curr_a / igap
 
-    # Resample I-V curve
+    # Re-sample I-V curve
     v_temp = np.linspace(-vmax, vmax, npts) / vgap
     current = np.interp(v_temp, voltage, current)
     voltage = v_temp
@@ -490,8 +489,6 @@ def _take_one_pass(v, i):
 
     """
 
-    # TODO: Update -- make more general
-
     idx_min, idx_max = v.argmin(), v.argmax()
 
     # If data is already sorted
@@ -500,7 +497,7 @@ def _take_one_pass(v, i):
 
     # If data is already sorted, but in reverse order
     if idx_max == 0 and idx_min == len(i) - 1:  # pragma: no cover
-        return v, i
+        return v[::-1], i[::-1]
 
     # If the sweep starts in the middle.
     if idx_max < idx_min:
@@ -529,7 +526,7 @@ def _correct_offset(volt_v, curr_a, **kw):
     Keyword Args:
         voffset: voltage offset, in V
         ioffset: current offset, in A
-        voffset_range (list): Voltage range over which to search for offset,
+        voffset_range (list): voltage range over which to search for offset,
             in units [V].
 
     Returns:
@@ -541,7 +538,6 @@ def _correct_offset(volt_v, curr_a, **kw):
     voffset_range = kw.get('voffset_range', PARAMS['voffset_range'])
     voffset = kw.get('voffset', PARAMS['voffset'])
     ioffset = kw.get('ioffset', PARAMS['ioffset'])
-    debug = kw.get('debug', PARAMS['debug'])
 
     if isinstance(voffset_range, float) or isinstance(voffset_range, int):
         voffset_range = [-voffset_range, voffset_range]
@@ -613,13 +609,9 @@ def _find_normal_resistance(volt_v, curr_a, **kw):
     """
 
     # Range of voltages over which to calculate the normal resistance
-    vrn = kw.get('vrn', None)  # voltage range (list)
-    if vrn is not None:
-        vmin = vrn[0]
-        vmax = vrn[1]
-    else:
-        vmin = 3e-3
-        vmax = 1
+    vrn = kw.get('vrn', PARAMS['vrn'])
+    vmin = vrn[0]
+    vmax = vrn[1]
 
     # Range over which to fit normal resistance
     mask = (vmin < volt_v) & (volt_v < vmax)
@@ -642,7 +634,9 @@ def _find_gap_voltage(volt_v, curr_a, **kw):
         curr_a (ndarray): current, in A
 
     Keyword Args:
-        vgap_threshold (float): the current at the gap voltage
+        vrn (list): Voltage range over which to calculate the normal
+            resistance, in units [V]
+        debug (bool): plot for debugging purposes
 
     Returns:
         float: gap voltage
@@ -650,20 +644,44 @@ def _find_gap_voltage(volt_v, curr_a, **kw):
     """
 
     # Unpack keyword arguments
-    vgap_threshold = kw.get('vgap_threshold', PARAMS['vgap_threshold'])
+    vrn = kw.get('vrn', PARAMS['vrn'])
+    debug = kw.get('debug', PARAMS['debug'])
 
-    # Method 1: current threshold
-    if vgap_threshold is not None:
-        idx = np.abs(curr_a - vgap_threshold).argmin()
-        vgap = volt_v[idx]
-        return vgap
+    # Normal resistance slope
+    mask = (vrn[0] < volt_v) & (volt_v < vrn[1])
+    vtmp, itmp = volt_v[mask], curr_a[mask]
+    prn = np.polyfit(vtmp, itmp, 1)
 
-    # Method 2: max derivative
+    # Find max derivative in I-V curve
     vstep = volt_v[1] - volt_v[0]
-    mask = (1.5e-3 < volt_v) & (volt_v < 3.5e-3)
+    mask = 2e-3 < volt_v
     der = slope(volt_v[mask], curr_a[mask])
     der = gauss_conv(der, sigma=0.2e-3 / vstep)
     vgap = volt_v[mask][der.argmax()]
+
+    # Fit line around max derivative
+    mask = (vgap - 0.1e-4 < volt_v) & (volt_v < vgap + 0.1e-4)
+    vtmp, itmp = volt_v[mask], curr_a[mask]
+    pgap = np.polyfit(vtmp, itmp, 1)
+
+    # Find "corner" in I-V curve
+    vcorner = (pgap[1] - prn[1]) / (prn[0] - pgap[0])
+    icorner = pgap[0] * vcorner + pgap[1]
+
+    # Find gap
+    igap = icorner / 2
+    vgap = (igap - pgap[1]) / pgap[0]
+
+    if debug:
+        plt.figure()
+        plt.plot(volt_v * 1e3, curr_a * 1e6)
+        plt.plot(volt_v * 1e3, np.polyval(prn, volt_v) * 1e6, 'k--')
+        plt.plot(volt_v * 1e3, np.polyval(pgap, volt_v) * 1e6, 'r--')
+        plt.plot([vcorner * 1e3], [icorner * 1e6], 'r*')
+        plt.plot([vgap * 1e3], [igap * 1e6], 'k*')
+        plt.xlim([volt_v.min() * 1e3, volt_v.max() * 1e3])
+        plt.ylim([curr_a.min() * 1e6, curr_a.max() * 1e6])
+        plt.show()
 
     return vgap
 
@@ -682,6 +700,8 @@ def _find_subgap_resistance(volt_v, curr_a, **kw):
         float: subgap resistance
 
     """
+
+    # TODO: make this better
 
     # Unpack keyword arguments
     vrsg = kw.get('vrsg', PARAMS['vrsg'])
