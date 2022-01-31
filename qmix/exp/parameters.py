@@ -213,7 +213,7 @@ params = dict(
               freq =           None,
               # Analyzing DC I-V curve
               vgap_threshold = 105e-6,
-              vrn =            (3.5e-3, 4.5e-3),
+              vrn =            (3e-3, 1),
               vrsg =           2e-3,
               vleak =          2e-3,
               # Analyzing DC IF data

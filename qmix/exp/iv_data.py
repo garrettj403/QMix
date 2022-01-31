@@ -597,10 +597,6 @@ def _find_normal_resistance(volt_v, curr_a, **kw):
     Keyword Args:
         vrn (list): Voltage range over which to calculate the normal
             resistance, in units [V]
-        rn_vmin (float): Lower voltage range to determine the normal
-            resistance, in units [V] (DEPRECATED)
-        rn_vmax (float): Upper voltage range to determine the normal
-            resistance, in units [V] (DEPRECATED)
 
     Returns:
         tuple: normal resistance, intercept voltage
@@ -608,17 +604,13 @@ def _find_normal_resistance(volt_v, curr_a, **kw):
     """
 
     # Range of voltages over which to calculate the normal resistance
-    rn_vmin = kw.get('rn_vmin', None)  # DEPRECATED argument
-    rn_vmax = kw.get('rn_vmax', None)  # DEPRECATED argument
     vrn = kw.get('vrn', None)  # voltage range (list)
     if vrn is not None:
-        # Try to use new argument first
         rn_vmin = vrn[0]
         rn_vmax = vrn[1]
-    elif rn_vmin is None or rn_vmax is None:
-        # Use default values if neither are defined
-        rn_vmin = PARAMS['vrn'][0]
-        rn_vmax = PARAMS['vrn'][1]
+    else:
+        rn_vmin = 3e-3
+        rn_vmax = 1
 
     # Range over which to fit normal resistance
     mask = (rn_vmin < volt_v) & (volt_v < rn_vmax)
@@ -626,9 +618,9 @@ def _find_normal_resistance(volt_v, curr_a, **kw):
 
     # Fit normal-state resistance
     p = np.polyfit(v, i, 1)
-    rnslope = p[0]
-    rn = 1 / rnslope
-    vint = -p[1] / rnslope
+    rn_slope = p[0]
+    rn = 1 / rn_slope
+    vint = -p[1] / rn_slope
 
     return rn, vint
 
