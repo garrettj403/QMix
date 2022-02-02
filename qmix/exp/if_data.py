@@ -28,6 +28,8 @@ from qmix.misc.terminal import cprint
 
 _vfmt_dict = {'uV': 1e-6, 'mV': 1e-3, 'V': 1}  # Voltage units
 
+np.seterr(divide='ignore', invalid='ignore')  # ignore divide by zero errors
+
 
 # Load IF data and determine noise temperature -------------------------------
 

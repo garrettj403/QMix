@@ -1238,7 +1238,7 @@ class PumpedData(object):
             fig, ax = plt.subplots()
         else:
             fig = ax.get_figure()
-        pc = ax.pcolor(xx, yy, zz.T, cmap='viridis')
+        pc = ax.pcolor(xx, yy, zz.T, cmap='viridis', shading='auto')
         # Add color bar
         cbar = plt.colorbar(pc, ax=ax)
         cbar.ax.set_ylabel(r'$\log_{10}(\varepsilon)$', rotation=90)
