@@ -928,6 +928,8 @@ class PumpedData(object):
         ax1.plot(self.voltage_dc * mv, self.current_dc * ua, '#8c8c8c', label="Unpumped")
         mask = self.current != 0
         ax1.plot(self.voltage[mask] * mv, self.current[mask] * ua, 'k', label="Pumped")
+        ax1.axvline(self.vgap * 1e3, ymin=0.05, ymax=0.6, c='k', lw=0.5)
+        ax1.axvline(self.vgap * 1e3 - self.vph * mv, ymin=0.05, ymax=0.5, c='k', lw=0.5)
         ax1.set_xlabel('Bias Voltage (mV)')
         ax1.set_ylabel(r'DC Current ($\mu$A)')
         ax1.set_ylim([0, imax])
