@@ -32,8 +32,8 @@ def test_offset_correction(directory='tests/exp-data/'):
     param = params.copy()
     # param['debug'] = True
 
-    dciv = qe.DCData(directory + 'dciv-data.csv',
-                      analyze=False, **param)
+    dciv_data = np.genfromtxt(directory + 'dciv-data.csv', **csv_param)
+    dciv = qe.DCData(dciv_data, analyze=False, **param)
 
     # Check offset values
     voffset = dciv.offset[0] * 1e3
@@ -51,48 +51,38 @@ def test_importing_exp_data(directory='tests/exp-data/'):
 
     ### IMPORT DC DATA ----------------------------------------------------###
 
-    # Import DC data by passing file names -----------------------------------
+    dciv_data = np.genfromtxt(directory + 'dciv-data.csv', **csv_param)
+    dcif_data = np.genfromtxt(directory + 'dcif-data.csv', **csv_param)
 
-    dciv0 = qe.DCData(directory + 'dciv-data.csv',
-                      directory +'dcif-data.csv',
-                      analyze=False, **params)
+    # Import DC data ---------------------------------------------------------
 
-    # Import by passing Numpy arrays -----------------------------------------
-
-    dciv_data = np.genfromtxt(directory+'dciv-data.csv', **csv_param)
-    dcif_data = np.genfromtxt(directory+'dcif-data.csv', **csv_param)
-    dciv1 = qe.DCData(dciv_data, dcif_data, **params)
+    dciv1 = qe.DCData(dciv_data, dcif_data, analyze=False, **params)
 
     # Import without defining vshot range ------------------------------------
 
     tmp_param = params.copy()
     tmp_param['vshot'] = None
-    dciv2 = qe.DCData(directory + 'dciv-data.csv',
-                      directory +'dcif-data.csv',
-                      analyze=False, **tmp_param)
+    dciv2 = qe.DCData(dciv_data, dcif_data, analyze=False, **tmp_param)
 
     # Check IF noise value when vshot range isn't defined
     assert abs(dciv1.if_noise - dciv2.if_noise) < 2
 
     # Import without DC IF file ----------------------------------------------
 
-    dciv3 = qe.DCData(directory + 'dciv-data.csv',
-                      analyze=False, **params)
+    dciv3 = qe.DCData(dciv_data, analyze=False, **params)
 
     # Try including series resistance ----------------------------------------
 
-    dciv4 = qe.DCData(directory + 'dciv-data.csv',
-                      directory +'dcif-data.csv',
-                      analyze=False, rseries=0.5, **params)
+    dciv4 = qe.DCData(dciv_data, dcif_data, analyze=False, rseries=0.5, **params)
 
     # Try using lists (shouldn't work) ---------------------------------------
 
+    # TODO: thse should match
     with pytest.raises(ValueError):
         dciv5 = qe.DCData([1, 2, 3], analyze=False, **params)
 
-    with pytest.raises(ValueError):
-        dciv6 = qe.DCData(directory + 'dciv-data.csv',
-                          [1, 2, 3], analyze=False, **params)
+    with pytest.raises(AssertionError):
+        dciv6 = qe.DCData(dciv_data, [1, 2, 3], analyze=False, **params)
 
     # Check some of the attributes -------------------------------------------
 
@@ -104,44 +94,31 @@ def test_importing_exp_data(directory='tests/exp-data/'):
 
     ### IMPORT PUMPED DATA ------------------------------------------------###
 
-    # Import pumped data by passing file name --------------------------------
+    pumped_iv = np.genfromtxt(directory + 'f230_0_iv.csv', **csv_param)
+    pumped_hot = np.genfromtxt(directory +'f230_0_hot.csv', **csv_param)
+    pumped_cold = np.genfromtxt(directory +'f230_0_cold.csv', **csv_param)
 
-    pump1 = qe.PumpedData(directory + 'f230_0_iv.csv', dciv1,
-                          directory +'f230_0_hot.csv',
-                          directory +'f230_0_cold.csv',
-                          analyze_iv=False, **params)
+    # Import pumped data -----------------------------------------------------
+
+    pump1 = qe.PumpedData(pumped_iv, dciv1, pumped_hot, pumped_cold, freq=230, analyze_iv=False, **params)
 
     # Import without DC IF file information ----------------------------------
 
     # Without DC IF file
     tmp = params.copy()
     tmp['vshot'] = (5.05e-3, 5.5e-3)
-    pump2 = qe.PumpedData(directory + 'f230_0_iv.csv', dciv3,
-                          directory +'f230_0_hot.csv',
-                          directory +'f230_0_cold.csv',
-                          analyze_iv=False, **tmp)
+    pump2 = qe.PumpedData(pumped_iv, dciv3, pumped_hot, pumped_cold, freq=230, analyze_iv=False, **tmp)
     assert abs(pump1.if_noise - pump2.if_noise) < 3
-
-    # Import pumped data by passing Numpy array ------------------------------
-
-    csv = dict(delimiter=',', usecols=(0,1), skip_header=1)
-    ivdata = np.genfromtxt(directory+'f230_0_iv.csv', **csv)
-    hotdata = np.genfromtxt(directory+'f230_0_hot.csv', **csv)
-    colddata = np.genfromtxt(directory+'f230_0_cold.csv', **csv)
-    pump = qe.PumpedData(ivdata, dciv1, hotdata, colddata,
-                         freq=230.2, best_pt="Min Tn", **params)
-    assert pump.freq == 230.2, "Wrong frequency."
 
     # Try bad values ---------------------------------------------------------
 
     # Try importing without specifying the frequency
     with pytest.raises(ValueError):
-        pump = qe.PumpedData(ivdata, dciv1, hotdata, colddata, **params)
+        pump = qe.PumpedData(pumped_iv, dciv1, pumped_hot, pumped_cold, **params)
 
     # Try bad value for best_pt
     with pytest.raises(ValueError):
-        pump = qe.PumpedData(ivdata, dciv1, hotdata, colddata,
-                             freq=230.2, best_pt="Best value", **params)
+        pump = qe.PumpedData(pumped_iv, dciv1, pumped_hot, pumped_cold, freq=230, best_pt="Best value", **params)
 
     # Try importing a list
     data = [1, 2, 3]
@@ -151,13 +128,8 @@ def test_importing_exp_data(directory='tests/exp-data/'):
     # Check some of the attributes -------------------------------------------
 
     # Note: I calculated these by hand
-    assert 35. < pump.tn_best < 40., "Wrong noise temperature."
-    assert -1.2 < pump.g_db < -1.0, "Wrong conversion gain."
-
-    # Check automatic frequency determination
-    pump = qe.PumpedData(directory + 'f230_0_iv.csv', dciv1,
-                         analyze=False, **params)
-    assert pump.freq == 230.0, "Wrong frequency."
+    assert 35. < pump1.tn_best < 40., "Wrong noise temperature."
+    assert -1.2 < pump1.g_db < -1.0, "Wrong conversion gain."
 
 
 def test_dciv_importing_bad_units():
@@ -165,14 +137,15 @@ def test_dciv_importing_bad_units():
     tmp = params.copy()
     tmp['i_fmt'] = 'A'
 
-    _, _, dc = iv.dciv_curve('tests/exp-data/dciv-data.csv', **tmp)
+    dciv_data = np.genfromtxt('tests/exp-data/dciv-data.csv', **csv_param)
+    _, _, dc = iv.dciv_curve(dciv_data, **tmp)
     assert dc.rn < 1
 
 
 def test_try_loading_list():
     """Try loading a list (not an accepted input type)."""
 
-    with pytest.raises(ValueError):
+    with pytest.raises(AssertionError):
         _, _, _ = iv.dciv_curve([1, 2, 3])
 
 
@@ -183,7 +156,8 @@ def test_vgap():
     # param['debug'] = True
 
     # Method 1: Vgap is where the current passes
-    _, _, dc1 = iv.dciv_curve('tests/exp-data/dciv-data.csv', **param)
+    dciv_data = np.genfromtxt('tests/exp-data/dciv-data.csv', **csv_param)
+    _, _, dc1 = iv.dciv_curve(dciv_data, **param)
 
     # Both methods should be within 0.05 mV
     assert abs(dc1.vgap - 2.715e-3) < 0.05e-3
@@ -195,19 +169,21 @@ def test_offset_methods():
     param = params.copy()
     # param['debug'] = True
 
+    dciv_data = np.genfromtxt('tests/exp-data/dciv-data.csv', **csv_param)
+
     # Automatic for voltage and current offset
     param['voffset_range'] = 1e-3
-    _, _, dc0 = iv.dciv_curve('tests/exp-data/dciv-data.csv', **param)
+    _, _, dc0 = iv.dciv_curve(dciv_data, **param)
     param['voffset_range'] = (-0.8e-3, 1e-3)
-    _, _, dc1 = iv.dciv_curve('tests/exp-data/dciv-data.csv', **param)
+    _, _, dc1 = iv.dciv_curve(dciv_data, **param)
 
     # Set voltage offset
     param['voffset'] = dc1.offset[0]
-    _, _, dc2 = iv.dciv_curve('tests/exp-data/dciv-data.csv', **param)
+    _, _, dc2 = iv.dciv_curve(dciv_data, **param)
 
     # Set both
     param['ioffset'] = dc1.offset[1]
-    _, _, dc3 = iv.dciv_curve('tests/exp-data/dciv-data.csv', **param)
+    _, _, dc3 = iv.dciv_curve(dciv_data, **param)
 
     # Check values
     assert abs(dc0.offset[0] - dc1.offset[0]) < 0.01e-3
@@ -217,7 +193,8 @@ def test_offset_methods():
     assert abs(dc1.offset[1] - dc3.offset[1]) < 1e-6
 
     # Load pumped I-V curve with both voffset and ioffset defined
-    pump = iv.iv_curve('tests/exp-data/f230_0_iv.csv', dc3, **param)
+    pump_data = np.genfromtxt('tests/exp-data/f230_0_iv.csv', **csv_param)
+    pump = iv.iv_curve(pump_data, dc3, **param)
 
 
 def test_try_importing_reflected_iv_data():

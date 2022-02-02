@@ -10,25 +10,16 @@ Note:
     You can change this parameter to be microvolts (``"uV"``) by passing
     ``v_fmt="uV"`` to ``PumpedData`` or ``DCData``.
 
-    Also note that experimental data can be passed to ``DCData`` and
-    ``PumpedData`` either as CSV data files or as Numpy arrays. In both
-    cases, the data should have two columns: one for voltage and one
-    for current or IF power, depending on the file. See Example #3 on the
-    QMix website for more information.
+    Also note that experimental data must be passed to ``DCData`` and
+    ``PumpedData`` with Numpy arrays. The data should have two columns: one 
+    for voltage and one for current or IF power, depending on the file. See
+    Example #3 on the QMix website for more information.
 
 All of the different parameters are described below along with their default
 values.
 
 **Parameters:**
 
-    - CSV files:
-        - **Note:** If you are using CSV files, these parameters control how
-          the data is loaded from the CSV files.
-        - ``delimiter = ","`` : The delimiter used by the CSV data files.
-        - ``usecols = (0,1)`` : Which columns to import from the CSV data
-          files.
-        - ``skip_header = 1`` : Number of rows to skip at the beginning CSV
-          data files. (Used to skip the header.)
     - Units:
         - ``v_fmt = "mV"`` : Units for imported voltage data. The options
           are: ``"uV"``, ``"mV"`` and ``"V"``.
@@ -136,13 +127,6 @@ values.
           the best bias? Where the gain is the highest (``'Max Gain'``)? Or
           the lowest noise temperature (``'Min Tn'``)?
     - IF response:
-        - ``ifresp_delimiter = '\\t'`` : Delimiter for IF spectrum files.
-        - ``ifresp_usecols = (0, 1, 2)`` : Columns to import from IF spectrum
-          files. The first column should be the frequency, the second should
-          be the IF power from the hot load, and the third should be the IF
-          power from the cold load.
-        - ``ifresp_skipheader = 1`` : Number of rows to skip at the beginning
-          of the IF spectrum file.
         - ``ifresp_maxtn = 1e6`` : Maximum noise temperature. All values above
           this value will be set to ``ifresp_maxtn``.
     - Response function:
@@ -167,10 +151,6 @@ values.
 """
 
 params = dict(
-              # CSV files
-              delimiter =      ',',
-              usecols =        (0, 1),
-              skip_header =    1,
               # Units
               v_fmt =          'mV',
               i_fmt =          'mA',
@@ -222,9 +202,6 @@ params = dict(
               vbest =          None,
               best_pt =        'Max Gain',
               # Import IF response data
-              ifresp_delimiter  = '\t',
-              ifresp_usecols    = (0, 1, 2),
-              ifresp_skipheader = 1,
               ifresp_maxtn      = 1e6,
               # Response function
               v_smear =        0.020,

@@ -21,18 +21,13 @@ def if_response(if_data, **kw):
     response.
 
     Args:
-        if_data: IF response data. This can either be in the form of a CSV
-            file, or a Numpy array. Either way, the data should have 3
-            columns: frequency, in units [GHz], hot IF power, in units
+        if_data: IF response data. A Numpy array. Either way, the data should
+            have 3 columns: frequency, in units [GHz], hot IF power, in units
             [dBm], and cold IF power, in units [dBm].
 
     Keyword Args:
         t_hot: hot blackbody load temperature
         t_cold: cold blackbody load temperature
-        ifresp_delimiter: delimiter for the IF response files
-        ifresp_usecols: which columns to import from IF response files
-        ifresp_skipheader: how many rows to skip at the beginning of IF
-            response files.
 
     Returns:
         ndarray: frequency, noise temp, hot power, cold power
@@ -42,20 +37,11 @@ def if_response(if_data, **kw):
     # Unpack keyword arguments
     th = kw.get('t_hot', PARAMS['t_hot'])
     tc = kw.get('t_cold', PARAMS['t_cold'])
-    ifresp_delimiter = kw.get('ifresp_delimiter', PARAMS['ifresp_delimiter'])
-    ifresp_usecols = kw.get('ifresp_usecols', PARAMS['ifresp_usecols'])
-    ifresp_skipheader = kw.get('ifresp_skipheader', PARAMS['ifresp_skipheader'])
     ifresp_maxtn = kw.get('ifresp_maxtn', PARAMS['ifresp_maxtn'])
 
     # Import IF spectrum measurements
-    if isinstance(if_data, str):  # input is a CSV file
-        f, ph_db, pc_db = np.genfromtxt(if_data,
-                                        delimiter=ifresp_delimiter,
-                                        usecols=ifresp_usecols,
-                                        skip_header=ifresp_skipheader).T
-    elif isinstance(if_data, np.ndarray):  # input is a Numpy array
-        assert if_data.ndim == 2, \
-            'IF response data should be 2-dimensional.'
+    if isinstance(if_data, np.ndarray):  # input is a Numpy array
+        assert if_data.ndim == 2, 'IF response data should be 2-dimensional.'
         if if_data.shape[1] != 3:
             if_data = if_data.T
         assert if_data.shape[1] == 3, 'IF response should have 3 columns.'

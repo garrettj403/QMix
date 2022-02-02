@@ -8,18 +8,9 @@ collected with LO injection (i.e., pumped data).
 
 Note:
 
-    Experimental data can be passed to these classes either in the form of CSV
-    data files or Numpy arrays. In both bases, the data should have two
-    columns: the first for voltage, and the second for current or IF power,
-    depending on the file type.
-
-    For CSV files, you can define the delimiter using the keyword
-    argument ``delimiter=','``, the number of rows to skip for the header
-    using ``skip_header=1``, and which columns to import using
-    ``usecols=(0,1)``. Take a look at the data in
-    ``QMix/notebooks/eg-230-data/`` for an example. Also, take a look at
-    ``QMix/notebooks/analyze-experimental-data.ipynb`` for an example of how
-    to use this module.
+    Experimental data needs to be passed as a Numpy array. The data should 
+    have two columns: the first for voltage, and the second for current or IF
+    power, depending on the file type.
 
 """
 
@@ -85,38 +76,22 @@ class DCData(object):
 
     Note:
 
-        Experimental data can be passed to this class either in the form of
-        CSV data files or Numpy arrays. In both cases, the data should have
-        two columns: the first for voltage, and the second for current or IF
-        power, depending on the file type.
-
-        For CSV files, you can define the delimiter using the keyword
-        argument ``delimiter=','``, the number of rows to skip for the header
-        using ``skip_header=1``, and which columns to import using
-        ``usecols=(0,1)``. Take a look at the data in
-        ``QMix/notebooks/eg-230-data/`` for an example. Also, take a look at
-        ``QMix/notebooks/analyze-experimental-data.ipynb`` for an example of
-        how to use this module.
+        Experimental data needs to be passed as a Numpy array. The data should 
+        have two columns: the first for voltage, and the second for current or
+        IF power, depending on the file type.
 
         See ``qmix.exp.parameters.params`` for all possible keyword arguments.
         These parameters control how the data is imported and analyzed.
 
     Args:
-        dciv: DC I-V curve. Either a CSV data file or a Numpy array. The data
+        dciv: DC I-V curve. A Numpy array. The data
             should have two columns: the first for voltage, and the second
-            for current. If you are using CSV files, the properties of
-            the CSV file can be set through additional keyword arguments
-            (see below).
-        dcif: DC IF data. Either a CSV data file or a Numpy array. The
+            for current. 
+        dcif: DC IF data. A Numpy array. The
             data should have two columns: the first for voltage, and the
-            second for IF power. If you are using CSV files, the properties of
-            the CSV file can be set through additional keyword arguments
-            (see below).
+            second for IF power.
 
     Keyword arguments:
-        delimiter (str): Delimiter for CSV files.
-        usecols (tuple): List of columns to import (tuple of length 2).
-        skip_header (int): Number of rows to skip, used to skip the header.
         v_fmt (str): Units for voltage ('uV', 'mV', or 'V').
         i_fmt (str): Units for current ('uA', 'mA', or 'A').
         vmax (float): Maximum voltage to import in units [V].
@@ -178,9 +153,7 @@ class DCData(object):
         self.comment = comment
         self.vleak   = vleak
 
-        if isinstance(dciv, str):  # input type: CSV file
-            self.file_path = dciv
-        elif isinstance(dciv, np.ndarray):  # input type: Numpy array
+        if isinstance(dciv, np.ndarray):  # input type: Numpy array
             self.file_path = 'Numpy array'
         else:
             raise ValueError('Input data type not recognized.')
@@ -236,7 +209,7 @@ class DCData(object):
 
     def __str__(self):  # pragma: no cover
 
-        message = "\033[35m\nDC I-V data:\033[0m {0}\n".format(self.comment)
+        message = "\033[35m\nDC I-V data:\033[0m {0}\n\n".format(self.comment)
         message += "\tVgap:  \t\t{:6.2f}\tmV\n".format(self.vgap * 1e3)
         message += "\tfgap:  \t\t{:6.2f}\tGHz\n".format(self.fgap / 1e9)
         message += "\n"
@@ -327,11 +300,11 @@ class DCData(object):
         ax.plot(v_mv, i_ua, label=lgd_str1)
         # Label gap
         ax.plot(self.vgap * 1e3, i_at_gap,
-                marker='o', ls='None', color='r', mfc='None',
+                marker='o', ls='None', color='r', mfc='None', ms=8,
                 markeredgewidth=1, label=lgd_str3)
         # Label leakage current
         ax.plot(2, i_leak * ua,
-                marker='o', ls='None', color='g', mfc='None',
+                marker='o', ls='None', color='g', mfc='None', ms=8,
                 markeredgewidth=1, label=lgd_str4)
         # Fit line to normal resistance slope
         ax.plot(v_mv, rn_slope, 'k--', label=lgd_str2)
@@ -399,104 +372,6 @@ class DCData(object):
         else:
             return ax
 
-    def plot_rdyn(self, fig_name=None, ax=None, vmax_plot=4., **kw):  # pragma: no cover
-        """Plot dynamic resistance of the DC I-V curve.
-
-        The dynamic resistance is the derivative of the I-V data, inverted to
-        get resistance.
-
-        Note: If ``fig_name`` is provided, this method will save the plot
-        to the specified folder and then close the plot. This means
-        that the Matplotlib axis object will not be returned in this
-        case. This is done to prevent too many plots from being open
-        at the time.
-
-        Args:
-            fig_name: figure filename
-            ax: Matplotlib axis
-            vmax_plot: max voltage to include in plot (in mV)
-            kw (dict): keyword arguments (not used)
-
-        """
-
-        # Check arguments
-        # assert not fig_name is not None and ax is not None
-
-        # De-normalize
-        v_mv = self.voltage * self.vgap * 1e3
-        i_ma = self.current * self.igap * 1e3
-
-        # Calculate dynamic resistance
-        rdyn = slope_span_n(v_mv, i_ma, 11)
-
-        # Plot dynamic resistance
-        if ax is None:
-            fig, ax = plt.subplots()
-        else:
-            fig = ax.get_figure()
-        ax.semilogy(v_mv, 1 / rdyn)
-        ax.set_xlabel(r'Bias Voltage (mV)')
-        ax.set_ylabel(r'Dynamic Resistance ($\Omega$)')
-        ax.set_xlim([0, vmax_plot])
-        ax.minorticks_on()
-        if fig_name is not None:
-            fig.savefig(fig_name, **_plot_params)
-            plt.close(fig)
-            return
-        else:
-            return ax
-
-    def plot_rstat(self, fig_name=None, ax=None, vmax_plot=4., **kw):  # pragma: no cover
-        """Plot static resistance of DC I-V data.
-
-        The static resistance is the DC voltage divided by the DC current.
-
-        Note: If ``fig_name`` is provided, this method will save the plot
-        to the specified folder and then close the plot. This means
-        that the Matplotlib axis object will not be returned in this
-        case. This is done to prevent too many plots from being open
-        at the time.
-
-        Args:
-            fig_name: figure filename
-            ax: Matplotlib axis
-            vmax_plot: max voltage to include in plot (in mV)
-            kw (dict): keyword arguments (not used)
-
-        """
-
-        # Check arguments
-        # assert fig_name is not None and ax is not None
-
-        # De-normalize
-        v_mv = self.voltage * self.vgap * 1e3
-        i_ma = self.current * self.igap * 1e3
-
-        # Only plot up to a given voltage
-        mask = (0 < v_mv) & (v_mv < vmax_plot)
-        v_mv, i_ma = v_mv[mask], i_ma[mask]
-
-        # Calculate static resistance
-        r_stat = v_mv / i_ma
-
-        # Plot static resistance
-        if ax is None:
-            fig, ax = plt.subplots()
-        else:
-            fig = ax.get_figure()
-        ax.plot(v_mv, r_stat)
-        ax.set_xlabel(r'Bias Voltage (mV)')
-        ax.set_ylabel(r'Static Resistance ($\Omega$)')
-        ax.set_xlim([0, vmax_plot])
-        ax.set_ylim(bottom=0)
-        ax.minorticks_on()
-        if fig_name is not None:
-            fig.savefig(fig_name, **_plot_params)
-            plt.close(fig)
-            return
-        else:
-            return ax
-
     def plot_if_noise(self, fig_name=None, ax=None, **kw):  # pragma: no cover
         """Plot IF noise.
 
@@ -531,8 +406,6 @@ class DCData(object):
         ua = self.igap * 1e6  # norm -> uA
         v_mv = self.voltage * mv
         i_ua = self.current * ua
-        # vmax = v_mv.max()
-        # imax = i_ua.max()
 
         if ax is None:
             fig, (ax1, ax2) = plt.subplots(2, sharex=True, figsize=(6, 9))
@@ -542,9 +415,9 @@ class DCData(object):
         plt.subplots_adjust(hspace=0., wspace=0.)
 
         # Plot DC I-V curve
-        ax1.plot(v_mv, i_ua, label='DC I-V')
-        ax1.plot(v_mv, rslope, 'k--', label=r'$R_\mathrm{{n}}^{{-1}}$ slope')
-        ax1.axvline(self.vint * 1e3, c='k', ls=':', lw=0.5, label=r'$V_\mathrm{{int}}$')
+        ax1.plot(v_mv, i_ua, label='I-V curve')
+        ax1.plot(v_mv, rslope, 'k--', label=r'Normal-state')
+        ax1.axvline(self.vint * 1e3, c='k', ls=':', label=r'$V_\mathrm{{intercept}}$')
         ax1.set_ylabel(r'Current ($\mu$A)')
         ax1.set_ylim(bottom=0)
         ax1.set_xlim(left=0)
@@ -552,14 +425,14 @@ class DCData(object):
 
         # Plot DC IF data
         v_mv = self.if_data[:, 0] * mv
-        ax2.plot(v_mv, self.if_data[:, 1], _pale_red, label='IF (unpumped)')
+        ax2.plot(v_mv, self.if_data[:, 1], _pale_red, label='IF Power')
         ax2.plot(self.shot_slope[:, 0] * self.vgap * 1e3,
-                 self.shot_slope[:, 1], 'k--', label='Shot noise slope')
+                 self.shot_slope[:, 1], 'k--', label='5.8 K/mV')
         ax2.plot(self.vint * 1e3, self.if_noise,
-                 marker='o', ls='None', color='r',
+                 marker='o', ls='None', color='r', ms=8,
                  mfc='None', markeredgewidth=1,
-                 label='IF Noise: {0:.2f} K'.format(self.if_noise))
-        ax2.axvline(self.vint * 1e3, c='k', ls=':', lw=0.5)
+                 label='IF noise: {0:.2f} K'.format(self.if_noise))
+        ax2.axvline(self.vint * 1e3, c='k', ls=':')
         ax2.set_xlabel('Bias Voltage (mV)')
         ax2.set_ylabel('IF Power (K)')
         ax2.set_xlim([0, v_mv.max()])
@@ -605,15 +478,11 @@ class DCData(object):
 
         # Names for figures
         fig1 = os.path.join(folder, 'dciv.png')
-        fig2 = os.path.join(folder, 'dciv-offset.png')
-        fig3 = os.path.join(folder, 'dciv-rdyn.png')
-        fig4 = os.path.join(folder, 'dcif-shot-noise.png')
+        fig2 = os.path.join(folder, 'dcif.png')
 
         # Generate plots
         self.plot_dciv(fig1, **kw)
-        self.plot_offset(fig2, **kw)
-        self.plot_rdyn(fig3, **kw)
-        self.plot_if_noise(fig4, **kw)
+        self.plot_if_noise(fig2, **kw)
 
 
 class PumpedData(object):
@@ -621,34 +490,20 @@ class PumpedData(object):
 
     Note:
 
-        Experimental data can be passed to this class either in the form of
-        CSV data files or Numpy arrays. In both bases, the data should have
-        two columns: the first for voltage, and the second for current or IF
-        power, depending on the file type.
-
-        For CSV files, you can define the delimiter using the keyword
-        argument ``delimiter=','``, the number of rows to skip for the header
-        using ``skip_header=1``, and which columns to import using
-        ``usecols=(0,1)``. Take a look at the data in
-        ``QMix/notebooks/eg-230-data/`` for an example. Also, take a look at
-        ``QMix/notebooks/analyze-experimental-data.ipynb`` for an example of
-        how to use this module.
+        Experimental data needs to be passed as a Numpy array. The data should 
+        have two columns: the first for voltage, and the second for current or
+        IF power, depending on the file type.
 
         See ``qmix.exp.parameters.params`` for all possible keyword arguments.
         These parameters control how the data is imported and analyzed.
 
     Args:
-        ivdata: I-V data. Either a CSV data file or a Numpy array. The data
+        ivdata: I-V data. A Numpy array. The data
             should have two columns: the first for voltage, and the second
-            for current. If you are using CSV files, the properties of
-            the CSV file can be set through additional keyword arguments
-            (see below).
+            for current.
         dciv (qmix.exp.iv_data.DCIVData): DC I-V metadata
 
     Keyword arguments:
-        delimiter (str): Delimiter for CSV files.
-        usecols (tuple): List of columns to import (tuple of length 2).
-        skip_header (int): Number of rows to skip, used to skip the header.
         v_fmt (str): Units for voltage ('uV', 'mV', or 'V').
         i_fmt (str): Units for current ('uA', 'mA', or 'A').
         vmax (float): Maximum voltage to import in units [V].
@@ -708,28 +563,13 @@ class PumpedData(object):
         # Unpack keyword arguments
         comment    = kw['comment']
         freq       = kw['freq']
-        analyze    = kw['analyze']
+        # analyze    = kw['analyze']
         analyze_if = kw['analyze_if']
         analyze_iv = kw['analyze_iv']
         verbose    = kw['verbose']
 
-        # Analyze data? (deprecated, set individually)
-        if analyze is not None:  # pragma: no cover
-            analyze_iv = analyze
-            analyze_if = analyze
-
         # Sort out file paths
-        if isinstance(ivdata, str):  # input type: CSV file
-            self.iv_file = ivdata
-            self.directory = os.path.dirname(ivdata)
-            self.iv_filename = os.path.basename(ivdata)
-            if if_hot is not None and if_cold is not None:
-                self.filename_hot = os.path.basename(if_hot)
-                self.filename_cold = os.path.basename(if_cold)
-            else:
-                self.filename_hot = None
-                self.filename_cold = None
-        elif isinstance(ivdata, np.ndarray):  # input type: Numpy array
+        if isinstance(ivdata, np.ndarray):  # input type: Numpy array
             self.iv_file = 'Numpy array'
             self.directory = 'Numpy array'
             self.iv_filename = 'Numpy array'
@@ -759,7 +599,8 @@ class PumpedData(object):
             str1 = 'If input data is in the form of Numpy arrays, '
             str2 = 'you must define the frequency of the LO signal.'
             raise ValueError(str1 + str2)
-        self.freq, self.freq_str = _get_freq(freq, ivdata)
+        self.freq = freq
+        self.freq_str = f"{freq:.1f}"
         kw['freq'] = self.freq
         self.vph = self.freq / self.fgap * 1e9  # photon voltage
 
@@ -990,7 +831,8 @@ class PumpedData(object):
         else:
             fig = ax.get_figure()
         ax.plot(dciv.voltage * vmv, dciv.current * iua, label="Unpumped")
-        ax.plot(self.voltage * vmv, self.current * iua, 'r', label="Pumped")
+        mask = self.current != 0
+        ax.plot(self.voltage[mask] * vmv, self.current[mask] * iua, 'r', label="Pumped")
         ax.set_xlabel(r'Bias Voltage (mV)')
         ax.set_ylabel(r'DC Current (uA)')
         ax.set_xlim([0, vmax_plot])
@@ -1083,10 +925,9 @@ class PumpedData(object):
             fig = ax1.get_figure()
 
         # Plot I-V data
-        ax1.plot(self.voltage_dc * mv, self.current_dc * ua,
-                 '#8c8c8c', label="Unpumped")
-        ax1.plot(self.voltage * mv, self.current * ua,
-                 'k', label="Pumped")
+        ax1.plot(self.voltage_dc * mv, self.current_dc * ua, '#8c8c8c', label="Unpumped")
+        mask = self.current != 0
+        ax1.plot(self.voltage[mask] * mv, self.current[mask] * ua, 'k', label="Pumped")
         ax1.set_xlabel('Bias Voltage (mV)')
         ax1.set_ylabel(r'DC Current ($\mu$A)')
         ax1.set_ylim([0, imax])
@@ -1096,8 +937,10 @@ class PumpedData(object):
         # Plot IF data
         mv = self.if_hot[:, 0] * self.vgap * 1e3
         ax2 = ax1.twinx()
-        ax2.plot(mv, self.if_hot[:, 1], '#f96b6b', label='Hot')
-        ax2.plot(mv, self.if_cold[:, 1], '#6ba2f9', label='Cold')
+        mask = self.if_hot[:, 1] != 0
+        ax2.plot(mv[mask], self.if_hot[mask, 1], '#f96b6b', label='Hot')
+        mask = self.if_cold[:, 1] != 0
+        ax2.plot(mv[mask], self.if_cold[mask, 1], '#6ba2f9', label='Cold')
         ax2.set_ylabel('IF Power (K)')
         ax2.legend(loc=1, framealpha=1., frameon=True)
         ax2.grid(False)
@@ -1105,117 +948,6 @@ class PumpedData(object):
         ax2.set_xlim([0, vmax_plot])
         ax1.minorticks_on()
         ax2.minorticks_on()
-
-        if fig_name is not None:
-            fig.savefig(fig_name, **_plot_params)
-            plt.close(fig)
-            return
-        else:
-            return ax1, ax2
-
-    def plot_shapiro(self, fig_name=None, ax=None):  # pragma: no cover
-        """Plot Shapiro steps.
-
-        Note: If ``fig_name`` is provided, this method will save the plot
-        to the specified folder and then close the plot. This means
-        that the Matplotlib axis object will not be returned in this
-        case. This is done to prevent too many plots from being open
-        at the time.
-
-        Args:
-            fig_name: figure filename
-            ax: Matplotlib axis
-
-        """
-
-        # Check arguments
-        # assert fig_name is not None and ax is not None
-
-        # De-normalize voltage
-        v_mv = self.if_hot[:, 0] * self.vgap * 1e3
-
-        # Calculate Shaprio voltage separation
-        f_hz = float(self.freq) * 1e9
-        vshapiro = f_hz * sc.h / sc.e / 2 / sc.milli
-        mask = (0. < v_mv) & (v_mv < 3.5 * vshapiro)
-
-        if ax is None:
-            fig, ax = plt.subplots()
-        else:
-            fig = ax.get_figure()
-        ax.plot(v_mv[mask], self.if_hot[mask, 1], '#f96b6b', label='Hot')
-        ax.plot(v_mv[mask], self.if_cold[mask, 1], '#6ba2f9', label='Cold')
-        ax.axvline(vshapiro, label=r'$\omega_\mathrm{LO}h/2e$', c='k', ls='--')
-        ax.axvline(2 * vshapiro, c='k', ls='--')
-        ax.axvline(3 * vshapiro, c='k', ls='--')
-        ax.set_xlim([0, 3.5 * vshapiro])
-        ax.set_xlabel('Bias Voltage (mV)')
-        ax.set_ylabel('IF Power (K)')
-        ax.minorticks_on()
-        ax.legend()
-        if fig_name is not None:
-            fig.savefig(fig_name, **_plot_params)
-            plt.close(fig)
-            return
-        else:
-            return ax
-
-    def plot_if_noise(self, fig_name=None, ax=None):  # pragma: no cover
-        """Plot IF noise.
-
-        Note: If ``fig_name`` is provided, this method will save the plot
-        to the specified folder and then close the plot. This means
-        that the Matplotlib axis object will not be returned in this
-        case. This is done to prevent too many plots from being open
-        at the time.
-
-        Args:
-            fig_name: figure filename
-            ax: Matplotlib axis (should be tuple with two axes)
-
-        """
-
-        # Check arguments
-        # assert fig_name is not None and ax is not None
-
-        rslope = (self.voltage_dc * self.vgap /
-                  self.rn - self.vint / self.rn) * 1e6
-
-        vmax = self.voltage.max() * self.vgap * 1e3
-        imax = self.current.max() * self.igap * 1e6
-
-        if ax is None:
-            fig, (ax1, ax2) = plt.subplots(2, sharex=True, figsize=(6, 9))
-        else:
-            ax1, ax2 = ax
-            fig = ax1.get_figure()
-        plt.subplots_adjust(hspace=0., wspace=0.)
-
-        ax1.plot(self.dciv.voltage * self.vgap * 1e3,
-                 self.dciv.current * self.igap * 1e6, label='Unpumped')
-        ax1.plot(self.voltage * self.vgap * 1e3,
-                 self.current * self.igap * 1e6, 'r', label='Pumped')
-        ax1.plot(self.voltage * self.vgap * 1e3,
-                 rslope, 'k--', label=r'$R_\mathrm{{n}}^{{-1}}$ slope')
-        ax1.plot(self.vint * 1e3, 0, 'ro', label=r'$V_\mathrm{{int}}$')
-        ax1.set_ylabel(r'Current ($\mu$A)')
-        ax1.set_ylim([0, imax])
-        ax1.set_xlim([0, vmax])
-        ax1.legend()
-
-        v_mv = self.if_hot[:, 0] * self.vgap * 1e3
-
-        ax2.plot(v_mv, self.if_hot[:, 1], _pale_red, label='Hot')
-        ax2.plot(v_mv, self.if_cold[:, 1], _pale_blue, label='Cold')
-        ax2.plot(self.shot_slope[:, 0] * self.vgap * 1e3,
-                 self.shot_slope[:, 1], 'k--', label='Shot noise slope')
-        ax2.plot(self.vint * 1e3, self.if_noise, 'ro',
-                 label='IF Noise: {:.2f} K'.format(self.if_noise))
-        ax2.set_xlabel('Bias Voltage (mV)')
-        ax2.set_ylabel('IF Power (K)')
-        ax2.set_xlim([0, v_mv.max()])
-        ax2.set_ylim([0, np.max(self.shot_slope) * 1.1])
-        ax2.legend(loc=0)
 
         if fig_name is not None:
             fig.savefig(fig_name, **_plot_params)
@@ -1243,9 +975,10 @@ class PumpedData(object):
         # Check arguments
         # assert fig_name is not None and ax is not None
 
-        v_mv = self.if_hot[:, 0] * self.vgap * 1e3
-        hot = gauss_conv(self.if_hot[:, 1], 5)
-        cold = gauss_conv(self.if_cold[:, 1], 5)
+        mask = self.if_hot[:, 1] != 0
+        v_mv = self.if_hot[mask, 0] * self.vgap * 1e3
+        hot = gauss_conv(self.if_hot[mask, 1], 5)
+        cold = gauss_conv(self.if_cold[mask, 1], 5)
 
         if ax is None:
             fig, ax1 = plt.subplots()
@@ -1264,8 +997,8 @@ class PumpedData(object):
         ax1.grid(False)
 
         # Plot noise temperature
-        l3 = ax2.plot(v_mv, self.tn, _pale_green, ls='--', label='Noise Temp.')
-        l4 = ax2.plot(v_mv[self.idx_best], self.tn_best,
+        l3 = ax2.plot(v_mv, self.tn[mask], _pale_green, ls='--', label='Noise Temp.')
+        l4 = ax2.plot(self.if_hot[self.idx_best, 0] * self.vgap * 1e3, self.tn_best,
                       label=r'$T_\mathrm{{n}}={:.1f}$ K'.format(self.tn_best),
                       marker='o', ls='None', color='k',
                       mfc='None', markeredgewidth=1)
@@ -1425,65 +1158,6 @@ class PumpedData(object):
             return
         else:
             return ax1, ax2
-
-    def plot_rdyn(self, fig_name=None, ax=None, vmax_plot=4.):  # pragma: no cover
-        """Plot dynamic resistance.
-
-        Note: If ``fig_name`` is provided, this method will save the plot
-        to the specified folder and then close the plot. This means
-        that the Matplotlib axis object will not be returned in this
-        case. This is done to prevent too many plots from being open
-        at the time.
-
-        Args:
-            fig_name: figure filename
-            ax: Matplotlib axis
-            vmax_plot: max voltage to include in plot (in mV)
-
-        """
-
-        # Check arguments
-        # assert fig_name is not None and ax is not None
-
-        # Unnormalize current/voltage
-        v_mv = self.voltage * self.vgap * 1e3
-
-        # Determine dynamic resistance (remove 0 values to avoid /0 errors)
-        rdyn = self.rdyn * self.rn
-
-        # Position of steps
-        steps = np.r_[-1 + self.vph * np.arange(-3, 4, 1),
-                      1 - self.vph * np.arange(3, -4, -1)]
-        v_steps = steps * self.vgap * 1e3
-        r_steps = np.interp(v_steps, v_mv, rdyn)
-
-        # Dynamic resistance at 'best' bias point (where TN is best)
-        vb_best = (self.if_hot[:, 0] * self.vgap * 1e3)[self.idx_best]
-        rdyn_bias = np.interp(vb_best, v_mv, rdyn)
-
-        if ax is None:
-            fig, ax = plt.subplots()
-        else:
-            fig = ax.get_figure()
-        ax.plot(v_mv, rdyn, label=r'$R_\mathrm{dyn}$')
-        ax.plot(vb_best, rdyn_bias, 'r^', label=r'%.1f $\Omega$' % rdyn_bias)
-        ax.plot(v_steps, r_steps, 'k+',
-                label=r'$V_\mathrm{gap} + nV_\mathrm{ph}$')
-        plt.axvline(-1 * self.vgap * 1e3, c='k', ls='--', lw=0.5)
-        plt.axvline(0, c='k', ls='--', lw=0.5)
-        plt.axvline(1 * self.vgap * 1e3, c='k', ls='--', lw=0.5)
-        ax.set_xlabel('Bias Voltage (mV)')
-        ax.set_ylabel(r'Dynamic Resistance ($\Omega$)')
-        ax.set_xlim([0, vmax_plot])
-        ax.set_ylim(bottom=0)
-        ax.legend(loc=0, title='LO: ' + str(self.freq) + ' GHz')
-        ax.minorticks_on()
-        if fig_name is not None:
-            fig.savefig(fig_name, **_plot_params)
-            plt.close(fig)
-            return
-        else:
-            return ax
 
     def plot_gain(self, fig_name=None, ax=None, vmax_plot=4.):  # pragma: no cover
         """Plot gain.
@@ -1669,7 +1343,8 @@ class PumpedData(object):
             fig = ax.get_figure()
         ax.plot(self.dciv.voltage * mv, self.dciv.current * ua,
                 label='Unpumped', c='gray')
-        ax.plot(self.voltage * mv, self.current * ua,
+        mask = self.current != 0
+        ax.plot(self.voltage[mask] * mv, self.current[mask] * ua,
                 label='Pumped')
         ax.plot(cct.vb * mv, current[0].real * ua,
                 label='Simulated', c='r', ls='--')
@@ -1862,8 +1537,8 @@ def plot_overall_results(dciv, data_list, fig_folder, vmax_plot=4.,
 
     plotparam = dict(ls='--', marker='o')
 
-    csv_folder = os.path.join(fig_folder, '09_csv_data/')
-    fig_folder = os.path.join(fig_folder, '08_overall_performance/')
+    csv_folder = os.path.join(fig_folder, _file_structure['CSV data'])
+    fig_folder = os.path.join(fig_folder, _file_structure['Overall performance'])
 
     num_data = float(len(data_list))
 
@@ -2269,71 +1944,3 @@ def initialize_dir(fig_folder):  # pragma: no cover
             os.makedirs(fig_folder + folder)
             print('   - Created: ' + folder)
     print(" ")
-
-
-# FILE HELPER FUNCTIONS ------------------------------------------------------
-
-def _get_freq_from_filename(file_path):
-    """Get frequency from filename.
-
-    This is used by the ``PumpedData`` class if a frequency is not provided
-    as an argument.
-
-    Note:
-
-        This function assumes that the only numbers in the filename are there
-        to represent the frequency. E.g., ``f230_0_iv.csv`` will be analyzed as
-        230.0 GHz, but ``f230_0_iv12.csv`` will be analyzed as 230.012 GHz.
-        More importantly, ``no15_f230_iv.csv`` will be analyzed as 152.30 GHz.
-        This function also assumes that the first digit in the file name
-        represents the hundreds (x100), so to represent a frequency below
-        100 GHz, you should use a leading zero. E.g., 85 GHz should be saved as
-        ``f085_0_iv.csv``, or something along those lines.
-
-    Args:
-        file_path: file path
-
-    Returns:
-        float: Frequency, in units [GHz]
-
-    """
-
-    filename = os.path.basename(file_path)
-    freq_nums = [int(s) for s in list(filename) if s.isdigit()]
-    mult = 100.
-    freq = 0.
-    for c in freq_nums:
-        freq += c * mult
-        mult /= 10.
-
-    return freq
-
-
-def _get_freq(freq, filepath):
-    """Get frequency.
-
-    If ``freq`` is not ``None``, return ``freq``. Otherwise, if ``freq`` is
-    ``None``, try to get it from the filename (see
-    ``_get_freq_from_filename()`` function).
-
-    Also, return the frequency as a string, so that it can be used to name
-    output files. But, replace periods with underscores. For example,
-    represent a frequency of 230.0 GHz as ``230_0``.
-
-    Args:
-        freq: frequency, in units GHz
-        filepath: filename of pumped I-V data
-
-    Returns:
-        tuple: frequency float and frequency string
-
-    """
-
-    if freq is None:
-        freq = float(_get_freq_from_filename(filepath))
-    else:
-        freq = float(freq)
-    freq_str = "{0:05.1f}".format(freq)
-    freq_str = freq_str.replace('.', '_')
-
-    return freq, freq_str

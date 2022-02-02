@@ -9,8 +9,8 @@ used for I-V data that is collected with LO injection (also known as the
 
 Note:
 
-    The I-V data is expected either in the form of a CSV file or a Numpy
-    array. Either way the data should have two columns: the first for voltage
+    The I-V data is expected either in the form of Numpy
+    array. The data should have two columns: the first for voltage
     and the second for current.
 
 """
@@ -70,16 +70,11 @@ def dciv_curve(ivdata, **kwargs):
     """Import and analyze DC I-V data (a.k.a., the unpumped I-V curve).
 
     Args:
-        ivdata: DC I-V data. Either a CSV data file or a Numpy array. The data
+        ivdata: DC I-V data. A Numpy array. The data
             should have two columns: the first for voltage, and the second
-            for current. If you are using CSV files, the properties of
-            the CSV file can be set through additional keyword arguments.
-            (See below).
+            for current. 
 
     Keyword Args:
-        delimiter (str): Delimiter for CSV files.
-        usecols (tuple): List of columns to import (tuple of length 2).
-        skip_header (int): Number of rows to skip, used to skip the header.
         v_fmt (str): Units for voltage ('uV', 'mV', or 'V').
         i_fmt (str): Units for current ('uA', 'mA', or 'A').
         vmax (float): Maximum voltage to import in units [V].
@@ -225,18 +220,13 @@ def iv_curve(ivdata, dc, **kwargs):
     """Load and analyze pumped I-V curve data.
 
     Args:
-        ivdata: I-V data. Either a CSV data file or a Numpy array. The data
+        ivdata: I-V data. A Numpy array. The data
             should have two columns: the first for voltage, and the second
-            for current. If you are using a CSV file, the properties of
-            the CSV file can be set through additional keyword arguments
-            (see below).
+            for current. 
         dc (qmix.exp.iv_data.DCIVData): DC I-V data metadata. Generated
             previously by ``dciv_curve``.
 
     Keyword Args:
-        delimiter (str): Delimiter for CSV files.
-        usecols (tuple): List of columns to import (tuple of length 2).
-        skip_header (int): Number of rows to skip, used to skip the header.
         v_fmt (str): Units for voltage ('uV', 'mV', or 'V').
         i_fmt (str): Units for current ('uA', 'mA', or 'A').
         vmax (float): Maximum voltage to import in units [V].
@@ -328,7 +318,7 @@ def iv_curve(ivdata, dc, **kwargs):
 
     # Resample I-V curve
     v_temp = np.linspace(-vmax, vmax, npts) / dc.vgap
-    current = np.interp(v_temp, voltage, current)
+    current = np.interp(v_temp, voltage, current, left=0, right=0)
     voltage = v_temp
 
     return voltage, current
@@ -340,16 +330,13 @@ def _load_iv(ivdata, **kw):
     """Import I-V data and do some basic cleaning.
 
     Args:
-        ivdata: I-V data. Either a CSV data file or a Numpy array. The data
+        ivdata: I-V data. A Numpy array. The data
             should have two columns: the first for voltage, and the second
             for current.
 
     Keyword Arguments:
         v_fmt: voltage units ('uV', 'mV', 'V')
         i_fmt: current units ('uA', 'mA', 'A')
-        usecols: list of columns to use (tuple of length 2)
-        skip_header: number of rows to skip at the beginning of the file
-        delimiter: delimiter for CSV files
 
     Returns:
         tuple: voltage in units V, current in units A
@@ -357,24 +344,14 @@ def _load_iv(ivdata, **kw):
     """
 
     # Unpack keyword arguments
-    skip_header = kw.get('skip_header', PARAMS['skip_header'])
-    delimiter = kw.get('delimiter', PARAMS['delimiter'])
-    usecols = kw.get('usecols', PARAMS['usecols'])
     v_fmt = kw.get('v_fmt', PARAMS['v_fmt'])
     i_fmt = kw.get('i_fmt', PARAMS['i_fmt'])
 
     # Import raw I-V data
-    if isinstance(ivdata, str):  # input: CSV file
-        vraw, iraw = np.genfromtxt(ivdata, delimiter=delimiter,
-                                   usecols=usecols, skip_header=skip_header).T
-    elif isinstance(ivdata, np.ndarray):  # input: Numpy array
-        assert isinstance(ivdata, np.ndarray), \
-            'I-V data should be a Numpy array.'
-        assert ivdata.ndim == 2, 'I-V data should be 2-dimensional.'
-        assert ivdata.shape[1] == 2, 'I-V data should have 2 columns.'
-        vraw, iraw = ivdata.T
-    else:
-        raise ValueError("Input data type not recognized.")
+    assert isinstance(ivdata, np.ndarray), 'I-V data should be a Numpy array.'
+    assert ivdata.ndim == 2, 'I-V data should be 2-dimensional.'
+    assert ivdata.shape[1] == 2, 'I-V data should have 2 columns.'
+    vraw, iraw = ivdata.T
 
     # Set units
     volt_v = vraw * _vfmt_dict[v_fmt]

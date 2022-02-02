@@ -7,8 +7,8 @@ is used for IF power with LO injection.
 
 Note:
 
-    The IF data is expected either in the form of a CSV file or a Numpy
-    array. Either way the data should have two columns: the first for voltage
+    The IF data is expected in the form of a a Numpy
+    array. The data should have two columns: the first for voltage
     and the second for current.
 
 """
@@ -54,17 +54,12 @@ def dcif_data(ifdata, dc, **kwargs):
     data into units 'K' and estimate the IF noise component.
 
     Args:
-        ifdata: IF data. Either a CSV data file or a Numpy array. The data
+        ifdata: IF data. A Numpy array. The data
             should have two columns: the first for voltage, and the second
-            for IF power. If you are passing a CSV file, the properties of
-            the CSV file can be set through additional keyword arguments
-            (see below).
+            for IF power.
         dc (qmix.exp.iv_data.DCIVData): DC I-V metadata.
 
     Keyword Args:
-        delimiter (str): Delimiter for CSV files.
-        usecols (tuple): List of columns to import (tuple of length 2).
-        skip_header (int): Number of rows to skip, used to skip the header.
         v_fmt (str): Units for voltage ('uV', 'mV', or 'V').
         i_fmt (str): Units for current ('uA', 'mA', or 'A').
         rseries (float): Series resistance in experimental measurement
@@ -100,18 +95,15 @@ def if_data(if_hot, if_cold, dc, **kwargs):
     """Analyze IF measurements from a hot/cold load experiment.
 
     Args:
-        if_hot: Hot IF data. Either a CSV data file or a Numpy array. The data
+        if_hot: Hot IF data. A Numpy array. The data
             should have two columns: the first for voltage, and the second
             for IF power.
-        if_cold: Cold IF data. Either a CSV data file or a Numpy array. The
+        if_cold: Cold IF data. A Numpy array. The
             data should have two columns: the first for voltage, and the
             second for IF power.
         dc (qmix.exp.iv_data.DCIVData): DC I-V metadata.
 
     Keyword Args:
-        delimiter (str): Delimiter for CSV files.
-        usecols (tuple): List of columns to import (tuple of length 2).
-        skip_header (int): Number of rows to skip, used to skip the header.
         v_fmt (str): Units for voltage ('uV', 'mV', or 'V').
         i_fmt (str): Units for current ('uA', 'mA', or 'A').
         rseries (float): Series resistance in experimental measurement
@@ -233,7 +225,8 @@ def _find_tn_gain(if_data_hot, if_data_cold, dc, **kw):
     elif best_pt.lower() == 'max gain':
         idx_out = gain.argmax()
     elif best_pt.lower() == 'min tn':
-        idx_out = tn.argmin()
+        tn_best = tn[~np.isnan(tn)].min()
+        idx_out = np.nanargmin(np.abs(tn - tn_best))
     else:
         raise ValueError("best_pt not recognized")
 
@@ -373,23 +366,18 @@ def _load_if(ifdata, dc, **kwargs):
     """Import IF data.
 
     Args:
-        ifdata: IF data. Either a CSV data file or a Numpy array. The data
+        ifdata: IF data. A Numpy array. The data
             should have two columns: the first for voltage, and the second
-            for IF power. If you are using a CSV file, the properties of
-            the CSV file can be set through additional keyword arguments
-            (see below).
+            for IF power.
         dc (qmix.exp.iv_data.DCIVData): DC I-V metadata.
 
     Keyword arguments:
-        delimiter (str): delimiter used in data files
         v_fmt (str): units for voltage ('V', 'mV', 'uV')
-        usecols (tuple): columns for voltage and current (e.g., ``(0,1)``)
         ifdata_sigma (float): Standard deviation of Gaussian used for
             filtering, in units [V]
         ifdata_npts (float): evenly interpolate data to have this many data
             points
         rseries (float): series resistance of measurement system
-        skip_header: number of rows to skip at the beginning of the file
 
     Returns: IF data (in matrix form)
 
@@ -397,25 +385,17 @@ def _load_if(ifdata, dc, **kwargs):
 
     # Unpack keyword arguments
     v_multiplier = kwargs.get('v_multiplier', PARAMS['v_multiplier'])
-    skip_header = kwargs.get('skip_header', PARAMS['skip_header'])
     sigma = kwargs.get('ifdata_sigma', PARAMS['ifdata_sigma'])
     vmax = kwargs.get('vmax', PARAMS['vmax'])
     npts = kwargs.get('ifdata_npts', PARAMS['ifdata_npts'])
-    delim = kwargs.get('delimiter', PARAMS['delimiter'])
-    usecols = kwargs.get('usecols', PARAMS['usecols'])
     rseries = kwargs.get('rseries', PARAMS['rseries'])
     v_fmt = kwargs.get('v_fmt', PARAMS['v_fmt'])
 
     # Import raw IF data
-    if isinstance(ifdata, str):  # assume CSV data file
-        ifdata = np.genfromtxt(ifdata, delimiter=delim, usecols=usecols,
-                               skip_header=skip_header)
-    elif isinstance(ifdata, np.ndarray):  # Numpy array
-        ifdata = ifdata.copy()
-        assert ifdata.ndim == 2, 'I-V data should be 2-dimensional.'
-        assert ifdata.shape[1] == 2, 'I-V data should have 2 columns.'
-    else:
-        raise ValueError("Input data type not recognized.")
+    ifdata = ifdata.copy()
+    assert isinstance(ifdata, np.ndarray), 'IF data should be a Numpy array.'
+    assert ifdata.ndim == 2, 'IF data should be 2-dimensional.'
+    assert ifdata.shape[1] == 2, 'IF data should have 2 columns.'
 
     # Units for voltage
     ifdata[:, 0] *= _vfmt_dict[v_fmt]
@@ -447,11 +427,11 @@ def _load_if(ifdata, dc, **kwargs):
 
     # Set to common voltage (so that data can be stacked)
     v, p = ifdata[:, 0], ifdata[:, 1]
-    assert v.max() > vmax / dc.vgap, \
-        'vmax ({0}) outside data range ({1})'.format(vmax / dc.vgap, v.max())
-    assert v.min() < 0., 'V=0 not included in IF data'
+    # assert v.max() > vmax / dc.vgap, \
+    #     'vmax ({0}) outside data range ({1})'.format(vmax / dc.vgap, v.max())
+    # assert v.min() < 0., 'V=0 not included in IF data'
     v_out = np.linspace(0, vmax / dc.vgap, npts)
-    p_out = np.interp(v_out, v, p)
+    p_out = np.interp(v_out, v, p, left=0, right=0)
     ifdata = np.vstack((v_out, p_out)).T
 
     # Smooth IF data
