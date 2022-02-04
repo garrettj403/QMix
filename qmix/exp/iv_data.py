@@ -72,7 +72,7 @@ def dciv_curve(ivdata, **kwargs):
     Args:
         ivdata: DC I-V data. A Numpy array. The data
             should have two columns: the first for voltage, and the second
-            for current. 
+            for current.
 
     Keyword Args:
         v_fmt (str): Units for voltage ('uV', 'mV', or 'V').
@@ -222,7 +222,7 @@ def iv_curve(ivdata, dc, **kwargs):
     Args:
         ivdata: I-V data. A Numpy array. The data
             should have two columns: the first for voltage, and the second
-            for current. 
+            for current.
         dc (qmix.exp.iv_data.DCIVData): DC I-V data metadata. Generated
             previously by ``dciv_curve``.
 

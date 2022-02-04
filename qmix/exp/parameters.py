@@ -11,7 +11,7 @@ Note:
     ``v_fmt="uV"`` to ``PumpedData`` or ``DCData``.
 
     Also note that experimental data must be passed to ``DCData`` and
-    ``PumpedData`` with Numpy arrays. The data should have two columns: one 
+    ``PumpedData`` with Numpy arrays. The data should have two columns: one
     for voltage and one for current or IF power, depending on the file. See
     Example #3 on the QMix website for more information.
 

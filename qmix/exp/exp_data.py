@@ -8,7 +8,7 @@ collected with LO injection (i.e., pumped data).
 
 Note:
 
-    Experimental data needs to be passed as a Numpy array. The data should 
+    Experimental data needs to be passed as a Numpy array. The data should
     have two columns: the first for voltage, and the second for current or IF
     power, depending on the file type.
 
@@ -77,7 +77,7 @@ class DCData(object):
 
     Note:
 
-        Experimental data needs to be passed as a Numpy array. The data should 
+        Experimental data needs to be passed as a Numpy array. The data should
         have two columns: the first for voltage, and the second for current or
         IF power, depending on the file type.
 
@@ -87,7 +87,7 @@ class DCData(object):
     Args:
         dciv: DC I-V curve. A Numpy array. The data
             should have two columns: the first for voltage, and the second
-            for current. 
+            for current.
         dcif: DC IF data. A Numpy array. The
             data should have two columns: the first for voltage, and the
             second for IF power.
@@ -491,7 +491,7 @@ class PumpedData(object):
 
     Note:
 
-        Experimental data needs to be passed as a Numpy array. The data should 
+        Experimental data needs to be passed as a Numpy array. The data should
         have two columns: the first for voltage, and the second for current or
         IF power, depending on the file type.
 
@@ -1350,7 +1350,8 @@ class PumpedData(object):
         mask = self.current != 0
         ax.plot(self.voltage[mask] * mv, self.current[mask] * ua, label='Pumped')
         ax.plot(cct.vb * mv, current[0].real * ua, label='Simulated', c='r', ls='--')
-        ax.plot([v_min, v_max], np.interp([v_min, v_max], cct.vb * mv, current[0].real * ua), 'k+', label='Fit Interval')
+        y_min, y_max = np.interp([v_min, v_max], cct.vb * mv, current[0].real * ua)
+        ax.plot([v_min, v_max], [y_min, y_max], 'k+', label='Fit Interval')
         ax.axvline(self.vgap * 1e3, ymin=0.2, ymax=0.6, color='k', lw=0.5)
         ax.axvline(self.vgap * 1e3 - self.vph * mv, ymin=0.05, ymax=0.3, color='k', lw=0.5)
         ax.set_xlim([0, vmax_plot])
