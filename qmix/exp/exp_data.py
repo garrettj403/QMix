@@ -1346,26 +1346,22 @@ class PumpedData(object):
             fig, ax = plt.subplots()
         else:
             fig = ax.get_figure()
-        ax.plot(self.dciv.voltage * mv, self.dciv.current * ua,
-                label='Unpumped', c='gray')
+        ax.plot(self.dciv.voltage * mv, self.dciv.current * ua, label='Unpumped', c='gray')
         mask = self.current != 0
-        ax.plot(self.voltage[mask] * mv, self.current[mask] * ua,
-                label='Pumped')
-        ax.plot(cct.vb * mv, current[0].real * ua,
-                label='Simulated', c='r', ls='--')
-        ax.plot([v_min, v_max],
-                np.interp([v_min, v_max],
-                          cct.vb * mv, current[0].real * ua),
-                'k+', label='Fit Interval')
+        ax.plot(self.voltage[mask] * mv, self.current[mask] * ua, label='Pumped')
+        ax.plot(cct.vb * mv, current[0].real * ua, label='Simulated', c='r', ls='--')
+        ax.plot([v_min, v_max], np.interp([v_min, v_max], cct.vb * mv, current[0].real * ua), 'k+', label='Fit Interval')
+        ax.axvline(self.vgap * 1e3, ymin=0.2, ymax=0.6, color='k', lw=0.5)
+        ax.axvline(self.vgap * 1e3 - self.vph * mv, ymin=0.05, ymax=0.3, color='k', lw=0.5)
         ax.set_xlim([0, vmax_plot])
-        ax.set_ylim([0, np.interp(vmax_plot, self.dciv.voltage * mv,
-                                  self.dciv.current * ua)])
+        ax.set_ylim([0, np.interp(vmax_plot, self.dciv.voltage * mv, self.dciv.current * ua)])
         ax.set_xlabel(r'Bias Voltage (mV)')
         ax.set_ylabel(r'DC Current (uA)')
         msg1 = 'LO: {:.1f} GHz'.format(self.freq)
-        msg2 = r'$V_T$ = {:.2f} mV'.format(self.vt * self.vgap * 1e3)
-        msg3 = r'$Z_T$ = {:.2f} $\Omega$'.format(self.zt * self.rn)
-        msg = msg1 + '\n' + msg2 + '\n' + msg3
+        msg2 = r'$V_{{ph}}$ = {:.2f} mV'.format(self.vph * mv)
+        msg3 = r'$V_T$ = {:.2f} mV'.format(self.vt * self.vgap * 1e3)
+        msg4 = r'$Z_T$ = {:.2f} $\Omega$'.format(self.zt * self.rn)
+        msg = msg1 + '\n' + msg2 + '\n' + msg3 + '\n' + msg4
         ax.legend(title=msg, frameon=False)
         if fig_name is not None:
             fig.savefig(fig_name, **_plot_params)
