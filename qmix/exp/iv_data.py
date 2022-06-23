@@ -117,6 +117,7 @@ def dciv_curve(ivdata, **kwargs):
 
     # Unpack keyword arguments
     # Use default values from qmix.exp.parameters if they aren't provided
+    vgap = kwargs.get('vgap', PARAMS['vgap'])
     v_multiplier = kwargs.get('v_multiplier', PARAMS['v_multiplier'])
     i_multiplier = kwargs.get('i_multiplier', PARAMS['i_multiplier'])
     filter_data = kwargs.get('filter_data', PARAMS['filter_data'])
@@ -182,7 +183,8 @@ def dciv_curve(ivdata, **kwargs):
         plt.show()
 
     # Analyze properties of DC I-V curve
-    vgap = _find_gap_voltage(volt_v, curr_a, **kwargs)
+    if vgap is None:
+        vgap = _find_gap_voltage(volt_v, curr_a, **kwargs)
     rn, vint = _find_normal_resistance(volt_v, curr_a, **kwargs)
     rsg = _find_subgap_resistance(volt_v, curr_a, **kwargs)
     fgap = sc.e * vgap / sc.h

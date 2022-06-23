@@ -183,6 +183,7 @@ params = dict(
               # Junction properties
               area =           1.5,
               freq =           None,
+              vgap =           None,
               # Analyzing DC I-V curve
               vrn =            (3.5e-3, 5e3),
               vrsg =           2e-3,
