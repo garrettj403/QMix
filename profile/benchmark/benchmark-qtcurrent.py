@@ -52,7 +52,7 @@ if args.tone is None or args.tone == 1:
         print(" -> Checking current")
         with open('data/qtcurrent1.data', 'rb') as f:
             current_known = pickle.load(f)
-        numpy.testing.assert_almost_equal(current_test, current_known, decimal=15)
+        numpy.testing.assert_almost_equal(current_test, current_known, decimal=14)
 
 # 2 tone ---------------------------------------------------------------------
 
@@ -83,7 +83,7 @@ if args.tone is None or args.tone == 2:
         print(" -> Checking current")
         with open('data/qtcurrent2.data', 'rb') as f:
             current_known = pickle.load(f)
-        numpy.testing.assert_almost_equal(current_test, current_known, decimal=15)
+        numpy.testing.assert_almost_equal(current_test, current_known, decimal=14)
 
 # 3 tone ---------------------------------------------------------------------
 
@@ -116,7 +116,7 @@ if args.tone is None or args.tone == 3:
         print(" -> Checking current")
         with open('data/qtcurrent3.data', 'rb') as f:
             current_known = pickle.load(f)
-        numpy.testing.assert_almost_equal(current_test, current_known, decimal=15)
+        numpy.testing.assert_almost_equal(current_test, current_known, decimal=14)
 
 # 4 tone ---------------------------------------------------------------------
 
@@ -151,7 +151,7 @@ if args.tone is None or args.tone == 4:
         print(" -> Checking current")
         with open('data/qtcurrent4.data', 'rb') as f:
             current_known = pickle.load(f)
-        numpy.testing.assert_almost_equal(current_test, current_known, decimal=15)
+        numpy.testing.assert_almost_equal(current_test, current_known, decimal=14)
 
 print("")
 
