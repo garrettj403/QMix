@@ -22,6 +22,7 @@ for i in range(4):
     ax[i].text(0.95, 0.95, '{} tone'.format(i+1),  
                ha='right', va='top', transform=ax[i].transAxes)
     ax[i].set_ylabel('Time (ms)')
+    ax[i].set_ylim(ymin=0)
 
 ax[3].set_xlim([0, len(results[0])])
 ax[3].set_xlabel('Trial number')
@@ -37,6 +38,7 @@ for i in range(4):
     ax[i].text(0.95, 0.95, '{} tone'.format(i+1),  
                ha='right', va='top', transform=ax[i].transAxes)
     ax[i].set_ylabel('Change (%)')
+    ax[i].set_ylim(ymax=0)
 
 ax[3].set_xlim([0, len(results[0])])
 ax[3].set_xlabel('Trial number')

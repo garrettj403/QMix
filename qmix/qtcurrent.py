@@ -24,6 +24,7 @@ from timeit import default_timer as timer
 import numba as nb
 import numpy as np
 from scipy.special import jv as bessel
+from scipy.special import j0, j1
 
 
 # round frequency values to this number of decimal places
@@ -371,10 +372,13 @@ def calculate_phase_factor_coeff(vj, freq, num_f, num_p, num_b):
     jac = np.zeros((num_f + 1, num_p + 1, max(num_b) * 2 + 1, npts), dtype=complex)
     for f in range(1, num_f + 1):
         for p in range(1, num_p + 1):
-            jac[f, p,  0] = bessel(0, alpha[f, p])
+            jac[f, p,  0] = j0(alpha[f, p])
             for n in range(1, num_b[f - 1] + 1):
                 # using Bessel function identity
-                jn = bessel(n, alpha[f, p])
+                if n == 1:
+                    jn = j1(alpha[f, p])
+                else:
+                    jn = bessel(n, alpha[f, p])
                 jac[f, p,  n] = jn * np.exp(-1j * n * phi[f, p])
                 jac[f, p, -n] = (-1)**n * np.conj(jac[f, p,  n])
 
