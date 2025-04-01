@@ -16,7 +16,7 @@ def test_clean_xy():
     sure that the data is sorted by x, and make sure repeated values are 
     removed."""
 
-    xx1 = np.array([3., 4., np.NaN, 1., 2.])
+    xx1 = np.array([3., 4., np.nan, 1., 2.])
     yy1 = np.array([1., 2., 3., 4., 5.])
 
     xx2, yy2 = qc.clean_xy(xx1, yy1)
@@ -30,7 +30,7 @@ def test_clean_xy_matrix():
     removed, make sure that the data is sorted by x, and make sure repeated 
     values are removed."""
 
-    xx1 = np.array([3., 4., np.NaN, 1., 2.])
+    xx1 = np.array([3., 4., np.nan, 1., 2.])
     yy1 = np.array([1., 2., 3., 4., 5.])
 
     mat1 = qc.xy_to_matrix(xx1, yy1)
