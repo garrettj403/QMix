@@ -601,9 +601,9 @@ class RespFnExponential(RespFn):
 
     Args:
         vgap (float): Gap voltage (un-normalized)
-        rsg (float): Sub-gap resistance (un-normalized)
         rn (float): Normal resistance (un-normalized)
-        a (float): Gap smearing parameter (4e4 is typical)
+        rsg (float): Sub-gap resistance (un-normalized)
+        agap (float): Gap smearing parameter (4e4 is typical)
 
     Keyword Args:
         verbose (bool, default is True): print info to terminal?
