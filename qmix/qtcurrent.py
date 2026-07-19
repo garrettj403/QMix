@@ -389,7 +389,7 @@ def calculate_phase_factor_coeff(vj, freq, num_f, num_p, num_b):
     return ckh
 
 
-@nb.njit("c16[:,:,:](c16[:,:,:,:])")
+@nb.njit("c16[:,:,:](c16[:,:,:,:])", cache=True)
 def _convolve_coefficients(jac):  # pragma: no cover
     """Convolve spectrum coefficients (recursively).
 
@@ -476,7 +476,7 @@ def _current_1_tone(freq_out, ccc, freq, resp_matrix, num_p, npts, num_b1):
     return current_out
 
 
-@nb.njit("c16[:](i4, c16[:,:,:], c16[:,:], i4, i4)")
+@nb.njit("c16[:](i4, c16[:,:,:], c16[:,:], i4, i4)", cache=True)
 def _current_coeff_1_tone(a, ccc, resp_matrix, num_b1, npts):  # pragma: no cover
     """Calculate the tunneling current coefficient (for 1 tone).
 
@@ -554,7 +554,7 @@ def _current_2_tones(freq_out, ccc, freq, resp_matrix, num_p, npts, num_b1, num_
     return current_out
 
 
-@nb.njit("c16[:](i4, i4, c16[:,:,:], c16[:,:,:], i4, i4, i4)")
+@nb.njit("c16[:](i4, i4, c16[:,:,:], c16[:,:,:], i4, i4, i4)", cache=True)
 def _current_coeff_2_tones(a, b, ccc, resp_matrix, num_b1, num_b2, npts):  # pragma: no cover
     """Calculate the tunneling current coefficient (for 2 tones).
 
@@ -582,25 +582,40 @@ def _current_coeff_2_tones(a, b, ccc, resp_matrix, num_b1, num_b2, npts):  # pra
     ccc1 = ccc[1]
     ccc2 = ccc[2]
 
+    # Pre-compute conjugates (saves time in the inner loops)
+    ccc1_conj = np.conj(ccc1)
+    ccc2_conj = np.conj(ccc2)
+
     # Equation 5.25
     rs_p = np.zeros(npts, dtype=np.complex128)
     rs_m = np.zeros(npts, dtype=np.complex128)
+    t1_p = np.empty(npts, dtype=np.complex128)
+    t1_m = np.empty(npts, dtype=np.complex128)
     for k in range(-num_b1, num_b1 + 1):
+
+        # Hoist tone 1 products (invariant within the l loop)
+        k_p = -num_b1 <= k + a <= num_b1
+        k_m = -num_b1 <= k - a <= num_b1
+        if not (k_p or k_m):
+            continue
+        if k_p:
+            t1_p = ccc1[k] * ccc1_conj[k + a]
+        if k_m:
+            t1_m = ccc1[k] * ccc1_conj[k - a]
+
         for l in range(-num_b2, num_b2 + 1):
 
-            if -num_b1 <= k + a <= num_b1 and \
-               -num_b2 <= l + b <= num_b2:
+            if k_p and -num_b2 <= l + b <= num_b2:
 
-                rs_p += ccc1[k, :] * np.conj(ccc1[k + a, :]) * \
-                        ccc2[l, :] * np.conj(ccc2[l + b, :]) * \
-                        resp_matrix[k, l]
+                for i in range(npts):
+                    rs_p[i] += t1_p[i] * ccc2[l, i] * ccc2_conj[l + b, i] * \
+                               resp_matrix[k, l, i]
 
-            if -num_b1 <= k - a <= num_b1 and \
-               -num_b2 <= l - b <= num_b2:
+            if k_m and -num_b2 <= l - b <= num_b2:
 
-                rs_m += ccc1[k, :] * np.conj(ccc1[k - a, :]) * \
-                        ccc2[l, :] * np.conj(ccc2[l - b, :]) * \
-                        resp_matrix[k, l]
+                for i in range(npts):
+                    rs_m[i] += t1_m[i] * ccc2[l, i] * ccc2_conj[l - b, i] * \
+                               resp_matrix[k, l, i]
 
     # Calculate current coefficient: equation 5.26
     if a == 0 and b == 0:
@@ -664,7 +679,7 @@ def _current_3_tones(freq_out, ccc, freq, resp_matrix, num_p, npts, num_b1, num_
     return current_out
 
 
-@nb.njit("c16[:](i4, i4, i4, c16[:,:,:], c16[:,:,:,:], i4, i4, i4)")
+@nb.njit("c16[:](i4, i4, i4, c16[:,:,:], c16[:,:,:,:], i4, i4, i4)", cache=True)
 def _current_coeff_3_tones(a, b, c, ccc, resp_matrix, num_b1, num_b2, num_b3):  # pragma: no cover
     """Calculate the tunneling current coefficient (for 3 tones).
 
@@ -694,35 +709,58 @@ def _current_coeff_3_tones(a, b, c, ccc, resp_matrix, num_b1, num_b2, num_b3):  
     ccc2 = ccc[2]
     ccc3 = ccc[3]
 
+    # Pre-compute conjugates (saves time in the inner loops)
+    ccc1_conj = np.conj(ccc1)
+    ccc2_conj = np.conj(ccc2)
+    ccc3_conj = np.conj(ccc3)
+
     # Equation 5.25
-    rs_p = np.zeros_like(ccc1[0, :], dtype=np.complex128)
-    rs_m = np.zeros_like(ccc1[0, :], dtype=np.complex128)
+    npts = ccc1.shape[1]
+    rs_p = np.zeros(npts, dtype=np.complex128)
+    rs_m = np.zeros(npts, dtype=np.complex128)
+    t1_p = np.empty(npts, dtype=np.complex128)
+    t1_m = np.empty(npts, dtype=np.complex128)
+    t2_p = np.empty(npts, dtype=np.complex128)
+    t2_m = np.empty(npts, dtype=np.complex128)
     for k in range(-num_b1, num_b1 + 1):
+
+        # Hoist tone 1 products (invariant within the l and m loops)
+        k_p = -num_b1 <= k + a <= num_b1
+        k_m = -num_b1 <= k - a <= num_b1
+        if not (k_p or k_m):
+            continue
+        if k_p:
+            t1_p = ccc1[k] * ccc1_conj[k + a]
+        if k_m:
+            t1_m = ccc1[k] * ccc1_conj[k - a]
+
         for l in range(-num_b2, num_b2 + 1):
+
+            # Hoist tone 2 products (invariant within the m loop)
+            l_p = k_p and -num_b2 <= l + b <= num_b2
+            l_m = k_m and -num_b2 <= l - b <= num_b2
+            if not (l_p or l_m):
+                continue
+            if l_p:
+                t2_p = t1_p * ccc2[l] * ccc2_conj[l + b]
+            if l_m:
+                t2_m = t1_m * ccc2[l] * ccc2_conj[l - b]
+
             for m in range(-num_b3, num_b3 + 1):
 
-                c0 = ccc1[k] * ccc2[l] * ccc3[m]
-                resp_current = resp_matrix[k, l, m]
+                if l_p and -num_b3 <= m + c <= num_b3:
 
-                if -num_b1 <= k + a <= num_b1 and \
-                   -num_b2 <= l + b <= num_b2 and \
-                   -num_b3 <= m + c <= num_b3:
+                    for i in range(npts):
+                        rs_p[i] += t2_p[i] * ccc3[m, i] * \
+                                   ccc3_conj[m + c, i] * \
+                                   resp_matrix[k, l, m, i]
 
-                    cp = np.conj(ccc1[k + a, :] *
-                                 ccc2[l + b, :] *
-                                 ccc3[m + c, :]) * c0
+                if l_m and -num_b3 <= m - c <= num_b3:
 
-                    rs_p += cp * resp_current
-
-                if -num_b1 <= k - a <= num_b1 and \
-                   -num_b2 <= l - b <= num_b2 and \
-                   -num_b3 <= m - c <= num_b3:
-
-                    cm = np.conj(ccc1[k - a, :] *
-                                 ccc2[l - b, :] *
-                                 ccc3[m - c, :]) * c0
-
-                    rs_m += cm * resp_current
+                    for i in range(npts):
+                        rs_m[i] += t2_m[i] * ccc3[m, i] * \
+                                   ccc3_conj[m - c, i] * \
+                                   resp_matrix[k, l, m, i]
 
     # Calculate current coefficient: equation 5.26
     if a == 0 and b == 0 and c == 0:
@@ -775,7 +813,7 @@ def _current_4_tones(freq_out, ccc, freq, resp_matrix, num_p, npts, num_b1, num_
     return current_out
 
 
-@nb.njit("c16[:](i4, i4, i4, i4, c16[:,:,:], c16[:,:,:,:,:], i4, i4, i4, i4, i4)")
+@nb.njit("c16[:](i4, i4, i4, i4, c16[:,:,:], c16[:,:,:,:,:], i4, i4, i4, i4, i4)", cache=True)
 def _current_coeff_4_tones(a, b, c, d, ccc, resp_matrix, num_b1, num_b2, num_b3, num_b4, npts):  # pragma: no cover
     """Calculate the tunneling current coefficient (for 4 tones).
 
@@ -809,44 +847,74 @@ def _current_coeff_4_tones(a, b, c, d, ccc, resp_matrix, num_b1, num_b2, num_b3,
     ccc3 = ccc[3]
     ccc4 = ccc[4]
 
+    # Pre-compute conjugates (saves time in the inner loops)
+    ccc1_conj = np.conj(ccc1)
+    ccc2_conj = np.conj(ccc2)
+    ccc3_conj = np.conj(ccc3)
+    ccc4_conj = np.conj(ccc4)
+
     # Calculate Rabcd+j*Sabcd: quation 5.25
     rs_p = np.zeros(npts, dtype=np.complex128)  # positive abcd indices
     rs_m = np.zeros(npts, dtype=np.complex128)  # negative abcd indices
+    t1_p = np.empty(npts, dtype=np.complex128)
+    t1_m = np.empty(npts, dtype=np.complex128)
+    t2_p = np.empty(npts, dtype=np.complex128)
+    t2_m = np.empty(npts, dtype=np.complex128)
+    t3_p = np.empty(npts, dtype=np.complex128)
+    t3_m = np.empty(npts, dtype=np.complex128)
     for k in range(-num_b1, num_b1 + 1):
+
+        # Hoist tone 1 products (invariant within the l, m and n loops)
+        k_p = -num_b1 <= k + a <= num_b1
+        k_m = -num_b1 <= k - a <= num_b1
+        if not (k_p or k_m):
+            continue
+        if k_p:
+            t1_p = ccc1[k] * ccc1_conj[k + a]
+        if k_m:
+            t1_m = ccc1[k] * ccc1_conj[k - a]
+
         for l in range(-num_b2, num_b2 + 1):
+
+            # Hoist tone 2 products (invariant within the m and n loops)
+            l_p = k_p and -num_b2 <= l + b <= num_b2
+            l_m = k_m and -num_b2 <= l - b <= num_b2
+            if not (l_p or l_m):
+                continue
+            if l_p:
+                t2_p = t1_p * ccc2[l] * ccc2_conj[l + b]
+            if l_m:
+                t2_m = t1_m * ccc2[l] * ccc2_conj[l - b]
+
             for m in range(-num_b3, num_b3 + 1):
+
+                # Hoist tone 3 products (invariant within the n loop)
+                m_p = l_p and -num_b3 <= m + c <= num_b3
+                m_m = l_m and -num_b3 <= m - c <= num_b3
+                if not (m_p or m_m):
+                    continue
+                if m_p:
+                    t3_p = t2_p * ccc3[m] * ccc3_conj[m + c]
+                if m_m:
+                    t3_m = t2_m * ccc3[m] * ccc3_conj[m - c]
+
                 for n in range(-num_b4, num_b4 + 1):
 
-                    c0 = ccc1[k] * ccc2[l] * ccc3[m] * ccc4[n]
-
-                    # Response function
-                    resp_current = resp_matrix[k, l, m, n]
-
                     # Positive abcd indices
-                    if -num_b1 <= k + a <= num_b1 and \
-                       -num_b2 <= l + b <= num_b2 and \
-                       -num_b3 <= m + c <= num_b3 and \
-                       -num_b4 <= n + d <= num_b4:
+                    if m_p and -num_b4 <= n + d <= num_b4:
 
-                        cp = np.conj(ccc1[k + a] *
-                                     ccc2[l + b] *
-                                     ccc3[m + c] *
-                                     ccc4[n + d]) * c0
-
-                        rs_p += cp * resp_current
+                        for i in range(npts):
+                            rs_p[i] += t3_p[i] * ccc4[n, i] * \
+                                       ccc4_conj[n + d, i] * \
+                                       resp_matrix[k, l, m, n, i]
 
                     # Negative abcd indices
-                    if -num_b1 <= k - a <= num_b1 and \
-                       -num_b2 <= l - b <= num_b2 and \
-                       -num_b3 <= m - c <= num_b3 and \
-                       -num_b4 <= n - d <= num_b4:
+                    if m_m and -num_b4 <= n - d <= num_b4:
 
-                        cm = np.conj(ccc1[k - a] *
-                                     ccc2[l - b] *
-                                     ccc3[m - c] *
-                                     ccc4[n - d]) * c0
-
-                        rs_m += cm * resp_current
+                        for i in range(npts):
+                            rs_m[i] += t3_m[i] * ccc4[n, i] * \
+                                       ccc4_conj[n - d, i] * \
+                                       resp_matrix[k, l, m, n, i]
 
     # Calculate current coefficient: equation 5.26
     if a == 0 and b == 0 and c == 0 and d == 0:

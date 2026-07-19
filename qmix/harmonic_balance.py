@@ -344,13 +344,17 @@ def _inv_jacobian(error_all, vj_2d, vt_2d, zt_2d, cct, resp, num_b, resp_matrix=
         ij_dimv = _qt_current_for_hb(vj_2d + 1j * dvj, cct, resp, num_b, resp_matrix=resp_matrix)
         error_dimv = vt_2d[:, None] - zt_2d[:, None] * ij_dimv - (vj_2d + 1j * dvj)
 
+        # Numerical derivatives (hoisted out of the loop below)
+        derror_drev = (error_drev - error_all) / DV
+        derror_dimv = (error_dimv - error_all) / DV
+
         # Calculate the 2x2 Jacobian block
         block = np.zeros((2, 2, npts), dtype=float)
         for p in range(num_n):
-            block[0, 0, :] = np.real((error_drev - error_all) / DV)[p]
-            block[0, 1, :] = np.real((error_dimv - error_all) / DV)[p]
-            block[1, 0, :] = np.imag((error_drev - error_all) / DV)[p]
-            block[1, 1, :] = np.imag((error_dimv - error_all) / DV)[p]
+            block[0, 0, :] = np.real(derror_drev[p])
+            block[0, 1, :] = np.real(derror_dimv[p])
+            block[1, 0, :] = np.imag(derror_drev[p])
+            block[1, 1, :] = np.imag(derror_dimv[p])
             jacobian[p * 2:p * 2 + 2, q * 2:q * 2 + 2, :] = block
 
     if verbose:
