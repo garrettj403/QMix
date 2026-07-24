@@ -70,7 +70,9 @@ def kk_trans_trapz(v, i):
     ikk = []
     for a in range(len(v)):
         v_prime, i_prime = np.delete(v, a), np.delete(i, a)
-        ikk.append(np.trapz((i_prime - v_prime) / (v_prime - v[a]), x=v_prime))
+        # use trapezoid for NumPy >= 2.0, use trapz otherwise
+        trapezoid = getattr(np, "trapezoid", np.trapz)
+        ikk.append(trapezoid((i_prime - v_prime) / (v_prime - v[a]), x=v_prime))
     ikk = np.array(ikk) / np.pi
 
     return ikk
