@@ -203,6 +203,23 @@ def test_junction_properties():
     assert cct1.fgap == cct2.fgap
 
 
+def test_vph_alias():
+    """The ``vph`` property (photon voltage) should be an alias for ``freq``,
+    since the normalized photon voltage is equal to the normalized frequency."""
+
+    cct = EmbeddingCircuit(2, 2)
+    cct.freq[1] = 0.30
+    cct.freq[2] = 0.32
+
+    # vph should return the freq array itself
+    assert cct.vph is cct.freq
+    np.testing.assert_array_equal(cct.vph, cct.freq)
+
+    # Updating freq should be reflected in vph
+    cct.freq[1] = 0.5
+    assert cct.vph[1] == 0.5
+
+
 if __name__ == "__main__":
 
     test_setting_alpha()

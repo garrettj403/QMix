@@ -571,11 +571,13 @@ class EmbeddingCircuit(object):
     def vph(self):
         """Get photon voltage.
 
-        For backwards compatibility.
+        The photon voltage (normalized to the gap voltage) is equivalent to
+        the frequency (normalized to the gap frequency), so this is just an
+        alias for ``freq``. It is kept for backwards compatibility.
 
         """
 
-        return self.cct
+        return self.freq
 
 
 def read_circuit(filename):
