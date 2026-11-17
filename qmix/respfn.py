@@ -96,6 +96,9 @@ Examples:
 
 """
 
+from math import factorial
+
+import numba as nb
 import numpy as np
 import matplotlib.pyplot as plt
 from qmix.mathfn.misc import slope
@@ -188,6 +191,9 @@ class RespFn(object):
         self._f_ikk = f_interp[1]
         self._f_didc = f_interp[2]
         self._f_dikk = f_interp[3]
+
+        # Response function as one complex piecewise polynomial (faster)
+        self._resp_poly = _setup_resp_poly(self._f_ikk, self._f_idc, params['spline_order'])
 
         # Save DC I-V curve and KK transform as attributes
         self.voltage = voltage
@@ -433,7 +439,16 @@ class RespFn(object):
 
         """
 
-        return self._f_ikk(vbias) + 1j * self._f_idc(vbias)
+        # Note: _resp_poly is None for RespFnPerfect without smearing (and
+        # missing from objects pickled with older versions of QMix)
+        resp_poly = getattr(self, '_resp_poly', None)
+        if resp_poly is None:
+            return self._f_ikk(vbias) + 1j * self._f_idc(vbias)
+
+        vbias = np.asarray(vbias, dtype=float)
+        resp_out = _eval_resp_poly(np.ascontiguousarray(vbias).ravel(), *resp_poly)
+
+        return resp_out.reshape(vbias.shape)
 
     def resp_conj(self, vbias):
         """Interpolate the complex conjugate of the response function.
@@ -686,6 +701,7 @@ class RespFnPerfect(RespFn):
             self._f_ikk = iv.perfect_kk
             self._f_didc = None
             self._f_dikk = None
+            self._resp_poly = None
 
             # Save DC I-V curve and KK transform as attributes
             self.voltage = voltage
@@ -815,6 +831,70 @@ def _setup_interpolation(voltage, current, current_kk, **params):
             "Interpolation error too high. Please increase max_npts_kk"
 
     return f_dc, f_kk, f_ddc, f_dkk
+
+
+def _setup_resp_poly(f_ikk, f_idc, order):
+    """Represent the response function as one complex piecewise polynomial.
+
+    Both splines are piecewise polynomials, so on the union of their
+    breakpoints, the response function (ikk + 1j * idc) is exactly one
+    complex polynomial per interval. Evaluating this requires one search and
+    one polynomial evaluation per point, versus one of each per spline.
+
+    The polynomials are expanded about the midpoint of each interval. Outside
+    of the breakpoints, the end polynomials are used (i.e., extrapolation,
+    the same as the splines).
+
+    Args:
+        f_ikk: spline for the KK transform of the DC I-V curve
+        f_idc: spline for the DC I-V curve
+        order (int): spline order
+
+    Returns:
+        tuple: breakpoints, interval midpoints and polynomial coefficients
+        (coefficient order m first)
+
+    """
+
+    breakpoints = np.unique(np.r_[f_ikk.get_knots(), f_idc.get_knots()])
+    midpoints = 0.5 * (breakpoints[1:] + breakpoints[:-1])
+
+    # Taylor coefficients about the midpoints: f^(m)(x) / m!
+    coeff = np.zeros((order + 1, len(midpoints)), dtype=complex)
+    for m in range(order + 1):
+        coeff[m] = (f_ikk(midpoints, nu=m) + 1j * f_idc(midpoints, nu=m)) / factorial(m)
+
+    return breakpoints, midpoints, coeff
+
+
+@nb.njit("c16[:](f8[::1], f8[::1], f8[::1], c16[:,::1])", parallel=True, cache=True)
+def _eval_resp_poly(vbias, breakpoints, midpoints, coeff):  # pragma: no cover
+    """Evaluate the complex piecewise polynomial from _setup_resp_poly.
+
+    Args:
+        vbias (ndarray): bias voltages (1-D)
+        breakpoints (ndarray): breakpoints
+        midpoints (ndarray): interval midpoints
+        coeff (ndarray): polynomial coefficients
+
+    Returns:
+        ndarray: response function at each bias voltage
+
+    """
+
+    num_int = midpoints.size
+    order = coeff.shape[0] - 1
+    resp_out = np.empty(vbias.size, dtype=np.complex128)
+    for i in nb.prange(vbias.size):
+        idx = np.searchsorted(breakpoints, vbias[i], side='right') - 1
+        idx = min(max(idx, 0), num_int - 1)
+        dv = vbias[i] - midpoints[idx]
+        val = coeff[order, idx]
+        for m in range(order - 1, -1, -1):
+            val = val * dv + coeff[m, idx]
+        resp_out[i] = val
+
+    return resp_out
 
 
 def _sample_curve(voltage, current, max_npts, smear):

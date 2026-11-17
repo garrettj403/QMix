@@ -176,3 +176,26 @@ def test_smearing_perfect_respfn():
     x = np.array([0., 0.5, 1.5, -1.5])
     y = resp.idc(x)
     np.testing.assert_almost_equal(y, [0., 0., 1.5, -1.5], 5)
+
+
+def test_piecewise_polynomial_matches_splines():
+    """The response function is evaluated using one complex piecewise
+    polynomial (built from the DC I-V and KK splines). Make sure that this
+    gives the same values as the splines, including extrapolation."""
+
+    voltage = np.linspace(-30, 30, 100001)
+
+    respfn_list = [RespFnPolynomial(50, verbose=False),
+                   RespFnExponential(verbose=False),
+                   RespFnPerfect(v_smear=0.05, verbose=False),
+                   RespFnPerfect(verbose=False)]  # no polynomial (analytic)
+
+    for resp in respfn_list:
+        resp_splines = resp._f_ikk(voltage) + 1j * resp._f_idc(voltage)
+        np.testing.assert_allclose(resp(voltage), resp_splines, rtol=0, atol=1e-12)
+
+        # Shape of input is preserved (including scalars)
+        v_2d = voltage[:1000].reshape((10, 100))
+        assert resp(v_2d).shape == (10, 100)
+        assert np.shape(resp(0.5)) == np.shape(resp._f_idc(0.5))
+        np.testing.assert_allclose(resp(0.5), resp._f_ikk(0.5) + 1j * resp._f_idc(0.5), rtol=0, atol=1e-12)

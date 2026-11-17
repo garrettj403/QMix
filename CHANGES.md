@@ -16,6 +16,9 @@ Optimization
 - ``qmix.qtcurrent.qtcurrent`` is now ~20% faster for 1 tone.
 - ``qmix.harmonic_balance.harmonic_balance`` is ~20% faster for 1 or 2 tones, and ~10% faster for 3 tones.
 - ``qmix.harmonic_balance.harmonic_balance`` now reuses the Jacobian from the previous iteration while the error is still decreasing quickly (new ``reuse_jacobian`` argument, default ``True``). Combined with faster current coefficient calculations in ``qmix.qtcurrent`` (for 2-4 tones), harmonic balance is ~2x faster for 3 or 4 tones.
+- The current coefficient calculations in ``qmix.qtcurrent`` now run in parallel (multi-threaded, via Numba) for 3 or 4 tones. Harmonic balance is ~2.5x faster for 4 tones.
+- Added ``qmix.qtcurrent.suggest_num_b``, which suggests the summation limits (``num_b``) for each tone based on the junction voltage. Weakly driven tones need far fewer terms, so this can make 3 or 4 tone simulations several times faster (e.g., ~3x for the 4 tone benchmark).
+- Response functions (``qmix.respfn.RespFn`` and subclasses) are now evaluated as one complex piecewise polynomial (built from the DC I-V and KK splines) in a parallel Numba kernel, instead of evaluating two splines. Results are the same to ~1e-14. Together with building the interpolation voltages in a single vectorized step, ``qmix.qtcurrent.interpolate_respfn`` is ~7x faster for 4 tones, and ``qtcurrent`` (without a pre-interpolated ``resp_matrix``) is ~5x faster for 4 tones.
 
 Documentation
 -------------
