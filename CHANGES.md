@@ -15,6 +15,7 @@ Optimization
 - Added more detailed benchmarking and profiling scripts (found in ``QMix/profile/``).
 - ``qmix.qtcurrent.qtcurrent`` is now ~20% faster for 1 tone.
 - ``qmix.harmonic_balance.harmonic_balance`` is ~20% faster for 1 or 2 tones, and ~10% faster for 3 tones.
+- ``qmix.harmonic_balance.harmonic_balance`` now reuses the Jacobian from the previous iteration while the error is still decreasing quickly (new ``reuse_jacobian`` argument, default ``True``). Combined with faster current coefficient calculations in ``qmix.qtcurrent`` (for 2-4 tones), harmonic balance is ~2x faster for 3 or 4 tones.
 
 Documentation
 -------------

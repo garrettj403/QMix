@@ -432,6 +432,38 @@ def _convolve_coefficients(jac):  # pragma: no cover
     return ckh_last
 
 
+@nb.njit("c16[:,:](c16[:,:], i4, i4)", cache=True)
+def _pair_products(ccc_f, a, num_b):  # pragma: no cover
+    """Pre-compute the phase factor pair products for one tone.
+
+    Returns P[k, i] = ccc_f[k, i] * conj(ccc_f[k + a, i]), with zeros where
+    k + a falls outside of [-num_b, num_b]. Uses the same wraparound indexing
+    as ccc_f.
+
+    Used for the innermost tone in the current coefficient functions, where
+    this product would otherwise be recomputed for every combination of the
+    outer summation indices.
+
+    Args:
+        ccc_f (ndarray): Phase factor coefficients for one tone
+        a (int): Offset of the conjugated coefficient
+        num_b (int): Summation limits for phase factor coefficients
+
+    Returns:
+        ndarray: Pair products
+
+    """
+
+    npts = ccc_f.shape[1]
+    pair = np.zeros((2 * num_b + 1, npts), dtype=np.complex128)
+    for k in range(-num_b, num_b + 1):
+        if -num_b <= k + a <= num_b:
+            for i in range(npts):
+                pair[k, i] = ccc_f[k, i] * np.conj(ccc_f[k + a, i])
+
+    return pair
+
+
 # Tunneling current functions ------------------------------------------------
 # These are the functions that actually calculate the tunneling current.
 # Different functions are provided for different numbers of tones. They are
@@ -580,11 +612,13 @@ def _current_coeff_2_tones(a, b, ccc, resp_matrix, num_b1, num_b2, npts):  # pra
 
     # Recast coefficients
     ccc1 = ccc[1]
-    ccc2 = ccc[2]
 
     # Pre-compute conjugates (saves time in the inner loops)
     ccc1_conj = np.conj(ccc1)
-    ccc2_conj = np.conj(ccc2)
+
+    # Pre-compute tone 2 products (invariant within the k loop)
+    p2_p = _pair_products(ccc[2], b, num_b2)
+    p2_m = _pair_products(ccc[2], -b, num_b2)
 
     # Equation 5.25
     rs_p = np.zeros(npts, dtype=np.complex128)
@@ -608,14 +642,12 @@ def _current_coeff_2_tones(a, b, ccc, resp_matrix, num_b1, num_b2, npts):  # pra
             if k_p and -num_b2 <= l + b <= num_b2:
 
                 for i in range(npts):
-                    rs_p[i] += t1_p[i] * ccc2[l, i] * ccc2_conj[l + b, i] * \
-                               resp_matrix[k, l, i]
+                    rs_p[i] += t1_p[i] * p2_p[l, i] * resp_matrix[k, l, i]
 
             if k_m and -num_b2 <= l - b <= num_b2:
 
                 for i in range(npts):
-                    rs_m[i] += t1_m[i] * ccc2[l, i] * ccc2_conj[l - b, i] * \
-                               resp_matrix[k, l, i]
+                    rs_m[i] += t1_m[i] * p2_m[l, i] * resp_matrix[k, l, i]
 
     # Calculate current coefficient: equation 5.26
     if a == 0 and b == 0:
@@ -707,12 +739,14 @@ def _current_coeff_3_tones(a, b, c, ccc, resp_matrix, num_b1, num_b2, num_b3):  
     # Recast coefficients
     ccc1 = ccc[1]
     ccc2 = ccc[2]
-    ccc3 = ccc[3]
 
     # Pre-compute conjugates (saves time in the inner loops)
     ccc1_conj = np.conj(ccc1)
     ccc2_conj = np.conj(ccc2)
-    ccc3_conj = np.conj(ccc3)
+
+    # Pre-compute tone 3 products (invariant within the k and l loops)
+    p3_p = _pair_products(ccc[3], c, num_b3)
+    p3_m = _pair_products(ccc[3], -c, num_b3)
 
     # Equation 5.25
     npts = ccc1.shape[1]
@@ -751,16 +785,12 @@ def _current_coeff_3_tones(a, b, c, ccc, resp_matrix, num_b1, num_b2, num_b3):  
                 if l_p and -num_b3 <= m + c <= num_b3:
 
                     for i in range(npts):
-                        rs_p[i] += t2_p[i] * ccc3[m, i] * \
-                                   ccc3_conj[m + c, i] * \
-                                   resp_matrix[k, l, m, i]
+                        rs_p[i] += t2_p[i] * p3_p[m, i] * resp_matrix[k, l, m, i]
 
                 if l_m and -num_b3 <= m - c <= num_b3:
 
                     for i in range(npts):
-                        rs_m[i] += t2_m[i] * ccc3[m, i] * \
-                                   ccc3_conj[m - c, i] * \
-                                   resp_matrix[k, l, m, i]
+                        rs_m[i] += t2_m[i] * p3_m[m, i] * resp_matrix[k, l, m, i]
 
     # Calculate current coefficient: equation 5.26
     if a == 0 and b == 0 and c == 0:
@@ -845,13 +875,15 @@ def _current_coeff_4_tones(a, b, c, d, ccc, resp_matrix, num_b1, num_b2, num_b3,
     ccc1 = ccc[1]
     ccc2 = ccc[2]
     ccc3 = ccc[3]
-    ccc4 = ccc[4]
 
     # Pre-compute conjugates (saves time in the inner loops)
     ccc1_conj = np.conj(ccc1)
     ccc2_conj = np.conj(ccc2)
     ccc3_conj = np.conj(ccc3)
-    ccc4_conj = np.conj(ccc4)
+
+    # Pre-compute tone 4 products (invariant within the k, l and m loops)
+    p4_p = _pair_products(ccc[4], d, num_b4)
+    p4_m = _pair_products(ccc[4], -d, num_b4)
 
     # Calculate Rabcd+j*Sabcd: quation 5.25
     rs_p = np.zeros(npts, dtype=np.complex128)  # positive abcd indices
@@ -904,17 +936,13 @@ def _current_coeff_4_tones(a, b, c, d, ccc, resp_matrix, num_b1, num_b2, num_b3,
                     if m_p and -num_b4 <= n + d <= num_b4:
 
                         for i in range(npts):
-                            rs_p[i] += t3_p[i] * ccc4[n, i] * \
-                                       ccc4_conj[n + d, i] * \
-                                       resp_matrix[k, l, m, n, i]
+                            rs_p[i] += t3_p[i] * p4_p[n, i] * resp_matrix[k, l, m, n, i]
 
                     # Negative abcd indices
                     if m_m and -num_b4 <= n - d <= num_b4:
 
                         for i in range(npts):
-                            rs_m[i] += t3_m[i] * ccc4[n, i] * \
-                                       ccc4_conj[n - d, i] * \
-                                       resp_matrix[k, l, m, n, i]
+                            rs_m[i] += t3_m[i] * p4_m[n, i] * resp_matrix[k, l, m, n, i]
 
     # Calculate current coefficient: equation 5.26
     if a == 0 and b == 0 and c == 0 and d == 0:

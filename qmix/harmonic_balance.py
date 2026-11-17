@@ -28,6 +28,9 @@ MIN_VT = 1e-10
 DV = 1e-3
 # round frequency values to this number of decimal places when comparing
 ROUND_FREQ = 4
+# reuse the Jacobian from the previous iteration as long as each iteration
+# reduces the maximum relative error by at least this factor
+JACOBIAN_REUSE_RATIO = 0.5
 
 
 # Harmonic Balance ----------------------------------------------------------
@@ -37,7 +40,7 @@ ROUND_FREQ = 4
 
 
 def harmonic_balance(cct, resp, num_b=15, max_it=10, stop_rerror=0.001, vj_initial=None, damp_coeff=1., mode="o",
-                     verbose=True, zj_guess=0.67, ):
+                     verbose=True, zj_guess=0.67, reuse_jacobian=True):
     """Perform harmonic balance.
 
     Determine the harmonic balance of the junction + embedding circuit system.
@@ -61,6 +64,12 @@ def harmonic_balance(cct, resp, num_b=15, max_it=10, stop_rerror=0.001, vj_initi
             data ('x'), default is "o"
         verbose (bool, optional): print info to terminal if true, default is
             True
+        zj_guess (float, optional): guess of the junction impedance, used
+            to generate the initial guess of vj, default is 0.67
+        reuse_jacobian (bool, optional): reuse the Jacobian from the
+            previous iteration while the error is still decreasing quickly
+            (each new Jacobian requires 2 * num_n calls to the tunneling
+            current function), default is True
 
     Returns:
         ndarray: junction voltage that satisfies the circuit
@@ -128,6 +137,8 @@ def harmonic_balance(cct, resp, num_b=15, max_it=10, stop_rerror=0.001, vj_initi
     # Perform harmonic balance -----------------------------------------------
 
     iteration = 0
+    inv_j = None
+    last_max_rel_error = np.inf
     for iteration in range(max_it + 1):
 
         # Current vector (junction current)
@@ -193,8 +204,14 @@ def harmonic_balance(cct, resp, num_b=15, max_it=10, stop_rerror=0.001, vj_initi
             break
 
         # Update junction voltages (i.e., the business end of this function)
-        inv_j = _inv_jacobian(err_all, vj_2d, vt_2d, zt_2d, cct, resp, num_b, resp_matrix=respfn_interp,
-                              verbose=verbose)
+        # Only recalculate the Jacobian if the last one has stopped working well
+        slow_convergence = max_rel_error > JACOBIAN_REUSE_RATIO * last_max_rel_error
+        if inv_j is None or not reuse_jacobian or slow_convergence:
+            inv_j = _inv_jacobian(err_all, vj_2d, vt_2d, zt_2d, cct, resp, num_b, resp_matrix=respfn_interp,
+                                  verbose=verbose)
+        elif verbose:
+            print("Reusing Jacobian from previous iteration")
+        last_max_rel_error = max_rel_error
         if verbose:
             print("Applying correction")
         corr = np.zeros((num_n, npts), dtype=complex)
