@@ -12,7 +12,7 @@ import numpy as np
 from scipy.special import jv
 
 import qmix
-from qmix.qtcurrent import qtcurrent, interpolate_respfn, calculate_phase_factor_coeff
+from qmix.qtcurrent import qtcurrent, interpolate_respfn, calculate_phase_factor_coeff, suggest_num_b
 from qmix.circuit import EmbeddingCircuit
 
 
@@ -511,6 +511,40 @@ def test_phase_factor_coefficients():
     ckh_qmix = calculate_phase_factor_coeff(vj, cct.freq, num_f, num_p, num_b)
 
     np.testing.assert_almost_equal(ckh_qmix, ckh_known, decimal=12)
+
+
+def test_suggest_num_b():
+    """For one tone and one harmonic, the phase factor coefficients are
+    Bessel functions of the drive level (alpha), so the suggested num_b should
+    be the largest order with |J_n(alpha)| >= tol. Then check that the
+    suggested num_b gives the same tunneling currents as a large num_b."""
+
+    alpha = np.array([0.1, 1.5, 3.0])  # drive level at each bias voltage
+    freq = 0.3
+    cct = EmbeddingCircuit(1, 1, vb_npts=3)
+    cct.freq[1] = freq
+    vj = cct.initialize_vj()
+    vj[1, 1, :] = alpha * freq * np.exp(1j * 0.4)
+
+    for tol in [1e-3, 1e-5, 1e-8]:
+        num_b_known = max(n for n in range(40) if np.abs(jv(n, alpha)).max() >= tol)
+        assert suggest_num_b(vj, cct, tol=tol) == (num_b_known,)
+
+    # Multi-tone: weakly driven tones need fewer terms
+    cct = EmbeddingCircuit(3, 1, vb_min=0, vb_max=2, vb_npts=101)
+    cct.freq[1] = 0.30
+    cct.freq[2] = 0.33
+    cct.freq[3] = 0.27
+    vj = cct.initialize_vj()
+    vj[1, 1, :] = 0.30 * np.exp(1j * 2.0)
+    vj[2, 1, :] = 0.03 * np.exp(1j * 1.5)
+    vj[3, 1, :] = 0.03 * np.exp(1j * -0.3)
+    num_b = suggest_num_b(vj, cct, tol=1e-6)
+    assert num_b[1] < num_b[0] and num_b[2] < num_b[0]
+    freq_list = [0, cct.freq[1], cct.freq[2], cct.freq[3]]
+    current_suggested = qtcurrent(vj, cct, RESP, freq_list, num_b=num_b, verbose=False)
+    current_large = qtcurrent(vj, cct, RESP, freq_list, num_b=(15, 15, 15), verbose=False)
+    np.testing.assert_allclose(current_suggested, current_large, atol=1e-5)
 
 # Tucker theory --------------------------------------------------------------
 # These functions will calculate the QTCs using the equations found in: 

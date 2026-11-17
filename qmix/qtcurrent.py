@@ -149,15 +149,6 @@ def qtcurrent(vj, cct, resp, freq_list, num_b=15, verbose=True, resp_matrix=None
 # repeatedly interpolated in this module. The functions below do all of the
 # necessary interpolations all at once to save time.
 #
-# Note: Interpolating the response function is one of the most time consuming
-# operations within this module.
-#
-# Two different methods are used below to generate the interpolation voltages:
-#    - one using loops
-#    - one without
-# I've spent some time optimizing each and using the correct method for each
-# number of tones.
-#
 # Runs once per qtcurrent function call
 
 # TODO: write better tests for this function
@@ -179,149 +170,45 @@ def interpolate_respfn(cct, resp, num_b):
 
     """
 
-    nb_list = _unpack_num_b(num_b, cct.num_f)
-
-    if cct.num_f == 1:
-        resp_matrix = _interpolate_respfn_1_tone(resp, cct.vb, cct.freq, *nb_list)
-    elif cct.num_f == 2:
-        resp_matrix = _interpolate_respfn_2_tone(resp, cct.vb, cct.freq, *nb_list)
-    elif cct.num_f == 3:
-        resp_matrix = _interpolate_respfn_3_tone(resp, cct.vb, cct.freq, *nb_list)
-    elif cct.num_f == 4:
-        resp_matrix = _interpolate_respfn_4_tone(resp, cct.vb, cct.freq, *nb_list)
-    else:
+    if cct.num_f not in (1, 2, 3, 4):
         print("num_f must be 1, 2, 3 or 4!")
         raise ValueError
 
-    return resp_matrix
+    nb_list = _unpack_num_b(num_b, cct.num_f)
+
+    return resp(_interpolation_voltages(cct.vb, cct.freq, nb_list))
 
 
-def _interpolate_respfn_1_tone(resp, vb, freq, num_b1):
-    """Interpolate the response function (1 tone).
+def _interpolation_voltages(vb, freq, nb_list):
+    """Build the voltages required to interpolate the response function.
+
+    I.e., vb + k * freq[1] + l * freq[2] + ... for all summation indices
+    (k, l, ...). The summation indices use wraparound indexing (see
+    ``calculate_phase_factor_coeff``).
 
     Args:
-        resp (qmix.respfn.RespFn): Response function
         vb (ndarray): Bias voltages, normalized
         freq (ndarray): Frequencies, normalized
-        num_b1 (int): Summation limits for phase factor coefficients
+        nb_list (tuple): Summation limits for phase factor coefficients, one
+            for each tone
 
     Returns:
-        ndarray: Response function, interpolated
+        ndarray: Voltages, with shape (2 * num_b1 + 1, ..., npts)
 
     """
 
-    npts = len(vb)
-    k_npts = num_b1 * 2 + 1
-    vb_tmp = vb[None, :] * np.ones(k_npts)[:, None]
-    ind = np.r_[np.arange(0, num_b1+1), np.arange(-num_b1, 0)]
-    k_array = ind[:, None] * np.ones(npts, dtype=int)[None, :]
-    resp_out = resp(vb_tmp + k_array * freq[1])
+    num_f = len(nb_list)
+    shape = [2 * num_b + 1 for num_b in nb_list] + [len(vb)]
 
-    # # DEBUG
-    # print k_array[:,0]
-    # print len(k_array[0,:])
-    # print " {} -> {}".format(-num_b1, k_array[-num_b1][0])
-    # print " 0 -> {}".format(k_array[0][0])
-    # print " {} -> {}".format(num_b1, k_array[num_b1][0])
+    voltage = np.zeros(shape)
+    voltage += vb
+    for f, num_b in enumerate(nb_list, 1):
+        ind = np.r_[np.arange(0, num_b + 1), np.arange(-num_b, 0)]
+        ind_shape = [1] * (num_f + 1)
+        ind_shape[f - 1] = 2 * num_b + 1
+        voltage += (ind * freq[f]).reshape(ind_shape)
 
-    return resp_out
-
-
-def _interpolate_respfn_2_tone(resp, vb, freq, num_b1, num_b2):
-    """Interpolate the response function (2 tones).
-
-    Args:
-        resp (qmix.respfn.RespFn): Response function
-        vb (ndarray): Bias voltages, normalized
-        freq (ndarray): Frequencies, normalized
-        num_b1 (int): Summation limits for phase factor coefficients (tone 1)
-        num_b2 (int): Summation limits for phase factor coefficients (tone 2)
-
-    Returns:
-        ndarray: Response function, interpolated
-
-    """
-
-    npts = len(vb)
-    k_npts = num_b1 * 2 + 1
-    l_npts = num_b2 * 2 + 1
-
-    ind = np.r_[np.arange(0, num_b1 + 1), np.arange(-num_b1, 0)]
-    k_array = ind[:, None, None] * np.ones((l_npts, npts), dtype=int)[None, :, :]
-
-    ind = np.r_[np.arange(0, num_b2 + 1), np.arange(-num_b2, 0)]
-    l_array = ind[None, :, None] * np.ones((k_npts, npts), dtype=int)[:, None, :]
-
-    vb_tmp = vb[None, None, :] * np.ones((k_npts, l_npts))[:, :, None]
-    resp_out = resp(vb_tmp + k_array * freq[1] + l_array * freq[2])
-
-    # # DEBUG
-    # print k_array[:,0,0]
-    # print " {} -> {}".format(-num_b1, k_array[-num_b1][0,0])
-    # print " {} -> {}".format(0, k_array[0][0,0])
-    # print " {} -> {}".format(num_b1, k_array[num_b1][0,0])
-    # print l_array[0,:,0]
-    # print " {} -> {}".format(-num_b2, l_array[:,-num_b2][0,0])
-    # print " {} -> {}".format(0, l_array[:,0][0,0])
-    # print " {} -> {}".format(num_b2, l_array[:,num_b2][0,0])
-
-    return resp_out
-
-
-def _interpolate_respfn_3_tone(resp, vb, freq, num_b1, num_b2, num_b3):
-    """Interpolate the response function (3 tones).
-
-    Args:
-        resp (qmix.respfn.RespFn): Response function
-        vb (ndarray): Bias voltages, normalized
-        freq (ndarray): Frequencies, normalized
-        num_b1 (int): Summation limits for phase factor coefficients (tone 1)
-        num_b2 (int): Summation limits for phase factor coefficients (tone 2)
-        num_b3 (int): Summation limits for phase factor coefficients (tone 3)
-
-    Returns:
-        ndarray: Response function, interpolated
-
-    """
-
-    npts = len(vb)
-    voltage = np.zeros((num_b1 * 2 + 1, num_b2 * 2 + 1, num_b3 * 2 + 1, npts))
-    for k in range(-num_b1, num_b1 + 1):
-        for l in range(-num_b2, num_b2 + 1):
-            for m in range(-num_b3, num_b3 + 1):
-                voltage[k, l, m] = vb + k * freq[1] + l * freq[2] + m * freq[3]
-    resp_out = resp(voltage)
-
-    return resp_out
-
-
-def _interpolate_respfn_4_tone(resp, vb, freq, num_b1, num_b2, num_b3, num_b4):
-    """Interpolate the response function (3 tones).
-
-    Args:
-        resp (qmix.respfn.RespFn): Response function
-        vb (ndarray): Bias voltages, normalized
-        freq (ndarray): Frequencies, normalized
-        num_b1 (int): Summation limits for phase factor coefficients (tone 1)
-        num_b2 (int): Summation limits for phase factor coefficients (tone 2)
-        num_b3 (int): Summation limits for phase factor coefficients (tone 3)
-        num_b4 (int): Summation limits for phase factor coefficients (tone 4)
-
-    Returns:
-        ndarray: Response function, interpolated
-
-    """
-
-    npts = len(vb)
-    voltage = np.zeros((num_b1 * 2 + 1, num_b2 * 2 + 1, num_b3 * 2 + 1, num_b4 * 2 + 1, npts))
-    for k in range(-num_b1, num_b1 + 1):
-        for l in range(-num_b2, num_b2 + 1):
-            for m in range(-num_b3, num_b3 + 1):
-                for n in range(-num_b4, num_b4 + 1):
-                    voltage[k, l, m, n, :] = vb + k * freq[1] + l * freq[2] + m * freq[3] + n * freq[4]
-    resp_out = resp(voltage)
-
-    return resp_out
+    return voltage
 
 
 # Calculate the overall phase factor spectrum coefficients -------------------
@@ -432,6 +319,59 @@ def _convolve_coefficients(jac):  # pragma: no cover
     return ckh_last
 
 
+def suggest_num_b(vj, cct, tol=1e-5, max_b=50):
+    """Suggest summation limits for the phase factor coefficients (num_b).
+
+    The computation time of ``qtcurrent`` (and therefore
+    ``harmonic_balance``) scales with the product of (2 * num_b + 1) over all
+    tones, but weakly driven tones only need a few terms. This function
+    calculates the phase factor coefficients for each tone and returns the
+    smallest summation limit beyond which all coefficients are below ``tol``
+    (at every bias voltage).
+
+    Note:
+
+        This requires the actual junction voltage (e.g., the output of
+        ``harmonic_balance``), not the Thevenin voltage. Some tones (e.g.,
+        an IF tone) can have a large junction voltage even though they are
+        not driven by the embedding circuit (i.e., ``cct.vt`` is zero),
+        because they are generated by mixing. A typical workflow is to run
+        ``harmonic_balance`` once with a conservative ``num_b``, call this
+        function, and then use the result for subsequent simulations with
+        similar drive levels (e.g., sweeps).
+
+    Args:
+        vj (ndarray): Voltage across the SIS junction
+        cct (qmix.circuit.EmbeddingCircuit): Embedding circuit
+        tol (float, optional): Neglect phase factor coefficients smaller than
+            this value, default is 1e-5
+        max_b (int, optional): Largest summation limit to consider, default
+            is 50
+
+    Returns:
+        tuple: Suggested summation limits, one for each tone
+
+    """
+
+    ckh = calculate_phase_factor_coeff(vj, cct.freq, cct.num_f, cct.num_p, max_b)
+
+    # Summation index (k >= 0), used with wraparound indexing for -k
+    k = np.arange(max_b + 1)
+
+    num_b = []
+    for f in range(1, cct.num_f + 1):
+        # Largest coefficient magnitude at +/-k (over all bias voltages)
+        ckh_max = np.abs(ckh[f]).max(axis=-1)
+        ckh_max = np.maximum(ckh_max[k], ckh_max[-k])
+        k_above_tol = k[ckh_max >= tol]
+        num_b_f = int(k_above_tol.max()) if len(k_above_tol) > 0 else 1
+        if num_b_f == max_b:
+            print("Warning: tone {0} may need num_b > max_b ({1})".format(f, max_b))
+        num_b.append(max(1, num_b_f))
+
+    return tuple(num_b)
+
+
 @nb.njit("c16[:,:](c16[:,:], i4, i4)", cache=True)
 def _pair_products(ccc_f, a, num_b):  # pragma: no cover
     """Pre-compute the phase factor pair products for one tone.
@@ -440,9 +380,9 @@ def _pair_products(ccc_f, a, num_b):  # pragma: no cover
     k + a falls outside of [-num_b, num_b]. Uses the same wraparound indexing
     as ccc_f.
 
-    Used for the innermost tone in the current coefficient functions, where
-    this product would otherwise be recomputed for every combination of the
-    outer summation indices.
+    Used in the current coefficient functions, where this product would
+    otherwise be recomputed for every combination of the other summation
+    indices.
 
     Args:
         ccc_f (ndarray): Phase factor coefficients for one tone
@@ -711,7 +651,7 @@ def _current_3_tones(freq_out, ccc, freq, resp_matrix, num_p, npts, num_b1, num_
     return current_out
 
 
-@nb.njit("c16[:](i4, i4, i4, c16[:,:,:], c16[:,:,:,:], i4, i4, i4)", cache=True)
+@nb.njit("c16[:](i4, i4, i4, c16[:,:,:], c16[:,:,:,:], i4, i4, i4)", parallel=True, cache=True)
 def _current_coeff_3_tones(a, b, c, ccc, resp_matrix, num_b1, num_b2, num_b3):  # pragma: no cover
     """Calculate the tunneling current coefficient (for 3 tones).
 
@@ -736,61 +676,52 @@ def _current_coeff_3_tones(a, b, c, ccc, resp_matrix, num_b1, num_b2, num_b3):  
 
     """
 
-    # Recast coefficients
-    ccc1 = ccc[1]
-    ccc2 = ccc[2]
-
-    # Pre-compute conjugates (saves time in the inner loops)
-    ccc1_conj = np.conj(ccc1)
-    ccc2_conj = np.conj(ccc2)
-
-    # Pre-compute tone 3 products (invariant within the k and l loops)
+    # Pre-compute products of phase factor coefficients: Eqn. 5.25
+    p1_p = _pair_products(ccc[1], a, num_b1)
+    p1_m = _pair_products(ccc[1], -a, num_b1)
+    p2_p = _pair_products(ccc[2], b, num_b2)
+    p2_m = _pair_products(ccc[2], -b, num_b2)
     p3_p = _pair_products(ccc[3], c, num_b3)
     p3_m = _pair_products(ccc[3], -c, num_b3)
 
     # Equation 5.25
-    npts = ccc1.shape[1]
-    rs_p = np.zeros(npts, dtype=np.complex128)
-    rs_m = np.zeros(npts, dtype=np.complex128)
-    t1_p = np.empty(npts, dtype=np.complex128)
-    t1_m = np.empty(npts, dtype=np.complex128)
-    t2_p = np.empty(npts, dtype=np.complex128)
-    t2_m = np.empty(npts, dtype=np.complex128)
-    for k in range(-num_b1, num_b1 + 1):
+    # Parallelized over (k, l) pairs: each one accumulates into its own row,
+    # which is summed at the end (avoids race conditions)
+    npts = ccc.shape[2]
+    num_l = 2 * num_b2 + 1
+    num_kl = (2 * num_b1 + 1) * num_l
+    rs_p_kl = np.zeros((num_kl, npts), dtype=np.complex128)
+    rs_m_kl = np.zeros((num_kl, npts), dtype=np.complex128)
+    for kl in nb.prange(num_kl):
 
-        # Hoist tone 1 products (invariant within the l and m loops)
-        k_p = -num_b1 <= k + a <= num_b1
-        k_m = -num_b1 <= k - a <= num_b1
-        if not (k_p or k_m):
+        k = kl // num_l - num_b1
+        l = kl % num_l - num_b2
+        l_p = -num_b1 <= k + a <= num_b1 and -num_b2 <= l + b <= num_b2
+        l_m = -num_b1 <= k - a <= num_b1 and -num_b2 <= l - b <= num_b2
+        if not (l_p or l_m):
             continue
-        if k_p:
-            t1_p = ccc1[k] * ccc1_conj[k + a]
-        if k_m:
-            t1_m = ccc1[k] * ccc1_conj[k - a]
 
-        for l in range(-num_b2, num_b2 + 1):
+        # Tone 1 and 2 products (invariant within the m loop)
+        t2_p = np.empty(npts, dtype=np.complex128)
+        t2_m = np.empty(npts, dtype=np.complex128)
+        for i in range(npts):
+            t2_p[i] = p1_p[k, i] * p2_p[l, i]
+            t2_m[i] = p1_m[k, i] * p2_m[l, i]
 
-            # Hoist tone 2 products (invariant within the m loop)
-            l_p = k_p and -num_b2 <= l + b <= num_b2
-            l_m = k_m and -num_b2 <= l - b <= num_b2
-            if not (l_p or l_m):
-                continue
-            if l_p:
-                t2_p = t1_p * ccc2[l] * ccc2_conj[l + b]
-            if l_m:
-                t2_m = t1_m * ccc2[l] * ccc2_conj[l - b]
+        for m in range(-num_b3, num_b3 + 1):
 
-            for m in range(-num_b3, num_b3 + 1):
+            if l_p and -num_b3 <= m + c <= num_b3:
 
-                if l_p and -num_b3 <= m + c <= num_b3:
+                for i in range(npts):
+                    rs_p_kl[kl, i] += t2_p[i] * p3_p[m, i] * resp_matrix[k, l, m, i]
 
-                    for i in range(npts):
-                        rs_p[i] += t2_p[i] * p3_p[m, i] * resp_matrix[k, l, m, i]
+            if l_m and -num_b3 <= m - c <= num_b3:
 
-                if l_m and -num_b3 <= m - c <= num_b3:
+                for i in range(npts):
+                    rs_m_kl[kl, i] += t2_m[i] * p3_m[m, i] * resp_matrix[k, l, m, i]
 
-                    for i in range(npts):
-                        rs_m[i] += t2_m[i] * p3_m[m, i] * resp_matrix[k, l, m, i]
+    rs_p = rs_p_kl.sum(axis=0)
+    rs_m = rs_m_kl.sum(axis=0)
 
     # Calculate current coefficient: equation 5.26
     if a == 0 and b == 0 and c == 0:
@@ -843,7 +774,7 @@ def _current_4_tones(freq_out, ccc, freq, resp_matrix, num_p, npts, num_b1, num_
     return current_out
 
 
-@nb.njit("c16[:](i4, i4, i4, i4, c16[:,:,:], c16[:,:,:,:,:], i4, i4, i4, i4, i4)", cache=True)
+@nb.njit("c16[:](i4, i4, i4, i4, c16[:,:,:], c16[:,:,:,:,:], i4, i4, i4, i4, i4)", parallel=True, cache=True)
 def _current_coeff_4_tones(a, b, c, d, ccc, resp_matrix, num_b1, num_b2, num_b3, num_b4, npts):  # pragma: no cover
     """Calculate the tunneling current coefficient (for 4 tones).
 
@@ -871,78 +802,61 @@ def _current_coeff_4_tones(a, b, c, d, ccc, resp_matrix, num_b1, num_b2, num_b3,
 
     """
 
-    # Recast coefficients (saves a bit of time)
-    ccc1 = ccc[1]
-    ccc2 = ccc[2]
-    ccc3 = ccc[3]
-
-    # Pre-compute conjugates (saves time in the inner loops)
-    ccc1_conj = np.conj(ccc1)
-    ccc2_conj = np.conj(ccc2)
-    ccc3_conj = np.conj(ccc3)
-
-    # Pre-compute tone 4 products (invariant within the k, l and m loops)
+    # Pre-compute products of phase factor coefficients: Eqn. 5.25
+    p1_p = _pair_products(ccc[1], a, num_b1)
+    p1_m = _pair_products(ccc[1], -a, num_b1)
+    p2_p = _pair_products(ccc[2], b, num_b2)
+    p2_m = _pair_products(ccc[2], -b, num_b2)
+    p3_p = _pair_products(ccc[3], c, num_b3)
+    p3_m = _pair_products(ccc[3], -c, num_b3)
     p4_p = _pair_products(ccc[4], d, num_b4)
     p4_m = _pair_products(ccc[4], -d, num_b4)
 
-    # Calculate Rabcd+j*Sabcd: quation 5.25
-    rs_p = np.zeros(npts, dtype=np.complex128)  # positive abcd indices
-    rs_m = np.zeros(npts, dtype=np.complex128)  # negative abcd indices
-    t1_p = np.empty(npts, dtype=np.complex128)
-    t1_m = np.empty(npts, dtype=np.complex128)
-    t2_p = np.empty(npts, dtype=np.complex128)
-    t2_m = np.empty(npts, dtype=np.complex128)
-    t3_p = np.empty(npts, dtype=np.complex128)
-    t3_m = np.empty(npts, dtype=np.complex128)
-    for k in range(-num_b1, num_b1 + 1):
+    # Calculate Rabcd+j*Sabcd: equation 5.25
+    # Parallelized over (k, l) pairs: each one accumulates into its own row,
+    # which is summed at the end (avoids race conditions)
+    num_l = 2 * num_b2 + 1
+    num_kl = (2 * num_b1 + 1) * num_l
+    rs_p_kl = np.zeros((num_kl, npts), dtype=np.complex128)  # positive abcd indices
+    rs_m_kl = np.zeros((num_kl, npts), dtype=np.complex128)  # negative abcd indices
+    for kl in nb.prange(num_kl):
 
-        # Hoist tone 1 products (invariant within the l, m and n loops)
-        k_p = -num_b1 <= k + a <= num_b1
-        k_m = -num_b1 <= k - a <= num_b1
-        if not (k_p or k_m):
+        k = kl // num_l - num_b1
+        l = kl % num_l - num_b2
+        l_p = -num_b1 <= k + a <= num_b1 and -num_b2 <= l + b <= num_b2
+        l_m = -num_b1 <= k - a <= num_b1 and -num_b2 <= l - b <= num_b2
+        if not (l_p or l_m):
             continue
-        if k_p:
-            t1_p = ccc1[k] * ccc1_conj[k + a]
-        if k_m:
-            t1_m = ccc1[k] * ccc1_conj[k - a]
 
-        for l in range(-num_b2, num_b2 + 1):
+        t3_p = np.empty(npts, dtype=np.complex128)
+        t3_m = np.empty(npts, dtype=np.complex128)
+        for m in range(-num_b3, num_b3 + 1):
 
-            # Hoist tone 2 products (invariant within the m and n loops)
-            l_p = k_p and -num_b2 <= l + b <= num_b2
-            l_m = k_m and -num_b2 <= l - b <= num_b2
-            if not (l_p or l_m):
+            # Tone 1, 2 and 3 products (invariant within the n loop)
+            m_p = l_p and -num_b3 <= m + c <= num_b3
+            m_m = l_m and -num_b3 <= m - c <= num_b3
+            if not (m_p or m_m):
                 continue
-            if l_p:
-                t2_p = t1_p * ccc2[l] * ccc2_conj[l + b]
-            if l_m:
-                t2_m = t1_m * ccc2[l] * ccc2_conj[l - b]
+            for i in range(npts):
+                t3_p[i] = p1_p[k, i] * p2_p[l, i] * p3_p[m, i]
+                t3_m[i] = p1_m[k, i] * p2_m[l, i] * p3_m[m, i]
 
-            for m in range(-num_b3, num_b3 + 1):
+            for n in range(-num_b4, num_b4 + 1):
 
-                # Hoist tone 3 products (invariant within the n loop)
-                m_p = l_p and -num_b3 <= m + c <= num_b3
-                m_m = l_m and -num_b3 <= m - c <= num_b3
-                if not (m_p or m_m):
-                    continue
-                if m_p:
-                    t3_p = t2_p * ccc3[m] * ccc3_conj[m + c]
-                if m_m:
-                    t3_m = t2_m * ccc3[m] * ccc3_conj[m - c]
+                # Positive abcd indices
+                if m_p and -num_b4 <= n + d <= num_b4:
 
-                for n in range(-num_b4, num_b4 + 1):
+                    for i in range(npts):
+                        rs_p_kl[kl, i] += t3_p[i] * p4_p[n, i] * resp_matrix[k, l, m, n, i]
 
-                    # Positive abcd indices
-                    if m_p and -num_b4 <= n + d <= num_b4:
+                # Negative abcd indices
+                if m_m and -num_b4 <= n - d <= num_b4:
 
-                        for i in range(npts):
-                            rs_p[i] += t3_p[i] * p4_p[n, i] * resp_matrix[k, l, m, n, i]
+                    for i in range(npts):
+                        rs_m_kl[kl, i] += t3_m[i] * p4_m[n, i] * resp_matrix[k, l, m, n, i]
 
-                    # Negative abcd indices
-                    if m_m and -num_b4 <= n - d <= num_b4:
-
-                        for i in range(npts):
-                            rs_m[i] += t3_m[i] * p4_m[n, i] * resp_matrix[k, l, m, n, i]
+    rs_p = rs_p_kl.sum(axis=0)
+    rs_m = rs_m_kl.sum(axis=0)
 
     # Calculate current coefficient: equation 5.26
     if a == 0 and b == 0 and c == 0 and d == 0:
