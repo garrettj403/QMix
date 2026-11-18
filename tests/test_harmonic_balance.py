@@ -133,6 +133,32 @@ def test_converged_flag_on_last_iteration():
     assert num_it_2 == num_it and converged
 
 
+@pytest.mark.parametrize('strong_tone', [1, 2])
+def test_warm_start(strong_tone):
+    """warm_start solves the strongest tone on its own first. The result
+    should be the same solution (within the tolerance), found in fewer
+    multi-tone iterations. The strongest tone doesn't have to be tone 1."""
+
+    NB = (12, 5, 5)
+    circuit = qmix.circuit.EmbeddingCircuit(3, 1, vb_npts=NPTS)
+    for f, (freq, vt) in enumerate(zip([0.30, 0.33, 0.27], [0.6, 0.03, 0.03]), 1):
+        circuit.freq[f] = freq
+        circuit.vt[f, 1] = vt
+        circuit.zt[f, 1] = 0.5 - 0.3j
+    if strong_tone == 2:
+        circuit.freq[[1, 2]] = circuit.freq[[2, 1]]
+        circuit.vt[[1, 2]] = circuit.vt[[2, 1]]
+        NB = (5, 12, 5)
+
+    vj_cold, it_cold, ok_cold = harmonic_balance(circuit, RESP, NB, mode='x', verbose=False)
+    vj_warm, it_warm, ok_warm = harmonic_balance(circuit, RESP, NB, mode='x', verbose=False, warm_start=True)
+
+    assert ok_cold and ok_warm
+    assert it_warm < it_cold
+    check_hb_error(vj_warm, circuit, RESP, NB, stop_rerror=0.001)
+    np.testing.assert_allclose(vj_warm, vj_cold, rtol=0, atol=1e-3)
+
+
 def test_when_zthev_is_zero():
     """ Harmonic balance is not needed when all of the embedding impedances
     are set to zero. In this test, set all thevenin impedances to zero, and

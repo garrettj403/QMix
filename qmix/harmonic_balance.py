@@ -19,8 +19,9 @@ SIS mixer circuits.
 # import qmix
 import numpy as np
 from timeit import default_timer as timer
+from qmix.circuit import EmbeddingCircuit
 from qmix.misc.progbar import progress_bar
-from qmix.qtcurrent import interpolate_respfn, qtcurrent
+from qmix.qtcurrent import interpolate_respfn, qtcurrent, _unpack_num_b
 
 # minimum Thevenin voltage (required to avoid div by 0 errors)
 MIN_VT = 1e-10
@@ -51,7 +52,8 @@ MAX_RESTARTS = 3
 
 
 def harmonic_balance(cct, resp, num_b=15, max_it=30, stop_rerror=0.001, vj_initial=None, damp_coeff=1., mode="o",
-                     verbose=True, zj_guess=0.67, reuse_jacobian=True, method='auto', line_search=True):
+                     verbose=True, zj_guess=0.67, reuse_jacobian=True, method='auto', line_search=True,
+                     warm_start=False):
     """Perform harmonic balance.
 
     Determine the harmonic balance of the junction + embedding circuit system.
@@ -95,6 +97,15 @@ def harmonic_balance(cct, resp, num_b=15, max_it=30, stop_rerror=0.001, vj_initi
             strongly (e.g., large embedding impedance near the gap). Each
             shortened step costs one call to the tunneling current function,
             but full steps cost nothing extra.
+        warm_start (bool, optional): for multi-tone simulations, first
+            solve the harmonic balance for the strongest tone (largest
+            Thevenin voltage) on its own, and use the result as the initial
+            guess for that tone, default is False. This is cheap (single-tone
+            tunneling currents are much faster to calculate) and typically
+            cuts the number of multi-tone iterations by 2-3x when one tone
+            (e.g., the LO) is much stronger than the others, but it is not
+            always faster. Ignored if ``vj_initial`` is given or there is
+            only one tone.
 
     Returns:
         ndarray: junction voltage that satisfies the circuit (mode 'o');
@@ -136,6 +147,15 @@ def harmonic_balance(cct, resp, num_b=15, max_it=30, stop_rerror=0.001, vj_initi
         vj_initial = vt[:, :, None] * \
                      zj_guess / (zj_guess + zt[:, :, None]) * \
                      np.ones(npts, dtype=complex)
+
+        # Warm start: solve the strongest tone on its own
+        if warm_start and num_f > 1:
+            f_strong = 1 + int(np.argmax(np.abs(cct.vt[1:, 1:]).max(axis=1)))
+            if verbose:
+                print(" - warm start: solving tone {} on its own".format(f_strong))
+            vj_initial[f_strong] = _single_tone_guess(cct, resp, f_strong, _unpack_num_b(num_b, num_f)[f_strong - 1],
+                                                      max_it, stop_rerror, damp_coeff, zj_guess, reuse_jacobian,
+                                                      method, line_search)
 
     # Prepare input data ----------------------------------------------------
 
@@ -269,6 +289,8 @@ def harmonic_balance(cct, resp, num_b=15, max_it=30, stop_rerror=0.001, vj_initi
                     vj_2d[:, i] = vj_2d[:, idx_done[np.abs(idx_done - i).argmin()]]
                 num_restarts[restart] += 1
                 err_all = _error_vector(vj_2d, vt_2d, zt_2d, cct, resp, num_b, respfn_interp)
+                # The Jacobian at the restarted points is out of date
+                force_new_jacobian = True
                 if verbose:
                     print("Restarted {} bias point(s) from a converged neighbor".format(np.sum(restart)))
         else:
@@ -470,6 +492,31 @@ def _qt_current_for_hb(vj_2d, cct, resp, num_b, resp_matrix=None):
     current_out = qtcurrent(vj, cct, resp, freq_list, num_b, verbose=False, resp_matrix=resp_matrix)
 
     return current_out
+
+
+def _single_tone_guess(cct, resp, f, num_b, max_it, stop_rerror, damp_coeff, zj_guess, reuse_jacobian, method,
+                       line_search):
+    """Solve the harmonic balance for tone f on its own (all harmonics).
+
+    Used as the initial guess for that tone in a multi-tone harmonic balance
+    (``warm_start``).
+
+    Returns:
+        ndarray: junction voltage for tone f, shape (num_p + 1, npts)
+
+    """
+
+    cct_1 = EmbeddingCircuit(1, cct.num_p, vb_npts=cct.vb_npts)
+    cct_1.vb = cct.vb.copy()
+    cct_1.freq[1] = cct.freq[f]
+    cct_1.vt[1] = cct.vt[f]
+    cct_1.zt[1] = cct.zt[f]
+
+    vj_1 = harmonic_balance(cct_1, resp, num_b=num_b, max_it=max_it, stop_rerror=stop_rerror, damp_coeff=damp_coeff,
+                            verbose=False, zj_guess=zj_guess, reuse_jacobian=reuse_jacobian, method=method,
+                            line_search=line_search)
+
+    return vj_1[1]
 
 
 def _error_vector(vj_2d, vt_2d, zt_2d, cct, resp, num_b, resp_matrix):
