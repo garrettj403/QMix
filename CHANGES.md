@@ -25,7 +25,8 @@ Optimization
 Documentation
 -------------
 
-- Travis CI now automatically rebuilds the online documentation on each new commit.
+- Added the ``qmix.exp.if_response`` module to the API documentation (it was missing).
+- Updated ``environment.yml``: added ``scienceplots`` (required by the notebooks) and removed unused or unmaintained packages.
 - Added information on how to contribute to QMix to README.
 - Added docstrings to many private functions. This should allow new users to understand the inner workings a bit better.
 - Added a page to the online documentation describing the Fourier-shift method (``docs/source/fourier-shift-method.rst``).

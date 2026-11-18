@@ -25,7 +25,7 @@ Benchmarks must be run from `profile/benchmark/` (they use relative paths). `ben
 cd profile/benchmark && python benchmark-qtcurrent.py && python benchmark-harmonic-balance.py
 ```
 
-Docs are Sphinx (`docs/source/*.rst`, built with `make html` in `docs/`, output goes to `../../QMix-docs/html/`); the simulation pages come from `notebooks/` via nbsphinx, and `fourier-shift-method.rst` is a hand-written theory page using `.. math::` (mathjax). Sphinx is not installed in the usual dev environment; to check a page, build it in a throwaway venv with a minimal `conf.py` (`extensions = ['sphinx.ext.mathjax']`) and `sphinx-build -W`.
+Docs are Sphinx (`docs/source/*.rst`, built with `make html` in `docs/`, output goes to `docs/build/html/`; the notebooks must first be symlinked into `docs/source/`, see `docs/source/README.md`); the simulation pages come from `notebooks/` via nbsphinx, and `fourier-shift-method.rst` is a hand-written theory page using `.. math::` (mathjax). Sphinx is not installed in the usual dev environment; to check a page, build it in a throwaway venv with a minimal `conf.py` (`extensions = ['sphinx.ext.mathjax']`) and `sphinx-build -W`.
 
 ## Architecture
 

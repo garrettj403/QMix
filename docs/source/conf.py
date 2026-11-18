@@ -58,7 +58,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'QMix'
-copyright = u'2017, John Garrett'
+copyright = u'2017-2026, John Garrett'
 author = u'John Garrett'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -75,7 +75,7 @@ release = u'latest'
 #
 # This is also used if you do content translation via gettext catalogs.
 # Usually you set "language" from the command line for these cases.
-language = None
+language = 'en'
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
@@ -161,7 +161,7 @@ man_pages = [
 #  dir menu entry, description, category)
 texinfo_documents = [
     (master_doc, 'QMix', u'QMix Documentation',
-     author, 'QMix', 'One line description of project.',
+     author, 'QMix', 'Simulate the quasiparticle tunneling currents in SIS junctions.',
      'Miscellaneous'),
 ]
 

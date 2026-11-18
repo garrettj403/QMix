@@ -13,35 +13,30 @@ channels:
   - defaults
   - conda-forge
 dependencies:
-  - python>=3.7
+  - python>=3.10
   - pip
   # QMix dependencies (same as requirements.txt)
   - matplotlib
   - numba
   - numpy
   - scipy
-  # for generating documentation
+  # for running the notebooks and generating documentation
   - ipython
   - ipykernel
   - jupyter
   - nbconvert
-  - nb_conda
   - pandoc
-  - sphinx>=1.6
+  - sphinx
   - sphinx_rtd_theme
+  # for testing
+  - pytest
+  - pytest-cov
   - pip:
+    # plot styles used by the notebooks
+    - scienceplots
+    # for generating documentation
     - nbsphinx
-    - tornado==4.5.3
-  # for profiling
-  - pip:
-    - py-heat-magic
+    # for profiling
     - snakeviz
-    - gprof2dot
     - memory_profiler
     - line_profiler
-    - pycallgraph
-  # for testing
-  - pytest>=3.0
-  - pip:
-    - pytest-cov==2.5.0
-    - python-coveralls

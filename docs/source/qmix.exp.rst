@@ -28,6 +28,14 @@ qmix.exp.if\_data module
     :undoc-members:
     :show-inheritance:
 
+qmix.exp.if\_response module
+----------------------------
+
+.. automodule:: qmix.exp.if_response
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 qmix.exp.iv\_data module
 ------------------------
 
