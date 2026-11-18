@@ -51,7 +51,9 @@ templates_path = ['_templates']
 # You can specify multiple suffix as a list of string:
 #
 # source_suffix = ['.rst', '.md']
-source_suffix = ['.rst', '.ipynb']
+# Note: nbsphinx registers '.ipynb' itself. Listing it here (e.g., as
+# ['.rst', '.ipynb']) makes Sphinx parse notebooks as reStructuredText.
+source_suffix = {'.rst': 'restructuredtext'}
 
 # The master toctree document.
 master_doc = 'index'

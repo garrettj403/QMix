@@ -32,12 +32,12 @@ Description:
 
     The current at an output frequency is the sum over all combinations of
     tone indices (a_1, ..., a_F) with a_1 * f_1 + ... + a_F * f_F equal to
-    that frequency (Eqn. 5.36). All combinations with |a_f| <= num_p are
+    that frequency (Eqn. 5.36). All combinations with ``|a_f| <= num_p`` are
     included. When the tones are commensurate (e.g., LO, USB, LSB and IF),
     combinations with larger indices can also land on the output frequency,
     some of them first order in the signals (e.g., 2 * LO - LSB = USB). These
     are included if an upper bound on their contribution exceeds
-    ``MIXING_TOL`` (see ``qtcurrent``).
+    ``MIXING_TOL`` times the size of that current (see ``qtcurrent``).
 
 Note:
 
@@ -133,12 +133,13 @@ def qtcurrent(vj, cct, resp, freq_list, num_b=15, verbose=True, resp_matrix=None
         num_modes (int, optional): Number of Fourier modes for the
             Fourier-shift method, default is ``NUM_MODES``
         mixing_tol (float, optional): include combinations of tone indices
-            with |a_f| > num_p that land on an output frequency if the upper
-            bound on their contribution exceeds this (see module docstring),
-            default is ``MIXING_TOL`` (1e-6, which gives errors of ~1e-8).
-            Larger values are faster for commensurate tones; ``np.inf`` only
-            includes |a_f| <= num_p. To change it for ``harmonic_balance``,
-            set ``qmix.qtcurrent.MIXING_TOL``.
+            with ``|a_f| > num_p`` that land on an output frequency if the
+            upper bound on their contribution exceeds this times the size of
+            that current (see module docstring), default is ``MIXING_TOL``
+            (1e-6, which gives relative errors of ~1e-7 or better). Larger
+            values are faster for commensurate tones; ``np.inf`` only
+            includes ``|a_f| <= num_p``. To change it for
+            ``harmonic_balance``, set ``qmix.qtcurrent.MIXING_TOL``.
 
     Returns:
         ndarray: Quasiparticle tunneling current

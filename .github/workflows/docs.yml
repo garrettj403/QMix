@@ -1,0 +1,47 @@
+name: docs
+
+# Build the documentation (Sphinx + nbsphinx) and publish it to the gh-pages
+# branch, which GitHub Pages serves at https://garrettj403.github.io/QMix/.
+# Pull requests only build the docs (to catch warnings); pushes to master also
+# deploy them.
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: write  # to push to the gh-pages branch
+
+concurrency:
+  group: docs-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install pandoc
+        run: sudo apt-get update && sudo apt-get install -y pandoc
+      - name: Install QMix and the documentation packages
+        run: |
+          pip install -e .
+          pip install -r docs/requirements.txt
+      - name: Build documentation
+        run: |
+          cp notebooks/*.ipynb docs/source/
+          make -C docs html SPHINXOPTS="-W --keep-going"
+          touch docs/build/html/.nojekyll
+      - name: Deploy to GitHub Pages
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: docs/build/html
+          publish_branch: gh-pages

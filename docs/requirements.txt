@@ -1,0 +1,7 @@
+# Packages needed to build the documentation (in addition to QMix itself and
+# pandoc, which nbsphinx needs). Pinned to the versions the docs were last
+# checked with (Nov 2026), since the build treats warnings as errors.
+sphinx==9.1.1
+sphinx_rtd_theme==3.1.0
+nbsphinx==0.9.8
+ipython==9.18.1
