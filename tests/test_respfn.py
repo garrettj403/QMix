@@ -199,3 +199,21 @@ def test_piecewise_polynomial_matches_splines():
         assert resp(v_2d).shape == (10, 100)
         assert np.shape(resp(0.5)) == np.shape(resp._f_idc(0.5))
         np.testing.assert_allclose(resp(0.5), resp._f_ikk(0.5) + 1j * resp._f_idc(0.5), rtol=0, atol=1e-12)
+
+
+def test_respfn_symmetry():
+    """The DC I-V curve is odd and its KK transform is even. The spline knots
+    are mirrored about v = 0, so the interpolated response function should
+    keep this symmetry to round-off (it didn't before the knots were
+    mirrored: the two sides differed by up to ~5e-5 near the gap)."""
+
+    voltage = np.linspace(0, 30, 100001)
+
+    respfn_list = [RespFnPolynomial(50, verbose=False),
+                   RespFnExponential(verbose=False),
+                   RespFnPerfect(v_smear=0.05, verbose=False)]
+
+    for resp in respfn_list:
+        r_pos, r_neg = resp(voltage), resp(-voltage)
+        np.testing.assert_allclose(r_neg.real, r_pos.real, rtol=0, atol=1e-11)
+        np.testing.assert_allclose(r_neg.imag, -r_pos.imag, rtol=0, atol=1e-11)

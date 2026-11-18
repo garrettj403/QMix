@@ -27,6 +27,14 @@ at `reference/supermix` (git-ignored), or set `SUPERMIXDIR`.
   tolerance at 1e-14 instead of 1e-6, for the `--tight` build.
 - `compare.py`: exports a QMix response function as SuperMix I-V files, runs
   both codes on the same inputs and prints the differences.
+- `make_reference_data.py`: runs the tight driver on the same cases and saves
+  the inputs and SuperMix's results to
+  `tests/supermix-data/supermix_reference.npz`, which
+  `tests/test_supermix_reference.py` checks QMix against (no SuperMix needed
+  to run the tests). The I-V curve is stored as a table on a grid that
+  contains every voltage evaluated, so the test checks `qtcurrent` and
+  `harmonic_balance` independently of QMix's response function code. Only
+  rerun this if the cases need to change.
 
 ## Usage
 
