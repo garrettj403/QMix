@@ -155,6 +155,9 @@ class RespFn(object):
             ``current_kk``.
         current_kk (ndarray): The values of the KK transform of the DC I-V
             curve.
+        v_max (float): The response function is only defined for
+            ``|voltage| <= v_max``; beyond that, the splines are
+            extrapolated, which is inaccurate.
 
     """
 
@@ -200,6 +203,7 @@ class RespFn(object):
         self.current = current
         self.voltage_kk = voltage
         self.current_kk = current_kk
+        self.v_max = float(voltage.max())
 
     def __str__(self):  # pragma: no cover
 
@@ -708,6 +712,7 @@ class RespFnPerfect(RespFn):
             self.current = current
             self.voltage_kk = voltage
             self.current_kk = current_kk
+            self.v_max = np.inf  # analytic, so defined at any voltage
 
         # Smear IV curve (optional)
         else:

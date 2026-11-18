@@ -43,6 +43,7 @@ Note:
 """
 
 import itertools
+import warnings
 from timeit import default_timer as timer
 
 import numba as nb
@@ -262,10 +263,30 @@ def interpolate_respfn(cct, resp, num_b, method='auto', num_modes=None, verbose=
 
     nb_list = _unpack_num_b(num_b, cct.num_f)
 
+    _check_respfn_range(resp, cct.vb, cct.freq, nb_list)
+
     if _select_method(method, nb_list, cct.vb_npts, verbose) == 'fourier':
         return FourierResp(resp, cct.vb, cct.freq, nb_list, num_modes)
 
     return resp(_interpolation_voltages(cct.vb, cct.freq, nb_list))
+
+
+def _check_respfn_range(resp, vb, freq, nb_list):
+    """Warn if the response function is needed beyond the voltage range over
+    which it is defined (``resp.v_max``; e.g., |v| <= 35 for the standard
+    response functions). Beyond that, it is extrapolated, which is
+    inaccurate. Response functions without ``v_max`` are not checked."""
+
+    v_max = getattr(resp, 'v_max', None)
+    if v_max is None:
+        return
+
+    reach = np.abs(vb).max() + sum(num_b * freq[f] for f, num_b in enumerate(nb_list, 1))
+    if reach > v_max:
+        msg = ("The response function is only defined for |v| <= {:.1f}, but voltages up to {:.1f} are needed "
+               "(bias voltage + num_b * freq). It will be extrapolated, which is inaccurate. Reduce num_b or the "
+               "bias voltage range.")
+        warnings.warn(msg.format(v_max, reach))
 
 
 def _select_method(method, nb_list, npts, verbose=False):

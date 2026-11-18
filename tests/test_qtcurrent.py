@@ -7,6 +7,8 @@ to compare against.
 
 """
 
+import warnings
+
 import pytest
 import numpy as np
 from scipy.special import jv
@@ -820,3 +822,27 @@ def _calculate_phase_factor_coeff(vj, freq, num_f, num_p, num_b):
     # plt.show()
 
     return ckh_last
+
+
+def test_warning_beyond_respfn_range():
+    """Warn if the response function is needed beyond the voltage range over
+    which it is defined (|v| <= 35 here), where it is extrapolated."""
+
+    cct = EmbeddingCircuit(1, 1, vb_npts=11)
+    cct.freq[1] = 0.6
+    assert RESP.v_max == 35
+
+    # Within range: 2 + 50 * 0.6 = 32
+    with warnings.catch_warnings():
+        warnings.simplefilter('error')
+        interpolate_respfn(cct, RESP, 50)
+
+    # Beyond range: 2 + 60 * 0.6 = 38
+    with pytest.warns(UserWarning, match='only defined for'):
+        interpolate_respfn(cct, RESP, 60)
+
+    # The ideal (unsmeared) response function is analytic: no limit
+    resp_perfect = qmix.respfn.RespFnPerfect(verbose=False)
+    with warnings.catch_warnings():
+        warnings.simplefilter('error')
+        interpolate_respfn(cct, resp_perfect, 60)
