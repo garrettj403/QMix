@@ -900,8 +900,12 @@ def _eval_resp_poly(vbias, breakpoints, midpoints, coeff):  # pragma: no cover
 def _sample_curve(voltage, current, max_npts, smear):
     """Sample curve. Sample more often when the curve is curvier.
 
+    The samples are symmetric about v = 0 (the samples at v >= 0 are
+    mirrored), so that splines through them keep the symmetry of the
+    response function (DC I-V curve odd, KK transform even).
+
     Args:
-        voltage (ndarray): DC bias voltage
+        voltage (ndarray): DC bias voltage, symmetric about zero
         current (ndarray): current (either DC tunneling or KK)
         max_npts (int): maximum number of sample points
         smear (float): smear current (only for sampling purposes)
@@ -945,8 +949,12 @@ def _sample_curve(voltage, current, max_npts, smear):
     for i in range(ind_low, ind_high, npts // 30):
         idx_list.append(i)
 
-    idx_list = list(set(idx_list))
-    idx_list.sort()
+    # Keep the samples at v >= 0 and mirror them. The scan above runs from
+    # negative to positive voltage and places each sample relative to the
+    # previous one, so on its own it does not give mirrored samples.
+    assert np.allclose(voltage, -voltage[::-1]), "Voltage must be symmetric about zero"
+    idx_pos = {idx for idx in idx_list if voltage[idx] >= 0}
+    idx_list = sorted(idx_pos | {len(voltage) - 1 - idx for idx in idx_pos})
 
     return idx_list
 

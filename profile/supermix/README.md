@@ -49,7 +49,7 @@ the others are in `$SUPERMIXDIR/test/cfast.all`).
 Maximum |QMix - SuperMix| in normalized units over each bias sweep (polynomial
 I-V curve, order 50):
 
-| Case | stock SuperMix, QMix resp | stock, symmetrized resp | tight SuperMix, symmetrized resp |
+| Case | before knot mirroring, stock SuperMix | stock SuperMix | tight SuperMix |
 |---|---|---|---|
 | current, 1 harmonic, alpha 0.5 | 9.3e-09 | 3.0e-09 | 2.3e-15 |
 | current, 1 harmonic, alpha 1.0 | 1.2e-07 | 2.1e-09 | 1.4e-15 |
@@ -58,16 +58,17 @@ I-V curve, order 50):
 | balance, 1 harmonic | 4.5e-07 | 1.0e-08 | 1.0e-12 |
 | balance, 3 harmonics | 1.0e-06 | 3.7e-07 | 2.0e-10 |
 
-- With the same I-V curve and Bessel truncation, the tunneling currents agree
-  to machine precision, and the harmonic balance to QMix's stopping tolerance.
-  The two codes also use the same phasor and phase conventions.
-- The remaining differences in the stock comparison come from two sources:
-  - QMix's interpolated response function is only symmetric (Idc odd, Ikk even)
-    to within its interpolation error (up to 5e-5 in Ikk near the gap), because
-    its spline knots are not symmetric about v = 0. SuperMix mirrors the v >= 0
-    data. This dominates the ac current differences, which grow with pump
-    level since larger alpha samples more negative voltages.
-  - SuperMix truncates the Bessel functions and phase factors at 1e-6.
+- With the tight build, the tunneling currents agree to machine precision and
+  the harmonic balance to QMix's stopping tolerance. The two codes use the same
+  phasor and phase conventions.
+- With stock SuperMix, the differences come from its Bessel truncation at 1e-6.
+- The first column is from before QMix mirrored its spline knots (Nov 2026).
+  QMix's response function was then symmetric (Idc odd, Ikk even) only to
+  within its interpolation error (up to 5e-5 in Ikk near the gap), while
+  SuperMix mirrors the v >= 0 data. That dominated the ac current differences,
+  which grew with pump level since larger alpha samples more negative voltages.
+  The results with the symmetrized response function (`SymmetricResp`) now
+  match those with QMix's own.
 - The table step divides every voltage `vb + k * flo` evaluated here, so
   SuperMix's re-interpolation of the exported table does not contribute.
 - Speed: SuperMix balances a 199-point sweep in a few ms (4-7 Newton iterations

@@ -18,17 +18,17 @@ to interpolation error. QMix's KK transform does not vanish at v = 0 like the
 Tucker form that SuperMix expects, but a constant offset in Ikk cancels out of
 the tunneling currents, so this does not matter.
 
-Two things limit the agreement, and each case is run twice to separate them:
+Each case is run twice: with the QMix response function as is, and wrapped
+in ``SymmetricResp``. SuperMix mirrors the v >= 0 I-V data, so the two runs
+agree only if QMix's response function is exactly symmetric (Idc odd, Ikk
+even). Before QMix mirrored its spline knots (Nov 2026), it was not, and
+this gave differences up to ~1e-5 in the ac currents.
 
-- QMix's interpolated response function is symmetric (Idc odd, Ikk even)
-  only to within its interpolation error, while SuperMix mirrors the v >= 0
-  data. This gives up to ~1e-5 in the ac currents. The second run wraps the
-  QMix response function in ``SymmetricResp`` so both codes see one curve.
-- Stock SuperMix truncates the Bessel functions and phase factors at 1e-6
-  (ZEROTOL in its global.h). ``./build.sh --tight`` also builds a driver with
-  this set to 1e-14; with it and the symmetrized response function, the
-  tunneling currents agree to ~1e-15 and the harmonic balance to QMix's
-  stopping tolerance.
+Stock SuperMix truncates the Bessel functions and phase factors at 1e-6
+(ZEROTOL in its global.h), which limits the agreement to ~1e-7.
+``./build.sh --tight`` also builds a driver with this set to 1e-14; with it,
+the tunneling currents agree to ~1e-15 and the harmonic balance to QMix's
+stopping tolerance.
 
 QMix is run with generous num_b so that its truncation error is negligible.
 
@@ -79,12 +79,11 @@ PLOT_PREFIX = ''
 class SymmetricResp(object):
     """Response function made exactly symmetric: Idc odd, Ikk even.
 
-    SuperMix only reads I-V data for v >= 0 and mirrors it. QMix's
-    interpolated response function is symmetric only to within its
-    interpolation error (its spline knots are not placed symmetrically
-    about v = 0), which gives differences up to ~1e-5 in the ac currents.
-    Wrapping the QMix response function in this class gives both codes the
-    same curve, so that the comparison isolates the algorithms.
+    SuperMix only reads I-V data for v >= 0 and mirrors it. Wrapping the
+    QMix response function in this class guarantees that both codes see the
+    same curve. QMix's own response function should already be symmetric
+    (its spline knots are mirrored), so results with and without this
+    wrapper should match; if they don't, that symmetry has been lost.
     """
 
     def __init__(self, resp):
