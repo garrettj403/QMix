@@ -8,6 +8,8 @@ Functionality Changes
 - Deleted the command line scripts (``bin/``). There was only one script and it was pretty obscure so I descided to delete it.
 - Moved ``qtcurrent_all_freq()`` function from ``qmix.qtcurrent`` to ``qmix.harmonic_balance``. Again, it's a pretty obscure function and it's only used in the ``harmonic_balance`` module, so I moved it.
 - Deleted ``qtcurrent_std`` from ``qmix.qtcurrent``. This function calculated the "standard" output values, but this was pretty arbitrary. It also didn't really simplify the package at all so I deleted it.
+- Removed the limit of 4 tones. ``qmix.qtcurrent.qtcurrent`` now uses one general current coefficient kernel for any number of tones (replacing the separate 1, 2, 3 and 4 tone functions), and ``qmix.circuit.EmbeddingCircuit`` accepts any ``num_f >= 1``. Results are unchanged (to ~1e-15) and the speed is the same.
+- Added a Fourier-shift method for the summation over the phase factor coefficients (new ``method`` argument of ``qmix.qtcurrent.qtcurrent``, ``qmix.qtcurrent.interpolate_respfn`` and ``qmix.harmonic_balance.harmonic_balance``: ``'direct'``, ``'fourier'`` or ``'auto'``). With ``'fourier'``, the response function is represented by a windowed Fourier series so that the cost scales with the *sum* of ``2 * num_b + 1`` over the tones instead of the *product*, and the large interpolated response function matrix is not needed. This makes 5 or more tones (or large ``num_b``) practical. The accuracy is limited by the smoothness of the response function splines: ~1e-7 (relative to the direct method) with the default cubic splines and ~1e-9 or better with ``spline_order=5``. The default, ``'auto'``, uses the direct method unless the response function matrix would exceed ``qmix.qtcurrent.MAX_RESP_MATRIX_BYTES`` (2 GB). ``interpolate_respfn`` returns a ``qmix.qtcurrent.FourierResp`` object in this case, which can be passed to ``qtcurrent`` as ``resp_matrix``.
 
 Optimization
 ------------
@@ -26,6 +28,7 @@ Documentation
 - Travis CI now automatically rebuilds the online documentation on each new commit.
 - Added information on how to contribute to QMix to README.
 - Added docstrings to many private functions. This should allow new users to understand the inner workings a bit better.
+- Added a page to the online documentation describing the Fourier-shift method (``docs/source/fourier-shift-method.rst``).
 
 Miscellaneous Minor Changes
 ---------------------------

@@ -199,8 +199,8 @@ class EmbeddingCircuit(object):
         self.name = name  # used to identify the instance
 
         # Check input
-        assert num_f in [1, 2, 3, 4], \
-            "Number of tones (num_f) must be equal to 1, 2, 3, or 4."
+        assert num_f >= 1 and isinstance(num_f, int), \
+            "Number of tones (num_f) must be an integer equal or greater than 1."
         assert num_p >= 1 and isinstance(num_p, int), \
             "Number of harmonics (num_p) must be an integer equal or greater than 1."
         assert isinstance(vb_npts, int) and vb_npts >= 1, \

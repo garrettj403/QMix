@@ -40,7 +40,7 @@ JACOBIAN_REUSE_RATIO = 0.5
 
 
 def harmonic_balance(cct, resp, num_b=15, max_it=10, stop_rerror=0.001, vj_initial=None, damp_coeff=1., mode="o",
-                     verbose=True, zj_guess=0.67, reuse_jacobian=True):
+                     verbose=True, zj_guess=0.67, reuse_jacobian=True, method='auto'):
     """Perform harmonic balance.
 
     Determine the harmonic balance of the junction + embedding circuit system.
@@ -53,6 +53,10 @@ def harmonic_balance(cct, resp, num_b=15, max_it=10, stop_rerror=0.001, vj_initi
         resp (qmix.respfn.RespFn): Response function
         num_b (int/tuple, optional): Summation limits for phase factor
             coefficients, default is 15
+        method (str, optional): Method used by ``qmix.qtcurrent.qtcurrent``
+            to sum over the phase factor coefficients: ``'direct'``,
+            ``'fourier'`` or ``'auto'``, default is ``'auto'`` (see
+            ``qmix.qtcurrent`` for details)
         max_it (int, optional): Maximum number of iterations, default is 10
         stop_rerror (float, optional): Maximum acceptable relative error,
             default is 0.001
@@ -132,7 +136,7 @@ def harmonic_balance(cct, resp, num_b=15, max_it=10, stop_rerror=0.001, vj_initi
         print(" - max. iterations: {}".format(max_it))
 
     # Interpolate response function for all required voltages
-    respfn_interp = interpolate_respfn(cct, resp, num_b)
+    respfn_interp = interpolate_respfn(cct, resp, num_b, method=method, verbose=verbose)
 
     # Perform harmonic balance -----------------------------------------------
 

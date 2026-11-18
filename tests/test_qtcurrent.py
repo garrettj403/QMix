@@ -13,6 +13,7 @@ from scipy.special import jv
 
 import qmix
 from qmix.qtcurrent import qtcurrent, interpolate_respfn, calculate_phase_factor_coeff, suggest_num_b
+from qmix.qtcurrent import FourierResp
 from qmix.circuit import EmbeddingCircuit
 
 
@@ -71,10 +72,10 @@ def test_effect_of_adding_more_tones():
     ever excited. This should result in the same tunnelling currents being
     calculated in each simulation.
 
-    Note: 1, 2, 3 and 4 tone simulations use different calculation techniques,
-    so this test should make sure that they are all equivalent."""
+    Note: The summation order differs with the number of tones, so the
+    results are compared to within rounding error."""
 
-    num_b = (9, 2, 2, 2)
+    num_b = (9, 2, 2, 2, 2)
 
     alpha1 = 0.8  # drive level, tone 1
     freq1 = 0.33  # frequency, tone 1
@@ -139,17 +140,37 @@ def test_effect_of_adding_more_tones():
     idc4 = np.real(i4[0, :])
     iac4 = i4[1, :]
 
+    # 5 tones ----------------------------------------------------------------
+
+    num_f = 5
+    cct = EmbeddingCircuit(num_f, num_p)
+
+    cct.freq[1] = cct1.freq[1]
+    cct.freq[2] = cct1.freq[1] + 0.05
+    cct.freq[3] = cct1.freq[1] + 0.10
+    cct.freq[4] = cct1.freq[1] + 0.15
+    cct.freq[5] = cct1.freq[1] + 0.20
+
+    vj = cct.initialize_vj()
+    vj[1, 1, :] = cct.freq[1] * alpha1
+
+    i5 = qtcurrent(vj, cct, RESP, cct.freq, num_b)
+    idc5 = np.real(i5[0, :])
+    iac5 = i5[1, :]
+
     # Compare results --------------------------------------------------------
 
     # Compare methods
     # dc
-    np.testing.assert_equal(idc1, idc2)
-    np.testing.assert_equal(idc1, idc3)
-    np.testing.assert_equal(idc1, idc4)
+    np.testing.assert_allclose(idc2, idc1, rtol=1e-13)
+    np.testing.assert_allclose(idc3, idc1, rtol=1e-13)
+    np.testing.assert_allclose(idc4, idc1, rtol=1e-13)
+    np.testing.assert_allclose(idc5, idc1, rtol=1e-13)
     # ac
-    np.testing.assert_equal(iac1, iac2)
-    np.testing.assert_equal(iac1, iac3)
-    np.testing.assert_equal(iac1, iac4)
+    np.testing.assert_allclose(iac2, iac1, rtol=1e-13)
+    np.testing.assert_allclose(iac3, iac1, rtol=1e-13)
+    np.testing.assert_allclose(iac4, iac1, rtol=1e-13)
+    np.testing.assert_allclose(iac5, iac1, rtol=1e-13)
     # ensure all other tones are zero
     np.testing.assert_equal(i2[2, :], np.zeros_like(i2[2, :]))
     np.testing.assert_equal(i3[2, :], np.zeros_like(i3[2, :]))
@@ -157,6 +178,7 @@ def test_effect_of_adding_more_tones():
     np.testing.assert_equal(i4[2, :], np.zeros_like(i4[2, :]))
     np.testing.assert_equal(i4[3, :], np.zeros_like(i4[3, :]))
     np.testing.assert_equal(i4[4, :], np.zeros_like(i4[4, :]))
+    np.testing.assert_equal(i5[2:, :], np.zeros_like(i5[2:, :]))
 
 
 def test_effect_of_adding_more_harmonics():
@@ -466,11 +488,121 @@ def test_interpolation_of_respfn():
 
     # test 5 tones -----------------------------------------------------------
 
-    # should raise an error
-    cct.num_f = 5
-    with pytest.raises(ValueError):
-        _ = interpolate_respfn(cct, RESP, num_b=5)
+    num_f = 5
+    num_p = 2
+    cct = EmbeddingCircuit(num_f, num_p)
+    cct.freq[1] = 0.30
+    cct.freq[2] = 0.35
+    cct.freq[3] = 0.40
+    cct.freq[4] = 0.45
+    cct.freq[5] = 0.50
+    e = -1
 
+    interp_matrix = interpolate_respfn(cct, RESP, num_b=4)
+    vtest = cct.vb + a * cct.freq[1] + b * cct.freq[2] + c * cct.freq[3] + d * cct.freq[4] + e * cct.freq[5]
+
+    np.testing.assert_equal(interp_matrix[a, b, c, d, e, :], RESP(vtest))
+
+    # method='fourier' returns a Fourier representation instead -------------
+
+    fresp = interpolate_respfn(cct, RESP, num_b=4, method='fourier', num_modes=2000)
+    assert isinstance(fresp, FourierResp)
+    with pytest.raises(AssertionError):
+        _ = interpolate_respfn(cct, RESP, num_b=4, method='not-a-method')
+
+
+
+def _multitone_setup(freqs, amps, num_p=1, npts=101):
+    """Embedding circuit + bias-dependent, complex junction voltage."""
+
+    cct = EmbeddingCircuit(len(freqs), num_p, vb_npts=npts)
+    vj = cct.initialize_vj()
+    for f, (freq, amp) in enumerate(zip(freqs, amps), 1):
+        cct.freq[f] = freq
+        for p in range(1, num_p + 1):
+            vj[f, p, :] = amp / p * (1 + 0.3 * np.sin(3 * cct.vb + f)) * np.exp(1j * (0.7 * f + 0.2 * p))
+
+    return cct, vj
+
+
+def _rel_error(i_test, i_ref):
+    """Largest relative error, per output frequency."""
+
+    return (np.abs(i_test - i_ref).max(axis=1) / np.abs(i_ref).max(axis=1)).max()
+
+
+def test_five_tones_with_all_tones_excited():
+    """Add a 5th tone to a 4 tone simulation. With the 5th tone unexcited,
+    the currents must not change (the general kernel handles any number of
+    tones); with it excited, the direct and Fourier-shift methods must
+    agree."""
+
+    freqs = [0.30, 0.33, 0.27, 0.03]
+    amps = [0.3, 0.1, 0.1, 0.02]
+    num_b = (6, 3, 3, 3, 3)
+    freq_list = [0., 0.30, 0.33, 0.03]
+
+    cct4, vj4 = _multitone_setup(freqs, amps)
+    i4 = qtcurrent(vj4, cct4, RESP, freq_list, num_b, verbose=False)
+
+    # 5th tone unexcited
+    cct5, vj5 = _multitone_setup(freqs + [0.07], amps + [0.])
+    i5 = qtcurrent(vj5, cct5, RESP, freq_list, num_b, verbose=False)
+    np.testing.assert_allclose(i5, i4, rtol=1e-13, atol=1e-16)
+
+    # 5th tone excited: direct vs Fourier-shift
+    cct5, vj5 = _multitone_setup(freqs + [0.07], amps + [0.03])
+    i5_direct = qtcurrent(vj5, cct5, RESP, freq_list, num_b, verbose=False, method='direct')
+    i5_fourier = qtcurrent(vj5, cct5, RESP, freq_list, num_b, verbose=False, method='fourier')
+    assert _rel_error(i5_fourier, i5_direct) < 1e-5
+    # and the 5th tone changes the result
+    assert _rel_error(i5_direct, i4) > 1e-3
+
+
+def test_fourier_shift_method():
+    """Compare the Fourier-shift method to the direct summation. The
+    agreement is limited by the smoothness of the response function splines
+    (cubic by default); quintic splines converge much faster."""
+
+    freqs = [0.30, 0.33, 0.03]
+    amps = [0.3, 0.1, 0.02]
+    num_b = (8, 4, 4)
+    freq_list = [0., 0.30, 0.33, 0.03, 0.63]
+    cct, vj = _multitone_setup(freqs, amps, num_p=2)
+
+    # Cubic splines (default)
+    i_direct = qtcurrent(vj, cct, RESP, freq_list, num_b, verbose=False, method='direct')
+    i_fourier = qtcurrent(vj, cct, RESP, freq_list, num_b, verbose=False, method='fourier')
+    assert _rel_error(i_fourier, i_direct) < 1e-5
+
+    # Quintic splines
+    resp5 = qmix.respfn.RespFnPolynomial(50, verbose=False, spline_order=5)
+    i_direct = qtcurrent(vj, cct, resp5, freq_list, num_b, verbose=False, method='direct')
+    i_fourier = qtcurrent(vj, cct, resp5, freq_list, num_b, verbose=False, method='fourier')
+    assert _rel_error(i_fourier, i_direct) < 1e-7
+
+    # Pre-computed Fourier representation gives the same result
+    fresp = interpolate_respfn(cct, resp5, num_b, method='fourier')
+    assert isinstance(fresp, FourierResp)
+    i_pre = qtcurrent(vj, cct, resp5, freq_list, num_b, verbose=False, resp_matrix=fresp)
+    np.testing.assert_equal(i_pre, i_fourier)
+
+    # The represented response function matches the original within the
+    # window (the bias voltages +/- the reach of the summation indices)
+    vtest = np.linspace(cct.vb.min() - 1., cct.vb.max() + 1., 1001)
+    assert np.abs(fresp.resp(vtest) - resp5(vtest)).max() < 1e-8
+
+    # method='auto' switches to the Fourier-shift method above the memory
+    # budget for the response function matrix
+    max_bytes = qmix.qtcurrent.MAX_RESP_MATRIX_BYTES
+    try:
+        qmix.qtcurrent.MAX_RESP_MATRIX_BYTES = 0
+        assert isinstance(interpolate_respfn(cct, resp5, num_b), FourierResp)
+        i_auto = qtcurrent(vj, cct, resp5, freq_list, num_b, verbose=False)
+        np.testing.assert_equal(i_auto, i_fourier)
+    finally:
+        qmix.qtcurrent.MAX_RESP_MATRIX_BYTES = max_bytes
+    assert isinstance(interpolate_respfn(cct, resp5, num_b), np.ndarray)
 
 
 def test_phase_factor_coefficients():
