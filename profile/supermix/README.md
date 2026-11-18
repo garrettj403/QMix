@@ -27,6 +27,12 @@ at `reference/supermix` (git-ignored), or set `SUPERMIXDIR`.
   tolerance at 1e-14 instead of 1e-6, for the `--tight` build.
 - `compare.py`: exports a QMix response function as SuperMix I-V files, runs
   both codes on the same inputs and prints the differences.
+- `compare_multitone.py`: checks QMix's multi-tone harmonic balance of a
+  mixer (strong LO, weak RF, IF driven by mixing) against small-signal
+  (Tucker) theory. The driver's `smallsignal` mode balances the LO alone and
+  outputs the junction's conversion admittance matrix at the IF; the script
+  solves the sideband network and compares with QMix extrapolated to zero RF
+  amplitude.
 - `make_reference_data.py`: runs the tight driver on the same cases and saves
   the inputs and SuperMix's results to
   `tests/supermix-data/supermix_reference.npz`, which
@@ -79,6 +85,18 @@ I-V curve, order 50):
   match those with QMix's own.
 - The table step divides every voltage `vb + k * flo` evaluated here, so
   SuperMix's re-interpolation of the exported table does not contribute.
+- Multi-tone mixer vs small-signal theory (`compare_multitone.py`, max
+  relative difference of the junction voltages per unit RF voltage):
+  - A, LO + USB + IF (LSB shorted, `num_p = 1`): 1.9e-07
+  - B, LO + USB + IF + LSB (`num_p = 1`): **5.5e-01**
+  - C, same as B with `num_p = 2`: 2.8e-07
+
+  Case B exposes a QMix limitation: `_matching_tuples` only includes mixing
+  products with `|a_f| <= num_p`, but the USB current from the LSB voltage
+  comes from 2 * LO - LSB (`a_LO = 2`). This is first order in the signal,
+  so with both sidebands as tones and `num_p = 1`, the mixer response is off
+  by ~10-50%. Including tuples up to `|a_f| <= 3` makes B agree to 3e-7.
+  `tests/test_supermix_reference.py` marks this case as an expected failure.
 - Speed: SuperMix balances a 199-point sweep in a few ms (4-7 Newton iterations
   per point, about 15 us each), versus a few tenths of a second for QMix (two
   harmonic-balance passes; vectorized over bias, numerical Jacobian).

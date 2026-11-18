@@ -26,6 +26,11 @@ DATA_FILE = os.path.join(os.path.dirname(__file__), 'supermix-data', 'supermix_r
 DATA = np.load(DATA_FILE)
 CURRENT_CASES = [str(name) for name in DATA['names'] if name.startswith('current')]
 BALANCE_CASES = [str(name) for name in DATA['names'] if name.startswith('balance')]
+MIXER_CASES = [str(name) for name in DATA['names'] if name.startswith('mixer')]
+
+# Frequencies of the mixer cases (normalized): LO, USB, IF, LSB
+F_LO, F_IF = 0.3, 0.03
+F_USB, F_LSB = F_LO + F_IF, F_LO - F_IF
 
 
 class TableResp(object):
@@ -121,3 +126,62 @@ def test_harmonic_balance(case):
 
     ij = _qmix_current(case, cct, vj)
     np.testing.assert_allclose(ij, ij_smx, rtol=0, atol=1e-9)
+
+
+def _qmix_mixer_voltage(case, amp):
+    """QMix multi-tone harmonic balance for a mixer case: tones LO, USB (RF,
+    Thevenin voltage amp), IF[, LSB]. Harmonics p >= 2 of the weak tones are
+    shorted. Returns vj[f, p, i]."""
+
+    num_p = int(_get(case, 'num_p'))
+    zt_lsb = complex(_get(case, 'zt_lsb'))
+    weak = [0] * (num_p - 1)
+    tones = [(F_LO, float(_get(case, 'vt_lo')), list(_get(case, 'zt_lo'))),
+             (F_USB, amp, [complex(_get(case, 'zt_usb'))] + weak),
+             (F_IF, 0, [complex(_get(case, 'zt_if'))] + weak)]
+    if not np.isnan(zt_lsb):
+        tones.append((F_LSB, 0, [zt_lsb] + weak))
+
+    vb = _get(case, 'vb')
+    cct = EmbeddingCircuit(len(tones), num_p, vb_min=vb[0], vb_max=vb[-1], vb_npts=len(vb))
+    cct.vb = vb
+    for f, (freq, vt, zt) in enumerate(tones, 1):
+        cct.freq[f] = freq
+        cct.vt[f, 1] = vt
+        cct.zt[f, 1:] = zt
+
+    num_b = tuple(int(nb) for nb in _get(case, 'num_b'))
+    vj, _, converged = harmonic_balance(cct, RESP, num_b=num_b, stop_rerror=1e-11, max_it=60, verbose=False,
+                                        mode='x', warm_start=True)
+    assert converged
+    return vj
+
+
+@pytest.mark.parametrize('case', MIXER_CASES)
+def test_mixer_small_signal(case, request):
+    """Multi-tone harmonic balance of a mixer (strong LO, weak RF at the USB,
+    IF driven by mixing) vs small-signal (Tucker) theory from SuperMix.
+
+    QMix is run at two RF amplitudes and extrapolated to zero amplitude; the
+    junction voltage per unit RF Thevenin voltage at each sideband must match.
+
+    The case with the LSB as a tone and num_p = 1 fails: the USB current from
+    the LSB voltage comes from the mixing product 2 * LO - LSB, which needs
+    a_LO = 2 > num_p, and qtcurrent only includes |a_f| <= num_p."""
+
+    lsb_is_tone = not np.isnan(complex(_get(case, 'zt_lsb')))
+    if lsb_is_tone and int(_get(case, 'num_p')) == 1:
+        request.applymarker(pytest.mark.xfail(strict=True, reason="mixing products with |a_f| > num_p are dropped"))
+
+    amp = 1e-3
+    vj_1 = _qmix_mixer_voltage(case, amp)
+    vj_2 = _qmix_mixer_voltage(case, 2 * amp)
+
+    for f, sideband in enumerate(['usb', 'if', 'lsb'], 2):
+        key = '{}_v_{}'.format(case, sideband)
+        if key not in DATA.files:
+            continue
+        v_ref = DATA[key]
+        v_qmix = (4 * vj_1[f, 1] / amp - vj_2[f, 1] / (2 * amp)) / 3  # Richardson extrapolation
+        np.testing.assert_allclose(v_qmix, v_ref, rtol=0, atol=1e-5 * np.abs(v_ref).max(),
+                                   err_msg='{} voltage'.format(sideband.upper()))

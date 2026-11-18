@@ -27,6 +27,7 @@ import qmix
 from qmix.qtcurrent import suggest_num_b
 
 import compare
+import compare_multitone
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUTPUT = os.path.join(HERE, '..', '..', 'tests', 'supermix-data', 'supermix_reference.npz')
@@ -127,6 +128,26 @@ def main():
                      key + '_vj': smx['vj'], key + '_ij': smx['ij']})
         print('{}: flo {}, {} harmonic(s), num_b {}, SuperMix iterations <= {}'.format(
               key, flo, len(vt_list), num_b, smx['iterations'].max()))
+
+    # Multi-tone mixer vs small-signal theory (see compare_multitone.py):
+    # junction voltage per unit RF Thevenin voltage at each sideband
+    vb = np.round(np.linspace(0.05, 1.95, 39), 12)
+    for case in compare_multitone.MIXER_CASES:
+        _, ss = compare_multitone.small_signal_reference(files, vb, case)
+        q, _, num_b = compare_multitone.qmix_per_unit_rf(resp, vb, case)
+
+        key = 'mixer{}'.format(len(names))
+        names.append(key)
+        data.update({key + '_name': case['name'], key + '_num_p': case['num_p'], key + '_vb': vb,
+                     key + '_zt_lo': np.array(case['zt_lo'], dtype=complex), key + '_zt_usb': case['zt_usb'],
+                     key + '_zt_if': case['zt_if'],
+                     key + '_zt_lsb': np.nan if case['zt_lsb'] is None else case['zt_lsb'],
+                     key + '_vt_lo': compare_multitone.VT_LO, key + '_num_b': np.array(num_b)})
+        err = 0
+        for sideband, v in ss.items():
+            data['{}_v_{}'.format(key, sideband)] = v
+            err = max(err, np.abs(q[sideband] - v).max() / np.abs(v).max())
+        print('{}: {}, num_b {}, max relative |QMix - small-signal| = {:.1e}'.format(key, case['name'], num_b, err))
 
     data['names'] = np.array(names)
     os.makedirs(os.path.dirname(OUTPUT), exist_ok=True)

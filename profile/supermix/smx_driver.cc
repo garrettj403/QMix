@@ -11,18 +11,27 @@
 //
 // Input (whitespace separated):
 //
-//   mode                 "current" or "balance"
+//   mode                 "current", "balance" or "smallsignal"
 //   vn_mV rn_ohm         normalizing voltage and resistance
 //   idc_file ikk_file    I-V curve and KK transform (normalized)
 //   flo num_p npts       LO frequency, number of harmonics, bias points
-//   tol                  balance only: Newton tolerance (normalized voltage)
-//   num_p x (vt_re vt_im zt_re zt_im)   balance only: Thevenin circuit
+//   tol                  balance/smallsignal: Newton tolerance (normalized
+//                        voltage)
+//   fif                  smallsignal only: IF frequency (normalized)
+//   num_p x (vt_re vt_im zt_re zt_im)   balance/smallsignal: Thevenin
+//                                       circuit at each LO harmonic
 //   npts x (vb [num_p x (vj_re vj_im)]) bias voltage; current mode also
 //                                       gives the junction voltage phasors
 //
 // Output: npts lines of
 //
 //   vb iterations status  then for p = 0..num_p: vj_re vj_im ij_re ij_im
+//
+// and in smallsignal mode, then the junction's small-signal admittance matrix
+// (Tucker theory, after balancing the LO) Y[m][n] for m, n = -num_p..num_p
+// (row by row), as re im pairs, normalized to 1/Rn. Sideband m is at
+// frequency m * flo + fif; for m < 0, this is negative, so the phasor is the
+// complex conjugate of the one at the positive frequency |m| * flo - fif.
 //
 // where status is 0 for success (current mode always 0) and iterations is
 // the number of Newton iterations (0 in current mode). The final line is
@@ -83,7 +92,7 @@ int main()
   int num_p, npts;
 
   cin >> mode >> vn_mV >> rn_ohm >> idc_file >> ikk_file >> flo_norm >> num_p >> npts;
-  if (!cin || (mode != "current" && mode != "balance")) {
+  if (!cin || (mode != "current" && mode != "balance" && mode != "smallsignal")) {
     cerr << "smx_driver: bad input header" << endl;
     return 1;
   }
@@ -131,9 +140,11 @@ int main()
     }
   }
 
-  else {  // balance
-    double tol;
+  else {  // balance or smallsignal
+    double tol, fif_norm = 0.0;
     cin >> tol;
+    if (mode == "smallsignal") cin >> fif_norm;
+    const double fIF = fif_norm * Fgap;
 
     harmonic_thevenin lo;
     lo.LO = fLO;
@@ -179,6 +190,16 @@ int main()
         double scale = (p == 0) ? 1.0 : RmsToPeak;
         Complex v = V.read(p) * scale / Vn, c = I.read(p) * scale / In;
         cout << " " << v.real << " " << v.imaginary << " " << c.real << " " << c.imaginary;
+      }
+      if (mode == "smallsignal") {
+        double t1 = now();
+        const Matrix & Y = sis.small_signal(fIF, num_p);
+        t_total += now() - t1;
+        for (int mm = -num_p; mm <= num_p; ++mm)
+          for (int nn = -num_p; nn <= num_p; ++nn) {
+            Complex y = Y.read(mm, nn) * Rn;
+            cout << " " << y.real << " " << y.imaginary;
+          }
       }
       cout << "\n";
     }
