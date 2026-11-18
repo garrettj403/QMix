@@ -91,12 +91,12 @@ I-V curve, order 50):
   - B, LO + USB + IF + LSB (`num_p = 1`): **5.5e-01**
   - C, same as B with `num_p = 2`: 2.8e-07
 
-  Case B exposes a QMix limitation: `_matching_tuples` only includes mixing
-  products with `|a_f| <= num_p`, but the USB current from the LSB voltage
-  comes from 2 * LO - LSB (`a_LO = 2`). This is first order in the signal,
-  so with both sidebands as tones and `num_p = 1`, the mixer response is off
-  by ~10-50%. Including tuples up to `|a_f| <= 3` makes B agree to 3e-7.
-  `tests/test_supermix_reference.py` marks this case as an expected failure.
+  Case B exposed a QMix bug (fixed Nov 2026): `qtcurrent` only included
+  mixing products with `|a_f| <= num_p`, but the USB current from the LSB
+  voltage comes from 2 * LO - LSB (`a_LO = 2`). This is first order in the
+  signal, so with both sidebands as tones and `num_p = 1`, the mixer response
+  was off by ~10-50% (the value in bold above). QMix now includes all
+  significant combinations (`mixing_tol`), and case B agrees to ~3e-7.
 - Speed: SuperMix balances a 199-point sweep in a few ms (4-7 Newton iterations
   per point, about 15 us each), versus a few tenths of a second for QMix (two
   harmonic-balance passes; vectorized over bias, numerical Jacobian).

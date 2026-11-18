@@ -30,6 +30,15 @@ Description:
     interpolated response function matrix would be larger than
     ``MAX_RESP_MATRIX_BYTES``.
 
+    The current at an output frequency is the sum over all combinations of
+    tone indices (a_1, ..., a_F) with a_1 * f_1 + ... + a_F * f_F equal to
+    that frequency (Eqn. 5.36). All combinations with |a_f| <= num_p are
+    included. When the tones are commensurate (e.g., LO, USB, LSB and IF),
+    combinations with larger indices can also land on the output frequency,
+    some of them first order in the signals (e.g., 2 * LO - LSB = USB). These
+    are included if an upper bound on their contribution exceeds
+    ``MIXING_TOL`` (see ``qtcurrent``).
+
 Note:
 
     This code is largely based on P. Kittara's 2002 DPhil thesis (see
@@ -42,6 +51,7 @@ Note:
 
 """
 
+import functools
 import itertools
 import warnings
 from timeit import default_timer as timer
@@ -74,10 +84,18 @@ FOURIER_BLOCK = 2048
 
 METHODS = ('auto', 'direct', 'fourier')
 
+# Include combinations of tone indices with |a_f| > num_p that land on an
+# output frequency if the upper bound on their contribution (the product over
+# tones of the summed magnitudes of the pair products C_k * conj(C_{k+a}))
+# exceeds this. The bound is conservative: with 1e-6, the error in the
+# currents is ~1e-8. np.inf gives the old behavior (only |a_f| <= num_p).
+MIXING_TOL = 1e-6
+
 
 # Determine the dc/ac tunneling currents -------------------------------------
 
-def qtcurrent(vj, cct, resp, freq_list, num_b=15, verbose=True, resp_matrix=None, method='auto', num_modes=None):
+def qtcurrent(vj, cct, resp, freq_list, num_b=15, verbose=True, resp_matrix=None, method='auto', num_modes=None,
+              mixing_tol=None):
     """Calculate the quasiparticle tunneling current.
 
     This function uses multi-tone spectral domain analysis (MTSDA; see
@@ -114,6 +132,13 @@ def qtcurrent(vj, cct, resp, freq_list, num_b=15, verbose=True, resp_matrix=None
             (see module docstring), default is ``'auto'``
         num_modes (int, optional): Number of Fourier modes for the
             Fourier-shift method, default is ``NUM_MODES``
+        mixing_tol (float, optional): include combinations of tone indices
+            with |a_f| > num_p that land on an output frequency if the upper
+            bound on their contribution exceeds this (see module docstring),
+            default is ``MIXING_TOL`` (1e-6, which gives errors of ~1e-8).
+            Larger values are faster for commensurate tones; ``np.inf`` only
+            includes |a_f| <= num_p. To change it for ``harmonic_balance``,
+            set ``qmix.qtcurrent.MIXING_TOL``.
 
     Returns:
         ndarray: Quasiparticle tunneling current
@@ -172,6 +197,12 @@ def qtcurrent(vj, cct, resp, freq_list, num_b=15, verbose=True, resp_matrix=None
 
     tuple_lists = [_matching_tuples(freq_out, freq, num_f, num_p) for freq_out in freq_list]
 
+    # Combinations with |a_f| > num_p that also land on an output frequency
+    if mixing_tol is None:
+        mixing_tol = MIXING_TOL
+    if np.isfinite(mixing_tol):
+        tuple_lists = _add_mixing_products(tuple_lists, freq_list, freq, num_p, nb_list, ccc, mixing_tol)
+
     # Calculate the tunneling currents ----------------------------------------
 
     if isinstance(resp_matrix, FourierResp):
@@ -223,6 +254,137 @@ def _matching_tuples(freq_out, freq, num_f, num_p):
             tuple_list.append(a_tuple)
 
     return tuple_list
+
+
+def _add_mixing_products(tuple_lists, freq_list, freq, num_p, nb_list, ccc, mixing_tol):
+    """Add the combinations of tone indices with |a_f| > num_p that land on
+    each output frequency and whose contribution may be significant.
+
+    The contribution of (a_1, ..., a_F) to the current is bounded by the
+    product over tones of sum_k |C_k| |C_{k+a_f}| (times the magnitude of
+    the response function). A combination is included if this bound exceeds
+    mixing_tol times the largest bound of the |a_f| <= num_p combinations at
+    the same output frequency (i.e., relative to the size of that current).
+
+    Args:
+        tuple_lists (list): for each output frequency, the combinations with
+            |a_f| <= num_p (from ``_matching_tuples``)
+        freq_list (list): output frequencies
+        freq (ndarray): frequencies of the tones (1-indexed)
+        num_p (int): number of harmonics
+        nb_list (tuple): summation limits, one per tone
+        ccc (ndarray): convolution coefficients
+        mixing_tol (float): tolerance for the bound
+
+    Returns:
+        list: for each output frequency, the list of combinations
+
+    """
+
+    num_f = len(nb_list)
+    freq_key = tuple(float(freq[f]) for f in range(1, num_f + 1))
+    candidate_lists = [_candidate_tuples(round(freq_out, ROUND_FREQ), freq_key, tuple(nb_list), num_p)
+                       for freq_out in freq_list]
+    if all(len(candidates) == 0 for candidates in candidate_lists):
+        return tuple_lists
+    bounds = _pair_product_bounds(ccc, nb_list)
+
+    def weights(a_tuples):
+        a_tuples = np.asarray(a_tuples, dtype=np.int64).reshape(-1, num_f)
+        weight = np.ones(len(a_tuples))
+        for f, num_b in enumerate(nb_list):
+            in_range = np.abs(a_tuples[:, f]) <= 2 * num_b
+            weight *= np.where(in_range, bounds[f][np.clip(a_tuples[:, f] + 2 * num_b, 0, 4 * num_b)], 0.)
+        return weight
+
+    tuple_lists_out = []
+    for candidates, tuple_list in zip(candidate_lists, tuple_lists):
+        if len(candidates) > 0:
+            # Relative to the largest bound of the |a_f| <= num_p combinations,
+            # so that e.g. first-order terms at a weak signal's frequency are
+            # included regardless of the signal strength
+            scale = weights(tuple_list).max() if len(tuple_list) > 0 else 0.
+            if scale == 0:
+                scale = 1.
+            extra = [tuple(int(a) for a in a_tuple) for a_tuple in candidates[weights(candidates) > mixing_tol * scale]]
+            tuple_list = list(tuple_list) + extra
+        tuple_lists_out.append(tuple_list)
+
+    return tuple_lists_out
+
+
+def _pair_product_bounds(ccc, nb_list):
+    """For each tone f and index a = -2 num_b_f ... 2 num_b_f (stored at
+    a + 2 num_b_f), the maximum over bias voltages of sum_k |C_k| |C_{k+a}|,
+    with k and k + a within [-num_b_f, num_b_f]."""
+
+    bounds = []
+    for f, num_b in enumerate(nb_list, 1):
+        abs_c = np.abs(ccc[f][_natural_indices(num_b)])  # k = -num_b ... num_b
+        dim = 2 * num_b + 1
+        bound_f = np.zeros(4 * num_b + 1)
+        for a in range(-2 * num_b, 2 * num_b + 1):
+            lo, hi = max(0, -a), min(dim, dim - a)
+            bound_f[a + 2 * num_b] = (abs_c[lo:hi] * abs_c[lo + a:hi + a]).sum(axis=0).max()
+        bounds.append(bound_f)
+
+    return bounds
+
+
+def _natural_indices(num_b):
+    """Storage indices of k = -num_b ... num_b (wraparound indexing)."""
+
+    return np.r_[np.arange(-num_b, 0), np.arange(0, num_b + 1)]
+
+
+@functools.lru_cache(maxsize=1024)
+def _candidate_tuples(freq_out, freq, nb_list, num_p):
+    """All combinations of tone indices with |a_f| <= 2 * num_b_f (beyond
+    that, the pair products vanish) that land on the output frequency, except
+    those with all |a_f| <= num_p (see ``_matching_tuples``).
+
+    The tones are split into two groups, and the sums of the frequencies over
+    each group are matched (meet in the middle), so the cost scales with the
+    square root of the number of combinations.
+
+    Returns:
+        ndarray: combinations, shape (number of combinations, number of tones)
+
+    """
+
+    num_f = len(nb_list)
+    half = num_f // 2
+
+    def combinations(tones):
+        if len(tones) == 0:
+            return np.zeros((1, 0), dtype=np.int64), np.zeros(1)
+        ranges = [np.arange(-2 * nb_list[f], 2 * nb_list[f] + 1) for f in tones]
+        a = np.stack(np.meshgrid(*ranges, indexing='ij'), axis=-1).reshape(-1, len(tones))
+        return a, a @ np.array([freq[f] for f in tones])
+
+    a_1, sum_1 = combinations(range(half))
+    a_2, sum_2 = combinations(range(half, num_f))
+
+    # Pairs whose total frequency is within the rounding window, then the
+    # exact check (the same as in _matching_tuples)
+    order = np.argsort(sum_2)
+    sum_2_sorted = sum_2[order]
+    window = 10. ** -ROUND_FREQ
+    lo = np.searchsorted(sum_2_sorted, freq_out - sum_1 - window)
+    hi = np.searchsorted(sum_2_sorted, freq_out - sum_1 + window, side='right')
+    result = []
+    for i in np.flatnonzero(hi > lo):
+        for j in order[lo[i]:hi[i]]:
+            a_tuple = tuple(int(a) for a in np.r_[a_1[i], a_2[j]])
+            if all(abs(a) <= num_p for a in a_tuple):
+                continue
+            if round(sum(a * freq[f] for f, a in enumerate(a_tuple)), ROUND_FREQ) == freq_out:
+                result.append(a_tuple)
+
+    result = np.array(sorted(result, reverse=True), dtype=np.int64).reshape(-1, num_f)
+    result.flags.writeable = False
+
+    return result
 
 
 # Response function matrices --------------------------------------------------

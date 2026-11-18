@@ -15,7 +15,7 @@ from scipy.special import jv
 
 import qmix
 from qmix.qtcurrent import qtcurrent, interpolate_respfn, calculate_phase_factor_coeff, suggest_num_b
-from qmix.qtcurrent import FourierResp
+from qmix.qtcurrent import FourierResp, _candidate_tuples, _matching_tuples
 from qmix.circuit import EmbeddingCircuit
 
 
@@ -552,10 +552,12 @@ def test_five_tones_with_all_tones_excited():
     i5 = qtcurrent(vj5, cct5, RESP, freq_list, num_b, verbose=False)
     np.testing.assert_allclose(i5, i4, rtol=1e-13, atol=1e-16)
 
-    # 5th tone excited: direct vs Fourier-shift
+    # 5th tone excited: direct vs Fourier-shift (these agree for any set of
+    # mixing products; a looser mixing_tol keeps the test fast, since all 5
+    # tones are commensurate and the default includes ~160 per output)
     cct5, vj5 = _multitone_setup(freqs + [0.07], amps + [0.03])
-    i5_direct = qtcurrent(vj5, cct5, RESP, freq_list, num_b, verbose=False, method='direct')
-    i5_fourier = qtcurrent(vj5, cct5, RESP, freq_list, num_b, verbose=False, method='fourier')
+    i5_direct = qtcurrent(vj5, cct5, RESP, freq_list, num_b, verbose=False, method='direct', mixing_tol=1e-3)
+    i5_fourier = qtcurrent(vj5, cct5, RESP, freq_list, num_b, verbose=False, method='fourier', mixing_tol=1e-3)
     assert _rel_error(i5_fourier, i5_direct) < 1e-5
     # and the 5th tone changes the result
     assert _rel_error(i5_direct, i4) > 1e-3
@@ -846,3 +848,60 @@ def test_warning_beyond_respfn_range():
     with warnings.catch_warnings():
         warnings.simplefilter('error')
         interpolate_respfn(cct, resp_perfect, 60)
+
+
+def test_candidate_mixing_products():
+    """_candidate_tuples (meet in the middle) finds exactly the combinations
+    with |a_f| <= 2 * num_b_f, not all |a_f| <= num_p, that land on the
+    output frequency (checked by brute force)."""
+
+    import itertools
+
+    for freqs, num_b, num_p in (([0.30, 0.33, 0.27, 0.03], (4, 2, 2, 2), 1),
+                                ([0.30, 0.33, 0.03], (5, 3, 3), 2),
+                                ([0.2312, 0.2531, 0.0219], (6, 3, 3), 1),
+                                ([0.30, 0.33, 0.27, 0.03, 0.07], (3, 2, 2, 1, 1), 1)):
+        freqs = tuple(freqs)
+        for freq_out in [0.] + list(freqs) + [2 * freqs[0]]:
+            freq_out = round(freq_out, 4)
+            found = set(map(tuple, _candidate_tuples(freq_out, freqs, num_b, num_p)))
+            expected = set()
+            for a_tuple in itertools.product(*[range(-2 * nb, 2 * nb + 1) for nb in num_b]):
+                if all(abs(a) <= num_p for a in a_tuple):
+                    continue
+                if round(sum(a * f for a, f in zip(a_tuple, freqs)), 4) == freq_out:
+                    expected.add(a_tuple)
+            assert found == expected
+
+
+def test_mixing_products():
+    """With commensurate tones (LO, USB, LSB), combinations with |a_f| > num_p
+    can land on an output frequency, e.g. 2 * LO - LSB = USB. These are now
+    included (mixing_tol); mixing_tol=np.inf gives the old result, which
+    only includes |a_f| <= num_p and differs by ~1e-2 here."""
+
+    freqs = [0.30, 0.33, 0.27]
+    amps = [0.3, 0.1, 0.1]
+    num_b = (10, 5, 5)
+    freq_list = [0., 0.30, 0.33, 0.27]
+    cct, vj = _multitone_setup(freqs, amps)
+
+    # The combination 2 * LO - LSB is a candidate for the USB
+    assert (2, 0, -1) in set(map(tuple, _candidate_tuples(0.33, tuple(freqs), num_b, 1)))
+    assert (2, 0, -1) not in _matching_tuples(0.33, cct.freq, 3, 1)
+
+    i_all = qtcurrent(vj, cct, RESP, freq_list, num_b, verbose=False, mixing_tol=0.)  # every candidate
+    i_default = qtcurrent(vj, cct, RESP, freq_list, num_b, verbose=False)
+    i_old = qtcurrent(vj, cct, RESP, freq_list, num_b, verbose=False, mixing_tol=np.inf)
+
+    assert np.abs(i_default - i_all).max() < 1e-7
+    assert np.abs(i_old - i_all).max() > 1e-3
+
+    # mixing_tol=np.inf: only |a_f| <= num_p, i.e., the sum over _matching_tuples
+    from qmix.qtcurrent import _current_coeff, _unpack_num_b
+    ccc = calculate_phase_factor_coeff(vj, cct.freq, 3, 1, num_b)
+    resp_matrix = interpolate_respfn(cct, RESP, num_b)
+    for i, freq_out in enumerate(freq_list):
+        expected = sum(_current_coeff(a, ccc, resp_matrix, _unpack_num_b(num_b, 3))
+                       for a in _matching_tuples(freq_out, cct.freq, 3, 1))
+        np.testing.assert_array_equal(i_old[i], expected)

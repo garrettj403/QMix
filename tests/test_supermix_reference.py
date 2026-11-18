@@ -158,20 +158,16 @@ def _qmix_mixer_voltage(case, amp):
 
 
 @pytest.mark.parametrize('case', MIXER_CASES)
-def test_mixer_small_signal(case, request):
+def test_mixer_small_signal(case):
     """Multi-tone harmonic balance of a mixer (strong LO, weak RF at the USB,
     IF driven by mixing) vs small-signal (Tucker) theory from SuperMix.
 
     QMix is run at two RF amplitudes and extrapolated to zero amplitude; the
     junction voltage per unit RF Thevenin voltage at each sideband must match.
 
-    The case with the LSB as a tone and num_p = 1 fails: the USB current from
-    the LSB voltage comes from the mixing product 2 * LO - LSB, which needs
-    a_LO = 2 > num_p, and qtcurrent only includes |a_f| <= num_p."""
-
-    lsb_is_tone = not np.isnan(complex(_get(case, 'zt_lsb')))
-    if lsb_is_tone and int(_get(case, 'num_p')) == 1:
-        request.applymarker(pytest.mark.xfail(strict=True, reason="mixing products with |a_f| > num_p are dropped"))
+    With the LSB as a tone and num_p = 1, the USB current from the LSB voltage
+    comes from the mixing product 2 * LO - LSB, which needs a_LO = 2 > num_p.
+    This used to be dropped (errors of up to ~50%)."""
 
     amp = 1e-3
     vj_1 = _qmix_mixer_voltage(case, amp)
