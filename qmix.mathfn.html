@@ -1,92 +1,48 @@
 
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="./">
 <head>
-  <meta charset="utf-8">
-  
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>2.1.2. qmix.mathfn package &mdash; QMix latest documentation</title>
-  
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
 
   
-  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-
-  
-  
-  
-  
-
-  
-  <!--[if lt IE 9]>
-    <script src="_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script src="_static/jquery.js"></script>
-        <script src="_static/underscore.js"></script>
-        <script src="_static/doctools.js"></script>
-        <script src="_static/language_data.js"></script>
-        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    
-    <script type="text/javascript" src="_static/js/theme.js"></script>
-
-    
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=c6e86fd7"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="2.1.3. qmix.misc package" href="qmix.misc.html" />
     <link rel="prev" title="2.1.1. qmix.exp package" href="qmix.exp.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-          
 
           
-            <a href="index.html" class="icon icon-home" alt="Documentation Home"> QMix
           
-
-          
+          <a href="index.html" class="icon icon-home">
+            QMix
           </a>
-
-          
-            
-            
-              <div class="version">
-                latest
-              </div>
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="setup.html">1. Getting Started</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="qmix.html">2. Package API</a><ul class="current">
@@ -114,113 +70,50 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="single-tone-simulation.html">3. Example #1: Creating a simple 1 tone simulation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="multi-tone-simulation.html">4. Example #2: Simulating an SIS mixer</a></li>
-<li class="toctree-l1"><a class="reference internal" href="analyze-experimental-data.html">5. Example #3: Analyzing experimental data</a></li>
-<li class="toctree-l1"><a class="reference internal" href="references.html">6. References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fourier-shift-method.html">5. The Fourier-Shift Method</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analyze-experimental-data.html">6. Example #3: Analyzing experimental data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="references.html">7. References</a></li>
 </ul>
 
-            
-          
         </div>
-        
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="index.html">QMix</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
-      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-        
-          <li><a href="qmix.html"><span class="section-number">2. </span>Package API</a> &raquo;</li>
-        
-      <li><span class="section-number">2.1.2. </span>qmix.mathfn package</li>
-    
-    
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="qmix.html"><span class="section-number">2. </span>Package API</a></li>
+      <li class="breadcrumb-item active"><span class="section-number">2.1.2. </span>qmix.mathfn package</li>
       <li class="wy-breadcrumbs-aside">
-        
-            
             <a href="_sources/qmix.mathfn.rst.txt" rel="nofollow"> View page source</a>
-          
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
-  
-<style>
-/* CSS overrides for sphinx_rtd_theme */
-
-/* 24px margin */
-.nbinput.nblast.container,
-.nboutput.nblast.container {
-    margin-bottom: 19px;  /* padding has already 5px */
-}
-
-/* ... except between code cells! */
-.nblast.container + .nbinput.container {
-    margin-top: -19px;
-}
-
-.admonition > p:before {
-    margin-right: 4px;  /* make room for the exclamation icon */
-}
-
-/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
-.math {
-    text-align: unset;
-}
-</style>
-<div class="section" id="qmix-mathfn-package">
-<h1><span class="section-number">2.1.2. </span>qmix.mathfn package<a class="headerlink" href="#qmix-mathfn-package" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="submodules">
-<h2><span class="section-number">2.1.2.1. </span>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
-</div>
-<div class="section" id="module-qmix.mathfn.filters">
-<span id="qmix-mathfn-filters-module"></span><h2><span class="section-number">2.1.2.2. </span>qmix.mathfn.filters module<a class="headerlink" href="#module-qmix.mathfn.filters" title="Permalink to this headline">¶</a></h2>
+             
+  <section id="qmix-mathfn-package">
+<h1><span class="section-number">2.1.2. </span>qmix.mathfn package<a class="headerlink" href="#qmix-mathfn-package" title="Link to this heading"></a></h1>
+<section id="submodules">
+<h2><span class="section-number">2.1.2.1. </span>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
+</section>
+<section id="module-qmix.mathfn.filters">
+<span id="qmix-mathfn-filters-module"></span><h2><span class="section-number">2.1.2.2. </span>qmix.mathfn.filters module<a class="headerlink" href="#module-qmix.mathfn.filters" title="Link to this heading"></a></h2>
 <p>This sub-module contains filters for cleaning experimental data.</p>
 <dl class="py function">
-<dt id="qmix.mathfn.filters.gauss_conv">
-<code class="sig-prename descclassname">qmix.mathfn.filters.</code><code class="sig-name descname">gauss_conv</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">sigma</span><span class="o">=</span><span class="default_value">10</span></em>, <em class="sig-param"><span class="n">ext_x</span><span class="o">=</span><span class="default_value">3</span></em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.mathfn.filters.gauss_conv" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="qmix.mathfn.filters.gauss_conv">
+<span class="sig-prename descclassname"><span class="pre">qmix.mathfn.filters.</span></span><span class="sig-name descname"><span class="pre">gauss_conv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ext_x</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.mathfn.filters.gauss_conv" title="Link to this definition"></a></dt>
 <dd><p>Smooth data using a Gaussian convolution.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>x</strong> (<em>ndarray</em>) – noisy data</p></li>
 <li><p><strong>sigma</strong> (<em>float</em>) – std. dev. of Gaussian curve, given as number of data
@@ -229,24 +122,24 @@ points</p></li>
 direction</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>filtered data</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>ndarray</p>
 </dd>
 </dl>
 </dd></dl>
 
-</div>
-<div class="section" id="module-qmix.mathfn.ivcurve_models">
-<span id="qmix-mathfn-ivcurve-models-module"></span><h2><span class="section-number">2.1.2.3. </span>qmix.mathfn.ivcurve_models module<a class="headerlink" href="#module-qmix.mathfn.ivcurve_models" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="module-qmix.mathfn.ivcurve_models">
+<span id="qmix-mathfn-ivcurve-models-module"></span><h2><span class="section-number">2.1.2.3. </span>qmix.mathfn.ivcurve_models module<a class="headerlink" href="#module-qmix.mathfn.ivcurve_models" title="Link to this heading"></a></h2>
 <p>This sub-module contains DC I-V curve models.</p>
 <p>These models range from simple (e.g., ‘perfect’ and ‘polynomial’) to
 complex (e.g., ‘exponential’ and ‘expanded’).</p>
 <dl class="py function">
-<dt id="qmix.mathfn.ivcurve_models.expanded">
-<code class="sig-prename descclassname">qmix.mathfn.ivcurve_models.</code><code class="sig-name descname">expanded</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">voltage</span></em>, <em class="sig-param"><span class="n">vgap</span><span class="o">=</span><span class="default_value">0.0028</span></em>, <em class="sig-param"><span class="n">rn</span><span class="o">=</span><span class="default_value">14.0</span></em>, <em class="sig-param"><span class="n">rsg</span><span class="o">=</span><span class="default_value">500.0</span></em>, <em class="sig-param"><span class="n">agap</span><span class="o">=</span><span class="default_value">40000.0</span></em>, <em class="sig-param"><span class="n">a0</span><span class="o">=</span><span class="default_value">10000.0</span></em>, <em class="sig-param"><span class="n">ileak</span><span class="o">=</span><span class="default_value">5e-06</span></em>, <em class="sig-param"><span class="n">vnot</span><span class="o">=</span><span class="default_value">0.00285</span></em>, <em class="sig-param"><span class="n">inot</span><span class="o">=</span><span class="default_value">1e-05</span></em>, <em class="sig-param"><span class="n">anot</span><span class="o">=</span><span class="default_value">20000.0</span></em>, <em class="sig-param"><span class="n">ioff</span><span class="o">=</span><span class="default_value">1e-05</span></em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.mathfn.ivcurve_models.expanded" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="qmix.mathfn.ivcurve_models.expanded">
+<span class="sig-prename descclassname"><span class="pre">qmix.mathfn.ivcurve_models.</span></span><span class="sig-name descname"><span class="pre">expanded</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">voltage</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vgap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0028</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rn</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">14.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rsg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">500.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">40000.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10000.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ileak</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5e-06</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vnot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.00285</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">anot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20000.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ioff</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-05</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.mathfn.ivcurve_models.expanded" title="Link to this definition"></a></dt>
 <dd><p>My “expanded” I-V curve model.</p>
 <p>This model is based on the exponential I-V curve model, but I have added
 the ability to include leakage current, the proximity effect, the onset of
@@ -254,7 +147,7 @@ thermal tunnelling, and the reduced current amplitude often seen
 above the gap. It is able to recreate experimental data very well, but it
 is very complex.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>voltage</strong> (<em>ndarray</em>) – normalized bias voltage</p></li>
 <li><p><strong>vgap</strong> (<em>float</em><em>, </em><em>optional</em>) – gap voltage, in units [V], default is 2.8e-3</p></li>
@@ -274,18 +167,18 @@ is 1e-5</p></li>
 <li><p><strong>ioff</strong> (<em>float</em><em>, </em><em>optional</em>) – current offset, default is 1e-5</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>normalized current</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>ndarray</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
-<dt id="qmix.mathfn.ivcurve_models.exponential">
-<code class="sig-prename descclassname">qmix.mathfn.ivcurve_models.</code><code class="sig-name descname">exponential</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">voltage</span></em>, <em class="sig-param"><span class="n">vgap</span><span class="o">=</span><span class="default_value">0.0028</span></em>, <em class="sig-param"><span class="n">rn</span><span class="o">=</span><span class="default_value">14.0</span></em>, <em class="sig-param"><span class="n">rsg</span><span class="o">=</span><span class="default_value">300.0</span></em>, <em class="sig-param"><span class="n">agap</span><span class="o">=</span><span class="default_value">40000.0</span></em>, <em class="sig-param"><span class="n">model</span><span class="o">=</span><span class="default_value">'fixed'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.mathfn.ivcurve_models.exponential" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="qmix.mathfn.ivcurve_models.exponential">
+<span class="sig-prename descclassname"><span class="pre">qmix.mathfn.ivcurve_models.</span></span><span class="sig-name descname"><span class="pre">exponential</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">voltage</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vgap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0028</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rn</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">14.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rsg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">300.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">40000.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'fixed'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.mathfn.ivcurve_models.exponential" title="Link to this definition"></a></dt>
 <dd><p>The exponential I-V curve model that is used in some papers from
 Chalmers.</p>
 <p>From Rashid et al. (2016) [see full references in online docs].</p>
@@ -302,7 +195,7 @@ setting <code class="docutils literal notranslate"><span class="pre">model='orig
 </ul>
 </div>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>voltage</strong> (<em>ndarray</em>) – normalized bias voltage</p></li>
 <li><p><strong>vgap</strong> (<em>float</em><em>, </em><em>optional</em>) – gap voltage, in units [V], default is 2.8e-3</p></li>
@@ -316,18 +209,18 @@ is 300</p></li>
 default is “fixed”</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>normalized current</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>ndarray</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
-<dt id="qmix.mathfn.ivcurve_models.perfect">
-<code class="sig-prename descclassname">qmix.mathfn.ivcurve_models.</code><code class="sig-name descname">perfect</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">voltage</span></em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.mathfn.ivcurve_models.perfect" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="qmix.mathfn.ivcurve_models.perfect">
+<span class="sig-prename descclassname"><span class="pre">qmix.mathfn.ivcurve_models.</span></span><span class="sig-name descname"><span class="pre">perfect</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">voltage</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.mathfn.ivcurve_models.perfect" title="Link to this definition"></a></dt>
 <dd><p>Generate a perfect I-V curve.</p>
 <p>This is the ideal I-V curve. The current is equal to 0 when the normalized
 bias voltage is less than 1, equal to 0.5 when the normalized bias voltage
@@ -336,96 +229,96 @@ is equal to 1, and equal to the normalized bias voltage otherwise.</p>
 where Igap=Vgap/Rn is the gap current, Vgap is the gap voltage, and Rn is
 the normal resistance.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>voltage</strong> (<em>ndarray</em>) – normalized bias voltage</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>normalized current</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>ndarray</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
-<dt id="qmix.mathfn.ivcurve_models.perfect_kk">
-<code class="sig-prename descclassname">qmix.mathfn.ivcurve_models.</code><code class="sig-name descname">perfect_kk</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">voltage</span></em>, <em class="sig-param"><span class="n">max_kk</span><span class="o">=</span><span class="default_value">100.0</span></em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.mathfn.ivcurve_models.perfect_kk" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="qmix.mathfn.ivcurve_models.perfect_kk">
+<span class="sig-prename descclassname"><span class="pre">qmix.mathfn.ivcurve_models.</span></span><span class="sig-name descname"><span class="pre">perfect_kk</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">voltage</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_kk</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.mathfn.ivcurve_models.perfect_kk" title="Link to this definition"></a></dt>
 <dd><p>Generate Kramers-Kronig transform of the perfect I-V curve.</p>
 <p>This is an analytic solution.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>voltage</strong> (<em>ndarray</em>) – normalized bias voltage</p></li>
 <li><p><strong>max_kk</strong> (<em>float</em><em>, </em><em>optional</em>) – if output is NaN, use this max value
 instead, default is 100</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>kk-transform of perfect i-v curve</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>ndarray</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
-<dt id="qmix.mathfn.ivcurve_models.polynomial">
-<code class="sig-prename descclassname">qmix.mathfn.ivcurve_models.</code><code class="sig-name descname">polynomial</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">voltage</span></em>, <em class="sig-param"><span class="n">order</span><span class="o">=</span><span class="default_value">50</span></em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.mathfn.ivcurve_models.polynomial" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="qmix.mathfn.ivcurve_models.polynomial">
+<span class="sig-prename descclassname"><span class="pre">qmix.mathfn.ivcurve_models.</span></span><span class="sig-name descname"><span class="pre">polynomial</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">voltage</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.mathfn.ivcurve_models.polynomial" title="Link to this definition"></a></dt>
 <dd><p>Generate the polynomial I-V curve model.</p>
 <p>From Kennedy (1999) [see full references in online docs].</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>voltage</strong> (<em>ndarray</em>) – normalized bias voltage</p></li>
 <li><p><strong>order</strong> (<em>float</em>) – order of polynomial (usually between 30 and 50)</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>normalized current</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>ndarray</p>
 </dd>
 </dl>
 </dd></dl>
 
-</div>
-<div class="section" id="module-qmix.mathfn.kktrans">
-<span id="qmix-mathfn-kktrans-module"></span><h2><span class="section-number">2.1.2.4. </span>qmix.mathfn.kktrans module<a class="headerlink" href="#module-qmix.mathfn.kktrans" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="module-qmix.mathfn.kktrans">
+<span id="qmix-mathfn-kktrans-module"></span><h2><span class="section-number">2.1.2.4. </span>qmix.mathfn.kktrans module<a class="headerlink" href="#module-qmix.mathfn.kktrans" title="Link to this heading"></a></h2>
 <p>This sub-module contains functions to generate the Kramers-Kronig
 transform of DC I-V data.</p>
 <p>Used to find the real component of the response function from the DC I-V
 curve.</p>
 <dl class="py function">
-<dt id="qmix.mathfn.kktrans.kk_trans">
-<code class="sig-prename descclassname">qmix.mathfn.kktrans.</code><code class="sig-name descname">kk_trans</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">v</span></em>, <em class="sig-param"><span class="n">i</span></em>, <em class="sig-param"><span class="n">n</span><span class="o">=</span><span class="default_value">50</span></em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.mathfn.kktrans.kk_trans" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="qmix.mathfn.kktrans.kk_trans">
+<span class="sig-prename descclassname"><span class="pre">qmix.mathfn.kktrans.</span></span><span class="sig-name descname"><span class="pre">kk_trans</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">v</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">i</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.mathfn.kktrans.kk_trans" title="Link to this definition"></a></dt>
 <dd><p>Calculate the Kramers-Kronig transform from DC I-V data.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Voltage spacing must be constant!</p>
 </div>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>v</strong> (<em>ndarray</em>) – normalized voltage (DC I-V curve)</p></li>
 <li><p><strong>i</strong> (<em>ndarray</em>) – normalized current (DC I-V curve)</p></li>
 <li><p><strong>n</strong> (<em>int</em>) – padding for Hilbert transform</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>kk transform</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>ndarray</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
-<dt id="qmix.mathfn.kktrans.kk_trans_trapz">
-<code class="sig-prename descclassname">qmix.mathfn.kktrans.</code><code class="sig-name descname">kk_trans_trapz</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">v</span></em>, <em class="sig-param"><span class="n">i</span></em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.mathfn.kktrans.kk_trans_trapz" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="qmix.mathfn.kktrans.kk_trans_trapz">
+<span class="sig-prename descclassname"><span class="pre">qmix.mathfn.kktrans.</span></span><span class="sig-name descname"><span class="pre">kk_trans_trapz</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">v</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">i</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.mathfn.kktrans.kk_trans_trapz" title="Link to this definition"></a></dt>
 <dd><p>Calculate the Kramers-Kronig transform using a simple trapezoidal
 summation.</p>
 <p>This function isn’t used anymore, but it is nice to use it to
@@ -438,58 +331,58 @@ compare against qmix.mathfn.kktrans.kk_trans.</p>
 qmix.mathfn.kktrans.kk_trans). It also has problems with how it is
 calculated around the singularity.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>v</strong> (<em>ndarray</em>) – normalized voltage (DC I-V curve)</p></li>
 <li><p><strong>i</strong> (<em>ndarray</em>) – normalized current (DC I-V curve)</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>kk transform</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>ndarray</p>
 </dd>
 </dl>
 </dd></dl>
 
-</div>
-<div class="section" id="module-qmix.mathfn.misc">
-<span id="qmix-mathfn-misc-module"></span><h2><span class="section-number">2.1.2.5. </span>qmix.mathfn.misc module<a class="headerlink" href="#module-qmix.mathfn.misc" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="module-qmix.mathfn.misc">
+<span id="qmix-mathfn-misc-module"></span><h2><span class="section-number">2.1.2.5. </span>qmix.mathfn.misc module<a class="headerlink" href="#module-qmix.mathfn.misc" title="Link to this heading"></a></h2>
 <p>This sub-module contains various mathematical functions that do various
 things, variously.</p>
 <dl class="py function">
-<dt id="qmix.mathfn.misc.slope">
-<code class="sig-prename descclassname">qmix.mathfn.misc.</code><code class="sig-name descname">slope</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">y</span></em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.mathfn.misc.slope" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="qmix.mathfn.misc.slope">
+<span class="sig-prename descclassname"><span class="pre">qmix.mathfn.misc.</span></span><span class="sig-name descname"><span class="pre">slope</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.mathfn.misc.slope" title="Link to this definition"></a></dt>
 <dd><p>Take a simple derivative, dy/dx.</p>
 <p>The derivative is centered and it has the same number of points as the
 original x/y data.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>x</strong> (<em>ndarray</em>) – x data</p></li>
 <li><p><strong>y</strong> (<em>ndarray</em>) – y data</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>derivative</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>ndarray</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
-<dt id="qmix.mathfn.misc.slope_span_n">
-<code class="sig-prename descclassname">qmix.mathfn.misc.</code><code class="sig-name descname">slope_span_n</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">y</span></em>, <em class="sig-param"><span class="n">n</span><span class="o">=</span><span class="default_value">11</span></em>, <em class="sig-param"><span class="n">nozeros</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.mathfn.misc.slope_span_n" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="qmix.mathfn.misc.slope_span_n">
+<span class="sig-prename descclassname"><span class="pre">qmix.mathfn.misc.</span></span><span class="sig-name descname"><span class="pre">slope_span_n</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">11</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nozeros</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.mathfn.misc.slope_span_n" title="Link to this definition"></a></dt>
 <dd><p>Simple derivative, except the derivative is over a -N/2 to N/2 span.</p>
 <p>This helps with noisy data.</p>
 <p>This function also deletes zero values since the results of this
 function are usually used to divide other values (i.e., to avoid div. 0
 errors).</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>x</strong> (<em>ndarray</em>) – x data</p></li>
 <li><p><strong>y</strong> (<em>ndarray</em>) – y data</p></li>
@@ -497,78 +390,53 @@ errors).</p>
 <li><p><strong>nozeros</strong> (<em>bool</em><em>, </em><em>optional</em>) – don’t allow der=0 results, default is True</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>derivative</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>ndarray</p>
 </dd>
 </dl>
 </dd></dl>
 
-</div>
-<div class="section" id="module-qmix.mathfn">
-<span id="module-contents"></span><h2><span class="section-number">2.1.2.6. </span>Module contents<a class="headerlink" href="#module-qmix.mathfn" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="module-qmix.mathfn">
+<span id="module-contents"></span><h2><span class="section-number">2.1.2.6. </span>Module contents<a class="headerlink" href="#module-qmix.mathfn" title="Link to this heading"></a></h2>
 <p>This sub-package contains mathematical functions.</p>
 <p>This includes numerical differentiation, I-V curve models, Kramers-Kronig
 transforms and various filters.</p>
-</div>
-</div>
+</section>
+</section>
 
 
            </div>
-           
           </div>
-          <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="qmix.misc.html" class="btn btn-neutral float-right" title="2.1.3. qmix.misc package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="qmix.exp.html" class="btn btn-neutral float-left" title="2.1.1. qmix.exp package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="qmix.exp.html" class="btn btn-neutral float-left" title="2.1.1. qmix.exp package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="qmix.misc.html" class="btn btn-neutral float-right" title="2.1.3. qmix.misc package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        
-        &copy; Copyright 2017, John Garrett
-
-    </p>
+    <p>&#169; Copyright 2017-2026, John Garrett.</p>
   </div>
-    
-    
-    
-    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
-    
-    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
-
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>

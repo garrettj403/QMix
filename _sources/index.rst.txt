@@ -18,6 +18,7 @@ Contents
    qmix
    single-tone-simulation
    multi-tone-simulation
+   fourier-shift-method
    analyze-experimental-data
    references
 
