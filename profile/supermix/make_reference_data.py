@@ -103,8 +103,12 @@ def main():
               key, flo, num_p, num_b, np.abs(ij_q - smx['ij']).max()))
 
     # Harmonic balance
+    # The last case is hard: strong pumping into a large embedding impedance.
+    # Plain Newton diverges near the gap; QMix needs its line search and a
+    # restart from a neighboring solution at vb = 1.
     balance_cases = [(0.3, [0.5], [0.3 - 0.3j]),
-                     (0.3, [0.5, 0, 0], [0.3 - 0.3j, 0.1 - 0.2j, 0.05 - 0.1j])]
+                     (0.3, [0.5, 0, 0], [0.3 - 0.3j, 0.1 - 0.2j, 0.05 - 0.1j]),
+                     (0.15, [1.5], [2 + 1j])]
     for flo, vt_list, zt_list in balance_cases:
         vb = np.round(np.linspace(0.02, 2, 199), 12)
         vt = np.r_[0, vt_list].astype(complex)

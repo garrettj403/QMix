@@ -96,6 +96,43 @@ def test_error_handling():
     assert not got_solution, "A solution was found with only one iteration."
 
 
+def test_line_search_hard_case():
+    """Strong pumping into a large embedding impedance: near the gap, the
+    junction loads the embedding circuit heavily and plain Newton steps
+    diverge. With the line search (and a restart from a converged neighbor
+    at the gap), every bias voltage converges."""
+
+    circuit = qmix.circuit.EmbeddingCircuit(1, 1, vb_npts=NPTS)
+    circuit.freq[1] = 0.15
+    circuit.vt[1, 1] = 1.5
+    circuit.zt[1, 1] = 2 + 1j
+
+    vj, _, converged = harmonic_balance(circuit, RESP, 25, max_it=50, stop_rerror=1e-3, mode='x', verbose=False)
+    assert converged
+    check_hb_error(vj, circuit, RESP, 25, stop_rerror=1e-3)
+
+    # Without the line search, some bias voltages don't converge
+    _, mask = harmonic_balance(circuit, RESP, 25, max_it=50, stop_rerror=1e-3, mode='m', verbose=False,
+                               line_search=False)
+    assert not mask.all()
+
+
+def test_converged_flag_on_last_iteration():
+    """mode='x' reports convergence from the final error, including when the
+    target is reached on the last allowed iteration."""
+
+    circuit = qmix.circuit.EmbeddingCircuit(1, 1, vb_npts=NPTS)
+    circuit.freq[1] = 0.30
+    circuit.vt[1, 1] = circuit.freq[1] * 1.5
+    circuit.zt[1, 1] = 0.3 - 1j*0.3
+
+    _, num_it, converged = harmonic_balance(circuit, RESP, 15, stop_rerror=1e-6, mode='x', verbose=False)
+    assert converged
+    _, num_it_2, converged = harmonic_balance(circuit, RESP, 15, max_it=num_it, stop_rerror=1e-6, mode='x',
+                                              verbose=False)
+    assert num_it_2 == num_it and converged
+
+
 def test_when_zthev_is_zero():
     """ Harmonic balance is not needed when all of the embedding impedances
     are set to zero. In this test, set all thevenin impedances to zero, and

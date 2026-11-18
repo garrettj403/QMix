@@ -98,7 +98,10 @@ def test_current_at_balanced_voltage(case):
 
 @pytest.mark.parametrize('case', BALANCE_CASES)
 def test_harmonic_balance(case):
-    """Harmonic balance with a Thevenin circuit (one vt, zt per harmonic)."""
+    """Harmonic balance with a Thevenin circuit (one vt, zt per harmonic).
+
+    The last case (strong pumping into a large embedding impedance) only
+    converges with the line search, and needs ~25 iterations."""
 
     vt, zt = _get(case, 'vt'), _get(case, 'zt')
     vj_smx, ij_smx = _get(case, 'vj'), _get(case, 'ij')
@@ -107,7 +110,7 @@ def test_harmonic_balance(case):
     cct.vt[1, 1:] = vt[1:]
     cct.zt[1, 1:] = zt[1:]
 
-    vj3, _, converged = harmonic_balance(cct, RESP, num_b=int(_get(case, 'num_b')), max_it=20,
+    vj3, _, converged = harmonic_balance(cct, RESP, num_b=int(_get(case, 'num_b')), max_it=40,
                                          stop_rerror=1e-10, verbose=False, mode='x')
     assert converged
 

@@ -31,6 +31,17 @@ ROUND_FREQ = 4
 # reuse the Jacobian from the previous iteration as long as each iteration
 # reduces the maximum relative error by at least this factor
 JACOBIAN_REUSE_RATIO = 0.5
+# line search: a step must reduce the squared error norm |e|^2 at a bias point
+# to at most (1 - 2 * LINE_SEARCH_ALPHA * step) times its previous value
+# (sufficient decrease condition); otherwise the step is shortened, up to
+# LINE_SEARCH_MAX_BACKTRACK times
+LINE_SEARCH_ALPHA = 1e-4
+LINE_SEARCH_MAX_BACKTRACK = 8
+# if the line search fails even with a new Jacobian (i.e., the iteration is
+# stuck near a local minimum of the error, not a root), restart that bias
+# voltage from the solution at the nearest converged bias voltage, up to this
+# many times per bias voltage
+MAX_RESTARTS = 3
 
 
 # Harmonic Balance ----------------------------------------------------------
@@ -39,8 +50,8 @@ JACOBIAN_REUSE_RATIO = 0.5
 # method to find the solution to the highly non-linear equation.
 
 
-def harmonic_balance(cct, resp, num_b=15, max_it=10, stop_rerror=0.001, vj_initial=None, damp_coeff=1., mode="o",
-                     verbose=True, zj_guess=0.67, reuse_jacobian=True, method='auto'):
+def harmonic_balance(cct, resp, num_b=15, max_it=30, stop_rerror=0.001, vj_initial=None, damp_coeff=1., mode="o",
+                     verbose=True, zj_guess=0.67, reuse_jacobian=True, method='auto', line_search=True):
     """Perform harmonic balance.
 
     Determine the harmonic balance of the junction + embedding circuit system.
@@ -57,13 +68,16 @@ def harmonic_balance(cct, resp, num_b=15, max_it=10, stop_rerror=0.001, vj_initi
             to sum over the phase factor coefficients: ``'direct'``,
             ``'fourier'`` or ``'auto'``, default is ``'auto'`` (see
             ``qmix.qtcurrent`` for details)
-        max_it (int, optional): Maximum number of iterations, default is 10
+        max_it (int, optional): Maximum number of iterations, default is 30.
+            Most cases converge in ~5 iterations (and stop there), but strong
+            pumping into a large embedding impedance can take ~20.
         stop_rerror (float, optional): Maximum acceptable relative error,
             default is 0.001
         vj_initial (ndarray, optional): Initial guess of junction voltage
             (vj), default is None
         damp_coeff (float, optional): Dampening coefficient for correction
-            factor (0-1), default is 1
+            factor (0-1), default is 1. With ``line_search=True``, this is
+            the initial step length of the line search.
         mode (string, optional): output vj ('o'), print ('p'), output extra
             data ('x'), default is "o"
         verbose (bool, optional): print info to terminal if true, default is
@@ -74,9 +88,18 @@ def harmonic_balance(cct, resp, num_b=15, max_it=10, stop_rerror=0.001, vj_initi
             previous iteration while the error is still decreasing quickly
             (each new Jacobian requires 2 * num_n calls to the tunneling
             current function), default is True
+        line_search (bool, optional): backtracking line search, default is
+            True. At each bias voltage, a Newton step is only accepted if it
+            reduces the error enough; otherwise it is shortened. This
+            prevents divergence when the junction loads the embedding circuit
+            strongly (e.g., large embedding impedance near the gap). Each
+            shortened step costs one call to the tunneling current function,
+            but full steps cost nothing extra.
 
     Returns:
-        ndarray: junction voltage that satisfies the circuit
+        ndarray: junction voltage that satisfies the circuit (mode 'o');
+        also the number of iterations and whether the solution converged
+        (mode 'x'), or a mask of the converged bias voltages (mode 'm')
 
     """
 
@@ -140,28 +163,27 @@ def harmonic_balance(cct, resp, num_b=15, max_it=10, stop_rerror=0.001, vj_initi
 
     # Perform harmonic balance -----------------------------------------------
 
+    # Error vector at the initial guess
+    time_current = timer()
+    err_all = _error_vector(vj_2d, vt_2d, zt_2d, cct, resp, num_b, respfn_interp)
+    if verbose:
+        print("Estimated time:")
+        call_time = timer() - time_current
+        msg = ' - time per qtc call:  {:7.2f} s / {:6.2f} min / {:5.2f} hrs'
+        print((msg.format(call_time, call_time / 60., call_time / 3600.)))
+        it_time = call_time * (num_n * 2 + 1)
+        msg = ' - time per iteration: {:7.2f} s / {:6.2f} min / {:5.2f} hrs'
+        print((msg.format(it_time, it_time / 60., it_time / 3600.)))
+        max_time = it_time * max_it
+        msg = ' - max sim time:       {:7.2f} s / {:6.2f} min / {:5.2f} hrs'
+        print((msg.format(max_time, max_time / 60., max_time / 3600.)))
+
     iteration = 0
     inv_j = None
     last_max_rel_error = np.inf
+    force_new_jacobian = False
+    num_restarts = np.zeros(npts, dtype=int)
     for iteration in range(max_it + 1):
-
-        # Current vector (junction current)
-        time_current = timer()
-        ij_2d = _qt_current_for_hb(vj_2d, cct, resp, num_b, resp_matrix=respfn_interp)
-        if iteration == 0 and verbose:
-            print("Estimated time:")
-            call_time = timer() - time_current
-            msg = ' - time per qtc call:  {:7.2f} s / {:6.2f} min / {:5.2f} hrs'
-            print((msg.format(call_time, call_time / 60., call_time / 3600.)))
-            it_time = call_time * (num_n * 2 + 1)
-            msg = ' - time per iteration: {:7.2f} s / {:6.2f} min / {:5.2f} hrs'
-            print((msg.format(it_time, it_time / 60., it_time / 3600.)))
-            max_time = it_time * max_it
-            msg = ' - max sim time:       {:7.2f} s / {:6.2f} min / {:5.2f} hrs'
-            print((msg.format(max_time, max_time / 60., max_time / 3600.)))
-
-        # Error vector
-        err_all = vt_2d[:, None] - zt_2d[:, None] * ij_2d - vj_2d
 
         # Check error at each tone and harmonic
         if verbose:
@@ -210,7 +232,8 @@ def harmonic_balance(cct, resp, num_b=15, max_it=10, stop_rerror=0.001, vj_initi
         # Update junction voltages (i.e., the business end of this function)
         # Only recalculate the Jacobian if the last one has stopped working well
         slow_convergence = max_rel_error > JACOBIAN_REUSE_RATIO * last_max_rel_error
-        if inv_j is None or not reuse_jacobian or slow_convergence:
+        new_jacobian = inv_j is None or not reuse_jacobian or slow_convergence or force_new_jacobian
+        if new_jacobian:
             inv_j = _inv_jacobian(err_all, vj_2d, vt_2d, zt_2d, cct, resp, num_b, resp_matrix=respfn_interp,
                                   verbose=verbose)
         elif verbose:
@@ -225,7 +248,32 @@ def harmonic_balance(cct, resp, num_b=15, max_it=10, stop_rerror=0.001, vj_initi
                                inv_j[p * 2, q * 2 + 1] * np.imag(err_all[q]))
                 corr[p, :] -= 1j * (inv_j[p * 2 + 1, q * 2] * np.real(err_all[q]) +
                                     inv_j[p * 2 + 1, q * 2 + 1] * np.imag(err_all[q]))
-        vj_2d += corr * damp_coeff
+
+        if line_search:
+            # Points that have already converged take the full step
+            vj_2d, err_all, num_backtrack, stuck = _line_search(vj_2d, corr, err_all, ~finished_points, damp_coeff,
+                                                                new_jacobian, vt_2d, zt_2d, cct, resp, num_b,
+                                                                respfn_interp)
+            # A step that had to be shortened (or failed) with an old Jacobian
+            # suggests that the Jacobian is out of date
+            force_new_jacobian = not new_jacobian and (num_backtrack > 0 or stuck.any())
+            if verbose and (num_backtrack > 0 or stuck.any()):
+                msg = "Line search: {} step reduction(s); no acceptable step at {} bias point(s)"
+                print(msg.format(num_backtrack, np.sum(stuck)))
+
+            # Stuck despite a new Jacobian: restart from a converged neighbor
+            restart = stuck & new_jacobian & (num_restarts < MAX_RESTARTS)
+            if restart.any() and finished_points.any():
+                idx_done = np.flatnonzero(finished_points)
+                for i in np.flatnonzero(restart):
+                    vj_2d[:, i] = vj_2d[:, idx_done[np.abs(idx_done - i).argmin()]]
+                num_restarts[restart] += 1
+                err_all = _error_vector(vj_2d, vt_2d, zt_2d, cct, resp, num_b, respfn_interp)
+                if verbose:
+                    print("Restarted {} bias point(s) from a converged neighbor".format(np.sum(restart)))
+        else:
+            vj_2d = vj_2d + corr * damp_coeff
+            err_all = _error_vector(vj_2d, vt_2d, zt_2d, cct, resp, num_b, respfn_interp)
 
     # Format results (from [k,vb] to [f,p,vb])
     vj_out = np.zeros((num_f + 1, num_p + 1, npts), dtype=complex)
@@ -243,8 +291,8 @@ def harmonic_balance(cct, resp, num_b=15, max_it=10, stop_rerror=0.001, vj_initi
     if mode == "o":  # return vj
         return vj_out
     elif mode == "x":  # return vj, number of iterations, and if converged
-        did_not_hit_max_it = iteration != max_it
-        return vj_out, iteration, did_not_hit_max_it
+        converged = max_rel_error <= stop_rerror
+        return vj_out, iteration, converged
     elif mode == "m":  # return vj and mask
         return vj_out, finished_points
 
@@ -422,6 +470,80 @@ def _qt_current_for_hb(vj_2d, cct, resp, num_b, resp_matrix=None):
     current_out = qtcurrent(vj, cct, resp, freq_list, num_b, verbose=False, resp_matrix=resp_matrix)
 
     return current_out
+
+
+def _error_vector(vj_2d, vt_2d, zt_2d, cct, resp, num_b, resp_matrix):
+    """Harmonic balance error vector, vt - zt * ij - vj, for each signal and
+    bias voltage (2-D, [k, i])."""
+
+    ij_2d = _qt_current_for_hb(vj_2d, cct, resp, num_b, resp_matrix=resp_matrix)
+
+    return vt_2d[:, None] - zt_2d[:, None] * ij_2d - vj_2d
+
+
+# Line search -----------------------------------------------------------------
+
+# Backtracking line search along the Newton step, separately at each bias
+# voltage (Numerical Recipes, Section 9.7). The merit function is the squared
+# error norm f = |e|^2. For an exact Newton step, its initial slope along the
+# step is -2 f, so the sufficient decrease condition for step length lam is
+# f(lam) <= (1 - 2 * alpha * lam) * f(0). Rejected steps are shortened to the
+# minimum of a quadratic fit (limited to 0.1 - 0.5 of the previous length).
+
+def _line_search(vj_2d, corr, err_all, active, lam0, fresh_jacobian, vt_2d, zt_2d, cct, resp, num_b, resp_matrix):
+    """Apply the Newton correction with a backtracking line search.
+
+    Args:
+        vj_2d (ndarray): junction voltage, [k, i]
+        corr (ndarray): Newton correction, [k, i]
+        err_all (ndarray): error vector at vj_2d, [k, i]
+        active (ndarray): bias voltages that need the line search (others
+            take the full step)
+        lam0 (float): initial step length (damping coefficient)
+        fresh_jacobian (bool): was the Jacobian calculated at vj_2d? If not,
+            bias voltages without an acceptable step keep their old voltage
+            (so that the Jacobian can be recalculated); otherwise they take
+            the shortest step tried.
+
+    Returns:
+        tuple: new junction voltage, its error vector, the number of step
+        reductions, and a mask of the bias voltages without an acceptable step
+
+    """
+
+    merit0 = np.sum(np.abs(err_all) ** 2, axis=0)
+    lam = np.full(vj_2d.shape[1], float(lam0))
+
+    vj_new = vj_2d + lam * corr
+    err_new = _error_vector(vj_new, vt_2d, zt_2d, cct, resp, num_b, resp_matrix)
+    merit = np.sum(np.abs(err_new) ** 2, axis=0)
+    pending = active & ~(merit <= (1 - 2 * LINE_SEARCH_ALPHA * lam) * merit0)
+
+    num_backtrack = 0
+    while pending.any() and num_backtrack < LINE_SEARCH_MAX_BACKTRACK:
+        num_backtrack += 1
+
+        # Minimum of the quadratic through f(0), f'(0) = -2 f(0) and f(lam)
+        lam_old, f0, f1 = lam[pending], merit0[pending], merit[pending]
+        denom = f1 - f0 + 2 * f0 * lam_old
+        with np.errstate(divide='ignore', invalid='ignore'):
+            lam_quad = np.where(denom > 0, f0 * lam_old ** 2 / denom, 0.5 * lam_old)
+        lam[pending] = np.clip(np.nan_to_num(lam_quad, nan=0.5 * lam_old), 0.1 * lam_old, 0.5 * lam_old)
+
+        # Evaluating all bias voltages costs about the same as a subset
+        vj_try = vj_2d + lam * corr
+        err_try = _error_vector(vj_try, vt_2d, zt_2d, cct, resp, num_b, resp_matrix)
+        vj_new[:, pending] = vj_try[:, pending]
+        err_new[:, pending] = err_try[:, pending]
+        merit[pending] = np.sum(np.abs(err_try[:, pending]) ** 2, axis=0)
+        pending &= ~(merit <= (1 - 2 * LINE_SEARCH_ALPHA * lam) * merit0)
+
+    stuck = pending
+    if stuck.any() and not fresh_jacobian:
+        vj_new[:, stuck] = vj_2d[:, stuck]
+        err_new[:, stuck] = err_all[:, stuck]
+
+    return vj_new, err_new, num_backtrack, stuck
 
 
 # General helper functions --------------------------------------------------
