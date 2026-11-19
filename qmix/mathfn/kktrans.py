@@ -13,6 +13,15 @@ from scipy.signal import hilbert
 def kk_trans(v, i, n=50):
     """Calculate the Kramers-Kronig transform from DC I-V data.
 
+    The transform is calculated with an FFT-based Hilbert transform of
+    ``i - v``, which assumes that ``i - v`` goes to zero at the ends of the
+    voltage range. Real I-V curves often have an offset above the gap (e.g.,
+    excess current: ``i ~ v + b`` for large ``v``), which would make the
+    result inaccurate (errors of ~1e-3 for ``b = 0.2`` at ``|v| < 8``, and
+    much more towards the ends). This offset is subtracted first, as a
+    smooth odd step whose transform is known analytically, and its transform
+    is added back.
+
     Note:
 
         Voltage spacing must be constant!
@@ -32,11 +41,36 @@ def kk_trans(v, i, n=50):
     # Ensure v has (roughly) even spacing
     assert np.abs((v[1] - v[0]) - (v[1:] - v[:-1])).max() < 1e-5
 
-    # Subtract v to make kk defined at v=infinity
-    ikk = -(hilbert(i - v, N=npts * n)).imag
-    ikk = ikk[:npts]
+    # Asymptotic offset of i - v (odd: +b at large v, -b at large -v)
+    num_end = min(10, npts // 4)
+    offset = 0.5 * (np.mean((i - v)[-num_end:]) - np.mean((i - v)[:num_end]))
+
+    # Subtract v to make kk defined at v=infinity, and the offset (as a
+    # smooth step that approaches +/-1 as 1/v^3)
+    ikk = -(hilbert(i - v - offset * _offset_step(v), N=npts * n)).imag
+    ikk = ikk[:npts] + offset * _offset_step_kk(v)
 
     return ikk
+
+
+def _offset_step(v, width=1.):
+    """Smooth odd step from -1 to 1: (2/pi) * (arctan(x) + x / (1 + x^2)),
+    with x = v / width. The x / (1 + x^2) term cancels the 1/x approach of
+    arctan to +/-pi/2, so this approaches +/-1 as 1/x^3."""
+
+    x = v / width
+
+    return 2 / np.pi * (np.arctan(x) + x / (1 + x ** 2))
+
+
+def _offset_step_kk(v, width=1.):
+    """Kramers-Kronig transform of _offset_step, with the same convention as
+    kk_trans (up to a constant, which does not affect the tunneling
+    currents): -(1/pi) * ln(1 + x^2) + (2/pi) / (1 + x^2)."""
+
+    x = v / width
+
+    return -1 / np.pi * np.log(1 + x ** 2) + 2 / np.pi / (1 + x ** 2)
 
 
 def kk_trans_trapz(v, i):

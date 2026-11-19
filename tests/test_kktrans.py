@@ -52,3 +52,26 @@ def test_uneven_voltage_array():
     
     with pytest.raises(AssertionError):
         kk_trans_trapz(x, y)
+
+
+def test_kk_with_excess_current():
+    """Compare to the exact KK transform of the ideal I-V curve plus an
+    offset above the gap (like excess current): i = perfect(v) + b * sign(v)
+    for |v| > 1. Its transform is perfect_kk(v) - (b / pi) * (ln|1 - v| +
+    ln|1 + v|), up to a constant (which does not affect the currents).
+
+    Without accounting for the offset, the FFT-based transform would be off
+    by ~3e-3 at |v| <= 8 for b = 0.2 (and much more towards the ends)."""
+
+    from qmix.mathfn.ivcurve_models import perfect, perfect_kk
+
+    v = np.linspace(-35, 35, 14001)
+    for b in (0., 0.2, -0.1):
+        step = np.where(np.abs(v) > 1, 1., np.where(np.abs(v) == 1, 0.5, 0.))
+        i = perfect(v) + b * np.sign(v) * step
+        with np.errstate(divide='ignore'):
+            exact = perfect_kk(v) - b / np.pi * (np.log(np.abs(1 - v)) + np.log(np.abs(1 + v)))
+        error = kk_trans(v, i) - exact
+        error -= error[np.argmin(np.abs(v))]  # remove the constant
+        mask = (np.abs(v) <= 30) & (np.abs(np.abs(v) - 1) > 0.5)  # away from the gap
+        assert np.abs(error[mask]).max() < 1e-4
