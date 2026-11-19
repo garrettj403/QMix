@@ -251,6 +251,14 @@ def test_mixer_noise(directory='tests/exp-data/'):
     np.testing.assert_allclose(results.gain_model[mask], results.gain_meas[mask], rtol=0.15)
     np.testing.assert_allclose(results.tn_model[mask], results.tn_meas[mask], rtol=0.15)
 
+    # With the smeared response function: a different simulation, which also
+    # follows the measurements
+    smeared = pump.mixer_noise(f_if=6., smeared=True)
+    assert not np.allclose(smeared.g_mix, results.g_mix)
+    mask = smeared.fit_mask
+    np.testing.assert_allclose(smeared.gain_model[mask], smeared.gain_meas[mask], rtol=0.15)
+    np.testing.assert_allclose(smeared.tn_model[mask], smeared.tn_meas[mask], rtol=0.15)
+
     # Missing data
     pump_no_if = qe.PumpedData(pumped_iv, dciv, freq=230, **params)
     with pytest.raises(AssertionError):

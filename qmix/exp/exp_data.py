@@ -824,7 +824,7 @@ class PumpedData(object):
 
         self.err_surf = err_surf
 
-    def mixer_noise(self, f_if, z_if=50., temp=4., num_b=25, fit_range=None, voltage=None):
+    def mixer_noise(self, f_if, z_if=50., temp=4., num_b=25, fit_range=None, voltage=None, smeared=False):
         """Compare the measured gain and noise temperature with a small-signal
         simulation of the mixer.
 
@@ -870,6 +870,14 @@ class PumpedData(object):
             voltage (ndarray, optional): Normalized bias voltages for the
                 simulation; default covers the first photon step below the
                 gap
+            smeared (bool, optional): Use the smeared response function
+                (``DCData.resp_smear``, the DC I-V curve convolved with a
+                Gaussian of width ``v_smear``) instead of the unsmeared one,
+                default is False. Simulated photon steps tend to be sharper
+                than measured ones (e.g., due to heating, or the RF and IF
+                signals smearing the gap); for the example data, smearing
+                halves the error in the shape of the simulated gain across the
+                first photon step.
 
         Returns:
             MixerNoise: simulated and measured gain and noise temperature
@@ -883,6 +891,7 @@ class PumpedData(object):
         assert self.zt is not None, "The embedding circuit must be recovered first (analyze_iv=True)"
         assert self.tn is not None, "Hot/cold IF data are needed"
 
+        resp = self.dciv.resp_smear if smeared else self.dciv.resp
         v_meas = self.if_hot[:, 0]
         if voltage is None:
             voltage = np.linspace(max(0.05, 1 - 1.5 * self.vph), min(1 + 0.5 * self.vph, v_meas.max()), 101)
@@ -896,12 +905,12 @@ class PumpedData(object):
         cct.freq[1] = self.vph
         cct.vt[1, 1] = self.vt
         cct.zt[1, 1] = self.zt
-        vj = harmonic_balance(cct, self.dciv.resp, num_b=num_b, verbose=False)
+        vj = harmonic_balance(cct, resp, num_b=num_b, verbose=False)
 
         # Small-signal analysis: DSB gain and noise temperature of the mixer
         f_if_norm = f_if * 1e9 / self.fgap
-        y = admittance_matrix(vj, cct, self.dciv.resp, f_if_norm, num_b=num_b)
-        h = noise_matrix(vj, cct, self.dciv.resp, f_if_norm, temp, vgap=self.vgap, num_b=num_b)
+        y = admittance_matrix(vj, cct, resp, f_if_norm, num_b=num_b)
+        h = noise_matrix(vj, cct, resp, f_if_norm, temp, vgap=self.vgap, num_b=num_b)
         zt = sideband_impedances(z_if / self.rn, self.zt, self.zt)
         g_mix = conversion_gain(y, zt, 1) + conversion_gain(y, zt, -1)
         t_mix = output_noise(y, h, zt, self.vgap, exclude=[-1, 0, 1]) / g_mix
