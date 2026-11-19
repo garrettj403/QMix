@@ -14,6 +14,7 @@ how QMix builds its response function.
 """
 
 import os
+from types import SimpleNamespace
 
 import numpy as np
 import pytest
@@ -240,3 +241,53 @@ def test_mixer_small_signal_analysis(case):
             v_ref = DATA[key]
             np.testing.assert_allclose(v_qmix, v_ref, rtol=0, atol=1e-8 * np.abs(v_ref).max(),
                                        err_msg='{} voltage'.format(sideband.upper()))
+
+
+NOISE_CASES = [str(name) for name in DATA['names'] if name.startswith('noise')]
+
+# SuperMix uses the CODATA 1986 values of e, k and h; e / k differs from
+# SciPy's by 6.1e-6, which shows up directly in noise temperatures. The noise
+# tests run qmix.small_signal with SuperMix's constants.
+SUPERMIX_CONSTANTS = SimpleNamespace(e=1.60217733e-19, k=1.380658e-23, h=6.6260755e-34)
+
+
+@pytest.mark.parametrize('case', NOISE_CASES)
+def test_noise(case, monkeypatch):
+    """Noise of the mixer vs SuperMix: the junction's current noise
+    correlation matrix (shot noise, with its thermal and quantum limits), and
+    SuperMix's mixer analysis with every sideband port open (Z0): conversion
+    gain from the USB and the LSB, and the noise delivered to the IF load.
+    Then with the RF sidebands terminated by the (noisy, Callen-Welton) LO
+    embedding impedances: the IF output noise including the embedding
+    noise."""
+
+    import qmix.small_signal as ss
+    monkeypatch.setattr(ss, 'sc', SUPERMIX_CONSTANTS)
+
+    num_p = int(_get(case, 'num_p'))
+    cct = _circuit(case, num_p)
+    vj = cct.initialize_vj()
+    vj[1, 1:] = _get(case, 'vj')[1:]
+    num_b = int(_get(case, 'num_b'))
+    f_lo, f_if = float(_get(case, 'flo')), float(_get(case, 'fif'))
+    temp, vgap, z0 = float(_get(case, 'temp')), float(_get(case, 'vgap')), float(_get(case, 'z0'))
+
+    y = ss.admittance_matrix(vj, cct, RESP, f_if, num_b=num_b)
+    h = ss.noise_matrix(vj, cct, RESP, f_if, temp, vgap=vgap, num_b=num_b)
+    h_ref = _get(case, 'h')
+    np.testing.assert_allclose(h, h_ref, rtol=0, atol=1e-12 * np.abs(h_ref).max())
+
+    # All sideband ports open: terminated in Z0
+    zt = np.full(2 * num_p + 1, z0, dtype=complex)
+    for m, key in ((1, 'gain_usb'), (-1, 'gain_lsb')):
+        np.testing.assert_allclose(ss.conversion_gain(y, zt, m), _get(case, key), rtol=1e-12)
+    # (solving the sideband network amplifies round-off at some bias points)
+    np.testing.assert_allclose(ss.output_noise(y, h, zt, vgap), _get(case, 'tout'), rtol=1e-9)
+
+    # RF sidebands terminated by the LO embedding impedances, with noise
+    zt_lo = list(_get(case, 'zt_lo'))
+    zt = ss.sideband_impedances(z0, zt_lo, zt_lo)
+    v_noise = ss.embedding_noise(zt, temp, f_lo, f_if, vgap)
+    # (SuperMix's volt-to-frequency constant differs slightly from its e / h,
+    # which limits the agreement of the embedding noise to ~1e-9)
+    np.testing.assert_allclose(ss.output_noise(y, h, zt, vgap, v_noise=v_noise), _get(case, 'tout_term'), rtol=1e-7)

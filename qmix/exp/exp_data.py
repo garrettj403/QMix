@@ -16,6 +16,7 @@ Note:
 
 import glob
 import os
+from collections import namedtuple
 from copy import deepcopy
 
 import matplotlib.pyplot as plt
@@ -68,6 +69,30 @@ _file_structure = {'DC IV curve':               'dciv/',
                    'Overall performance':       'overall-results/',
                    'CSV data':                  'csv/'}
 """Default file hierarchy to use when plotting experimental data."""
+
+
+MixerNoise = namedtuple('MixerNoise', ['voltage', 'g_mix', 't_mix', 'g_rf', 't_rf', 't_if', 'gain_model',
+                                       'tn_model', 'gain_meas', 'tn_meas', 'fit_mask'])
+MixerNoise.__doc__ = """\
+Results of ``PumpedData.mixer_noise``: measured vs simulated gain and noise.
+
+Args:
+    voltage (ndarray): Bias voltage (normalized).
+    g_mix (ndarray): Simulated DSB conversion gain of the mixer (USB + LSB to
+        IF).
+    t_mix (ndarray): Simulated DSB noise temperature of the mixer, in [K].
+    g_rf (float): Fitted gain of the RF/optics stage (and coupling) in front
+        of the mixer.
+    t_rf (float): Fitted noise temperature of the RF/optics stage, in [K].
+    t_if (float): IF noise temperature (from the shot noise), in [K].
+    gain_model (ndarray): Model gain, ``g_rf * g_mix``.
+    tn_model (ndarray): Model receiver noise temperature,
+        ``t_rf + (t_mix + t_if / g_mix) / g_rf``, in [K].
+    gain_meas (ndarray): Measured gain (interpolated to ``voltage``).
+    tn_meas (ndarray): Measured receiver noise temperature (interpolated to
+        ``voltage``), in [K].
+    fit_mask (ndarray): Bias voltages used to fit ``g_rf`` and ``t_rf``.
+"""
 
 
 # CLASSES FOR RAW DATA -------------------------------------------------------
@@ -798,6 +823,147 @@ class PumpedData(object):
         self.alpha    = alpha[idx_middle]
 
         self.err_surf = err_surf
+
+    def mixer_noise(self, f_if, z_if=50., temp=4., num_b=25, fit_range=None, voltage=None):
+        """Compare the measured gain and noise temperature with a small-signal
+        simulation of the mixer.
+
+        The mixer is simulated with the recovered embedding circuit (``vt``
+        and ``zt``, which reproduce the pumped I-V curve): harmonic balance of
+        the LO, then the small-signal analysis (``qmix.small_signal``), which
+        gives the DSB conversion gain ``g_mix`` (USB + LSB to IF) and the DSB
+        noise temperature ``t_mix`` of the mixer (from the junction's shot
+        noise). The embedding impedance at both sidebands is assumed to be
+        equal to the one at the LO (``zt``).
+
+        The receiver is modelled as an RF/optics stage (gain ``g_rf``, noise
+        temperature ``t_rf``; this also absorbs the IF coupling and the
+        calibration of the IF power) in front of the mixer, followed by the IF
+        chain (noise ``t_if``, from the shot noise):
+
+            gain = g_rf * g_mix
+            T_rx = t_rf + (t_mix + t_if / g_mix) / g_rf
+
+        ``g_rf`` and ``t_rf`` are fitted to the measured gain and noise
+        temperature in ``fit_range``. The bias dependence of the measurements
+        is then a test of the simulation.
+
+        Note:
+
+            The IF frequency, the IF load impedance and the physical
+            temperature are not part of the experimental data, so they must be
+            given. For the example data, the results hardly depend on them
+            (``g_rf`` and ``t_rf`` change by a few percent for IF frequencies
+            of 4-8 GHz and IF loads of 30-75 ohms).
+
+        Args:
+            f_if (float): IF frequency, in [GHz]
+            z_if (float, optional): IF load impedance, in [ohms], default is
+                50
+            temp (float, optional): Physical temperature of the junction, in
+                [K], default is 4
+            num_b (int, optional): Summation limit for the phase factor
+                coefficients, default is 25
+            fit_range (tuple, optional): Range of normalized bias voltages over
+                which to fit ``g_rf`` and ``t_rf``; default is the best bias
+                voltage +/- 1/5 of the photon voltage
+            voltage (ndarray, optional): Normalized bias voltages for the
+                simulation; default covers the first photon step below the
+                gap
+
+        Returns:
+            MixerNoise: simulated and measured gain and noise temperature
+
+        """
+
+        from qmix.circuit import EmbeddingCircuit
+        from qmix.small_signal import admittance_matrix, conversion_gain, noise_matrix, output_noise
+        from qmix.small_signal import sideband_impedances
+
+        assert self.zt is not None, "The embedding circuit must be recovered first (analyze_iv=True)"
+        assert self.tn is not None, "Hot/cold IF data are needed"
+
+        v_meas = self.if_hot[:, 0]
+        if voltage is None:
+            voltage = np.linspace(max(0.05, 1 - 1.5 * self.vph), min(1 + 0.5 * self.vph, v_meas.max()), 101)
+        voltage = np.asarray(voltage, dtype=float)
+        if fit_range is None:
+            fit_range = (self.v_best - self.vph / 5, self.v_best + self.vph / 5)
+
+        # Harmonic balance of the LO with the recovered embedding circuit
+        cct = EmbeddingCircuit(1, 1, vb_npts=len(voltage), vgap=self.vgap, rn=self.rn)
+        cct.vb = voltage
+        cct.freq[1] = self.vph
+        cct.vt[1, 1] = self.vt
+        cct.zt[1, 1] = self.zt
+        vj = harmonic_balance(cct, self.dciv.resp, num_b=num_b, verbose=False)
+
+        # Small-signal analysis: DSB gain and noise temperature of the mixer
+        f_if_norm = f_if * 1e9 / self.fgap
+        y = admittance_matrix(vj, cct, self.dciv.resp, f_if_norm, num_b=num_b)
+        h = noise_matrix(vj, cct, self.dciv.resp, f_if_norm, temp, vgap=self.vgap, num_b=num_b)
+        zt = sideband_impedances(z_if / self.rn, self.zt, self.zt)
+        g_mix = conversion_gain(y, zt, 1) + conversion_gain(y, zt, -1)
+        t_mix = output_noise(y, h, zt, self.vgap, exclude=[-1, 0, 1]) / g_mix
+
+        # Fit the RF stage to the measurements
+        gain_meas = np.interp(voltage, v_meas, self.gain)
+        tn_meas = np.interp(voltage, v_meas, self.tn)
+        mask = (fit_range[0] <= voltage) & (voltage <= fit_range[1])
+        assert mask.sum() >= 3, "Not enough bias voltages in fit_range"
+        t_if = self.if_noise
+        g_rf = np.sum(gain_meas[mask] * g_mix[mask]) / np.sum(g_mix[mask] ** 2)
+        t_rf = np.mean(tn_meas[mask] - (t_mix[mask] + t_if / g_mix[mask]) / g_rf)
+
+        gain_model = g_rf * g_mix
+        tn_model = t_rf + (t_mix + t_if / g_mix) / g_rf
+
+        return MixerNoise(voltage=voltage, g_mix=g_mix, t_mix=t_mix, g_rf=g_rf, t_rf=t_rf, t_if=t_if,
+                          gain_model=gain_model, tn_model=tn_model, gain_meas=gain_meas, tn_meas=tn_meas,
+                          fit_mask=mask)
+
+    def plot_mixer_noise(self, results, fig_name=None, ax=None):  # pragma: no cover
+        """Plot the measured and modelled gain and noise temperature (from
+        ``mixer_noise``).
+
+        Args:
+            results (MixerNoise): Output of ``mixer_noise``
+            fig_name (str, optional): Save the figure here (and close it),
+                default is None
+            ax (tuple, optional): Two axes (gain, noise temperature), default
+                is None (new figure)
+
+        Returns:
+            tuple: the two axes (if ``fig_name`` is None)
+
+        """
+
+        if ax is None:
+            _, ax = plt.subplots(1, 2, figsize=(10, 4))
+        ax1, ax2 = ax
+        vmv = self.vgap * 1e3
+        v = results.voltage * vmv
+        fit = results.fit_mask
+
+        ax1.plot(v, results.gain_meas, 'k', label='Measured')
+        ax1.plot(v, results.gain_model, 'r--', label='Model (G$_{{RF}}$ = {:.2f})'.format(results.g_rf))
+        ax1.axvspan(v[fit][0], v[fit][-1], color='0.9', zorder=0, label='Fit range')
+        ax1.set(xlabel='Bias Voltage (mV)', ylabel='Gain', ylim=(0, None))
+        ax1.legend(frameon=False, loc='lower left', bbox_to_anchor=(0., 1.0))
+
+        ax2.plot(v, results.tn_meas, 'k', label='Measured')
+        ax2.plot(v, results.tn_model, 'r--', label='Model (T$_{{RF}}$ = {:.1f} K)'.format(results.t_rf))
+        ax2.plot(v, results.t_mix, 'b:', label='Mixer (DSB, simulated)')
+        ax2.axvspan(v[fit][0], v[fit][-1], color='0.9', zorder=0)
+        tmin = np.nanmin(results.tn_meas[fit])
+        ax2.set(xlabel='Bias Voltage (mV)', ylabel='Noise Temperature (K)', ylim=(0, 4 * tmin))
+        ax2.legend(frameon=False, loc='lower left', bbox_to_anchor=(0., 1.0))
+
+        if fig_name is not None:
+            plt.savefig(fig_name, **_plot_params)
+            plt.close()
+            return
+        return ax1, ax2
 
     def plot_iv(self, fig_name=None, ax=None, vmax_plot=4.):  # pragma: no cover
         """Plot pumped I-V curve.

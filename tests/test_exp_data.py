@@ -222,3 +222,36 @@ if __name__ == "__main__":
     test_vgap()
     test_offset_methods()
     test_try_importing_reflected_iv_data()
+
+
+def test_mixer_noise(directory='tests/exp-data/'):
+    """Compare the measured gain and noise temperature with a small-signal
+    simulation of the mixer (PumpedData.mixer_noise). With the recovered
+    embedding circuit and two fitted constants for the RF/optics stage, the
+    simulated mixer should reproduce the bias dependence of the measured gain
+    and noise temperature over the photon step."""
+
+    dciv_data = np.genfromtxt(directory + 'dciv-data.csv', **csv_param)
+    dcif_data = np.genfromtxt(directory + 'dcif-data.csv', **csv_param)
+    pumped_iv = np.genfromtxt(directory + 'f230_0_iv.csv', **csv_param)
+    pumped_hot = np.genfromtxt(directory + 'f230_0_hot.csv', **csv_param)
+    pumped_cold = np.genfromtxt(directory + 'f230_0_cold.csv', **csv_param)
+
+    dciv = qe.DCData(dciv_data, dcif_data, **params)
+    pump = qe.PumpedData(pumped_iv, dciv, pumped_hot, pumped_cold, freq=230, **params)
+    results = pump.mixer_noise(f_if=6.)
+
+    # Physically reasonable RF stage
+    assert 0.2 < results.g_rf < 1.
+    assert 0. < results.t_rf < pump.tn_best
+    # The DSB mixer noise is a small part of the receiver noise
+    mask = results.fit_mask
+    assert (results.t_mix[mask] < 0.3 * results.tn_meas[mask]).all()
+    # The model follows the measurements over the fit range
+    np.testing.assert_allclose(results.gain_model[mask], results.gain_meas[mask], rtol=0.15)
+    np.testing.assert_allclose(results.tn_model[mask], results.tn_meas[mask], rtol=0.15)
+
+    # Missing data
+    pump_no_if = qe.PumpedData(pumped_iv, dciv, freq=230, **params)
+    with pytest.raises(AssertionError):
+        pump_no_if.mixer_noise(f_if=6.)

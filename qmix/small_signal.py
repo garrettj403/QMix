@@ -30,6 +30,14 @@ Description:
         zt = sideband_impedances(z_if, z_usb, z_lsb)
         gain = conversion_gain(y, zt, 1)                  # USB -> IF
 
+    The shot noise of the junction (including its thermal and quantum
+    limits) is described by the current noise correlation matrix ``H``
+    (Tucker and Feldman, 1985), from which the noise temperature of the mixer
+    follows::
+
+        h = noise_matrix(vj, cct, resp, f_if, temp, vgap)
+        tn = noise_temperature(y, h, zt, vgap, 1)         # SSB, USB input
+
 Note:
 
     **Phasors at negative frequencies.** For m < 0, the frequency
@@ -50,6 +58,7 @@ Note:
 """
 
 import numpy as np
+import scipy.constants as sc
 
 from qmix.qtcurrent import calculate_phase_factor_coeff, _natural_indices
 
@@ -119,6 +128,104 @@ def admittance_matrix(vj, cct, resp, f_if, num_sb=None, num_b=15):
             y[m + num_sb, n + num_sb] = np.sum(pair * term, axis=0) / (2 * (n * f_lo + f_if))
 
     return y
+
+
+def noise_matrix(vj, cct, resp, f_if, temp, vgap=None, num_sb=None, num_b=15):
+    """Calculate the current noise correlation matrix of the junction
+    (Tucker theory).
+
+    The noise currents at the sidebands, delta I_m, are correlated:
+    ``<delta I_m delta I_n*> = H[m, n] * e * Igap * df``, where df is the
+    bandwidth, ``Igap = Vgap / Rn``, and the currents are RMS values (H is the
+    one-sided spectral density). This includes shot noise and its thermal
+    (coth) and quantum limits, but not the noise of the embedding circuit.
+    Equivalent to SuperMix's ``sis_basic_device::noise``.
+
+    Args:
+        vj (ndarray): Junction voltage of the LO state, see
+            ``admittance_matrix``
+        cct (qmix.circuit.EmbeddingCircuit): Embedding circuit with one tone
+        resp (qmix.respfn.RespFn): Response function
+        f_if (float): IF frequency (normalized), with ``0 < f_if < f_lo``
+        temp (float): Physical temperature of the junction, in [K]
+        vgap (float, optional): Gap voltage, in [V], default is ``cct.vgap``
+        num_sb (int, optional): Number of sidebands on each side of the IF,
+            default is ``cct.num_p``
+        num_b (int, optional): Summation limit for the phase factor
+            coefficients of the LO, default is 15
+
+    Returns:
+        ndarray: Noise correlation matrix ``h[m + num_sb, n + num_sb, i]``
+        (Hermitian, normalized to ``e * Igap``)
+
+    """
+
+    assert cct.num_f == 1, "The LO state must be a single tone (cct.num_f == 1)"
+    f_lo = cct.freq[1]
+    assert 0 < f_if < f_lo, "The IF frequency must be between 0 and the LO frequency"
+    if vgap is None:
+        vgap = cct.vgap
+    assert vgap is not None, "The gap voltage is needed (vgap argument or cct.vgap)"
+    assert temp >= 0, "The temperature must not be negative"
+    if num_sb is None:
+        num_sb = cct.num_p
+    num_b = int(num_b)
+
+    # Normalized temperature, k T / (e Vgap)
+    t_norm = sc.k * temp / (sc.e * vgap)
+
+    ccc = calculate_phase_factor_coeff(vj, cct.freq, 1, cct.num_p, num_b)
+    c_k = ccc[1][_natural_indices(num_b)]
+
+    # c_+/-(x) = Idc(v) coth(v / 2t) at v = vb + x * f_lo +/- f_if
+    x_max = num_b + num_sb
+    x = np.arange(-x_max, x_max + 1)
+    voltage = cct.vb[None, :] + x[:, None] * f_lo
+    _check_range(resp, voltage, f_if)
+    c_p = _shot_noise(resp, voltage + f_if, t_norm)
+    c_m = _shot_noise(resp, voltage - f_if, t_norm)
+
+    # H[m, n] = sum_k C_k C*_{k+m-n} [c_+(k+m) + c_-(k-n)]
+    dim = 2 * num_sb + 1
+    h = np.zeros((dim, dim, cct.vb_npts), dtype=complex)
+    for m in range(-num_sb, num_sb + 1):
+        for n in range(-num_sb, num_sb + 1):
+            d = m - n
+            k = np.arange(max(-num_b, -num_b - d), min(num_b, num_b - d) + 1)
+            if k.size == 0:
+                continue
+            pair = c_k[k + num_b] * np.conj(c_k[k + d + num_b])
+            h[m + num_sb, n + num_sb] = np.sum(pair * (c_p[k + m + x_max] + c_m[k - n + x_max]), axis=0)
+
+    return h
+
+
+def _shot_noise(resp, voltage, t_norm):
+    """Idc(v) * coth(v / 2t), the shot noise of the unpumped junction (up to
+    a factor of 2), with its limits: Idc(v) * sign(v) at t = 0 and
+    2 t Idc'(0) at v = 0."""
+
+    idc = resp(voltage).imag
+    if t_norm == 0:
+        return np.abs(idc)
+
+    arg = voltage / (2 * t_norm)
+    out = np.empty_like(idc)
+    large = np.abs(arg) > 24  # coth(arg) = sign(arg) to double precision
+    out[large] = np.abs(idc[large])
+    small = np.abs(voltage) < 1e-6
+    if small.any():
+        f_didc = getattr(resp, '_f_didc', None)
+        if f_didc is not None:
+            didc_0 = float(f_didc(0.))
+        else:
+            dv = 1e-6
+            didc_0 = (resp(dv).imag - resp(-dv).imag) / (2 * dv)
+        out[small] = 2 * t_norm * didc_0
+    mid = ~large & ~small
+    out[mid] = idc[mid] / np.tanh(arg[mid])
+
+    return out
 
 
 def _check_range(resp, voltage, f_if):
@@ -257,3 +364,129 @@ def conversion_gain(y, zt, m_in, m_out=0):
     _, i = solve_sidebands(y, zt, vt)
 
     return 4 * zt[m_in + num_sb].real * zt[m_out + num_sb].real * np.abs(i[m_out + num_sb]) ** 2
+
+
+# Noise -----------------------------------------------------------------------
+
+def embedding_noise(zt, temp, f_lo, f_if, vgap):
+    """Thermal noise of the embedding impedances at all sidebands.
+
+    Each embedding impedance is a Thevenin source with a noise voltage of
+    one-sided spectral density ``4 k T_cw Re(Z)``, where
+    ``T_cw = (h f / 2 k) coth(h f / 2 k T)`` (Callen-Welton) includes the
+    zero-point fluctuations, at the physical frequency of the sideband,
+    ``f = |m * f_lo + f_if|``. The noise at different sidebands is
+    uncorrelated.
+
+    Args:
+        zt (ndarray): Embedding impedances, from ``sideband_impedances``
+        temp (float or ndarray): Physical temperature of the embedding
+            circuit, in [K]; a scalar or one value per sideband (natural
+            order)
+        f_lo (float): LO frequency (normalized)
+        f_if (float): IF frequency (normalized)
+        vgap (float): Gap voltage, in [V] (sets the gap frequency)
+
+    Returns:
+        ndarray: Noise voltage spectral densities at sidebands m = -num_sb
+        ... num_sb, normalized to ``e * Vgap * Rn``
+
+    """
+
+    num_sb = (zt.shape[0] - 1) // 2
+    m = np.arange(-num_sb, num_sb + 1)
+    freq = np.abs(m * f_lo + f_if) * sc.e * vgap / sc.h  # in [Hz]
+    temp = np.broadcast_to(np.asarray(temp, dtype=float), m.shape)
+
+    x = sc.h * freq / (2 * sc.k)
+    with np.errstate(divide='ignore', invalid='ignore'):
+        t_cw = np.where(temp > 0, x / np.tanh(x / np.maximum(temp, 1e-300)), x)  # T -> 0: h f / 2 k
+    t_cw = np.where(freq == 0, temp, t_cw)
+
+    return 4 * sc.k * t_cw * zt.real / (sc.e * vgap)
+
+
+def output_noise(y, h, zt, vgap, m_out=0, v_noise=None, exclude=None):
+    """Noise power delivered to the embedding impedance at sideband m_out
+    (default: the IF), per unit bandwidth and in units of the Boltzmann
+    constant (i.e., a noise temperature, in [K]).
+
+    The noise sources are the junction (``h``) and, optionally, the
+    embedding impedances (``v_noise``, Thevenin noise voltages). They drive
+    the sideband network: ``(1 + Y Z) I = delta I + Y E``, so the current
+    correlation matrix is ``A (H + Y S Y^dagger) A^dagger``, with
+    ``A = (1 + Y Z)^-1`` and S the (diagonal) spectral densities of E. The
+    noise of the load at m_out itself is not included.
+
+    Args:
+        y (ndarray): Admittance matrix, from ``admittance_matrix``
+        h (ndarray): Noise correlation matrix, from ``noise_matrix``
+        zt (ndarray): Embedding impedances, from ``sideband_impedances``
+        vgap (float): Gap voltage, in [V]
+        m_out (int, optional): Output sideband, default is 0 (the IF)
+        v_noise (ndarray, optional): Noise of the embedding impedances, from
+            ``embedding_noise``; default is None (junction noise only)
+        exclude (list, optional): Sidebands whose embedding noise is not
+            included, default is ``[m_out]``
+
+    Returns:
+        ndarray: Output noise temperature at each bias voltage, in [K]
+
+    """
+
+    dim = y.shape[0]
+    num_sb = (dim - 1) // 2
+    y_t = np.moveaxis(y, -1, 0)                                         # (npts, dim, dim)
+    a = np.linalg.inv(np.eye(dim)[None] + y_t * zt[None, None, :])
+    row = a[:, m_out + num_sb, :]                                       # (npts, dim)
+    noise_current = np.einsum('im,mni,in->i', row, h, np.conj(row)).real  # units of e * Igap
+
+    if v_noise is not None:
+        if exclude is None:
+            exclude = [m_out]
+        s = np.array(v_noise, dtype=float)
+        for m in exclude:
+            s[m + num_sb] = 0.
+        row_y = np.einsum('im,imn->in', row, y_t)                       # row of A Y
+        noise_current = noise_current + np.sum(np.abs(row_y) ** 2 * s[None, :], axis=1)
+
+    # Power: |I|^2 Re(Z) = noise_current * e * Igap * Re(zt) * Rn = noise_current * e * Vgap * Re(zt)
+    return noise_current * zt[m_out + num_sb].real * sc.e * vgap / sc.k
+
+
+def noise_temperature(y, h, zt, vgap, m_in, m_out=0, v_noise=None):
+    """Input noise temperature of the mixer, referred to sideband m_in: the
+    output noise (``output_noise``) divided by the conversion gain from m_in
+    (``conversion_gain``).
+
+    This is the single-sideband (SSB) noise temperature. The noise of the
+    source at m_in and of the load at m_out are not included (if
+    ``v_noise`` is given, the embedding noise at all other sidebands, e.g.,
+    the image, is). For the double-sideband (DSB) noise temperature, divide
+    the output noise (excluding the noise at both sidebands) by the sum of
+    the gains from the USB and the LSB.
+
+    Note:
+
+        With ``v_noise=None``, only the junction's noise is included. Since
+        the zero-point fluctuations of the embedding are then missing, the
+        result can be below the quantum limit.
+
+    Args:
+        y (ndarray): Admittance matrix, from ``admittance_matrix``
+        h (ndarray): Noise correlation matrix, from ``noise_matrix``
+        zt (ndarray): Embedding impedances, from ``sideband_impedances``
+        vgap (float): Gap voltage, in [V]
+        m_in (int): Input sideband (e.g., 1 for the USB)
+        m_out (int, optional): Output sideband, default is 0 (the IF)
+        v_noise (ndarray, optional): Noise of the embedding impedances, from
+            ``embedding_noise``; default is None (junction noise only)
+
+    Returns:
+        ndarray: Noise temperature at each bias voltage, in [K]
+
+    """
+
+    noise = output_noise(y, h, zt, vgap, m_out, v_noise=v_noise, exclude=[m_in, m_out])
+
+    return noise / conversion_gain(y, zt, m_in, m_out)

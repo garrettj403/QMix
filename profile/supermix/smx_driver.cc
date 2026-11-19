@@ -11,13 +11,15 @@
 //
 // Input (whitespace separated):
 //
-//   mode                 "current", "balance" or "smallsignal"
+//   mode                 "current", "balance", "smallsignal" or "mixernoise"
 //   vn_mV rn_ohm         normalizing voltage and resistance
 //   idc_file ikk_file    I-V curve and KK transform (normalized)
 //   flo num_p npts       LO frequency, number of harmonics, bias points
 //   tol                  balance/smallsignal: Newton tolerance (normalized
 //                        voltage)
-//   fif                  smallsignal only: IF frequency (normalized)
+//   fif                  smallsignal/mixernoise: IF frequency (normalized)
+//   temp_K z0_ohm        mixernoise only: physical temperature and the
+//                        normalizing impedance of the mixer ports
 //   num_p x (vt_re vt_im zt_re zt_im)   balance/smallsignal: Thevenin
 //                                       circuit at each LO harmonic
 //   npts x (vb [num_p x (vj_re vj_im)]) bias voltage; current mode also
@@ -32,6 +34,15 @@
 // (row by row), as re im pairs, normalized to 1/Rn. Sideband m is at
 // frequency m * flo + fif; for m < 0, this is negative, so the phasor is the
 // complex conjugate of the one at the positive frequency |m| * flo - fif.
+//
+// In mixernoise mode, the line continues with the junction's current noise
+// correlation matrix H[m][n] (one-sided spectral density of the RMS noise
+// currents, normalized to e * Vn / Rn), then the mixer's (small-signal
+// analysis with all sideband ports open, i.e., terminated in Z0) scattering
+// matrix S and noise wave correlation matrix C (in K) between the sideband
+// ports m, n = -num_p..num_p, each as re im pairs, row by row. The last
+// column is the IF noise temperature (in K) with the RF port terminated by the
+// Thevenin terminators, which have thermal noise (Callen-Welton) at temp_K.
 //
 // where status is 0 for success (current mode always 0) and iterations is
 // the number of Newton iterations (0 in current mode). The final line is
@@ -57,7 +68,7 @@ public:
   std::vector<Complex> V;   // RMS voltage at harmonic n (Volt)
 
   harmonic_thevenin() : nport(1), LO(0.0)
-  { info.source = true; info.noise = false; info.active = false; }
+  { info.source = true; info.noise = true; info.active = false; }
 
   int size() { return 1; }
 
@@ -73,7 +84,10 @@ private:
     data.B[1] = sqrt(z0) * v / (z + z0);  // same convention as voltage_source
   }
 
-  void recalc() { recalc_S(); data.C[1][1] = 0.0; }
+  // Thermal noise of the impedance at the global temperature device::T
+  // (Callen-Welton, including zero-point fluctuations), like any passive
+  // SuperMix element. It only matters for mixer::get_term_data().
+  void recalc() { recalc_S(); compute_passive_noise(data, f, T); }
 };
 
 
@@ -92,7 +106,7 @@ int main()
   int num_p, npts;
 
   cin >> mode >> vn_mV >> rn_ohm >> idc_file >> ikk_file >> flo_norm >> num_p >> npts;
-  if (!cin || (mode != "current" && mode != "balance" && mode != "smallsignal")) {
+  if (!cin || (mode != "current" && mode != "balance" && mode != "smallsignal" && mode != "mixernoise")) {
     cerr << "smx_driver: bad input header" << endl;
     return 1;
   }
@@ -140,10 +154,15 @@ int main()
     }
   }
 
-  else {  // balance or smallsignal
-    double tol, fif_norm = 0.0;
+  else {  // balance, smallsignal or mixernoise
+    double tol, fif_norm = 0.0, temp_K = 0.0, z0_ohm = 50.0;
     cin >> tol;
-    if (mode == "smallsignal") cin >> fif_norm;
+    if (mode == "smallsignal" || mode == "mixernoise") cin >> fif_norm;
+    if (mode == "mixernoise") {
+      cin >> temp_K >> z0_ohm;
+      device::T = temp_K * Kelvin;
+      device::Z0 = z0_ohm * Ohm;
+    }
     const double fIF = fif_norm * Fgap;
 
     harmonic_thevenin lo;
@@ -191,7 +210,7 @@ int main()
         Complex v = V.read(p) * scale / Vn, c = I.read(p) * scale / In;
         cout << " " << v.real << " " << v.imaginary << " " << c.real << " " << c.imaginary;
       }
-      if (mode == "smallsignal") {
+      if (mode == "smallsignal" || mode == "mixernoise") {
         double t1 = now();
         const Matrix & Y = sis.small_signal(fIF, num_p);
         t_total += now() - t1;
@@ -200,6 +219,34 @@ int main()
             Complex y = Y.read(mm, nn) * Rn;
             cout << " " << y.real << " " << y.imaginary;
           }
+      }
+      if (mode == "mixernoise") {
+        double t1 = now();
+        const Matrix & H = sis.noise(fIF, device::T, num_p);
+        const double h_norm = eCharge * Vn / Rn;
+        for (int mm = -num_p; mm <= num_p; ++mm)
+          for (int nn = -num_p; nn <= num_p; ++nn) {
+            Complex h = H.read(mm, nn) / h_norm;
+            cout << " " << h.real << " " << h.imaginary;
+          }
+        // Full small-signal analysis of the mixer at the IF frequency
+        device::f = fIF;
+        const sdata & sd = m.get_data();
+        t_total += now() - t1;
+        for (int mm = -num_p; mm <= num_p; ++mm)
+          for (int nn = -num_p; nn <= num_p; ++nn) {
+            Complex s = sd.S.read(m.port(2, mm), m.port(2, nn));
+            cout << " " << s.real << " " << s.imaginary;
+          }
+        for (int mm = -num_p; mm <= num_p; ++mm)
+          for (int nn = -num_p; nn <= num_p; ++nn) {
+            Complex c = sd.C.read(m.port(2, mm), m.port(2, nn)) / Kelvin;
+            cout << " " << c.real << " " << c.imaginary;
+          }
+        // RF ports terminated by the (noisy) Thevenin terminators: noise
+        // temperature at the IF port, from the junction and the terminations
+        const sdata & st = m.get_term_data();
+        cout << " " << st.C.read(1, 1).real / Kelvin;
       }
       cout << "\n";
     }

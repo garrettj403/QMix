@@ -28,6 +28,7 @@ from qmix.qtcurrent import suggest_num_b
 
 import compare
 import compare_multitone
+import compare_noise
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUTPUT = os.path.join(HERE, '..', '..', 'tests', 'supermix-data', 'supermix_reference.npz')
@@ -174,6 +175,33 @@ def main():
         data.update({key + '_num_p': num_p, key + '_vb': vb, key + '_flo': compare_multitone.F_LO,
                      key + '_fif': compare_multitone.F_IF, key + '_vj': vj_lo, key + '_y': y, key + '_num_b': num_b})
         print('{}: LO with {} harmonic(s), num_b {}, max |Y| = {:.2f}'.format(key, num_p, num_b, np.abs(y).max()))
+
+    # Noise (see compare_noise.py): SuperMix's junction noise matrix H, and its
+    # mixer analysis with all sideband ports open (Z0): conversion gain and IF
+    # output noise; and with the RF port terminated by the (noisy) LO
+    # embedding impedance at all sidebands: IF output noise
+    for num_p, zt_lo, temp, z0_ohm in ((1, [0.3 - 0.3j], 4.2, 5.), (1, [0.5 + 0.1j], 1e-6, 10.),
+                                       (2, [0.3 - 0.3j, 0.1 - 0.1j], 4.2, 3.)):
+        vt_lo = np.r_[0, compare_multitone.VT_LO, np.zeros(num_p - 1)].astype(complex)
+        vj_lo, _, h, s, c, tout_term = compare_noise.supermix_mixer_noise(files, vb, vt_lo, np.r_[0, zt_lo], temp,
+                                                                          z0_ohm)
+        cct = qmix.circuit.EmbeddingCircuit(1, num_p, vb_min=vb[0], vb_max=vb[-1], vb_npts=len(vb))
+        cct.vb = vb.copy()
+        cct.freq[1] = compare_multitone.F_LO
+        vj3 = cct.initialize_vj()
+        vj3[1, 1:] = vj_lo[1:]
+        num_b = suggest_num_b(vj3, cct, tol=1e-15, max_b=60)[0]
+
+        key = 'noise{}'.format(len(names))
+        names.append(key)
+        data.update({key + '_num_p': num_p, key + '_vb': vb, key + '_flo': compare_multitone.F_LO,
+                     key + '_fif': compare_multitone.F_IF, key + '_vj': vj_lo, key + '_num_b': num_b,
+                     key + '_temp': temp, key + '_vgap': compare_noise.VGAP, key + '_z0': z0_ohm / compare.RN_OHM,
+                     key + '_zt_lo': np.array(zt_lo, dtype=complex), key + '_h': h,
+                     key + '_gain_usb': np.abs(s[num_p, num_p + 1]) ** 2,
+                     key + '_gain_lsb': np.abs(s[num_p, num_p - 1]) ** 2,
+                     key + '_tout': c[num_p, num_p].real, key + '_tout_term': tout_term})
+        print('{}: LO with {} harmonic(s), T = {} K, Z0 = {} Ohm, num_b {}'.format(key, num_p, temp, z0_ohm, num_b))
 
     data['names'] = np.array(names)
     os.makedirs(os.path.dirname(OUTPUT), exist_ok=True)
