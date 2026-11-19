@@ -24,6 +24,8 @@ Functionality Changes
 Optimization
 ------------
 
+- ``qmix.qtcurrent.qtcurrent`` (direct method) now evaluates all of the current coefficients of all output frequencies together, in batches of up to 32 terms per pass over the interpolated response function matrix (``_current_coeff_batched``), instead of one pass per term. The kernel is limited by memory bandwidth, so this matters most with many terms, i.e., commensurate tones with the mixing products that are now included: e.g., ~2.4x faster for 4 strong commensurate tones and ~2x for 5 tones; the 4-tone harmonic balance benchmark takes 2.6 s instead of 4.0 s. 1 and 2 tone calculations are also ~1.3-1.9x faster. Results agree with the previous kernel to ~5e-15.
+
 - Added more detailed benchmarking and profiling scripts (found in ``QMix/profile/``).
 - ``qmix.qtcurrent.qtcurrent`` is now ~20% faster for 1 tone.
 - ``qmix.harmonic_balance.harmonic_balance`` is ~20% faster for 1 or 2 tones, and ~10% faster for 3 tones.
