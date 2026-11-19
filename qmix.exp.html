@@ -67,7 +67,8 @@
 <li class="toctree-l2"><a class="reference internal" href="qmix.html#module-qmix.harmonic_balance">2.4. qmix.harmonic_balance module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="qmix.html#module-qmix.qtcurrent">2.5. qmix.qtcurrent module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="qmix.html#module-qmix.respfn">2.6. qmix.respfn module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="qmix.html#module-qmix">2.7. Module contents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="qmix.html#module-qmix.small_signal">2.7. qmix.small_signal module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="qmix.html#module-qmix">2.8. Module contents</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="single-tone-simulation.html">3. Example #1: Creating a simple 1 tone simulation</a></li>
@@ -460,6 +461,100 @@ that <code class="docutils literal notranslate"><span class="pre">dciv</span></c
 </dd></dl>
 
 <dl class="py class">
+<dt class="sig sig-object py" id="qmix.exp.exp_data.MixerNoise">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">qmix.exp.exp_data.</span></span><span class="sig-name descname"><span class="pre">MixerNoise</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">voltage</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">g_mix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_mix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">g_rf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_rf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_if</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gain_model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tn_model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gain_meas</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tn_meas</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fit_mask</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.exp.exp_data.MixerNoise" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></p>
+<p>Results of <code class="docutils literal notranslate"><span class="pre">PumpedData.mixer_noise</span></code>: measured vs simulated gain and noise.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>voltage</strong> (<em>ndarray</em>) – Bias voltage (normalized).</p></li>
+<li><p><strong>g_mix</strong> (<em>ndarray</em>) – Simulated DSB conversion gain of the mixer (USB + LSB to
+IF).</p></li>
+<li><p><strong>t_mix</strong> (<em>ndarray</em>) – Simulated DSB noise temperature of the mixer, in [K].</p></li>
+<li><p><strong>g_rf</strong> (<em>float</em>) – Fitted gain of the RF/optics stage (and coupling) in front
+of the mixer.</p></li>
+<li><p><strong>t_rf</strong> (<em>float</em>) – Fitted noise temperature of the RF/optics stage, in [K].</p></li>
+<li><p><strong>t_if</strong> (<em>float</em>) – IF noise temperature (from the shot noise), in [K].</p></li>
+<li><p><strong>gain_model</strong> (<em>ndarray</em>) – Model gain, <code class="docutils literal notranslate"><span class="pre">g_rf</span> <span class="pre">*</span> <span class="pre">g_mix</span></code>.</p></li>
+<li><p><strong>tn_model</strong> (<em>ndarray</em>) – Model receiver noise temperature,
+<code class="docutils literal notranslate"><span class="pre">t_rf</span> <span class="pre">+</span> <span class="pre">(t_mix</span> <span class="pre">+</span> <span class="pre">t_if</span> <span class="pre">/</span> <span class="pre">g_mix)</span> <span class="pre">/</span> <span class="pre">g_rf</span></code>, in [K].</p></li>
+<li><p><strong>gain_meas</strong> (<em>ndarray</em>) – Measured gain (interpolated to <code class="docutils literal notranslate"><span class="pre">voltage</span></code>).</p></li>
+<li><p><strong>tn_meas</strong> (<em>ndarray</em>) – Measured receiver noise temperature (interpolated to
+<code class="docutils literal notranslate"><span class="pre">voltage</span></code>), in [K].</p></li>
+<li><p><strong>fit_mask</strong> (<em>ndarray</em>) – Bias voltages used to fit <code class="docutils literal notranslate"><span class="pre">g_rf</span></code> and <code class="docutils literal notranslate"><span class="pre">t_rf</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qmix.exp.exp_data.MixerNoise.fit_mask">
+<span class="sig-name descname"><span class="pre">fit_mask</span></span><a class="headerlink" href="#qmix.exp.exp_data.MixerNoise.fit_mask" title="Link to this definition"></a></dt>
+<dd><p>Alias for field number 10</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qmix.exp.exp_data.MixerNoise.g_mix">
+<span class="sig-name descname"><span class="pre">g_mix</span></span><a class="headerlink" href="#qmix.exp.exp_data.MixerNoise.g_mix" title="Link to this definition"></a></dt>
+<dd><p>Alias for field number 1</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qmix.exp.exp_data.MixerNoise.g_rf">
+<span class="sig-name descname"><span class="pre">g_rf</span></span><a class="headerlink" href="#qmix.exp.exp_data.MixerNoise.g_rf" title="Link to this definition"></a></dt>
+<dd><p>Alias for field number 3</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qmix.exp.exp_data.MixerNoise.gain_meas">
+<span class="sig-name descname"><span class="pre">gain_meas</span></span><a class="headerlink" href="#qmix.exp.exp_data.MixerNoise.gain_meas" title="Link to this definition"></a></dt>
+<dd><p>Alias for field number 8</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qmix.exp.exp_data.MixerNoise.gain_model">
+<span class="sig-name descname"><span class="pre">gain_model</span></span><a class="headerlink" href="#qmix.exp.exp_data.MixerNoise.gain_model" title="Link to this definition"></a></dt>
+<dd><p>Alias for field number 6</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qmix.exp.exp_data.MixerNoise.t_if">
+<span class="sig-name descname"><span class="pre">t_if</span></span><a class="headerlink" href="#qmix.exp.exp_data.MixerNoise.t_if" title="Link to this definition"></a></dt>
+<dd><p>Alias for field number 5</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qmix.exp.exp_data.MixerNoise.t_mix">
+<span class="sig-name descname"><span class="pre">t_mix</span></span><a class="headerlink" href="#qmix.exp.exp_data.MixerNoise.t_mix" title="Link to this definition"></a></dt>
+<dd><p>Alias for field number 2</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qmix.exp.exp_data.MixerNoise.t_rf">
+<span class="sig-name descname"><span class="pre">t_rf</span></span><a class="headerlink" href="#qmix.exp.exp_data.MixerNoise.t_rf" title="Link to this definition"></a></dt>
+<dd><p>Alias for field number 4</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qmix.exp.exp_data.MixerNoise.tn_meas">
+<span class="sig-name descname"><span class="pre">tn_meas</span></span><a class="headerlink" href="#qmix.exp.exp_data.MixerNoise.tn_meas" title="Link to this definition"></a></dt>
+<dd><p>Alias for field number 9</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qmix.exp.exp_data.MixerNoise.tn_model">
+<span class="sig-name descname"><span class="pre">tn_model</span></span><a class="headerlink" href="#qmix.exp.exp_data.MixerNoise.tn_model" title="Link to this definition"></a></dt>
+<dd><p>Alias for field number 7</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qmix.exp.exp_data.MixerNoise.voltage">
+<span class="sig-name descname"><span class="pre">voltage</span></span><a class="headerlink" href="#qmix.exp.exp_data.MixerNoise.voltage" title="Link to this definition"></a></dt>
+<dd><p>Alias for field number 0</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt class="sig sig-object py" id="qmix.exp.exp_data.PumpedData">
 <span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">qmix.exp.exp_data.</span></span><span class="sig-name descname"><span class="pre">PumpedData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ivdata</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dciv</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">if_hot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">if_cold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kw</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.exp.exp_data.PumpedData" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
@@ -531,6 +626,72 @@ normalized to the normal-state resistance</p></li>
 </ul>
 </dd>
 </dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="qmix.exp.exp_data.PumpedData.mixer_noise">
+<span class="sig-name descname"><span class="pre">mixer_noise</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f_if</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z_if</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_b</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">25</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fit_range</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">voltage</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">smeared</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.exp.exp_data.PumpedData.mixer_noise" title="Link to this definition"></a></dt>
+<dd><p>Compare the measured gain and noise temperature with a small-signal
+simulation of the mixer.</p>
+<p>The mixer is simulated with the recovered embedding circuit (<code class="docutils literal notranslate"><span class="pre">vt</span></code>
+and <code class="docutils literal notranslate"><span class="pre">zt</span></code>, which reproduce the pumped I-V curve): harmonic balance of
+the LO, then the small-signal analysis (<code class="docutils literal notranslate"><span class="pre">qmix.small_signal</span></code>), which
+gives the DSB conversion gain <code class="docutils literal notranslate"><span class="pre">g_mix</span></code> (USB + LSB to IF) and the DSB
+noise temperature <code class="docutils literal notranslate"><span class="pre">t_mix</span></code> of the mixer (from the junction’s shot
+noise). The embedding impedance at both sidebands is assumed to be
+equal to the one at the LO (<code class="docutils literal notranslate"><span class="pre">zt</span></code>).</p>
+<p>The receiver is modelled as an RF/optics stage (gain <code class="docutils literal notranslate"><span class="pre">g_rf</span></code>, noise
+temperature <code class="docutils literal notranslate"><span class="pre">t_rf</span></code>; this also absorbs the IF coupling and the
+calibration of the IF power) in front of the mixer, followed by the IF
+chain (noise <code class="docutils literal notranslate"><span class="pre">t_if</span></code>, from the shot noise):</p>
+<blockquote>
+<div><p>gain = g_rf * g_mix
+T_rx = t_rf + (t_mix + t_if / g_mix) / g_rf</p>
+</div></blockquote>
+<p><code class="docutils literal notranslate"><span class="pre">g_rf</span></code> and <code class="docutils literal notranslate"><span class="pre">t_rf</span></code> are fitted to the measured gain and noise
+temperature in <code class="docutils literal notranslate"><span class="pre">fit_range</span></code>. The bias dependence of the measurements
+is then a test of the simulation.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The IF frequency, the IF load impedance and the physical
+temperature are not part of the experimental data, so they must be
+given. For the example data, the results hardly depend on them
+(<code class="docutils literal notranslate"><span class="pre">g_rf</span></code> and <code class="docutils literal notranslate"><span class="pre">t_rf</span></code> change by a few percent for IF frequencies
+of 4-8 GHz and IF loads of 30-75 ohms).</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>f_if</strong> (<em>float</em>) – IF frequency, in [GHz]</p></li>
+<li><p><strong>z_if</strong> (<em>float</em><em>, </em><em>optional</em>) – IF load impedance, in [ohms], default is
+50</p></li>
+<li><p><strong>temp</strong> (<em>float</em><em>, </em><em>optional</em>) – Physical temperature of the junction, in
+[K], default is 4</p></li>
+<li><p><strong>num_b</strong> (<em>int</em><em>, </em><em>optional</em>) – Summation limit for the phase factor
+coefficients, default is 25</p></li>
+<li><p><strong>fit_range</strong> (<em>tuple</em><em>, </em><em>optional</em>) – Range of normalized bias voltages over
+which to fit <code class="docutils literal notranslate"><span class="pre">g_rf</span></code> and <code class="docutils literal notranslate"><span class="pre">t_rf</span></code>; default is the best bias
+voltage +/- 1/5 of the photon voltage</p></li>
+<li><p><strong>voltage</strong> (<em>ndarray</em><em>, </em><em>optional</em>) – Normalized bias voltages for the
+simulation; default covers the first photon step below the
+gap</p></li>
+<li><p><strong>smeared</strong> (<em>bool</em><em>, </em><em>optional</em>) – Use the smeared response function
+(<code class="docutils literal notranslate"><span class="pre">DCData.resp_smear</span></code>, the DC I-V curve convolved with a
+Gaussian of width <code class="docutils literal notranslate"><span class="pre">v_smear</span></code>) instead of the unsmeared one,
+default is False. Simulated photon steps tend to be sharper
+than measured ones (e.g., due to heating, or the RF and IF
+signals smearing the gap); for the example data, smearing
+halves the error in the shape of the simulated gain across the
+first photon step.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>simulated and measured gain and noise temperature</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#qmix.exp.exp_data.MixerNoise" title="qmix.exp.exp_data.MixerNoise">MixerNoise</a></p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="qmix.exp.exp_data.PumpedData.plot_all">
 <span class="sig-name descname"><span class="pre">plot_all</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fig_folder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_struc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kw</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.exp.exp_data.PumpedData.plot_all" title="Link to this definition"></a></dt>
@@ -670,6 +831,30 @@ at the time.</p>
 <li><p><strong>ax</strong> – Matplotlib axis (should be tuple with two axes)</p></li>
 <li><p><strong>vmax_plot</strong> – max voltage to include in plot (in mV)</p></li>
 </ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qmix.exp.exp_data.PumpedData.plot_mixer_noise">
+<span class="sig-name descname"><span class="pre">plot_mixer_noise</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">results</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fig_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.exp.exp_data.PumpedData.plot_mixer_noise" title="Link to this definition"></a></dt>
+<dd><p>Plot the measured and modelled gain and noise temperature (from
+<code class="docutils literal notranslate"><span class="pre">mixer_noise</span></code>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>results</strong> (<a class="reference internal" href="#qmix.exp.exp_data.MixerNoise" title="qmix.exp.exp_data.MixerNoise"><em>MixerNoise</em></a>) – Output of <code class="docutils literal notranslate"><span class="pre">mixer_noise</span></code></p></li>
+<li><p><strong>fig_name</strong> (<em>str</em><em>, </em><em>optional</em>) – Save the figure here (and close it),
+default is None</p></li>
+<li><p><strong>ax</strong> (<em>tuple</em><em>, </em><em>optional</em>) – Two axes (gain, noise temperature), default
+is None (new figure)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the two axes (if <code class="docutils literal notranslate"><span class="pre">fig_name</span></code> is None)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple</p>
 </dd>
 </dl>
 </dd></dl>
