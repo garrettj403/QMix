@@ -71,8 +71,14 @@ def main():
     if not os.path.isfile(DRIVER):
         raise SystemExit("Tight driver not found; run ./build.sh --tight smx_driver.cc first")
 
-    v_table = np.arange(0, V_MAX + V_STEP / 2, V_STEP)
-    table = qmix.respfn.RespFnPolynomial(50, verbose=False)(v_table)
+    # Reuse the stored table if there is one, so that the existing reference
+    # values don't change when QMix's response functions change (the tests
+    # use the stored table, so any table is fine)
+    if os.path.isfile(OUTPUT):
+        table = np.load(OUTPUT)['resp_table']
+    else:
+        v_table = np.arange(0, V_MAX + V_STEP / 2, V_STEP)
+        table = qmix.respfn.RespFnPolynomial(50, verbose=False)(v_table)
     resp = TableResp(V_STEP, table)
     files = export_table(table)
 
@@ -148,6 +154,26 @@ def main():
             data['{}_v_{}'.format(key, sideband)] = v
             err = max(err, np.abs(q[sideband] - v).max() / np.abs(v).max())
         print('{}: {}, num_b {}, max relative |QMix - small-signal| = {:.1e}'.format(key, case['name'], num_b, err))
+
+    # Small-signal admittance matrix (Tucker theory) at SuperMix's LO state
+    # (LO alone, 1-3 harmonics), for qmix.small_signal.admittance_matrix
+    for num_p, zt_lo in ((1, [0.3 - 0.3j]), (2, [0.3 - 0.3j, 0.1 - 0.1j]), (3, [0.5 - 0.2j, 0.1 - 0.1j, 0.05])):
+        vt_lo = np.r_[0, compare_multitone.VT_LO, np.zeros(num_p - 1)].astype(complex)
+        vj_lo, y, status = compare_multitone.supermix_small_signal(files, vb, vt_lo, np.r_[0, zt_lo],
+                                                                   compare_multitone.F_IF)
+        assert (status == 0).all()
+        cct = qmix.circuit.EmbeddingCircuit(1, num_p, vb_min=vb[0], vb_max=vb[-1], vb_npts=len(vb))
+        cct.vb = vb.copy()
+        cct.freq[1] = compare_multitone.F_LO
+        vj3 = cct.initialize_vj()
+        vj3[1, 1:] = vj_lo[1:]
+        num_b = suggest_num_b(vj3, cct, tol=1e-15, max_b=60)[0]
+
+        key = 'ymatrix{}'.format(len(names))
+        names.append(key)
+        data.update({key + '_num_p': num_p, key + '_vb': vb, key + '_flo': compare_multitone.F_LO,
+                     key + '_fif': compare_multitone.F_IF, key + '_vj': vj_lo, key + '_y': y, key + '_num_b': num_b})
+        print('{}: LO with {} harmonic(s), num_b {}, max |Y| = {:.2f}'.format(key, num_p, num_b, np.abs(y).max()))
 
     data['names'] = np.array(names)
     os.makedirs(os.path.dirname(OUTPUT), exist_ok=True)

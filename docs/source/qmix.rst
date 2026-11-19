@@ -45,6 +45,14 @@ qmix.respfn module
     :undoc-members:
     :show-inheritance:
 
+qmix.small\_signal module
+-------------------------
+
+.. automodule:: qmix.small_signal
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 
 Module contents
 ---------------

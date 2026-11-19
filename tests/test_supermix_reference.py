@@ -181,3 +181,62 @@ def test_mixer_small_signal(case):
         v_qmix = (4 * vj_1[f, 1] / amp - vj_2[f, 1] / (2 * amp)) / 3  # Richardson extrapolation
         np.testing.assert_allclose(v_qmix, v_ref, rtol=0, atol=1e-5 * np.abs(v_ref).max(),
                                    err_msg='{} voltage'.format(sideband.upper()))
+
+
+# Small-signal analysis (qmix.small_signal) -----------------------------------
+
+YMATRIX_CASES = [str(name) for name in DATA['names'] if name.startswith('ymatrix')]
+
+
+@pytest.mark.parametrize('case', YMATRIX_CASES)
+def test_admittance_matrix(case):
+    """Small-signal admittance matrix (Tucker theory) at SuperMix's LO state
+    (LO with 1-3 harmonics) vs SuperMix's sis_basic_device::small_signal."""
+
+    from qmix.small_signal import admittance_matrix
+
+    num_p = int(_get(case, 'num_p'))
+    cct = _circuit(case, num_p)
+    vj = cct.initialize_vj()
+    vj[1, 1:] = _get(case, 'vj')[1:]
+    y = admittance_matrix(vj, cct, RESP, float(_get(case, 'fif')), num_b=int(_get(case, 'num_b')))
+
+    np.testing.assert_allclose(y, _get(case, 'y'), rtol=0, atol=1e-12)
+
+
+@pytest.mark.parametrize('case', MIXER_CASES)
+def test_mixer_small_signal_analysis(case):
+    """The mixer cases with QMix's small-signal analysis: single-tone harmonic
+    balance of the LO, admittance matrix, and the sideband network, vs the
+    same calculation with SuperMix."""
+
+    from qmix.small_signal import admittance_matrix, sideband_impedances, solve_sidebands, lsb
+
+    num_p = int(_get(case, 'num_p'))
+    vb = _get(case, 'vb')
+    cct = EmbeddingCircuit(1, num_p, vb_min=vb[0], vb_max=vb[-1], vb_npts=len(vb))
+    cct.vb = vb
+    cct.freq[1] = F_LO
+    cct.vt[1, 1] = float(_get(case, 'vt_lo'))
+    cct.zt[1, 1:] = _get(case, 'zt_lo')
+    num_b = int(_get(case, 'num_b')[0])
+    vj = harmonic_balance(cct, RESP, num_b=num_b, stop_rerror=1e-12, max_it=60, verbose=False)
+
+    zt_lsb = complex(_get(case, 'zt_lsb'))
+    # Sidebands of LO harmonics p >= 2 (and the LSB if it isn't a tone) are shorted
+    weak = [0] * (num_p - 1)
+    zt = sideband_impedances(complex(_get(case, 'zt_if')), [complex(_get(case, 'zt_usb'))] + weak,
+                             [0 if np.isnan(zt_lsb) else zt_lsb] + weak)
+    vt = np.zeros_like(zt)
+    vt[len(vt) // 2 + 1] = 1.  # unit source voltage at the USB of the LO fundamental
+    y = admittance_matrix(vj, cct, RESP, F_IF, num_b=num_b)
+    v, _ = solve_sidebands(y, zt, vt)
+
+    num_sb = (len(zt) - 1) // 2
+    results = {'usb': v[num_sb + 1], 'if': v[num_sb], 'lsb': lsb(v, 1)}
+    for sideband, v_qmix in results.items():
+        key = '{}_v_{}'.format(case, sideband)
+        if key in DATA.files:
+            v_ref = DATA[key]
+            np.testing.assert_allclose(v_qmix, v_ref, rtol=0, atol=1e-8 * np.abs(v_ref).max(),
+                                       err_msg='{} voltage'.format(sideband.upper()))
