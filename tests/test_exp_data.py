@@ -142,6 +142,39 @@ def test_dciv_importing_bad_units():
     assert dc.rn < 1
 
 
+def _coarse_iv_data():
+    """Coarse I-V data in V and A, one sweep from -8 to +8 mV (800 points),
+    like data from another lab (GitHub issue). Rn = 14 ohms, Vgap = 2.8 mV."""
+
+    from qmix.mathfn.ivcurve_models import polynomial
+    v = np.linspace(-8e-3, 8e-3, 800)
+    i = polynomial(v / 2.8e-3, 30) * 2.8e-3 / 14.
+    return np.c_[v, i]
+
+
+def test_dciv_wrong_voltage_units():
+    """Data in V read as mV (the default): clear error about the units, not an
+    empty polyfit."""
+
+    with pytest.raises(ValueError, match="units"):
+        iv.dciv_curve(_coarse_iv_data(), i_fmt='A')
+
+
+@pytest.mark.parametrize("filter_data", [True, False])
+@pytest.mark.parametrize("order", ["ascending", "descending"])
+def test_dciv_coarse_data(filter_data, order):
+    """Coarse data, swept up or down, with or without filtering. Without the
+    filter (which resamples the data), the gap voltage used to be fitted to a
+    single point."""
+
+    data = _coarse_iv_data()
+    if order == "descending":
+        data = data[::-1]
+    _, _, dc = iv.dciv_curve(data, v_fmt='V', i_fmt='A', filter_data=filter_data, verbose=False)
+    assert abs(dc.vgap - 2.8e-3) < 0.01e-3
+    assert abs(dc.rn - 14.) < 0.05
+
+
 def test_try_loading_list():
     """Try loading a list (not an accepted input type)."""
 

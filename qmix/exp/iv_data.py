@@ -571,6 +571,26 @@ def _correct_offset(volt_v, curr_a, **kw):
     return volt_v, curr_a, (voffset, ioffset)
 
 
+def _normal_range(volt_v, vrn):
+    """Mask of the voltages in the normal-resistance range ``vrn`` (in V).
+
+    Raises a ValueError with a hint about the units if there are fewer than
+    2 points in the range (e.g., if the voltage is in V but ``v_fmt`` is
+    'mV', the default, the voltages are 1000 times too small).
+
+    """
+
+    mask = (vrn[0] < volt_v) & (volt_v < vrn[1])
+    if mask.sum() < 2:
+        raise ValueError(
+            "Not enough I-V data in the range used to find the normal resistance "
+            "(vrn = {:.2f} to {:.2f} mV; the data go up to {:.4f} mV). Check the units of the data: "
+            "v_fmt and i_fmt are 'mV' and 'mA' by default (use v_fmt='V' and i_fmt='A' for data in V "
+            "and A), and the I-V curve must extend above vrn[0] (set vrn otherwise).".format(
+                vrn[0] * 1e3, vrn[1] * 1e3, volt_v.max() * 1e3))
+    return mask
+
+
 def _find_normal_resistance(volt_v, curr_a, **kw):
     """Determine the normal resistance of the DC I-V curve.
 
@@ -593,7 +613,7 @@ def _find_normal_resistance(volt_v, curr_a, **kw):
     vmax = vrn[1]
 
     # Range over which to fit normal resistance
-    mask = (vmin < volt_v) & (volt_v < vmax)
+    mask = _normal_range(volt_v, (vmin, vmax))
     v, i = volt_v[mask], curr_a[mask]
 
     # Fit normal-state resistance
@@ -627,19 +647,21 @@ def _find_gap_voltage(volt_v, curr_a, **kw):
     debug = kw.get('debug', PARAMS['debug'])
 
     # Normal resistance slope
-    mask = (vrn[0] < volt_v) & (volt_v < vrn[1])
+    mask = _normal_range(volt_v, vrn)
     vtmp, itmp = volt_v[mask], curr_a[mask]
     prn = np.polyfit(vtmp, itmp, 1)
 
     # Find max derivative in I-V curve
-    vstep = volt_v[1] - volt_v[0]
+    vstep = np.median(np.diff(volt_v))
     mask = 2e-3 < volt_v
     der = slope(volt_v[mask], curr_a[mask])
     der = gauss_conv(der, sigma=0.2e-3 / vstep)
     vgap = volt_v[mask][der.argmax()]
 
-    # Fit line around max derivative
-    mask = (vgap - 0.1e-4 < volt_v) & (volt_v < vgap + 0.1e-4)
+    # Fit line around max derivative (+/- 10 uV, but at least +/- 2 data
+    # points, e.g., for coarse data that are not resampled by the filter)
+    half_width = max(0.1e-4, 2.5 * vstep)
+    mask = (vgap - half_width < volt_v) & (volt_v < vgap + half_width)
     vtmp, itmp = volt_v[mask], curr_a[mask]
     pgap = np.polyfit(vtmp, itmp, 1)
 
