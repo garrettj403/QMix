@@ -1,0 +1,763 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>8. Example #5: Power saturation &mdash; QMix latest documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="_static/nbsphinx-code-cells.css?v=2aa19091" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=c6e86fd7"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="9. References" href="references.html" />
+    <link rel="prev" title="7. Example #4: Embedding impedance from HFSS" href="hfss-embedding-impedance.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            QMix
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="setup.html">1. Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="qmix.html">2. Package API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="theory.html">3. Theory</a></li>
+<li class="toctree-l1"><a class="reference internal" href="single-tone-simulation.html">4. Example #1: Creating a simple 1 tone simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multi-tone-simulation.html">5. Example #2: Simulating an SIS mixer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analyze-experimental-data.html">6. Example #3: Analyzing experimental data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hfss-embedding-impedance.html">7. Example #4: Embedding impedance from HFSS</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">8. Example #5: Power saturation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#Part-1:-LO-power">8.1. Part 1: LO power</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Importing-the-data">8.2. Importing the data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#The-embedding-circuit">8.3. The embedding circuit</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Gain-and-noise-vs-LO-power">8.4. Gain and noise vs LO power</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Part-2:-RF-power">8.5. Part 2: RF power</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#The-embedding-circuits-of-the-two-sources">8.5.1. The embedding circuits of the two sources</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#The-measured-IF-output">8.5.2. The measured IF output</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#The-RF-power">8.5.3. The RF power</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Gain-compression">8.5.4. Gain compression</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="references.html">9. References</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">QMix</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active"><span class="section-number">8. </span>Example #5: Power saturation</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/lo-saturation.ipynb.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="Example-#5:-Power-saturation">
+<h1><span class="section-number">8. </span>Example #5: Power saturation<a class="headerlink" href="#Example-#5:-Power-saturation" title="Link to this heading"></a></h1>
+<p>QMix calculates the tunneling currents for any signal power, not just in the small-signal limit. This notebook uses this to simulate the saturation of an SIS mixer, and compares it with measurements:</p>
+<ol class="arabic simple">
+<li><p><strong>LO power:</strong> the gain and noise of the mixer as the LO power is increased, compared with hot/cold measurements.</p></li>
+<li><p><strong>RF power:</strong> the compression of the gain by a strong RF signal, compared with the measured IF output power.</p></li>
+</ol>
+<section id="Part-1:-LO-power">
+<h2><span class="section-number">8.1. </span>Part 1: LO power<a class="headerlink" href="#Part-1:-LO-power" title="Link to this heading"></a></h2>
+<p>The data are from device #5.6 (the same device as in Example #3, Garrett, 2018), measured at 255 GHz with 9 LO power levels. The example data are in <code class="docutils literal notranslate"><span class="pre">example-data/lo-saturation/</span></code>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">dciv.csv</span></code>, <code class="docutils literal notranslate"><span class="pre">dcif.csv</span></code>: the unpumped DC I-V curve and IF power.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">levelN_iv.csv</span></code>, <code class="docutils literal notranslate"><span class="pre">levelN_if-hot.csv</span></code>, <code class="docutils literal notranslate"><span class="pre">levelN_if-cold.csv</span></code>: the pumped I-V curve and the IF power with hot and cold loads at power level N = 0-8. The power levels are not in order: levels 0-5 increase, and levels 6-8 are below level 0.</p></li>
+</ul>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">matplotlib</span> inline
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">contextlib</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">io</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">glob</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">qmix</span>
+
+<span class="c1"># https://github.com/garrettj403/SciencePlots</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">scienceplots</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">use</span><span class="p">([</span><span class="s1">'science'</span><span class="p">,</span> <span class="s1">'notebook'</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">params</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">delimiter</span> <span class="o">=</span> <span class="s1">','</span><span class="p">,</span>           <span class="c1"># CSV files</span>
+              <span class="n">usecols</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+              <span class="n">skip_header</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+              <span class="n">v_fmt</span> <span class="o">=</span> <span class="s1">'mV'</span><span class="p">,</span>              <span class="c1"># units</span>
+              <span class="n">i_fmt</span> <span class="o">=</span> <span class="s1">'mA'</span><span class="p">,</span>
+              <span class="n">area</span> <span class="o">=</span> <span class="mf">1.5</span><span class="p">,</span>                <span class="c1"># junction area in um^2</span>
+              <span class="n">filter_data</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>        <span class="c1"># Savitzky-Golay filter</span>
+              <span class="n">filter_nwind</span> <span class="o">=</span> <span class="mi">21</span><span class="p">,</span>
+              <span class="n">verbose</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">load</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Load a CSV file (bias voltage in mV, current in mA or IF power)."""</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">genfromtxt</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s1">','</span><span class="p">,</span> <span class="n">skip_header</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">quiet</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">"""Hide the printout of the impedance recovery."""</span>
+    <span class="k">return</span> <span class="n">contextlib</span><span class="o">.</span><span class="n">redirect_stdout</span><span class="p">(</span><span class="n">io</span><span class="o">.</span><span class="n">StringIO</span><span class="p">())</span>
+
+
+<span class="c1"># Hot and cold load temperatures (K), from the lab notes of this measurement</span>
+<span class="n">params</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">t_hot</span><span class="o">=</span><span class="mf">293.</span><span class="p">,</span> <span class="n">t_cold</span><span class="o">=</span><span class="mf">77.</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Importing-the-data">
+<h2><span class="section-number">8.2. </span>Importing the data<a class="headerlink" href="#Importing-the-data" title="Link to this heading"></a></h2>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">D</span> <span class="o">=</span> <span class="s1">'example-data/lo-saturation/'</span>
+<span class="n">FREQ</span> <span class="o">=</span> <span class="mf">255.0</span>  <span class="c1"># LO frequency (GHz)</span>
+
+<span class="k">with</span> <span class="n">quiet</span><span class="p">():</span>
+    <span class="n">dciv</span> <span class="o">=</span> <span class="n">qmix</span><span class="o">.</span><span class="n">exp</span><span class="o">.</span><span class="n">DCData</span><span class="p">(</span><span class="n">load</span><span class="p">(</span><span class="n">D</span> <span class="o">+</span> <span class="s1">'dciv.csv'</span><span class="p">),</span> <span class="n">load</span><span class="p">(</span><span class="n">D</span> <span class="o">+</span> <span class="s1">'dcif.csv'</span><span class="p">),</span> <span class="o">**</span><span class="n">params</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Rn = </span><span class="si">{:.2f}</span><span class="s2"> ohms, Vgap = </span><span class="si">{:.3f}</span><span class="s2"> mV"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">dciv</span><span class="o">.</span><span class="n">rn</span><span class="p">,</span> <span class="n">dciv</span><span class="o">.</span><span class="n">vgap</span> <span class="o">*</span> <span class="mf">1e3</span><span class="p">))</span>
+
+<span class="n">pumps</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">9</span><span class="p">):</span>
+    <span class="k">with</span> <span class="n">quiet</span><span class="p">():</span>
+        <span class="n">pump</span> <span class="o">=</span> <span class="n">qmix</span><span class="o">.</span><span class="n">exp</span><span class="o">.</span><span class="n">PumpedData</span><span class="p">(</span><span class="n">load</span><span class="p">(</span><span class="n">D</span> <span class="o">+</span> <span class="s1">'level</span><span class="si">{}</span><span class="s1">_iv.csv'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n</span><span class="p">)),</span> <span class="n">dciv</span><span class="p">,</span>
+                                   <span class="n">load</span><span class="p">(</span><span class="n">D</span> <span class="o">+</span> <span class="s1">'level</span><span class="si">{}</span><span class="s1">_if-hot.csv'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n</span><span class="p">)),</span> <span class="n">load</span><span class="p">(</span><span class="n">D</span> <span class="o">+</span> <span class="s1">'level</span><span class="si">{}</span><span class="s1">_if-cold.csv'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n</span><span class="p">)),</span>
+                                   <span class="n">freq</span><span class="o">=</span><span class="n">FREQ</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">)</span>
+    <span class="n">pumps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pump</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Rn = 14.01 ohms, Vgap = 2.690 mV
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">dciv</span><span class="o">.</span><span class="n">voltage</span><span class="p">,</span> <span class="n">dciv</span><span class="o">.</span><span class="n">current</span><span class="p">,</span> <span class="s1">'k--'</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">'Unpumped'</span><span class="p">)</span>
+<span class="n">by_power</span> <span class="o">=</span> <span class="p">[</span><span class="mi">8</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">]</span>  <span class="c1"># power levels, from lowest to highest LO power</span>
+<span class="n">colors</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">viridis</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">by_power</span><span class="p">)))</span>
+<span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">color</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">by_power</span><span class="p">,</span> <span class="n">colors</span><span class="p">):</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">pumps</span><span class="p">[</span><span class="n">n</span><span class="p">]</span><span class="o">.</span><span class="n">voltage</span><span class="p">,</span> <span class="n">pumps</span><span class="p">[</span><span class="n">n</span><span class="p">]</span><span class="o">.</span><span class="n">current</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="n">color</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">'Level </span><span class="si">{}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">'Bias voltage ($V_\mathrm</span><span class="si">{gap}</span><span class="s1">$)'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">'DC current ($I_\mathrm</span><span class="si">{gap}</span><span class="s1">$)'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">10</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="_images/lo-saturation_5_0.png" src="_images/lo-saturation_5_0.png" />
+</div>
+</div>
+</section>
+<section id="The-embedding-circuit">
+<h2><span class="section-number">8.3. </span>The embedding circuit<a class="headerlink" href="#The-embedding-circuit" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">PumpedData</span></code> recovers the embedding impedance and voltage at each power level. In principle, the embedding impedance shouldn’t depend on the LO power. At 255 GHz, however, the recovery is not well conditioned, and the recovered impedance drifts as the LO power increases:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">"Level   recovered zt (Rn)   vt (Vgap)"</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">pump</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">pumps</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"</span><span class="si">{:4d}</span><span class="s2">    </span><span class="si">{:5.2f}{:+5.2f}</span><span class="s2">j         </span><span class="si">{:.3f}</span><span class="s2">   </span><span class="si">{}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">pump</span><span class="o">.</span><span class="n">zt</span><span class="o">.</span><span class="n">real</span><span class="p">,</span> <span class="n">pump</span><span class="o">.</span><span class="n">zt</span><span class="o">.</span><span class="n">imag</span><span class="p">,</span> <span class="n">pump</span><span class="o">.</span><span class="n">vt</span><span class="p">,</span>
+                                                               <span class="s1">''</span> <span class="k">if</span> <span class="n">pump</span><span class="o">.</span><span class="n">fit_good</span> <span class="k">else</span> <span class="s1">'(bad fit)'</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Level   recovered zt (Rn)   vt (Vgap)
+   0     0.26-0.69j         0.477
+   1     0.26-0.66j         0.539
+   2     0.19-0.44j         0.596
+   3     0.07-0.27j         0.599
+   4     0.00-0.90j         0.982   (bad fit)
+   5     0.00-0.17j         0.984   (bad fit)
+   6     0.27-0.75j         0.280
+   7     0.28-0.74j         0.210
+   8     0.27-0.83j         0.136
+</pre></div></div>
+</div>
+<p>Instead, we will fix the embedding impedance at the average of the two lowest power levels (0 and 1), where the photon steps are well defined, and fit only the Thevenin voltage to each pumped I-V curve. The fit uses the first photon step below the gap and the smeared response function (<code class="docutils literal notranslate"><span class="pre">dciv.resp_smear</span></code>).</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">scipy.optimize</span><span class="w"> </span><span class="kn">import</span> <span class="n">minimize_scalar</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">qmix.circuit</span><span class="w"> </span><span class="kn">import</span> <span class="n">EmbeddingCircuit</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">qmix.harmonic_balance</span><span class="w"> </span><span class="kn">import</span> <span class="n">harmonic_balance</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">qmix.qtcurrent</span><span class="w"> </span><span class="kn">import</span> <span class="n">qtcurrent</span>
+
+<span class="n">zt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">([</span><span class="n">pumps</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">zt</span><span class="p">,</span> <span class="n">pumps</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">zt</span><span class="p">])</span>
+<span class="n">vph</span> <span class="o">=</span> <span class="n">pumps</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">vph</span>  <span class="c1"># photon voltage (normalized)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Fixed embedding impedance: </span><span class="si">{:.3f}</span><span class="s2"> Rn"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">zt</span><span class="p">))</span>
+
+<span class="n">v_fit</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">vph</span> <span class="o">+</span> <span class="mf">0.03</span><span class="p">,</span> <span class="mf">0.97</span><span class="p">,</span> <span class="mi">25</span><span class="p">)</span>  <span class="c1"># first photon step below the gap</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">simulate_iv</span><span class="p">(</span><span class="n">vt</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Simulated DC current at v_fit for a Thevenin voltage vt."""</span>
+    <span class="n">cct</span> <span class="o">=</span> <span class="n">EmbeddingCircuit</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">vb_npts</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">v_fit</span><span class="p">),</span> <span class="n">vgap</span><span class="o">=</span><span class="n">dciv</span><span class="o">.</span><span class="n">vgap</span><span class="p">,</span> <span class="n">rn</span><span class="o">=</span><span class="n">dciv</span><span class="o">.</span><span class="n">rn</span><span class="p">)</span>
+    <span class="n">cct</span><span class="o">.</span><span class="n">vb</span> <span class="o">=</span> <span class="n">v_fit</span>
+    <span class="n">cct</span><span class="o">.</span><span class="n">freq</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">vph</span>
+    <span class="n">cct</span><span class="o">.</span><span class="n">vt</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">vt</span>
+    <span class="n">cct</span><span class="o">.</span><span class="n">zt</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">zt</span>
+    <span class="n">vj</span> <span class="o">=</span> <span class="n">harmonic_balance</span><span class="p">(</span><span class="n">cct</span><span class="p">,</span> <span class="n">dciv</span><span class="o">.</span><span class="n">resp_smear</span><span class="p">,</span> <span class="n">num_b</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">qtcurrent</span><span class="p">(</span><span class="n">vj</span><span class="p">,</span> <span class="n">cct</span><span class="p">,</span> <span class="n">dciv</span><span class="o">.</span><span class="n">resp_smear</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="n">num_b</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+
+<span class="n">vt_fit</span><span class="p">,</span> <span class="n">iv_error</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">pump</span> <span class="ow">in</span> <span class="n">pumps</span><span class="p">:</span>
+    <span class="n">i_meas</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">v_fit</span><span class="p">,</span> <span class="n">pump</span><span class="o">.</span><span class="n">voltage</span><span class="p">,</span> <span class="n">pump</span><span class="o">.</span><span class="n">current</span><span class="p">)</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">minimize_scalar</span><span class="p">(</span><span class="k">lambda</span> <span class="n">vt</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">((</span><span class="n">simulate_iv</span><span class="p">(</span><span class="n">vt</span><span class="p">)</span> <span class="o">-</span> <span class="n">i_meas</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">),</span>
+                             <span class="n">bounds</span><span class="o">=</span><span class="p">(</span><span class="mf">0.02</span><span class="p">,</span> <span class="mf">2.</span><span class="p">),</span> <span class="n">method</span><span class="o">=</span><span class="s1">'bounded'</span><span class="p">)</span>
+    <span class="n">vt_fit</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">iv_error</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">fun</span><span class="p">))</span>
+    <span class="c1"># Use this embedding circuit from now on</span>
+    <span class="n">pump</span><span class="o">.</span><span class="n">vt</span><span class="p">,</span> <span class="n">pump</span><span class="o">.</span><span class="n">zt</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">zt</span>
+<span class="n">vt_fit</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">vt_fit</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">Level   vt (Vgap)   rms I-V error (Igap)"</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="p">(</span><span class="n">vt</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">vt_fit</span><span class="p">,</span> <span class="n">iv_error</span><span class="p">)):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"</span><span class="si">{:4d}</span><span class="s2">    </span><span class="si">{:.3f}</span><span class="s2">       </span><span class="si">{:.4f}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">vt</span><span class="p">,</span> <span class="n">err</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Fixed embedding impedance: 0.260-0.675j Rn
+
+Level   vt (Vgap)   rms I-V error (Igap)
+   0    0.471       0.0032
+   1    0.540       0.0029
+   2    0.687       0.0064
+   3    0.805       0.0091
+   4    1.053       0.0088
+   5    1.358       0.0052
+   6    0.258       0.0093
+   7    0.185       0.0109
+   8    0.095       0.0120
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">vt_fit</span><span class="p">)[::</span><span class="mi">2</span><span class="p">]:</span>
+    <span class="n">line</span><span class="p">,</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">pumps</span><span class="p">[</span><span class="n">n</span><span class="p">]</span><span class="o">.</span><span class="n">voltage</span><span class="p">,</span> <span class="n">pumps</span><span class="p">[</span><span class="n">n</span><span class="p">]</span><span class="o">.</span><span class="n">current</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">'Level </span><span class="si">{}</span><span class="s1"> ($V_T$ = </span><span class="si">{:.2f}</span><span class="s1">)'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">vt_fit</span><span class="p">[</span><span class="n">n</span><span class="p">]))</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">v_fit</span><span class="p">,</span> <span class="n">simulate_iv</span><span class="p">(</span><span class="n">vt_fit</span><span class="p">[</span><span class="n">n</span><span class="p">]),</span> <span class="s1">'o'</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="n">line</span><span class="o">.</span><span class="n">get_color</span><span class="p">(),</span> <span class="n">ms</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">'Bias voltage ($V_\mathrm</span><span class="si">{gap}</span><span class="s1">$)'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">'DC current ($I_\mathrm</span><span class="si">{gap}</span><span class="s1">$)'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.1</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">'Measured (lines) and simulated (dots)'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">10</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="_images/lo-saturation_10_0.png" src="_images/lo-saturation_10_0.png" />
+</div>
+</div>
+<p>With one fixed impedance, the Thevenin voltage alone reproduces the first photon step at every power level.</p>
+</section>
+<section id="Gain-and-noise-vs-LO-power">
+<h2><span class="section-number">8.4. </span>Gain and noise vs LO power<a class="headerlink" href="#Gain-and-noise-vs-LO-power" title="Link to this heading"></a></h2>
+<p>Now, <code class="docutils literal notranslate"><span class="pre">mixer_noise</span></code> simulates the mixer at each power level with this embedding circuit (see Example #3). The gain and noise of the RF/optics stage in front of the mixer don’t depend on the LO power, so we fit them only to the three lowest power levels (0-2), at the best bias voltage of each level, and keep them fixed:</p>
+<ul class="simple">
+<li><p>gain: G = G_RF G_mix</p></li>
+<li><p>noise: T_rx = T_RF + (T_mix + T_IF / G_mix) / G_RF</p></li>
+</ul>
+<p>The dependence on the LO power is then a prediction of the simulation.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">F_IF</span><span class="p">,</span> <span class="n">TEMP</span> <span class="o">=</span> <span class="mf">5.</span><span class="p">,</span> <span class="mf">5.1</span>  <span class="c1"># IF frequency (GHz) and physical temperature (K)</span>
+
+<span class="n">rows</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">pump</span> <span class="ow">in</span> <span class="n">pumps</span><span class="p">:</span>
+    <span class="k">with</span> <span class="n">quiet</span><span class="p">():</span>
+        <span class="n">noise</span> <span class="o">=</span> <span class="n">pump</span><span class="o">.</span><span class="n">mixer_noise</span><span class="p">(</span><span class="n">F_IF</span><span class="p">,</span> <span class="n">temp</span><span class="o">=</span><span class="n">TEMP</span><span class="p">,</span> <span class="n">smeared</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">voltage</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">,</span> <span class="mi">111</span><span class="p">),</span>
+                                 <span class="n">fit_range</span><span class="o">=</span><span class="p">(</span><span class="n">pump</span><span class="o">.</span><span class="n">v_best</span> <span class="o">-</span> <span class="n">vph</span> <span class="o">/</span> <span class="mi">4</span><span class="p">,</span> <span class="n">pump</span><span class="o">.</span><span class="n">v_best</span> <span class="o">+</span> <span class="n">vph</span> <span class="o">/</span> <span class="mi">4</span><span class="p">))</span>
+    <span class="n">i</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">noise</span><span class="o">.</span><span class="n">voltage</span> <span class="o">-</span> <span class="n">pump</span><span class="o">.</span><span class="n">v_best</span><span class="p">))</span>
+    <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">g_mix</span><span class="o">=</span><span class="n">noise</span><span class="o">.</span><span class="n">g_mix</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">t_mix</span><span class="o">=</span><span class="n">noise</span><span class="o">.</span><span class="n">t_mix</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">t_if</span><span class="o">=</span><span class="n">noise</span><span class="o">.</span><span class="n">t_if</span><span class="p">,</span>
+                     <span class="n">g_meas</span><span class="o">=</span><span class="n">noise</span><span class="o">.</span><span class="n">gain_meas</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">tn_meas</span><span class="o">=</span><span class="n">noise</span><span class="o">.</span><span class="n">tn_meas</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+
+<span class="n">g_mix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">r</span><span class="p">[</span><span class="s1">'g_mix'</span><span class="p">]</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">rows</span><span class="p">])</span>
+<span class="n">t_mix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">r</span><span class="p">[</span><span class="s1">'t_mix'</span><span class="p">]</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">rows</span><span class="p">])</span>
+<span class="n">t_if</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">r</span><span class="p">[</span><span class="s1">'t_if'</span><span class="p">]</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">rows</span><span class="p">])</span>
+<span class="n">g_meas</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">r</span><span class="p">[</span><span class="s1">'g_meas'</span><span class="p">]</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">rows</span><span class="p">])</span>
+<span class="n">tn_meas</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">r</span><span class="p">[</span><span class="s1">'tn_meas'</span><span class="p">]</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">rows</span><span class="p">])</span>
+
+<span class="n">g_rf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">g_meas</span><span class="p">[:</span><span class="mi">3</span><span class="p">]</span> <span class="o">/</span> <span class="n">g_mix</span><span class="p">[:</span><span class="mi">3</span><span class="p">])</span>
+<span class="n">t_rf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">tn_meas</span><span class="p">[:</span><span class="mi">3</span><span class="p">]</span> <span class="o">-</span> <span class="p">(</span><span class="n">t_mix</span><span class="p">[:</span><span class="mi">3</span><span class="p">]</span> <span class="o">+</span> <span class="n">t_if</span><span class="p">[:</span><span class="mi">3</span><span class="p">]</span> <span class="o">/</span> <span class="n">g_mix</span><span class="p">[:</span><span class="mi">3</span><span class="p">])</span> <span class="o">/</span> <span class="n">g_rf</span><span class="p">)</span>
+<span class="n">g_model</span> <span class="o">=</span> <span class="n">g_rf</span> <span class="o">*</span> <span class="n">g_mix</span>
+<span class="n">tn_model</span> <span class="o">=</span> <span class="n">t_rf</span> <span class="o">+</span> <span class="p">(</span><span class="n">t_mix</span> <span class="o">+</span> <span class="n">t_if</span> <span class="o">/</span> <span class="n">g_mix</span><span class="p">)</span> <span class="o">/</span> <span class="n">g_rf</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"RF/optics stage (levels 0-2): G_RF = </span><span class="si">{:.3f}</span><span class="s2">, T_RF = </span><span class="si">{:.1f}</span><span class="s2"> K</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">g_rf</span><span class="p">,</span> <span class="n">t_rf</span><span class="p">))</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Level   vt     G (meas)  G (model)  ratio   Tn (meas)  Tn (model)"</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">vt_fit</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"</span><span class="si">{:4d}</span><span class="s2">   </span><span class="si">{:.2f}</span><span class="s2">   </span><span class="si">{:.3f}</span><span class="s2">     </span><span class="si">{:.3f}</span><span class="s2">      </span><span class="si">{:.2f}</span><span class="s2">    </span><span class="si">{:6.1f}</span><span class="s2"> K   </span><span class="si">{:6.1f}</span><span class="s2"> K"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+          <span class="n">n</span><span class="p">,</span> <span class="n">vt_fit</span><span class="p">[</span><span class="n">n</span><span class="p">],</span> <span class="n">g_meas</span><span class="p">[</span><span class="n">n</span><span class="p">],</span> <span class="n">g_model</span><span class="p">[</span><span class="n">n</span><span class="p">],</span> <span class="n">g_meas</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">/</span> <span class="n">g_model</span><span class="p">[</span><span class="n">n</span><span class="p">],</span> <span class="n">tn_meas</span><span class="p">[</span><span class="n">n</span><span class="p">],</span> <span class="n">tn_model</span><span class="p">[</span><span class="n">n</span><span class="p">]))</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+RF/optics stage (levels 0-2): G_RF = 0.786, T_RF = 48.1 K
+
+Level   vt     G (meas)  G (model)  ratio   Tn (meas)  Tn (model)
+   8   0.10   0.088     0.067      1.33     224.2 K    190.5 K
+   7   0.18   0.188     0.195      0.97     109.9 K     92.7 K
+   6   0.26   0.266     0.284      0.93      84.2 K     76.4 K
+   0   0.47   0.365     0.364      1.00      64.3 K     65.8 K
+   1   0.54   0.360     0.360      1.00      66.3 K     66.6 K
+   2   0.69   0.345     0.345      1.00      70.7 K     69.0 K
+   3   0.81   0.335     0.344      0.97      76.2 K     70.7 K
+   4   1.05   0.293     0.383      0.77     110.5 K     86.8 K
+   5   1.36   0.163     0.174      0.94     135.4 K    110.0 K
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">order</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">vt_fit</span><span class="p">)</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">vt_fit</span><span class="p">[</span><span class="n">order</span><span class="p">],</span> <span class="n">g_meas</span><span class="p">[</span><span class="n">order</span><span class="p">],</span> <span class="s1">'ko'</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">'Measured'</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">vt_fit</span><span class="p">[</span><span class="n">order</span><span class="p">],</span> <span class="n">g_model</span><span class="p">[</span><span class="n">order</span><span class="p">],</span> <span class="s1">'r-'</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">'Simulated'</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">'DSB gain'</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">vt_fit</span><span class="p">[</span><span class="n">order</span><span class="p">],</span> <span class="n">tn_meas</span><span class="p">[</span><span class="n">order</span><span class="p">],</span> <span class="s1">'ko'</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">'Measured'</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">vt_fit</span><span class="p">[</span><span class="n">order</span><span class="p">],</span> <span class="n">tn_model</span><span class="p">[</span><span class="n">order</span><span class="p">],</span> <span class="s1">'r-'</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">'Simulated'</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">'DSB noise temperature (K)'</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">ax</span><span class="p">:</span>
+    <span class="n">a</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">'Thevenin voltage, $V_T$ ($V_\mathrm</span><span class="si">{gap}</span><span class="s1">$)'</span><span class="p">)</span>
+    <span class="n">a</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">bottom</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">9</span><span class="p">):</span>
+        <span class="n">a</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">n</span><span class="p">),</span> <span class="p">(</span><span class="n">vt_fit</span><span class="p">[</span><span class="n">n</span><span class="p">],</span> <span class="p">(</span><span class="n">g_meas</span> <span class="k">if</span> <span class="n">a</span> <span class="ow">is</span> <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">else</span> <span class="n">tn_meas</span><span class="p">)[</span><span class="n">n</span><span class="p">]),</span>
+                   <span class="n">textcoords</span><span class="o">=</span><span class="s1">'offset points'</span><span class="p">,</span> <span class="n">xytext</span><span class="o">=</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">9</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">();</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="_images/lo-saturation_13_0.png" src="_images/lo-saturation_13_0.png" />
+</div>
+</div>
+<p>The numbers next to the points are the power levels. With the RF stage fixed, the simulation predicts how the gain rises and then saturates with LO power, to within a few percent for most levels. The exceptions are level 4, where the measured gain is ~23% below the simulation, and the nearly unpumped level 8. The simulated noise temperature matches the fitted levels (0-2) but is too low at both ends: the measured noise increases faster than the simulation predicts as the LO power moves away from
+the optimum (e.g., 111 K measured vs 87 K simulated at level 4).</p>
+<p>The gain at each power level can also be compared across the whole bias range:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">n</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="k">with</span> <span class="n">quiet</span><span class="p">():</span>
+    <span class="n">noise</span> <span class="o">=</span> <span class="n">pumps</span><span class="p">[</span><span class="n">n</span><span class="p">]</span><span class="o">.</span><span class="n">mixer_noise</span><span class="p">(</span><span class="n">F_IF</span><span class="p">,</span> <span class="n">temp</span><span class="o">=</span><span class="n">TEMP</span><span class="p">,</span> <span class="n">smeared</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">voltage</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">,</span> <span class="mi">111</span><span class="p">))</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="n">pumps</span><span class="p">[</span><span class="n">n</span><span class="p">]</span><span class="o">.</span><span class="n">plot_mixer_noise</span><span class="p">(</span><span class="n">noise</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">'Level </span><span class="si">{}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n</span><span class="p">));</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="_images/lo-saturation_15_0.png" src="_images/lo-saturation_15_0.png" />
+</div>
+</div>
+</section>
+<section id="Part-2:-RF-power">
+<h2><span class="section-number">8.5. </span>Part 2: RF power<a class="headerlink" href="#Part-2:-RF-power" title="Link to this heading"></a></h2>
+<p>In a real receiver, a strong RF signal (e.g., a bright spectral line) also saturates the mixer. With multi-tone spectral domain analysis, the RF signal can be simulated as a tone of any power, so this saturation is included automatically (see Garrett et al., 2019, for simulations of this mixer).</p>
+<p>In this measurement, the mixer was pumped by an LO at 229.5 GHz (a Gubbins source), and a second strong source at 232.757 GHz (a Gunn oscillator) was used as the RF signal. The RF power was varied by rotating a wire grid from 0 to 90 degrees, and the IF output at 3.257 GHz was measured with a spectrum analyzer. The DC I-V curve has the same normal resistance and gap voltage as the device above, so this is most likely device #5.6 again. The example data are in <code class="docutils literal notranslate"><span class="pre">example-data/rf-saturation/</span></code>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">dciv.csv</span></code>, <code class="docutils literal notranslate"><span class="pre">dcif.csv</span></code>: the unpumped DC I-V curve and IF power.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">lo-only_iv.csv</span></code>, <code class="docutils literal notranslate"><span class="pre">rf-only_iv.csv</span></code>, <code class="docutils literal notranslate"><span class="pre">lo-and-rf_iv.csv</span></code>: the pumped I-V curves with the LO alone, the RF source alone (grid at 0 degrees), and both.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">spectrum_gridN.csv</span></code>: the IF spectrum with both sources, with the grid at N = 0, 10, …, 90 degrees.</p></li>
+</ul>
+<section id="The-embedding-circuits-of-the-two-sources">
+<h3><span class="section-number">8.5.1. </span>The embedding circuits of the two sources<a class="headerlink" href="#The-embedding-circuits-of-the-two-sources" title="Link to this heading"></a></h3>
+<p>As in Example #3, the embedding circuit of each source is recovered from its own pumped I-V curve. Together, they then predict the I-V curve with both sources, and the IF output, with no free parameters (other than the IF load impedance).</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">D2</span> <span class="o">=</span> <span class="s1">'example-data/rf-saturation/'</span>
+<span class="n">F_LO</span><span class="p">,</span> <span class="n">F_RF</span> <span class="o">=</span> <span class="mf">229.5</span><span class="p">,</span> <span class="mf">232.757</span>  <span class="c1"># GHz</span>
+
+<span class="k">with</span> <span class="n">quiet</span><span class="p">():</span>
+    <span class="n">dciv2</span> <span class="o">=</span> <span class="n">qmix</span><span class="o">.</span><span class="n">exp</span><span class="o">.</span><span class="n">DCData</span><span class="p">(</span><span class="n">load</span><span class="p">(</span><span class="n">D2</span> <span class="o">+</span> <span class="s1">'dciv.csv'</span><span class="p">),</span> <span class="n">load</span><span class="p">(</span><span class="n">D2</span> <span class="o">+</span> <span class="s1">'dcif.csv'</span><span class="p">),</span> <span class="o">**</span><span class="n">params</span><span class="p">)</span>
+    <span class="n">lo</span> <span class="o">=</span> <span class="n">qmix</span><span class="o">.</span><span class="n">exp</span><span class="o">.</span><span class="n">PumpedData</span><span class="p">(</span><span class="n">load</span><span class="p">(</span><span class="n">D2</span> <span class="o">+</span> <span class="s1">'lo-only_iv.csv'</span><span class="p">),</span> <span class="n">dciv2</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="n">F_LO</span><span class="p">,</span> <span class="n">analyze_if</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">)</span>
+    <span class="n">rf</span> <span class="o">=</span> <span class="n">qmix</span><span class="o">.</span><span class="n">exp</span><span class="o">.</span><span class="n">PumpedData</span><span class="p">(</span><span class="n">load</span><span class="p">(</span><span class="n">D2</span> <span class="o">+</span> <span class="s1">'rf-only_iv.csv'</span><span class="p">),</span> <span class="n">dciv2</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="n">F_RF</span><span class="p">,</span> <span class="n">analyze_if</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">)</span>
+    <span class="n">both</span> <span class="o">=</span> <span class="n">qmix</span><span class="o">.</span><span class="n">exp</span><span class="o">.</span><span class="n">PumpedData</span><span class="p">(</span><span class="n">load</span><span class="p">(</span><span class="n">D2</span> <span class="o">+</span> <span class="s1">'lo-and-rf_iv.csv'</span><span class="p">),</span> <span class="n">dciv2</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="n">F_LO</span><span class="p">,</span> <span class="n">analyze_iv</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                               <span class="n">analyze_if</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Rn = </span><span class="si">{:.2f}</span><span class="s2"> ohms, Vgap = </span><span class="si">{:.3f}</span><span class="s2"> mV"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">dciv2</span><span class="o">.</span><span class="n">rn</span><span class="p">,</span> <span class="n">dciv2</span><span class="o">.</span><span class="n">vgap</span> <span class="o">*</span> <span class="mf">1e3</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">p</span> <span class="ow">in</span> <span class="p">((</span><span class="s1">'LO'</span><span class="p">,</span> <span class="n">lo</span><span class="p">),</span> <span class="p">(</span><span class="s1">'RF'</span><span class="p">,</span> <span class="n">rf</span><span class="p">)):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"</span><span class="si">{}</span><span class="s2">: vt = </span><span class="si">{:.3f}</span><span class="s2"> Vgap, zt = </span><span class="si">{:.2f}</span><span class="s2"> Rn"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">vt</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">zt</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Rn = 14.01 ohms, Vgap = 2.690 mV
+LO: vt = 0.533 Vgap, zt = 0.50-0.58j Rn
+RF: vt = 0.365 Vgap, zt = 0.50-0.23j Rn
+</pre></div></div>
+</div>
+<p>The IF is at the difference frequency, f_RF - f_LO = 3.257 GHz. QMix matches frequencies after rounding them to 4 decimal places (normalized to the gap frequency), so the normalized frequencies are rounded first, to make sure that the IF is exactly f_RF - f_LO.</p>
+<p>The IF is a third tone with no source (<code class="docutils literal notranslate"><span class="pre">vt</span> <span class="pre">=</span> <span class="pre">0</span></code>). The current that the junction generates at the IF flows through the IF load and creates an IF voltage across the junction. The IF frequency is low, so the IF tone needs many terms in the Bessel function sums (<code class="docutils literal notranslate"><span class="pre">num_b</span></code>).</p>
+<p>The IF load impedance at the junction is not known: it is set by the IF circuit of the device (the tuning circuit and an IF transformer to the 50 ohm IF amplifier). However, the IF voltage smooths the photon steps of the I-V curve with both sources, so we can find the IF load from this curve:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fgap</span> <span class="o">=</span> <span class="n">dciv2</span><span class="o">.</span><span class="n">fgap</span> <span class="o">/</span> <span class="mf">1e9</span>
+<span class="n">f1</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">F_LO</span> <span class="o">/</span> <span class="n">fgap</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+<span class="n">f2</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">F_RF</span> <span class="o">/</span> <span class="n">fgap</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+<span class="n">f3</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">f2</span> <span class="o">-</span> <span class="n">f1</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+<span class="n">NUM_B</span> <span class="o">=</span> <span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">45</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">simulate_2</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">vt_rf</span><span class="p">,</span> <span class="n">z_if</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""3-tone simulation (LO, RF and IF), with an IF load of z_if ohms.</span>
+<span class="sd">    Returns the DC current, the IF power delivered to the IF load</span>
+<span class="sd">    (normalized) and the embedding circuit."""</span>
+    <span class="n">cct</span> <span class="o">=</span> <span class="n">EmbeddingCircuit</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">vb_npts</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">),</span> <span class="n">vgap</span><span class="o">=</span><span class="n">dciv2</span><span class="o">.</span><span class="n">vgap</span><span class="p">,</span> <span class="n">rn</span><span class="o">=</span><span class="n">dciv2</span><span class="o">.</span><span class="n">rn</span><span class="p">)</span>
+    <span class="n">cct</span><span class="o">.</span><span class="n">vb</span> <span class="o">=</span> <span class="n">v</span>
+    <span class="n">cct</span><span class="o">.</span><span class="n">freq</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">cct</span><span class="o">.</span><span class="n">vt</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">cct</span><span class="o">.</span><span class="n">zt</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">f1</span><span class="p">,</span> <span class="n">lo</span><span class="o">.</span><span class="n">vt</span><span class="p">,</span> <span class="n">lo</span><span class="o">.</span><span class="n">zt</span>
+    <span class="n">cct</span><span class="o">.</span><span class="n">freq</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">cct</span><span class="o">.</span><span class="n">vt</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">cct</span><span class="o">.</span><span class="n">zt</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">f2</span><span class="p">,</span> <span class="n">vt_rf</span><span class="p">,</span> <span class="n">rf</span><span class="o">.</span><span class="n">zt</span>
+    <span class="n">cct</span><span class="o">.</span><span class="n">freq</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">cct</span><span class="o">.</span><span class="n">vt</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">cct</span><span class="o">.</span><span class="n">zt</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">f3</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="n">z_if</span> <span class="o">/</span> <span class="n">dciv2</span><span class="o">.</span><span class="n">rn</span>
+    <span class="k">with</span> <span class="n">quiet</span><span class="p">():</span>
+        <span class="n">vj</span> <span class="o">=</span> <span class="n">harmonic_balance</span><span class="p">(</span><span class="n">cct</span><span class="p">,</span> <span class="n">dciv2</span><span class="o">.</span><span class="n">resp_smear</span><span class="p">,</span> <span class="n">num_b</span><span class="o">=</span><span class="n">NUM_B</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">max_it</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+    <span class="n">idc</span> <span class="o">=</span> <span class="n">qtcurrent</span><span class="p">(</span><span class="n">vj</span><span class="p">,</span> <span class="n">cct</span><span class="p">,</span> <span class="n">dciv2</span><span class="o">.</span><span class="n">resp_smear</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="n">num_b</span><span class="o">=</span><span class="n">NUM_B</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">real</span>
+    <span class="n">p_if</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">vj</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">real</span><span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="n">z_if</span> <span class="o">/</span> <span class="n">dciv2</span><span class="o">.</span><span class="n">rn</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">idc</span><span class="p">,</span> <span class="n">p_if</span><span class="p">,</span> <span class="n">cct</span>
+
+
+<span class="n">v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.05</span><span class="p">,</span> <span class="mf">1.3</span><span class="p">,</span> <span class="mi">126</span><span class="p">)</span>
+<span class="n">below_gap</span> <span class="o">=</span> <span class="n">v</span> <span class="o">&lt;</span> <span class="mi">1</span>
+<span class="n">i_meas2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">both</span><span class="o">.</span><span class="n">voltage</span><span class="p">,</span> <span class="n">both</span><span class="o">.</span><span class="n">current</span><span class="p">)</span>
+
+<span class="n">z_if_values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">2.</span><span class="p">,</span> <span class="mf">3.</span><span class="p">,</span> <span class="mf">4.</span><span class="p">,</span> <span class="mf">5.</span><span class="p">,</span> <span class="mf">7.</span><span class="p">,</span> <span class="mf">10.</span><span class="p">,</span> <span class="mf">25.</span><span class="p">,</span> <span class="mf">50.</span><span class="p">])</span>  <span class="c1"># ohms</span>
+<span class="n">i_sim</span><span class="p">,</span> <span class="n">error</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">z_if</span> <span class="ow">in</span> <span class="n">z_if_values</span><span class="p">:</span>
+    <span class="n">i</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">cct</span> <span class="o">=</span> <span class="n">simulate_2</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">rf</span><span class="o">.</span><span class="n">vt</span><span class="p">,</span> <span class="n">z_if</span><span class="p">)</span>
+    <span class="n">i_sim</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+    <span class="n">error</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">((</span><span class="n">i</span> <span class="o">-</span> <span class="n">i_meas2</span><span class="p">)[</span><span class="n">below_gap</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)))</span>
+<span class="n">z_best</span> <span class="o">=</span> <span class="n">z_if_values</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">error</span><span class="p">)]</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">"IF load (ohms):  "</span><span class="p">,</span> <span class="n">z_if_values</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"rms I-V error:   "</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">error</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Best IF load: </span><span class="si">{:.0f}</span><span class="s2"> ohms"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">z_best</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">Available power: LO </span><span class="si">{:.1f}</span><span class="s2"> dBm, RF </span><span class="si">{:.1f}</span><span class="s2"> dBm"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cct</span><span class="o">.</span><span class="n">available_power</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="s1">'dBm'</span><span class="p">),</span>
+                                                              <span class="n">cct</span><span class="o">.</span><span class="n">available_power</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="s1">'dBm'</span><span class="p">)))</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+IF load (ohms):   [ 2.  3.  4.  5.  7. 10. 25. 50.]
+rms I-V error:    [0.0094 0.0067 0.0053 0.0055 0.0087 0.0143 0.0312 0.0409]
+Best IF load: 4 ohms
+
+Available power: LO -44.4 dBm, RF -47.6 dBm
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">dciv2</span><span class="o">.</span><span class="n">voltage</span><span class="p">,</span> <span class="n">dciv2</span><span class="o">.</span><span class="n">current</span><span class="p">,</span> <span class="s1">'k--'</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">'Unpumped'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">lo</span><span class="o">.</span><span class="n">voltage</span><span class="p">,</span> <span class="n">lo</span><span class="o">.</span><span class="n">current</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">'C0'</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">'LO only'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">rf</span><span class="o">.</span><span class="n">voltage</span><span class="p">,</span> <span class="n">rf</span><span class="o">.</span><span class="n">current</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">'C2'</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">'RF only'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">both</span><span class="o">.</span><span class="n">voltage</span><span class="p">,</span> <span class="n">both</span><span class="o">.</span><span class="n">current</span><span class="p">,</span> <span class="s1">'k'</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">'LO + RF (measured)'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">i_sim</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">error</span><span class="p">)],</span> <span class="s1">'r--'</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">r</span><span class="s1">'LO + RF (simulated, </span><span class="si">{:.0f}</span><span class="s1"> $\Omega$ IF load)'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">z_best</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">i_sim</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="s1">'m:'</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">r</span><span class="s1">'LO + RF (simulated, 50 $\Omega$ IF load)'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">'Bias voltage ($V_\mathrm</span><span class="si">{gap}</span><span class="s1">$)'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">'DC current ($I_\mathrm</span><span class="si">{gap}</span><span class="s1">$)'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">1.3</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">9</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="_images/lo-saturation_20_0.png" src="_images/lo-saturation_20_0.png" />
+</div>
+</div>
+<p>The RF signal is almost as strong as the LO, so the I-V curve with both sources is not simply the sum of the two. With an IF load of a few ohms, the simulation reproduces it very closely, from the two single-source curves alone. With a 50 ohm IF load, the IF voltage is ~3 times larger, and it smooths the photon steps far more than measured (e.g., the current rises ~0.17 Vgap below the gap, the amplitude of the IF voltage).</p>
+</section>
+<section id="The-measured-IF-output">
+<h3><span class="section-number">8.5.2. </span>The measured IF output<a class="headerlink" href="#The-measured-IF-output" title="Link to this heading"></a></h3>
+<p>The IF output was measured with a spectrum analyzer at each grid angle. The IF peak is at ~3.24 GHz (the spectra have a resolution of 20 MHz):</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">angles</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+<span class="n">p_out</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">angle</span> <span class="ow">in</span> <span class="n">angles</span><span class="p">:</span>
+    <span class="n">spectrum</span> <span class="o">=</span> <span class="n">load</span><span class="p">(</span><span class="n">D2</span> <span class="o">+</span> <span class="s1">'spectrum_grid</span><span class="si">{}</span><span class="s1">.csv'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">angle</span><span class="p">))</span>
+    <span class="n">near_if</span> <span class="o">=</span> <span class="p">(</span><span class="n">spectrum</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mf">2.5</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">spectrum</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mf">4.</span><span class="p">)</span>
+    <span class="n">p_out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">spectrum</span><span class="p">[</span><span class="n">near_if</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
+    <span class="k">if</span> <span class="n">angle</span> <span class="o">%</span> <span class="mi">30</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">spectrum</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">spectrum</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s1">'</span><span class="si">{}</span><span class="s1"> deg'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">angle</span><span class="p">))</span>
+<span class="n">p_out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">p_out</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">'IF frequency (GHz)'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">'IF power (dBm)'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s1">'Grid angle'</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">10</span><span class="p">);</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Grid angle (deg):  "</span><span class="p">,</span> <span class="n">angles</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"IF peak (dBm):     "</span><span class="p">,</span> <span class="n">p_out</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Grid angle (deg):   [ 0 10 20 30 40 50 60 70 80 90]
+IF peak (dBm):      [ -6.42  -6.43  -6.62  -7.16  -8.12 -10.13 -13.2  -18.88 -29.54 -41.26]
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="_images/lo-saturation_22_1.png" src="_images/lo-saturation_22_1.png" />
+</div>
+</div>
+</section>
+<section id="The-RF-power">
+<h3><span class="section-number">8.5.3. </span>The RF power<a class="headerlink" href="#The-RF-power" title="Link to this heading"></a></h3>
+<p>The RF source is linearly polarized and passes through the wire grid, and the mixer only receives one polarization. Rotating the grid by an angle <span class="math notranslate nohighlight">\(\theta\)</span> therefore reduces the field by <span class="math notranslate nohighlight">\(\cos\theta\)</span> twice: once in the grid, and once at the mixer, which gives a power of</p>
+<div class="math notranslate nohighlight">
+\[P_{RF}(\theta) = P_{RF}(0) \cos^4\theta.\]</div>
+<p>This is confirmed by a measurement on the same setup a month earlier (2017-04-10), where the pumped I-V curve with only the RF source was measured at each grid angle: the Thevenin voltages recovered from these curves give <span class="math notranslate nohighlight">\(|V_T(\theta) / V_T(0)|^2\)</span> = 0.18, 0.07 and 0.012 at 50, 60 and 70 degrees, compared to <span class="math notranslate nohighlight">\(\cos^4\theta\)</span> = 0.17, 0.06 and 0.014. (At 90 degrees, the measured IF power is set by leakage through the grid, so this point is not used.)</p>
+</section>
+<section id="Gain-compression">
+<h3><span class="section-number">8.5.4. </span>Gain compression<a class="headerlink" href="#Gain-compression" title="Link to this heading"></a></h3>
+<p>Now we simulate the IF output power at each grid angle, with the Thevenin voltage of the RF source scaled by <span class="math notranslate nohighlight">\(\cos^2\theta\)</span>, for the IF load found above and for 50 ohms. The bias voltage of the spectra was not recorded, so the simulations are done at three bias voltages across the first photon step below the gap (2.0-2.3 mV); the shaded areas show the range. The gain is shown relative to its value with the weakest RF signal (80 degrees), for both the measurement and the simulations:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">angles</span> <span class="o">=</span> <span class="n">angles</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>  <span class="c1"># without 90 deg</span>
+<span class="n">p_out</span> <span class="o">=</span> <span class="n">p_out</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">transmission</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="n">angles</span><span class="p">))</span> <span class="o">**</span> <span class="mi">4</span>
+<span class="n">p_rf</span> <span class="o">=</span> <span class="n">cct</span><span class="o">.</span><span class="n">available_power</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="s1">'dBm'</span><span class="p">)</span> <span class="o">+</span> <span class="mi">10</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">transmission</span><span class="p">)</span>  <span class="c1"># available RF power (dBm)</span>
+<span class="n">v_bias</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.75</span><span class="p">,</span> <span class="mf">0.80</span><span class="p">,</span> <span class="mf">0.85</span><span class="p">])</span>
+
+<span class="n">gain_meas</span> <span class="o">=</span> <span class="n">p_out</span> <span class="o">-</span> <span class="n">p_rf</span>
+<span class="n">gain_meas</span> <span class="o">-=</span> <span class="n">gain_meas</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+<span class="n">gain_sim</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="k">for</span> <span class="n">z_if</span> <span class="ow">in</span> <span class="p">(</span><span class="n">z_best</span><span class="p">,</span> <span class="mf">50.</span><span class="p">):</span>
+    <span class="n">p_if</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">simulate_2</span><span class="p">(</span><span class="n">v_bias</span><span class="p">,</span> <span class="n">rf</span><span class="o">.</span><span class="n">vt</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">t</span><span class="p">),</span> <span class="n">z_if</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">transmission</span><span class="p">])</span>  <span class="c1"># [angle, bias]</span>
+    <span class="n">g</span> <span class="o">=</span> <span class="mi">10</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">p_if</span><span class="p">)</span> <span class="o">-</span> <span class="n">p_rf</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">]</span>
+    <span class="n">gain_sim</span><span class="p">[</span><span class="n">z_if</span><span class="p">]</span> <span class="o">=</span> <span class="n">g</span> <span class="o">-</span> <span class="n">g</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">p_1db</span><span class="p">(</span><span class="n">gain</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""RF power where the gain has dropped by 1 dB (interpolated; NaN if it</span>
+<span class="sd">    doesn't drop that far)."""</span>
+    <span class="k">if</span> <span class="n">gain</span><span class="o">.</span><span class="n">min</span><span class="p">()</span> <span class="o">&gt;</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="n">gain</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">p_rf</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">p_rf</span><span class="p">,</span> <span class="n">gain_meas</span><span class="p">,</span> <span class="s1">'ko'</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">'Measured'</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">z_if</span><span class="p">,</span> <span class="n">color</span> <span class="ow">in</span> <span class="p">((</span><span class="n">z_best</span><span class="p">,</span> <span class="s1">'r'</span><span class="p">),</span> <span class="p">(</span><span class="mf">50.</span><span class="p">,</span> <span class="s1">'m'</span><span class="p">)):</span>
+    <span class="n">g</span> <span class="o">=</span> <span class="n">gain_sim</span><span class="p">[</span><span class="n">z_if</span><span class="p">]</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span><span class="n">p_rf</span><span class="p">,</span> <span class="n">g</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="n">g</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span>
+                    <span class="n">label</span><span class="o">=</span><span class="sa">r</span><span class="s1">'Simulated, </span><span class="si">{:.0f}</span><span class="s1"> $\Omega$ IF load'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">z_if</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">'gray'</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">'--'</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">cct</span><span class="o">.</span><span class="n">available_power</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="s1">'dBm'</span><span class="p">),</span> <span class="n">c</span><span class="o">=</span><span class="s1">'gray'</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">':'</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">cct</span><span class="o">.</span><span class="n">available_power</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="s1">'dBm'</span><span class="p">)</span> <span class="o">-</span> <span class="mf">0.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">8.5</span><span class="p">,</span> <span class="s1">'LO power'</span><span class="p">,</span> <span class="n">ha</span><span class="o">=</span><span class="s1">'right'</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">'Available RF power (dBm)'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">'Relative gain (dB)'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="o">-</span><span class="mi">10</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="s1">'lower left'</span><span class="p">);</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">"1 dB compression point (dBm):"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"  measured:                </span><span class="si">{:.1f}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">p_1db</span><span class="p">(</span><span class="n">gain_meas</span><span class="p">)))</span>
+<span class="k">for</span> <span class="n">z_if</span><span class="p">,</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">gain_sim</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="n">p1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">p_1db</span><span class="p">(</span><span class="n">g</span><span class="p">[:,</span> <span class="n">j</span><span class="p">])</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">v_bias</span><span class="p">))])</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">p1</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">"  simulated, </span><span class="si">{:2.0f}</span><span class="s2"> ohm load: not reached (above </span><span class="si">{:.1f}</span><span class="s2">)"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">z_if</span><span class="p">,</span> <span class="n">p_rf</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">"  simulated, </span><span class="si">{:2.0f}</span><span class="s2"> ohm load: </span><span class="si">{:.1f}</span><span class="s2"> to </span><span class="si">{:.1f}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">z_if</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmin</span><span class="p">(</span><span class="n">p1</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmax</span><span class="p">(</span><span class="n">p1</span><span class="p">)))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Compression at the highest RF power (dB):"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"  measured:                </span><span class="si">{:.1f}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">gain_meas</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+<span class="k">for</span> <span class="n">z_if</span><span class="p">,</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">gain_sim</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"  simulated, </span><span class="si">{:2.0f}</span><span class="s2"> ohm load: </span><span class="si">{:.1f}</span><span class="s2"> to </span><span class="si">{:.1f}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">z_if</span><span class="p">,</span> <span class="n">g</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">g</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()))</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+1 dB compression point (dBm):
+  measured:                -67.5
+  simulated,  4 ohm load: not reached (above -47.6)
+  simulated, 50 ohm load: -62.7 to -57.5
+Compression at the highest RF power (dB):
+  measured:                -7.3
+  simulated,  4 ohm load: -1.0 to -0.9
+  simulated, 50 ohm load: -7.8 to -6.8
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="_images/lo-saturation_24_1.png" src="_images/lo-saturation_24_1.png" />
+</div>
+</div>
+<p>The saturation of an SIS mixer by a strong signal is mostly caused by the IF voltage, which swings the bias voltage across the photon step (Kerr, 2002). The simulated compression therefore depends strongly on the IF load:</p>
+<ul class="simple">
+<li><p>With the IF load that reproduces the DC I-V curve (a few ohms), the IF voltage is small, and the simulated gain only drops by ~1 dB, even when the RF signal is almost as strong as the LO.</p></li>
+<li><p>With a 50 ohm IF load, the simulation reproduces the total compression at the highest RF power (~7 dB), although the measured gain starts to drop at a lower RF power (a 1 dB compression point of about -67 dBm, vs -63 to -57 dBm). However, this IF load is inconsistent with the I-V curve measured at the same time.</p></li>
+</ul>
+<p>So the measured compression is not explained by the saturation of the mixer alone, unless the IF load at 3.3 GHz is very different from what the DC I-V curve implies. A likely contribution is the IF amplifier chain: the IF output reached -6.4 dBm at the spectrum analyzer, and the compression of the IF chain was not measured. A measurement with a calibrated IF chain (or with a weaker RF signal relative to the LO) would be needed to test the predicted saturation point of the mixer itself.</p>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="hfss-embedding-impedance.html" class="btn btn-neutral float-left" title="7. Example #4: Embedding impedance from HFSS" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="references.html" class="btn btn-neutral float-right" title="9. References" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2017-2026, John Garrett.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -76,7 +76,9 @@
 <li class="toctree-l1"><a class="reference internal" href="single-tone-simulation.html">4. Example #1: Creating a simple 1 tone simulation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="multi-tone-simulation.html">5. Example #2: Simulating an SIS mixer</a></li>
 <li class="toctree-l1"><a class="reference internal" href="analyze-experimental-data.html">6. Example #3: Analyzing experimental data</a></li>
-<li class="toctree-l1"><a class="reference internal" href="references.html">7. References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hfss-embedding-impedance.html">7. Example #4: Embedding impedance from HFSS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lo-saturation.html">8. Example #5: Power saturation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="references.html">9. References</a></li>
 </ul>
 
         </div>
@@ -351,7 +353,8 @@ filtering. Given in radians.</p></li>
 <li><p><strong>ifdata_sigma</strong> (<em>float</em>) – Standard deviation of Gaussian used for
 filtering, in units [V]</p></li>
 <li><p><strong>area</strong> (<em>float</em>) – Area of the junction in um^2.</p></li>
-<li><p><strong>vgap_threshold</strong> (<em>float</em>) – The current to measure the gap voltage at.</p></li>
+<li><p><strong>vgap</strong> (<em>float</em>) – Gap voltage, in units [V]; default is None (found from
+the I-V curve).</p></li>
 <li><p><strong>rn_vmin</strong> (<em>float</em>) – Lower voltage range to determine the normal resistance</p></li>
 <li><p><strong>rn_vmax</strong> (<em>float</em>) – Upper voltage range to determine the normal resistance</p></li>
 <li><p><strong>vrsg</strong> (<em>float</em>) – The voltage at which to calculate the subgap
@@ -670,16 +673,33 @@ is then a test of the simulation.</p>
 <p class="admonition-title">Note</p>
 <p>The IF frequency, the IF load impedance and the physical
 temperature are not part of the experimental data, so they must be
-given. For the example data, the results hardly depend on them
-(<code class="docutils literal notranslate"><span class="pre">g_rf</span></code> and <code class="docutils literal notranslate"><span class="pre">t_rf</span></code> change by a few percent for IF frequencies
-of 4-8 GHz and IF loads of 30-75 ohms).</p>
+given. The simulated noise temperature of the mixer (referred to
+its input) does not depend on the IF load, but its gain does, and
+therefore so does the split of the measured gain into <code class="docutils literal notranslate"><span class="pre">g_rf</span></code> and
+<code class="docutils literal notranslate"><span class="pre">g_mix</span></code>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">g_mix</span></code> is the gain into <code class="docutils literal notranslate"><span class="pre">z_if</span></code>. The measured gain, however,
+is calibrated with the shot noise (<code class="docutils literal notranslate"><span class="pre">DCData</span></code>), ignoring the
+mismatch between the junction (~``rn`` above the gap) and the IF
+circuit, i.e., it is referred to a reference plane with an
+impedance of <code class="docutils literal notranslate"><span class="pre">rn</span></code> (Garrett, 2018, Appendix A). The gain into
+the actual IF impedance <code class="docutils literal notranslate"><span class="pre">z_if</span></code> then corresponds to a measured
+gain of <code class="docutils literal notranslate"><span class="pre">g_mix</span> <span class="pre">/</span> <span class="pre">(1</span> <span class="pre">-</span> <span class="pre">|G|^2)</span></code>, with
+<code class="docutils literal notranslate"><span class="pre">G</span> <span class="pre">=</span> <span class="pre">(z_if</span> <span class="pre">-</span> <span class="pre">rn)</span> <span class="pre">/</span> <span class="pre">(z_if</span> <span class="pre">+</span> <span class="pre">rn)</span></code>; the IF noise from the shot
+noise has the same factor, so <code class="docutils literal notranslate"><span class="pre">t_if</span> <span class="pre">/</span> <span class="pre">g_mix</span></code> is unchanged. This
+factor is not applied here (it is 1 only for <code class="docutils literal notranslate"><span class="pre">z_if</span> <span class="pre">=</span> <span class="pre">rn</span></code>). For
+the example data, with the HFSS IF impedance of the device
+(7.4 - 17.1j ohms at 5 GHz, <code class="docutils literal notranslate"><span class="pre">1</span> <span class="pre">-</span> <span class="pre">|G|^2</span> <span class="pre">=</span> <span class="pre">0.56</span></code>) and this
+factor, <code class="docutils literal notranslate"><span class="pre">g_rf</span></code> ~0.77 and <code class="docutils literal notranslate"><span class="pre">t_rf</span></code> ~23 K; with the default of 50
+ohms and no factor, ~0.52 and ~21 K. The IF frequency (4-8 GHz)
+changes the results by a few percent.</p>
 </div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>f_if</strong> (<em>float</em>) – IF frequency, in [GHz]</p></li>
 <li><p><strong>z_if</strong> (<em>float</em><em>, </em><em>optional</em>) – IF load impedance, in [ohms], default is
-50</p></li>
+50 (see the note above about the reference plane of the
+measured gain)</p></li>
 <li><p><strong>temp</strong> (<em>float</em><em>, </em><em>optional</em>) – Physical temperature of the junction, in
 [K], default is 4</p></li>
 <li><p><strong>num_b</strong> (<em>int</em><em>, </em><em>optional</em>) – Summation limit for the phase factor
@@ -1334,6 +1354,10 @@ system, in units [ohms].</p></li>
 <li><p><strong>i_multiplier</strong> (<em>float</em>) – Multiply the imported current by this value.</p></li>
 <li><p><strong>v_multiplier</strong> (<em>float</em>) – Multiply the imported voltage by this value.</p></li>
 <li><p><strong>filter_data</strong> (<em>bool</em>) – Filter data</p></li>
+<li><p><strong>vgap</strong> (<em>float</em>) – Gap voltage, in units [V]. Default is None, in which
+case it is found from the I-V curve (half the current at the
+“corner” where the tangent at the steepest point of the gap meets
+the normal-resistance line).</p></li>
 <li><p><strong>vgap_guess</strong> (<em>float</em>) – Guess of gap voltage. Used to temporarily
 normalize while filtering. Given in units [V].</p></li>
 <li><p><strong>igap_guess</strong> (<em>float</em>) – Guess of gap current. Used to temporarily
@@ -1629,6 +1653,8 @@ function.</p></li>
 <li><dl class="simple">
 <dt>Junction properties:</dt><dd><ul>
 <li><p><code class="docutils literal notranslate"><span class="pre">area</span> <span class="pre">=</span> <span class="pre">1.5</span></code> : Area of the SIS junction in units [um^2].</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">vgap</span> <span class="pre">=</span> <span class="pre">None</span></code> : Gap voltage in units [V]. If None, it is found
+from the DC I-V curve.</p></li>
 </ul>
 </dd>
 </dl>

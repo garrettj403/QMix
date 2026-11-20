@@ -1,0 +1,618 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>7. Example #4: Embedding impedance from HFSS &mdash; QMix latest documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="_static/nbsphinx-code-cells.css?v=2aa19091" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=c6e86fd7"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="8. Example #5: Power saturation" href="lo-saturation.html" />
+    <link rel="prev" title="6. Example #3: Analyzing experimental data" href="analyze-experimental-data.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            QMix
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="setup.html">1. Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="qmix.html">2. Package API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="theory.html">3. Theory</a></li>
+<li class="toctree-l1"><a class="reference internal" href="single-tone-simulation.html">4. Example #1: Creating a simple 1 tone simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multi-tone-simulation.html">5. Example #2: Simulating an SIS mixer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analyze-experimental-data.html">6. Example #3: Analyzing experimental data</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">7. Example #4: Embedding impedance from HFSS</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#Reading-the-S-parameters">7.1. Reading the S-parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Connecting-the-networks">7.2. Connecting the networks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#The-embedding-impedance">7.3. The embedding impedance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Comparing-with-the-recovered-impedances">7.4. Comparing with the recovered impedances</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Sideband-impedances-in-the-noise-model">7.5. Sideband impedances in the noise model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#The-embedding-impedance-at-the-sub-harmonic">7.6. The embedding impedance at the sub-harmonic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Simulating-the-broken-photon-step">7.7. Simulating the broken photon step</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="lo-saturation.html">8. Example #5: Power saturation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="references.html">9. References</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">QMix</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active"><span class="section-number">7. </span>Example #4: Embedding impedance from HFSS</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/hfss-embedding-impedance.ipynb.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="Example-#4:-Embedding-impedance-from-HFSS">
+<h1><span class="section-number">7. </span>Example #4: Embedding impedance from HFSS<a class="headerlink" href="#Example-#4:-Embedding-impedance-from-HFSS" title="Link to this heading"></a></h1>
+<p>The previous example recovered the embedding impedance of an SIS mixer from its pumped I-V curve. This impedance can also be calculated from an electromagnetic simulation of the RF circuit. This notebook uses the <code class="docutils literal notranslate"><span class="pre">qmix.network</span></code> module to read the S-parameters of the 230 GHz mixer from HFSS, to calculate the embedding impedance seen by the junction, and to compare it with the impedances recovered from measurements over an LO sweep from 214 to 255 GHz. The impedances are then used for the
+sideband impedances in the noise model of the mixer (<code class="docutils literal notranslate"><span class="pre">PumpedData.mixer_noise</span></code>).</p>
+<p>The data are from the same device as in Example #3 (device #5.6 from Garrett, 2018). The example data are in <code class="docutils literal notranslate"><span class="pre">example-data/</span></code>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">hfss/tuner.s3p</span></code>: the tuning circuit (HFSS). Port 1 is the junction (a lumped port), port 2 connects to the finline, and port 3 is the IF output.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">hfss/finline.s2p</span></code>: the finline transition from the waveguide (HFSS). Port 1 is the waveguide, and port 2 connects to the tuning circuit.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dciv.csv</span></code>, <code class="docutils literal notranslate"><span class="pre">dcif.csv</span></code>: the unpumped DC I-V curve and IF power (as in Example #3).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">lo-sweep/fXXX.X_iv.csv</span></code>: pumped I-V curves at 23 LO frequencies.</p></li>
+</ul>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">matplotlib</span> inline
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">contextlib</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">io</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">glob</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">qmix</span>
+
+<span class="c1"># https://github.com/garrettj403/SciencePlots</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">scienceplots</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">use</span><span class="p">([</span><span class="s1">'science'</span><span class="p">,</span> <span class="s1">'notebook'</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<section id="Reading-the-S-parameters">
+<h2><span class="section-number">7.1. </span>Reading the S-parameters<a class="headerlink" href="#Reading-the-S-parameters" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">read_touchstone</span></code> reads Touchstone files. These files were exported from HFSS without renormalizing the ports, so the reference impedance of each port is its HFSS port impedance, which is listed for every frequency in the comments of the file (<code class="docutils literal notranslate"><span class="pre">!</span> <span class="pre">Port</span> <span class="pre">Impedance</span></code>). <code class="docutils literal notranslate"><span class="pre">read_touchstone</span></code> uses these when the option line doesn’t give a reference impedance.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">qmix.network</span><span class="w"> </span><span class="kn">import</span> <span class="n">read_touchstone</span><span class="p">,</span> <span class="n">embedding_impedance</span>
+
+<span class="n">tuner</span> <span class="o">=</span> <span class="n">read_touchstone</span><span class="p">(</span><span class="s1">'example-data/hfss/tuner.s3p'</span><span class="p">)</span>
+<span class="n">finline</span> <span class="o">=</span> <span class="n">read_touchstone</span><span class="p">(</span><span class="s1">'example-data/hfss/finline.s2p'</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Tuner:   </span><span class="si">{}</span><span class="s2"> ports, </span><span class="si">{:.1f}</span><span class="s2"> to </span><span class="si">{:.1f}</span><span class="s2"> GHz"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">tuner</span><span class="o">.</span><span class="n">num_ports</span><span class="p">,</span> <span class="n">tuner</span><span class="o">.</span><span class="n">freq</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="mf">1e9</span><span class="p">,</span> <span class="n">tuner</span><span class="o">.</span><span class="n">freq</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="mf">1e9</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Finline: </span><span class="si">{}</span><span class="s2"> ports, </span><span class="si">{:.1f}</span><span class="s2"> to </span><span class="si">{:.1f}</span><span class="s2"> GHz"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">finline</span><span class="o">.</span><span class="n">num_ports</span><span class="p">,</span> <span class="n">finline</span><span class="o">.</span><span class="n">freq</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="mf">1e9</span><span class="p">,</span> <span class="n">finline</span><span class="o">.</span><span class="n">freq</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="mf">1e9</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">Port impedances at 230 GHz (ohms):"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"  tuner:  "</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">tuner</span><span class="o">.</span><span class="n">interpolate</span><span class="p">([</span><span class="mf">230e9</span><span class="p">])</span><span class="o">.</span><span class="n">z0</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"  finline:"</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">finline</span><span class="o">.</span><span class="n">interpolate</span><span class="p">([</span><span class="mf">230e9</span><span class="p">])</span><span class="o">.</span><span class="n">z0</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Tuner:   3 ports, 0.1 to 300.1 GHz
+Finline: 2 ports, 0.1 to 300.1 GHz
+
+Port impedances at 230 GHz (ohms):
+  tuner:   [13.3+0.j 58.8-0.j 22.4-0.j]
+  finline: [288.4+0.j  60.7-0.j]
+</pre></div></div>
+</div>
+<p>The waveguide port of the finline has an impedance of ~290 ohms, the mode impedance of the waveguide.</p>
+<p><strong>Note:</strong> Touchstone files are often renormalized to 50 ohms. In that case, the waveguide port must be terminated in its own mode impedance, not in 50 ohms. Otherwise, the mismatch at the waveguide port creates ripples in the embedding impedance that aren’t there in the real mixer.</p>
+</section>
+<section id="Connecting-the-networks">
+<h2><span class="section-number">7.2. </span>Connecting the networks<a class="headerlink" href="#Connecting-the-networks" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">Network.connect</span></code> connects port 2 of the tuner to port 2 of the finline. The ports of the result are the remaining ports of the tuner, followed by the remaining ports of the finline: port 1 is the junction, port 2 the IF, and port 3 the waveguide.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">rf</span> <span class="o">=</span> <span class="n">tuner</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">finline</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"RF circuit: </span><span class="si">{}</span><span class="s2"> ports"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rf</span><span class="o">.</span><span class="n">num_ports</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+RF circuit: 3 ports
+</pre></div></div>
+</div>
+</section>
+<section id="The-embedding-impedance">
+<h2><span class="section-number">7.3. </span>The embedding impedance<a class="headerlink" href="#The-embedding-impedance" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">embedding_impedance</span></code> calculates the impedance seen at port 1, with the junction capacitance in parallel. Ports that are not terminated are matched to their reference impedance, so the waveguide (port 3) sees a matched load. Here, the IF port (port 2) is terminated by 50 ohms. The result is a function of frequency (in Hz) that returns the impedance in ohms.</p>
+<p>The nominal capacitance of the junction is the specific capacitance (80 fF/um^2) times the area (1.5 um^2).</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">cap_nominal</span> <span class="o">=</span> <span class="mf">80e-15</span> <span class="o">*</span> <span class="mf">1.5</span>  <span class="c1"># F</span>
+
+<span class="n">z_nominal</span> <span class="o">=</span> <span class="n">embedding_impedance</span><span class="p">(</span><span class="n">rf</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">cap</span><span class="o">=</span><span class="n">cap_nominal</span><span class="p">,</span> <span class="n">terminations</span><span class="o">=</span><span class="p">{</span><span class="mi">2</span><span class="p">:</span> <span class="mf">50.</span><span class="p">})</span>
+
+<span class="n">f</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">180e9</span><span class="p">,</span> <span class="mf">300e9</span><span class="p">,</span> <span class="mi">241</span><span class="p">)</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">f</span> <span class="o">/</span> <span class="mf">1e9</span><span class="p">,</span> <span class="n">z_nominal</span><span class="p">(</span><span class="n">f</span><span class="p">)</span><span class="o">.</span><span class="n">real</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">'Resistance'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">f</span> <span class="o">/</span> <span class="mf">1e9</span><span class="p">,</span> <span class="n">z_nominal</span><span class="p">(</span><span class="n">f</span><span class="p">)</span><span class="o">.</span><span class="n">imag</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">'Reactance'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">'k'</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">'Frequency (GHz)'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">'Embedding impedance ($\Omega$)'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="mi">180</span><span class="p">,</span> <span class="mi">300</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">();</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="_images/hfss-embedding-impedance_7_0.png" src="_images/hfss-embedding-impedance_7_0.png" />
+</div>
+</div>
+</section>
+<section id="Comparing-with-the-recovered-impedances">
+<h2><span class="section-number">7.4. </span>Comparing with the recovered impedances<a class="headerlink" href="#Comparing-with-the-recovered-impedances" title="Link to this heading"></a></h2>
+<p>We will now recover the embedding impedance from the pumped I-V curve at each LO frequency, as in Example #3.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">params</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">delimiter</span> <span class="o">=</span> <span class="s1">','</span><span class="p">,</span>           <span class="c1"># CSV files</span>
+              <span class="n">usecols</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+              <span class="n">skip_header</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+              <span class="n">v_fmt</span> <span class="o">=</span> <span class="s1">'mV'</span><span class="p">,</span>              <span class="c1"># units</span>
+              <span class="n">i_fmt</span> <span class="o">=</span> <span class="s1">'mA'</span><span class="p">,</span>
+              <span class="n">area</span> <span class="o">=</span> <span class="mf">1.5</span><span class="p">,</span>                <span class="c1"># junction area in um^2</span>
+              <span class="n">filter_data</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>        <span class="c1"># Savitzky-Golay filter</span>
+              <span class="n">filter_nwind</span> <span class="o">=</span> <span class="mi">21</span><span class="p">,</span>
+              <span class="n">verbose</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">load</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Load a CSV file (bias voltage in mV, current in mA or IF power)."""</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">genfromtxt</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s1">','</span><span class="p">,</span> <span class="n">skip_header</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">quiet</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">"""Hide the printout of the impedance recovery."""</span>
+    <span class="k">return</span> <span class="n">contextlib</span><span class="o">.</span><span class="n">redirect_stdout</span><span class="p">(</span><span class="n">io</span><span class="o">.</span><span class="n">StringIO</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">quiet</span><span class="p">():</span>
+    <span class="n">dciv</span> <span class="o">=</span> <span class="n">qmix</span><span class="o">.</span><span class="n">exp</span><span class="o">.</span><span class="n">DCData</span><span class="p">(</span><span class="n">load</span><span class="p">(</span><span class="s1">'example-data/dciv.csv'</span><span class="p">),</span> <span class="n">load</span><span class="p">(</span><span class="s1">'example-data/dcif.csv'</span><span class="p">),</span> <span class="o">**</span><span class="n">params</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Rn = </span><span class="si">{:.2f}</span><span class="s2"> ohms, Vgap = </span><span class="si">{:.3f}</span><span class="s2"> mV"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">dciv</span><span class="o">.</span><span class="n">rn</span><span class="p">,</span> <span class="n">dciv</span><span class="o">.</span><span class="n">vgap</span> <span class="o">*</span> <span class="mf">1e3</span><span class="p">))</span>
+
+<span class="n">freq</span><span class="p">,</span> <span class="n">zt</span><span class="p">,</span> <span class="n">good</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s1">'example-data/lo-sweep/f*_iv.csv'</span><span class="p">)):</span>
+    <span class="n">f_lo</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">filename</span><span class="p">)[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">7</span><span class="p">])</span>  <span class="c1"># e.g., f230.2_iv.csv</span>
+    <span class="k">with</span> <span class="n">quiet</span><span class="p">():</span>
+        <span class="n">pump</span> <span class="o">=</span> <span class="n">qmix</span><span class="o">.</span><span class="n">exp</span><span class="o">.</span><span class="n">PumpedData</span><span class="p">(</span><span class="n">load</span><span class="p">(</span><span class="n">filename</span><span class="p">),</span> <span class="n">dciv</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="n">f_lo</span><span class="p">,</span> <span class="n">analyze_if</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">)</span>
+    <span class="n">freq</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">f_lo</span><span class="p">)</span>
+    <span class="n">zt</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pump</span><span class="o">.</span><span class="n">zt</span><span class="p">)</span>          <span class="c1"># normalized to Rn</span>
+    <span class="n">good</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pump</span><span class="o">.</span><span class="n">fit_good</span><span class="p">)</span>  <span class="c1"># was the impedance recovery successful?</span>
+<span class="n">freq</span><span class="p">,</span> <span class="n">zt</span><span class="p">,</span> <span class="n">good</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">freq</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">zt</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">good</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">"f (GHz)   recovered zt (Rn)"</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">f_lo</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">g</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">freq</span><span class="p">,</span> <span class="n">zt</span><span class="p">,</span> <span class="n">good</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"</span><span class="si">{:6.1f}</span><span class="s2">    </span><span class="si">{:5.2f}{:+5.2f}</span><span class="s2">j  </span><span class="si">{}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">f_lo</span><span class="p">,</span> <span class="n">z</span><span class="o">.</span><span class="n">real</span><span class="p">,</span> <span class="n">z</span><span class="o">.</span><span class="n">imag</span><span class="p">,</span> <span class="s1">''</span> <span class="k">if</span> <span class="n">g</span> <span class="k">else</span> <span class="s1">'(bad fit)'</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Rn = 14.22 ohms, Vgap = 2.717 mV
+f (GHz)   recovered zt (Rn)
+ 214.2     0.42-0.66j
+ 215.7     0.36-0.48j
+ 217.8     0.30-0.53j
+ 220.1     0.31-0.51j
+ 220.2     0.31-0.58j
+ 221.8     0.39-0.57j
+ 223.2     0.27-0.46j
+ 225.9     0.24-0.30j
+ 226.6     0.30-0.26j
+ 228.3     0.23-0.11j
+ 230.2     0.47-0.32j
+ 230.8     0.43-0.34j
+ 232.8     0.39-0.29j
+ 235.1     0.42-0.27j  (bad fit)
+ 236.0     0.36-0.21j  (bad fit)
+ 238.4     0.51-0.36j  (bad fit)
+ 240.0     0.28-1.00j  (bad fit)
+ 240.7     0.45-0.57j  (bad fit)
+ 244.6     0.05-1.00j  (bad fit)
+ 245.6     0.00-0.91j  (bad fit)
+ 249.6     0.22-1.00j  (bad fit)
+ 252.2     0.23-0.66j
+ 255.0     0.23-0.57j
+</pre></div></div>
+</div>
+<p>From ~235 to ~250 GHz, the impedance recovery fails. In this range, the pumped I-V curves of this mixer show the <em>broken photon step</em> effect: a notch in the first photon step below the gap, which a single-tone simulation cannot reproduce (Garrett et al., 2019). We will therefore use the good fits below 234 GHz to fit the junction capacitance, i.e., the one parameter of the RF circuit that is not well known. (The broken photon steps are discussed again at the end of this notebook.)</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">use</span> <span class="o">=</span> <span class="n">good</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">freq</span> <span class="o">&lt;</span> <span class="mi">234</span><span class="p">)</span>
+
+<span class="n">caps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">60</span><span class="p">,</span> <span class="mi">300</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1e-15</span>
+<span class="n">rms_error</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">cap</span> <span class="ow">in</span> <span class="n">caps</span><span class="p">:</span>
+    <span class="n">z_hfss</span> <span class="o">=</span> <span class="n">embedding_impedance</span><span class="p">(</span><span class="n">rf</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">cap</span><span class="o">=</span><span class="n">cap</span><span class="p">,</span> <span class="n">terminations</span><span class="o">=</span><span class="p">{</span><span class="mi">2</span><span class="p">:</span> <span class="mf">50.</span><span class="p">})(</span><span class="n">freq</span><span class="p">[</span><span class="n">use</span><span class="p">]</span> <span class="o">*</span> <span class="mf">1e9</span><span class="p">)</span> <span class="o">/</span> <span class="n">dciv</span><span class="o">.</span><span class="n">rn</span>
+    <span class="n">rms_error</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">z_hfss</span> <span class="o">-</span> <span class="n">zt</span><span class="p">[</span><span class="n">use</span><span class="p">])</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)))</span>
+<span class="n">rms_error</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">rms_error</span><span class="p">)</span>
+
+<span class="n">cap_fit</span> <span class="o">=</span> <span class="n">caps</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">rms_error</span><span class="p">)]</span>
+<span class="n">z_fit</span> <span class="o">=</span> <span class="n">embedding_impedance</span><span class="p">(</span><span class="n">rf</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">cap</span><span class="o">=</span><span class="n">cap_fit</span><span class="p">,</span> <span class="n">terminations</span><span class="o">=</span><span class="p">{</span><span class="mi">2</span><span class="p">:</span> <span class="mf">50.</span><span class="p">})</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Nominal capacitance: </span><span class="si">{:.0f}</span><span class="s2"> fF, rms error </span><span class="si">{:.3f}</span><span class="s2"> Rn"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cap_nominal</span> <span class="o">*</span> <span class="mf">1e15</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">cap_nominal</span><span class="p">,</span> <span class="n">caps</span><span class="p">,</span> <span class="n">rms_error</span><span class="p">)))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Fitted capacitance:  </span><span class="si">{:.0f}</span><span class="s2"> fF, rms error </span><span class="si">{:.3f}</span><span class="s2"> Rn"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cap_fit</span> <span class="o">*</span> <span class="mf">1e15</span><span class="p">,</span> <span class="n">rms_error</span><span class="o">.</span><span class="n">min</span><span class="p">()))</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Nominal capacitance: 120 fF, rms error 0.216 Rn
+Fitted capacitance:  144 fF, rms error 0.122 Rn
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">f</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">210e9</span><span class="p">,</span> <span class="mf">260e9</span><span class="p">,</span> <span class="mi">201</span><span class="p">)</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">a</span><span class="p">,</span> <span class="n">part</span><span class="p">,</span> <span class="n">label</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">real</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">imag</span><span class="p">),</span> <span class="p">(</span><span class="s1">'Resistance'</span><span class="p">,</span> <span class="s1">'Reactance'</span><span class="p">)):</span>
+    <span class="n">a</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">f</span> <span class="o">/</span> <span class="mf">1e9</span><span class="p">,</span> <span class="n">part</span><span class="p">(</span><span class="n">z_nominal</span><span class="p">(</span><span class="n">f</span><span class="p">))</span> <span class="o">/</span> <span class="n">dciv</span><span class="o">.</span><span class="n">rn</span><span class="p">,</span> <span class="s1">'k--'</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">'HFSS (</span><span class="si">{:.0f}</span><span class="s1"> fF)'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cap_nominal</span> <span class="o">*</span> <span class="mf">1e15</span><span class="p">))</span>
+    <span class="n">a</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">f</span> <span class="o">/</span> <span class="mf">1e9</span><span class="p">,</span> <span class="n">part</span><span class="p">(</span><span class="n">z_fit</span><span class="p">(</span><span class="n">f</span><span class="p">))</span> <span class="o">/</span> <span class="n">dciv</span><span class="o">.</span><span class="n">rn</span><span class="p">,</span> <span class="s1">'k-'</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">'HFSS (</span><span class="si">{:.0f}</span><span class="s1"> fF)'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cap_fit</span> <span class="o">*</span> <span class="mf">1e15</span><span class="p">))</span>
+    <span class="n">a</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">freq</span><span class="p">[</span><span class="n">good</span><span class="p">],</span> <span class="n">part</span><span class="p">(</span><span class="n">zt</span><span class="p">[</span><span class="n">good</span><span class="p">]),</span> <span class="s1">'ro'</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">'Recovered'</span><span class="p">)</span>
+    <span class="n">a</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">freq</span><span class="p">[</span><span class="o">~</span><span class="n">good</span><span class="p">],</span> <span class="n">part</span><span class="p">(</span><span class="n">zt</span><span class="p">[</span><span class="o">~</span><span class="n">good</span><span class="p">]),</span> <span class="s1">'o'</span><span class="p">,</span> <span class="n">mfc</span><span class="o">=</span><span class="s1">'none'</span><span class="p">,</span> <span class="n">mec</span><span class="o">=</span><span class="s1">'r'</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">'Recovered (bad fit)'</span><span class="p">)</span>
+    <span class="n">a</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">'Frequency (GHz)'</span><span class="p">)</span>
+    <span class="n">a</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="n">label</span> <span class="o">+</span> <span class="sa">r</span><span class="s1">' ($R_n$)'</span><span class="p">)</span>
+    <span class="n">a</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="mi">210</span><span class="p">,</span> <span class="mi">260</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">();</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="_images/hfss-embedding-impedance_13_0.png" src="_images/hfss-embedding-impedance_13_0.png" />
+</div>
+</div>
+<p>With the fitted capacitance (~140 fF), the HFSS model follows the recovered impedances much more closely than with the nominal capacitance, also at 252-255 GHz, which were not used in the fit. With the measured normal resistance (14.2 ohms, i.e., an area of ~1.4 um^2 for the nominal resistance-area product of 20 ohm um^2), this corresponds to a specific capacitance of ~100 fF/um^2.</p>
+</section>
+<section id="Sideband-impedances-in-the-noise-model">
+<h2><span class="section-number">7.5. </span>Sideband impedances in the noise model<a class="headerlink" href="#Sideband-impedances-in-the-noise-model" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">PumpedData.mixer_noise</span></code> simulates the mixer with a small-signal analysis (see Example #3). By default, it uses the recovered embedding impedance at the LO for both sidebands. With <code class="docutils literal notranslate"><span class="pre">z_emb</span></code>, the sideband impedances are taken from a function of frequency instead, e.g., the HFSS embedding impedance. With <code class="docutils literal notranslate"><span class="pre">anchor_lo=True</span></code>, this function is shifted so that it matches the recovered impedance at the LO frequency.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">params_rf</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">t_hot</span><span class="o">=</span><span class="mf">295.</span><span class="p">,</span> <span class="n">t_cold</span><span class="o">=</span><span class="mf">80.</span><span class="p">)</span>  <span class="c1"># hot/cold load temperatures (K)</span>
+
+<span class="k">with</span> <span class="n">quiet</span><span class="p">():</span>
+    <span class="n">dciv_ex</span> <span class="o">=</span> <span class="n">qmix</span><span class="o">.</span><span class="n">exp</span><span class="o">.</span><span class="n">DCData</span><span class="p">(</span><span class="n">load</span><span class="p">(</span><span class="s1">'example-data/dciv.csv'</span><span class="p">),</span> <span class="n">load</span><span class="p">(</span><span class="s1">'example-data/dcif.csv'</span><span class="p">),</span> <span class="o">**</span><span class="n">params</span><span class="p">,</span> <span class="o">**</span><span class="n">params_rf</span><span class="p">)</span>
+    <span class="n">pump</span> <span class="o">=</span> <span class="n">qmix</span><span class="o">.</span><span class="n">exp</span><span class="o">.</span><span class="n">PumpedData</span><span class="p">(</span><span class="n">load</span><span class="p">(</span><span class="s1">'example-data/f230.2_iv.csv'</span><span class="p">),</span> <span class="n">dciv_ex</span><span class="p">,</span>
+                               <span class="n">load</span><span class="p">(</span><span class="s1">'example-data/f230.2_if-hot.csv'</span><span class="p">),</span> <span class="n">load</span><span class="p">(</span><span class="s1">'example-data/f230.2_if-cold.csv'</span><span class="p">),</span>
+                               <span class="n">freq</span><span class="o">=</span><span class="mf">230.2</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">,</span> <span class="o">**</span><span class="n">params_rf</span><span class="p">)</span>
+
+<span class="n">cases</span> <span class="o">=</span> <span class="p">[(</span><span class="s1">'Recovered impedance'</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">False</span><span class="p">),</span>
+         <span class="p">(</span><span class="s1">'HFSS (nominal C)'</span><span class="p">,</span> <span class="n">z_nominal</span><span class="p">,</span> <span class="kc">False</span><span class="p">),</span>
+         <span class="p">(</span><span class="s1">'HFSS (fitted C)'</span><span class="p">,</span> <span class="n">z_fit</span><span class="p">,</span> <span class="kc">False</span><span class="p">),</span>
+         <span class="p">(</span><span class="s1">'HFSS (fitted C), anchored'</span><span class="p">,</span> <span class="n">z_fit</span><span class="p">,</span> <span class="kc">True</span><span class="p">)]</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Recovered impedance at 230.2 GHz: </span><span class="si">{:.2f}</span><span class="s2"> Rn</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">pump</span><span class="o">.</span><span class="n">zt</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"</span><span class="si">{:28s}</span><span class="s2"> </span><span class="si">{:&gt;13s}</span><span class="s2"> </span><span class="si">{:&gt;13s}</span><span class="s2"> </span><span class="si">{:&gt;6s}</span><span class="s2"> </span><span class="si">{:&gt;7s}</span><span class="s2"> </span><span class="si">{:&gt;7s}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">'Sideband impedances'</span><span class="p">,</span> <span class="s1">'USB (Rn)'</span><span class="p">,</span> <span class="s1">'LSB (Rn)'</span><span class="p">,</span>
+                                                      <span class="s1">'G_RF'</span><span class="p">,</span> <span class="s1">'T_RF'</span><span class="p">,</span> <span class="s1">'T_mix'</span><span class="p">))</span>
+<span class="n">results</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">z_emb</span><span class="p">,</span> <span class="n">anchor</span> <span class="ow">in</span> <span class="n">cases</span><span class="p">:</span>
+    <span class="k">with</span> <span class="n">quiet</span><span class="p">():</span>
+        <span class="n">noise</span> <span class="o">=</span> <span class="n">pump</span><span class="o">.</span><span class="n">mixer_noise</span><span class="p">(</span><span class="n">f_if</span><span class="o">=</span><span class="mf">5.</span><span class="p">,</span> <span class="n">temp</span><span class="o">=</span><span class="mf">5.1</span><span class="p">,</span> <span class="n">smeared</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">z_emb</span><span class="o">=</span><span class="n">z_emb</span><span class="p">,</span> <span class="n">anchor_lo</span><span class="o">=</span><span class="n">anchor</span><span class="p">)</span>
+    <span class="n">results</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">noise</span>
+    <span class="n">t_mix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">pump</span><span class="o">.</span><span class="n">v_best</span><span class="p">,</span> <span class="n">noise</span><span class="o">.</span><span class="n">voltage</span><span class="p">,</span> <span class="n">noise</span><span class="o">.</span><span class="n">t_mix</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"</span><span class="si">{:28s}</span><span class="s2"> </span><span class="si">{:6.2f}{:+5.2f}</span><span class="s2">j </span><span class="si">{:6.2f}{:+5.2f}</span><span class="s2">j </span><span class="si">{:6.2f}</span><span class="s2"> </span><span class="si">{:5.1f}</span><span class="s2"> K </span><span class="si">{:5.1f}</span><span class="s2"> K"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+          <span class="n">name</span><span class="p">,</span> <span class="n">noise</span><span class="o">.</span><span class="n">z_usb</span><span class="o">.</span><span class="n">real</span><span class="p">,</span> <span class="n">noise</span><span class="o">.</span><span class="n">z_usb</span><span class="o">.</span><span class="n">imag</span><span class="p">,</span> <span class="n">noise</span><span class="o">.</span><span class="n">z_lsb</span><span class="o">.</span><span class="n">real</span><span class="p">,</span> <span class="n">noise</span><span class="o">.</span><span class="n">z_lsb</span><span class="o">.</span><span class="n">imag</span><span class="p">,</span>
+          <span class="n">noise</span><span class="o">.</span><span class="n">g_rf</span><span class="p">,</span> <span class="n">noise</span><span class="o">.</span><span class="n">t_rf</span><span class="p">,</span> <span class="n">t_mix</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Recovered impedance at 230.2 GHz: 0.47-0.32j Rn
+
+Sideband impedances               USB (Rn)      LSB (Rn)   G_RF    T_RF   T_mix
+Recovered impedance            0.47-0.32j   0.47-0.32j   0.52  20.9 K   3.6 K
+HFSS (nominal C)               0.54-0.00j   0.40-0.31j   0.39  18.6 K   3.6 K
+HFSS (fitted C)                0.51-0.14j   0.29-0.32j   0.56  20.4 K   4.1 K
+HFSS (fitted C), anchored      0.63-0.25j   0.42-0.43j   0.50  20.5 K   3.6 K
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="n">pump</span><span class="o">.</span><span class="n">plot_mixer_noise</span><span class="p">(</span><span class="n">results</span><span class="p">[</span><span class="s1">'HFSS (fitted C)'</span><span class="p">],</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="_images/hfss-embedding-impedance_16_0.png" src="_images/hfss-embedding-impedance_16_0.png" />
+</div>
+</div>
+<p>Although the HFSS impedances differ noticeably between the two sidebands, they change mostly the fitted gain of the RF/optics stage (<code class="docutils literal notranslate"><span class="pre">G_RF</span></code>, by up to ~25%), and hardly change its noise (<code class="docutils literal notranslate"><span class="pre">T_RF</span></code>) or the noise of the mixer itself (<code class="docutils literal notranslate"><span class="pre">T_mix</span></code>).</p>
+<p>The S-parameters of the RF circuit can also be used to simulate the IF circuit (port 2), but for this mixer, the HFSS IF impedance (with the IF transformer into 50 ohms) is not consistent with the measured gain. The IF circuit is therefore still modelled by a fixed impedance (<code class="docutils literal notranslate"><span class="pre">z_if</span></code>).</p>
+</section>
+<section id="The-embedding-impedance-at-the-sub-harmonic">
+<h2><span class="section-number">7.6. </span>The embedding impedance at the sub-harmonic<a class="headerlink" href="#The-embedding-impedance-at-the-sub-harmonic" title="Link to this heading"></a></h2>
+<p>Garrett et al. (2019) traced the broken photon steps of this mixer to a spurious harmonic of the LO source at 3/2 f_LO, made worse by the embedding impedance at the sub-harmonic, f_LO / 2. For LO frequencies of 236-255 GHz, the sub-harmonic (118-128 GHz) is below the cutoff frequency of the waveguide (136 GHz). The waveguide port then has an imaginary impedance. <code class="docutils literal notranslate"><span class="pre">qmix.network</span></code> connects such ports directly, without renormalizing them, so the embedding impedance can be calculated below cutoff
+too:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">f</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">100e9</span><span class="p">,</span> <span class="mf">170e9</span><span class="p">,</span> <span class="mi">701</span><span class="p">)</span>
+<span class="n">f_grid</span> <span class="o">=</span> <span class="n">rf</span><span class="o">.</span><span class="n">freq</span><span class="p">[(</span><span class="n">rf</span><span class="o">.</span><span class="n">freq</span> <span class="o">&gt;=</span> <span class="mf">100e9</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">rf</span><span class="o">.</span><span class="n">freq</span> <span class="o">&lt;=</span> <span class="mf">170e9</span><span class="p">)]</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">axvspan</span><span class="p">(</span><span class="mi">236</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">255</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'lightblue'</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">'$f_</span><span class="si">{LO}</span><span class="s1">/2$, broken photon steps'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">f</span> <span class="o">/</span> <span class="mf">1e9</span><span class="p">,</span> <span class="n">z_fit</span><span class="p">(</span><span class="n">f</span><span class="p">)</span><span class="o">.</span><span class="n">real</span><span class="p">,</span> <span class="s1">'k-'</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">'Resistance'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">f</span> <span class="o">/</span> <span class="mf">1e9</span><span class="p">,</span> <span class="n">z_fit</span><span class="p">(</span><span class="n">f</span><span class="p">)</span><span class="o">.</span><span class="n">imag</span><span class="p">,</span> <span class="s1">'r-'</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">'Reactance'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">f_grid</span> <span class="o">/</span> <span class="mf">1e9</span><span class="p">,</span> <span class="n">z_fit</span><span class="p">(</span><span class="n">f_grid</span><span class="p">)</span><span class="o">.</span><span class="n">real</span><span class="p">,</span> <span class="s1">'ko'</span><span class="p">,</span> <span class="n">ms</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">f_grid</span> <span class="o">/</span> <span class="mf">1e9</span><span class="p">,</span> <span class="n">z_fit</span><span class="p">(</span><span class="n">f_grid</span><span class="p">)</span><span class="o">.</span><span class="n">imag</span><span class="p">,</span> <span class="s1">'ro'</span><span class="p">,</span> <span class="n">ms</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="mi">136</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">'k'</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">'--'</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="mi">137</span><span class="p">,</span> <span class="o">-</span><span class="mi">18</span><span class="p">,</span> <span class="s1">'Waveguide cutoff'</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">'k'</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">'Frequency (GHz)'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">'Embedding impedance ($\Omega$)'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">170</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="o">-</span><span class="mi">20</span><span class="p">,</span> <span class="mi">25</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="s1">'upper right'</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="_images/hfss-embedding-impedance_18_0.png" src="_images/hfss-embedding-impedance_18_0.png" />
+</div>
+</div>
+<p>The embedding impedance is strongly inductive over exactly this range. (The HFSS data are on a 5 GHz grid, shown by the dots, so the shape of the resonance between the grid points is only approximate.) With <code class="docutils literal notranslate"><span class="pre">qmix.network</span></code>, this impedance can be used directly for a sub-harmonic tone in a multi-tone simulation.</p>
+</section>
+<section id="Simulating-the-broken-photon-step">
+<h2><span class="section-number">7.7. </span>Simulating the broken photon step<a class="headerlink" href="#Simulating-the-broken-photon-step" title="Link to this heading"></a></h2>
+<p>The broken photon step is visible in the pumped I-V curves of this device between ~235 and ~245 GHz: a notch in the first photon step below the gap, followed by a jump at <span class="math notranslate nohighlight">\(V_0 = V_\mathrm{gap} - h f_{LO} / 2e\)</span>, i.e., half a photon step below the gap. Here, we will simulate the pumped I-V curve at 240.0 GHz, following Garrett et al. (2019).</p>
+<p>Since the LO (f_LO), the sub-harmonic (f_LO / 2) and the spurious tone (3/2 f_LO) are all harmonics of f_LO / 2, this only needs one tone with three harmonics:</p>
+<ul class="simple">
+<li><p>p = 1: the sub-harmonic, f_LO / 2. There is no source at this frequency (<code class="docutils literal notranslate"><span class="pre">vt</span> <span class="pre">=</span> <span class="pre">0</span></code>), but the junction generates a current here by mixing the LO and the spurious tone. The embedding impedance is from HFSS.</p></li>
+<li><p>p = 2: the LO. The embedding impedance is from HFSS.</p></li>
+<li><p>p = 3: the spurious tone at 3/2 f_LO = 360 GHz. This is above the frequency range of the HFSS simulations (300 GHz), so the embedding impedance is approximated by the junction capacitance in parallel with a resistance of <span class="math notranslate nohighlight">\(R_n\)</span>. The capacitance dominates, so the exact resistance hardly matters.</p></li>
+</ul>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">scipy.optimize</span><span class="w"> </span><span class="kn">import</span> <span class="n">minimize</span><span class="p">,</span> <span class="n">minimize_scalar</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">qmix.circuit</span><span class="w"> </span><span class="kn">import</span> <span class="n">EmbeddingCircuit</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">qmix.harmonic_balance</span><span class="w"> </span><span class="kn">import</span> <span class="n">harmonic_balance</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">qmix.qtcurrent</span><span class="w"> </span><span class="kn">import</span> <span class="n">qtcurrent</span>
+
+<span class="n">f_lo</span> <span class="o">=</span> <span class="mf">240.0</span>  <span class="c1"># GHz</span>
+<span class="k">with</span> <span class="n">quiet</span><span class="p">():</span>
+    <span class="n">pump240</span> <span class="o">=</span> <span class="n">qmix</span><span class="o">.</span><span class="n">exp</span><span class="o">.</span><span class="n">PumpedData</span><span class="p">(</span><span class="n">load</span><span class="p">(</span><span class="s1">'example-data/lo-sweep/f240.0_iv.csv'</span><span class="p">),</span> <span class="n">dciv</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="n">f_lo</span><span class="p">,</span>
+                                  <span class="n">analyze_if</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">)</span>
+
+<span class="c1"># Embedding impedances (normalized to Rn)</span>
+<span class="n">z_sub</span> <span class="o">=</span> <span class="n">z_fit</span><span class="p">(</span><span class="n">f_lo</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">*</span> <span class="mf">1e9</span><span class="p">)</span> <span class="o">/</span> <span class="n">dciv</span><span class="o">.</span><span class="n">rn</span>                    <span class="c1"># f_LO / 2, from HFSS</span>
+<span class="n">z_lo</span> <span class="o">=</span> <span class="n">z_fit</span><span class="p">(</span><span class="n">f_lo</span> <span class="o">*</span> <span class="mf">1e9</span><span class="p">)</span> <span class="o">/</span> <span class="n">dciv</span><span class="o">.</span><span class="n">rn</span>                         <span class="c1"># f_LO, from HFSS</span>
+<span class="n">w_spur</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="mf">1.5</span> <span class="o">*</span> <span class="n">f_lo</span> <span class="o">*</span> <span class="mf">1e9</span>
+<span class="n">z_spur</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="mi">1</span><span class="n">j</span> <span class="o">*</span> <span class="n">w_spur</span> <span class="o">*</span> <span class="n">cap_fit</span> <span class="o">*</span> <span class="n">dciv</span><span class="o">.</span><span class="n">rn</span><span class="p">)</span>          <span class="c1"># 3/2 f_LO: Rn in parallel with C</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Embedding impedance (Rn): f_LO/2: </span><span class="si">{:.2f}</span><span class="s2">, f_LO: </span><span class="si">{:.2f}</span><span class="s2">, 3/2 f_LO: </span><span class="si">{:.2f}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">z_sub</span><span class="p">,</span> <span class="n">z_lo</span><span class="p">,</span> <span class="n">z_spur</span><span class="p">))</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">simulate</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">vt_lo</span><span class="p">,</span> <span class="n">vt_spur</span><span class="p">,</span> <span class="n">z_sub</span><span class="o">=</span><span class="n">z_sub</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""DC current at bias voltages v, with a spurious tone at 3/2 f_LO."""</span>
+    <span class="n">cct</span> <span class="o">=</span> <span class="n">EmbeddingCircuit</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">vb_npts</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">),</span> <span class="n">vgap</span><span class="o">=</span><span class="n">dciv</span><span class="o">.</span><span class="n">vgap</span><span class="p">,</span> <span class="n">rn</span><span class="o">=</span><span class="n">dciv</span><span class="o">.</span><span class="n">rn</span><span class="p">)</span>
+    <span class="n">cct</span><span class="o">.</span><span class="n">vb</span> <span class="o">=</span> <span class="n">v</span>
+    <span class="n">cct</span><span class="o">.</span><span class="n">freq</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">pump240</span><span class="o">.</span><span class="n">vph</span> <span class="o">/</span> <span class="mi">2</span>              <span class="c1"># fundamental frequency: f_LO / 2</span>
+    <span class="n">cct</span><span class="o">.</span><span class="n">vt</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">cct</span><span class="o">.</span><span class="n">zt</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.</span><span class="p">,</span> <span class="n">z_sub</span>     <span class="c1"># p = 1: sub-harmonic (no source)</span>
+    <span class="n">cct</span><span class="o">.</span><span class="n">vt</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">cct</span><span class="o">.</span><span class="n">zt</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">vt_lo</span><span class="p">,</span> <span class="n">z_lo</span>   <span class="c1"># p = 2: LO</span>
+    <span class="n">cct</span><span class="o">.</span><span class="n">vt</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">cct</span><span class="o">.</span><span class="n">zt</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">vt_spur</span><span class="p">,</span> <span class="n">z_spur</span>  <span class="c1"># p = 3: spurious tone</span>
+    <span class="k">with</span> <span class="n">quiet</span><span class="p">():</span>
+        <span class="n">vj</span> <span class="o">=</span> <span class="n">harmonic_balance</span><span class="p">(</span><span class="n">cct</span><span class="p">,</span> <span class="n">dciv</span><span class="o">.</span><span class="n">resp_smear</span><span class="p">,</span> <span class="n">num_b</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">qtcurrent</span><span class="p">(</span><span class="n">vj</span><span class="p">,</span> <span class="n">cct</span><span class="p">,</span> <span class="n">dciv</span><span class="o">.</span><span class="n">resp_smear</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="n">num_b</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">real</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Embedding impedance (Rn): f_LO/2: 0.04+0.51j, f_LO: 0.75-0.29j, 3/2 f_LO: 0.04-0.21j
+</pre></div></div>
+</div>
+<p>We will fit the Thevenin voltages to the first photon step below the gap: first the LO alone, and then the LO plus the spurious tone. (In this simulation, the phase of the spurious tone relative to the LO hardly changes the DC current, so we take both voltages to be real.)</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">vph</span> <span class="o">=</span> <span class="n">pump240</span><span class="o">.</span><span class="n">vph</span>
+<span class="n">v_fit</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">vph</span> <span class="o">+</span> <span class="mf">0.02</span><span class="p">,</span> <span class="mf">0.98</span><span class="p">,</span> <span class="mi">60</span><span class="p">)</span>
+<span class="n">i_meas</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">v_fit</span><span class="p">,</span> <span class="n">pump240</span><span class="o">.</span><span class="n">voltage</span><span class="p">,</span> <span class="n">pump240</span><span class="o">.</span><span class="n">current</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">rms_error</span><span class="p">(</span><span class="n">vt_lo</span><span class="p">,</span> <span class="n">vt_spur</span><span class="p">,</span> <span class="n">z_sub</span><span class="o">=</span><span class="n">z_sub</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">((</span><span class="n">simulate</span><span class="p">(</span><span class="n">v_fit</span><span class="p">,</span> <span class="n">vt_lo</span><span class="p">,</span> <span class="n">vt_spur</span><span class="p">,</span> <span class="n">z_sub</span><span class="p">)</span> <span class="o">-</span> <span class="n">i_meas</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">))</span>
+
+
+<span class="c1"># LO only</span>
+<span class="n">fit1</span> <span class="o">=</span> <span class="n">minimize_scalar</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">rms_error</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="mf">0.</span><span class="p">),</span> <span class="n">bounds</span><span class="o">=</span><span class="p">(</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">),</span> <span class="n">method</span><span class="o">=</span><span class="s1">'bounded'</span><span class="p">)</span>
+<span class="c1"># LO + spurious tone</span>
+<span class="n">fit2</span> <span class="o">=</span> <span class="n">minimize</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">rms_error</span><span class="p">(</span><span class="o">*</span><span class="n">x</span><span class="p">),</span> <span class="p">[</span><span class="n">fit1</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.15</span><span class="p">],</span> <span class="n">method</span><span class="o">=</span><span class="s1">'Nelder-Mead'</span><span class="p">,</span>
+                <span class="n">options</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">xatol</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">,</span> <span class="n">fatol</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">))</span>
+<span class="n">vt_lo</span><span class="p">,</span> <span class="n">vt_spur</span> <span class="o">=</span> <span class="n">fit2</span><span class="o">.</span><span class="n">x</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">"LO only:                 vt = </span><span class="si">{:.3f}</span><span class="s2">, rms error = </span><span class="si">{:.4f}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">fit1</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">fit1</span><span class="o">.</span><span class="n">fun</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"LO + 3/2 f_LO:           vt = </span><span class="si">{:.3f}</span><span class="s2"> and </span><span class="si">{:.3f}</span><span class="s2">, rms error = </span><span class="si">{:.4f}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">vt_lo</span><span class="p">,</span> <span class="n">vt_spur</span><span class="p">,</span> <span class="n">fit2</span><span class="o">.</span><span class="n">fun</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Same, with Z(f_LO/2) = 0: rms error = </span><span class="si">{:.4f}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rms_error</span><span class="p">(</span><span class="n">vt_lo</span><span class="p">,</span> <span class="n">vt_spur</span><span class="p">,</span> <span class="n">z_sub</span><span class="o">=</span><span class="mf">0.</span><span class="p">)))</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+LO only:                 vt = 0.653, rms error = 0.0177
+LO + 3/2 f_LO:           vt = 0.615 and -0.155, rms error = 0.0093
+Same, with Z(f_LO/2) = 0: rms error = 0.0139
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.3</span><span class="p">,</span> <span class="mf">1.1</span><span class="p">,</span> <span class="mi">161</span><span class="p">)</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">pump240</span><span class="o">.</span><span class="n">voltage</span><span class="p">,</span> <span class="n">pump240</span><span class="o">.</span><span class="n">current</span><span class="p">,</span> <span class="s1">'k'</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">'Measured'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">simulate</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">fit1</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="mf">0.</span><span class="p">),</span> <span class="s1">'b--'</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">'LO only'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">simulate</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">vt_lo</span><span class="p">,</span> <span class="n">vt_spur</span><span class="p">),</span> <span class="s1">'r'</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">'LO + 3/2 $f_</span><span class="si">{LO}</span><span class="s1">$'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">simulate</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">vt_lo</span><span class="p">,</span> <span class="n">vt_spur</span><span class="p">,</span> <span class="n">z_sub</span><span class="o">=</span><span class="mf">0.</span><span class="p">),</span> <span class="s1">'g:'</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">r</span><span class="s1">'LO + 3/2 $f_</span><span class="si">{LO}</span><span class="s1">$, $Z(f_</span><span class="si">{LO}</span><span class="s1">/2) = 0$'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">vph</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">'gray'</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">'--'</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">'Bias voltage ($V_\mathrm</span><span class="si">{gap}</span><span class="s1">$)'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">'DC current ($I_\mathrm</span><span class="si">{gap}</span><span class="s1">$)'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="mf">0.3</span><span class="p">,</span> <span class="mf">1.1</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">'</span><span class="si">{:.1f}</span><span class="s1"> GHz'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">f_lo</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">10</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="_images/hfss-embedding-impedance_23_0.png" src="_images/hfss-embedding-impedance_23_0.png" />
+</div>
+</div>
+<p>With the LO alone, the simulated photon step is smooth. Adding the spurious tone at 3/2 f_LO halves the error and reproduces the notch and the jump at half a photon step below the gap (gray line). The sub-harmonic embedding impedance is essential: with the same sources but <span class="math notranslate nohighlight">\(Z(f_{LO}/2) = 0\)</span>, the notch disappears, as in Garrett et al. (2019). The spurious tone and the LO mix to f_LO / 2, and the inductive embedding impedance at this frequency turns this current into a voltage, which creates
+the extra half-photon steps.</p>
+<p><strong>Note:</strong> At one or two bias voltages right at the jump, the harmonic balance may not converge (the solution changes abruptly there), and QMix prints a warning.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="analyze-experimental-data.html" class="btn btn-neutral float-left" title="6. Example #3: Analyzing experimental data" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="lo-saturation.html" class="btn btn-neutral float-right" title="8. Example #5: Power saturation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2017-2026, John Garrett.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
