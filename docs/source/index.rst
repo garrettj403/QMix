@@ -20,6 +20,8 @@ Contents
    single-tone-simulation
    multi-tone-simulation
    analyze-experimental-data
+   hfss-embedding-impedance
+   lo-saturation
    references
 
 Indices and tables

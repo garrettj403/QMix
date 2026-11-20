@@ -1,9 +1,11 @@
 Example Workflows
 =================
 
-This directory contains 3 example workflows:
-   1. ``single-tone-simple.ipynb``: a simple one tone simulation of an SIS junction
-   2. ``multi-tone.ipynb``: a multi-tone simulation (heterodyne mixing) of an SIS junction
+This directory contains 5 example workflows:
+   1. ``single-tone-simulation.ipynb``: a simple one tone simulation of an SIS junction
+   2. ``multi-tone-simulation.ipynb``: a multi-tone simulation (heterodyne mixing) of an SIS junction
    3. ``analyze-experimental-data.ipynb``: analyzing experimental data from an SIS mixer
+   4. ``hfss-embedding-impedance.ipynb``: the embedding impedance from HFSS S-parameters, compared with the impedances recovered from experimental data
+   5. ``lo-saturation.ipynb``: power saturation of an SIS mixer (vs LO power and vs RF power), compared with experimental data
 
-This directory contains some example experimental data, which is used to run these examples. This data is contained within ``eg-230-data/``.
+The example experimental data used by these examples is in ``example-data/``.

@@ -28,6 +28,8 @@ Other references
 
 Kennedy, P. R. (1999). *Superconducting Devices for Millimeter Wavelength Astronomy.* (DPhil). University of Cambridge.
 
+Kerr, A. R. (2002). Saturation by Noise and CW Signals in SIS Mixers. In Proc. 13th Int. Symp. Space THz Tech. (pp. 11-22). Cambridge, MA.
+
 Rashid, H., Krause, S., Meledin, D., Desmaris, V., Pavolotsky, A., & Belitsky, V. (2016). `Frequency Multiplier Based on Distributed Superconducting Tunnel Junctions: Theory, Design, and Characterization. <http://ieeexplore.ieee.org/document/7511700/>`_ IEEE Transactions on Terahertz Science and Technology, 1-13.
 
 Skalare, A. (1989). `Determining embedding circuit parameters from DC measurements on quasiparticle mixers. <http://link.springer.com/10.1007/BF01010125>`_ Journal of Infrared, Millimeter, and Terahertz Waves, 10(11), 1339–1353.
