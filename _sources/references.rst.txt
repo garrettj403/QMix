@@ -32,6 +32,8 @@ Rashid, H., Krause, S., Meledin, D., Desmaris, V., Pavolotsky, A., & Belitsky, V
 
 Skalare, A. (1989). `Determining embedding circuit parameters from DC measurements on quasiparticle mixers. <http://link.springer.com/10.1007/BF01010125>`_ Journal of Infrared, Millimeter, and Terahertz Waves, 10(11), 1339–1353.
 
+Tien, P. K., & Gordon, J. P. (1963). `Multiphoton process observed in the interaction of microwave fields with the tunneling between superconductor films. <https://link.aps.org/doi/10.1103/PhysRev.129.647>`_ Physical Review, 129(2), 647-651.
+
 Tucker, J. R., & Feldman, M. J. (1985). `Quantum detection at millimeter wavelengths. <https://link.aps.org/doi/10.1103/RevModPhys.57.1055>`_ Reviews of Modern Physics, 57(4), 1055-1113.
 
 Woody, D. P., Miller, R. E., & Wengler, M. J. (1985). `85--115-GHz Receivers for Radio Astronomy. <https://ieeexplore.ieee.org/abstract/document/1132955>`_ IEEE Transactions on Microwave Theory and Techniques, 33(2), 90–95.

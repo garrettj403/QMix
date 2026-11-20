@@ -1,0 +1,201 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>3.1. Multi-Tone Spectral Domain Analysis &mdash; QMix latest documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=c6e86fd7"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="3.2. Harmonic Balance" href="harmonic-balance.html" />
+    <link rel="prev" title="3. Theory" href="theory.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            QMix
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="setup.html">1. Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="qmix.html">2. Package API</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="theory.html">3. Theory</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">3.1. Multi-Tone Spectral Domain Analysis</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#the-response-function">3.1.1. The response function</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#one-tone">3.1.2. One tone</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#one-tone-with-harmonics">3.1.3. One tone with harmonics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#multiple-tones">3.1.4. Multiple tones</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#the-tunneling-current">3.1.5. The tunneling current</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="harmonic-balance.html">3.2. Harmonic Balance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="fourier-shift-method.html">3.3. The Fourier-Shift Method</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="single-tone-simulation.html">4. Example #1: Creating a simple 1 tone simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multi-tone-simulation.html">5. Example #2: Simulating an SIS mixer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analyze-experimental-data.html">6. Example #3: Analyzing experimental data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="references.html">7. References</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">QMix</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="theory.html"><span class="section-number">3. </span>Theory</a></li>
+      <li class="breadcrumb-item active"><span class="section-number">3.1. </span>Multi-Tone Spectral Domain Analysis</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/mtsda.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="multi-tone-spectral-domain-analysis">
+<span id="mtsda"></span><h1><span class="section-number">3.1. </span>Multi-Tone Spectral Domain Analysis<a class="headerlink" href="#multi-tone-spectral-domain-analysis" title="Link to this heading"></a></h1>
+<p>This page describes how QMix calculates the quasiparticle tunneling current through an SIS junction when the voltage across the junction is known. The voltage can contain any number of tones (e.g., a local oscillator, an RF signal and the IF), each with any number of harmonics.</p>
+<p>All quantities are normalized, as everywhere in QMix: voltages to the gap voltage <span class="math notranslate nohighlight">\(V_\mathrm{gap}\)</span>, currents to the gap current <span class="math notranslate nohighlight">\(I_\mathrm{gap} = V_\mathrm{gap} / R_n\)</span>, impedances to the normal-state resistance <span class="math notranslate nohighlight">\(R_n\)</span>, and frequencies to the gap frequency <span class="math notranslate nohighlight">\(f_\mathrm{gap} = e V_\mathrm{gap} / h\)</span>. In these units, a frequency is equal to the photon voltage <span class="math notranslate nohighlight">\(h f / e\)</span> (also normalized to the gap voltage).</p>
+<section id="the-response-function">
+<h2><span class="section-number">3.1.1. </span>The response function<a class="headerlink" href="#the-response-function" title="Link to this heading"></a></h2>
+<p>In Tucker’s theory of quasiparticle tunneling (Tucker and Feldman, 1985), everything about the junction itself is contained in its <em>response function</em></p>
+<div class="math notranslate nohighlight">
+\[\tilde{I}(V) = I_{kk}(V) + j \, I_{dc}(V),\]</div>
+<p>where <span class="math notranslate nohighlight">\(I_{dc}(V)\)</span> is the DC I-V curve of the unpumped junction and <span class="math notranslate nohighlight">\(I_{kk}(V)\)</span> is its Kramers-Kronig transform. The DC I-V curve gives the in-phase (dissipative) part of the response, and the Kramers-Kronig transform gives the quadrature (reactive) part. The reactive part is what makes the junction impedance complex near the gap.</p>
+<p>In QMix, the response function is built by the classes in <a class="reference internal" href="qmix.html#module-qmix.respfn" title="qmix.respfn"><code class="xref py py-mod docutils literal notranslate"><span class="pre">qmix.respfn</span></code></a>, either from an I-V curve model (e.g., <a class="reference internal" href="qmix.html#qmix.respfn.RespFnPolynomial" title="qmix.respfn.RespFnPolynomial"><code class="xref py py-class docutils literal notranslate"><span class="pre">qmix.respfn.RespFnPolynomial</span></code></a>) or from experimental data (<a class="reference internal" href="qmix.html#qmix.respfn.RespFnFromIVData" title="qmix.respfn.RespFnFromIVData"><code class="xref py py-class docutils literal notranslate"><span class="pre">qmix.respfn.RespFnFromIVData</span></code></a>). The Kramers-Kronig transform is calculated with an FFT-based Hilbert transform (<a class="reference internal" href="qmix.mathfn.html#qmix.mathfn.kktrans.kk_trans" title="qmix.mathfn.kktrans.kk_trans"><code class="xref py py-func docutils literal notranslate"><span class="pre">qmix.mathfn.kktrans.kk_trans()</span></code></a>), and both curves are interpolated with splines so that <span class="math notranslate nohighlight">\(\tilde{I}\)</span> can be evaluated at any voltage.</p>
+</section>
+<section id="one-tone">
+<h2><span class="section-number">3.1.2. </span>One tone<a class="headerlink" href="#one-tone" title="Link to this heading"></a></h2>
+<p>Consider a junction with a DC bias voltage <span class="math notranslate nohighlight">\(V_0\)</span> and a sinusoidal voltage at frequency <span class="math notranslate nohighlight">\(\omega\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[V(t) = V_0 + |V_\omega| \cos(\omega t + \phi).\]</div>
+<p>The voltage modulates the phase of the quasiparticle wavefunctions on one side of the barrier by the <em>phase factor</em></p>
+<div class="math notranslate nohighlight">
+\[W(t) = \exp\left[ -j \int |V_\omega| \cos(\omega t' + \phi) \, \mathrm{d}t' \right]
+     = \sum_{n=-\infty}^{\infty} J_n(\alpha) \, e^{-j n \phi} \, e^{-j n \omega t},\]</div>
+<p>where the second form follows from the Jacobi-Anger expansion, <span class="math notranslate nohighlight">\(J_n\)</span> is a Bessel function of the first kind, and</p>
+<div class="math notranslate nohighlight">
+\[\alpha = \frac{|V_\omega|}{\omega}\]</div>
+<p>is the <em>drive level</em> (in physical units, <span class="math notranslate nohighlight">\(\alpha = e |V_\omega| / \hbar \omega\)</span>). Each term in the sum is a quasiparticle that has absorbed (<span class="math notranslate nohighlight">\(n &gt; 0\)</span>) or emitted (<span class="math notranslate nohighlight">\(n &lt; 0\)</span>) <span class="math notranslate nohighlight">\(|n|\)</span> photons. The DC current is the classic photon-assisted tunneling result of Tien and Gordon:</p>
+<div class="math notranslate nohighlight">
+\[I_{dc}^{\mathrm{pumped}}(V_0) = \sum_{n=-\infty}^{\infty} J_n^2(\alpha) \, I_{dc}(V_0 + n \omega).\]</div>
+<p>This produces the photon steps in the pumped I-V curve, at <span class="math notranslate nohighlight">\(V_0 = 1 - n \omega\)</span> below the gap.</p>
+</section>
+<section id="one-tone-with-harmonics">
+<h2><span class="section-number">3.1.3. </span>One tone with harmonics<a class="headerlink" href="#one-tone-with-harmonics" title="Link to this heading"></a></h2>
+<p>In general, the voltage at a tone also has harmonics, <span class="math notranslate nohighlight">\(p = 1, 2, \ldots, P\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[V(t) = V_0 + \sum_{p=1}^{P} |V_{p}| \cos(p \omega t + \phi_p).\]</div>
+<p>The phase factor is then a product of one Jacobi-Anger series per harmonic, each with its own drive level <span class="math notranslate nohighlight">\(\alpha_p = |V_p| / (p \omega)\)</span> and coefficients</p>
+<div class="math notranslate nohighlight">
+\[c^{(p)}_n = J_n(\alpha_p) \, e^{-j n \phi_p}\]</div>
+<p>(Eqns. 5.5 and 5.7 in Kittara’s thesis). Collecting the terms by their overall frequency <span class="math notranslate nohighlight">\(k \omega\)</span> gives</p>
+<div class="math notranslate nohighlight">
+\[W(t) = \sum_{k} C_k \, e^{-j k \omega t},
+\qquad
+C_k = \sum_{n_1 + 2 n_2 + \cdots + P n_P = k} \; \prod_{p=1}^{P} c^{(p)}_{n_p},\]</div>
+<p>where <span class="math notranslate nohighlight">\(C_k\)</span> are the <em>phase factor coefficients</em> of the tone (Eqn. 5.12). QMix calculates them in <a class="reference internal" href="qmix.html#qmix.qtcurrent.calculate_phase_factor_coeff" title="qmix.qtcurrent.calculate_phase_factor_coeff"><code class="xref py py-func docutils literal notranslate"><span class="pre">qmix.qtcurrent.calculate_phase_factor_coeff()</span></code></a>, by convolving the coefficients of the harmonics one at a time. The sum over <span class="math notranslate nohighlight">\(k\)</span> is truncated at <span class="math notranslate nohighlight">\(|k| \le B\)</span>, where <span class="math notranslate nohighlight">\(B\)</span> is the summation limit (<code class="docutils literal notranslate"><span class="pre">num_b</span></code>). Since <span class="math notranslate nohighlight">\(J_n(\alpha)\)</span> falls off quickly once <span class="math notranslate nohighlight">\(|n| &gt; \alpha\)</span>, <span class="math notranslate nohighlight">\(B\)</span> must be somewhat larger than the drive level; <a class="reference internal" href="qmix.html#qmix.qtcurrent.suggest_num_b" title="qmix.qtcurrent.suggest_num_b"><code class="xref py py-func docutils literal notranslate"><span class="pre">qmix.qtcurrent.suggest_num_b()</span></code></a> estimates it from a solved junction voltage.</p>
+</section>
+<section id="multiple-tones">
+<h2><span class="section-number">3.1.4. </span>Multiple tones<a class="headerlink" href="#multiple-tones" title="Link to this heading"></a></h2>
+<p>Now consider <span class="math notranslate nohighlight">\(F\)</span> tones with frequencies <span class="math notranslate nohighlight">\(\omega_1, \ldots, \omega_F\)</span> that are not harmonically related (e.g., an LO and an RF signal), each with its own harmonics. The phase factor of the total voltage is the product of the phase factors of the individual tones, so it is described by the coefficients <span class="math notranslate nohighlight">\(C^{(f)}_k\)</span> of each tone <span class="math notranslate nohighlight">\(f\)</span>, calculated as above:</p>
+<div class="math notranslate nohighlight">
+\[W(t) = \prod_{f=1}^{F} \sum_{k_f} C^{(f)}_{k_f} \, e^{-j k_f \omega_f t}.\]</div>
+<p>This is the central idea of <em>multi-tone spectral domain analysis</em>: the phase factor is never formed in the time domain. Each tone is described by its own set of coefficients, and the tunneling current is assembled directly at the frequencies of interest.</p>
+</section>
+<section id="the-tunneling-current">
+<h2><span class="section-number">3.1.5. </span>The tunneling current<a class="headerlink" href="#the-tunneling-current" title="Link to this heading"></a></h2>
+<p>The tunneling current at an output frequency <span class="math notranslate nohighlight">\(\omega\)</span> (e.g., 0 for the DC current, the LO frequency, or the IF) comes from every combination of tone harmonics <span class="math notranslate nohighlight">\(\mathbf{a} = (a_1, \ldots, a_F)\)</span> that lands on that frequency,</p>
+<div class="math notranslate nohighlight">
+\[a_1 \omega_1 + a_2 \omega_2 + \cdots + a_F \omega_F = \omega.\]</div>
+<p>For each combination, the contribution is given by a sum over the summation indices of all tones (Eqns. 5.25 and 5.35 in Kittara’s thesis):</p>
+<div class="math notranslate nohighlight" id="equation-mtsda-sum">
+<span class="eqno">(1)<a class="headerlink" href="#equation-mtsda-sum" title="Link to this equation"></a></span>\[R_{\mathbf{a}} + j S_{\mathbf{a}} = \sum_{k_1 = -B_1}^{B_1} \cdots \sum_{k_F = -B_F}^{B_F}
+\left[ \prod_{f=1}^{F} C^{(f)}_{k_f} \, C^{(f)*}_{k_f + a_f} \right]
+\tilde{I}\!\left( V_0 + \sum_{f=1}^{F} k_f \omega_f \right).\]</div>
+<p>The response function is evaluated at the bias voltage shifted by every combination of photon energies, and each value is weighted by products of the phase factor coefficients. The current phasor at <span class="math notranslate nohighlight">\(\omega\)</span> is then (Eqn. 5.36)</p>
+<div class="math notranslate nohighlight">
+\[I_{\omega} = \sum_{\mathbf{a}} \left[ \left( S_{\mathbf{a}} + S_{-\mathbf{a}} \right) - j \left( R_{\mathbf{a}} - R_{-\mathbf{a}} \right) \right],\]</div>
+<p>and the DC current is <span class="math notranslate nohighlight">\(I_{0} = S_{\mathbf{0}}\)</span>. For one tone and one harmonic, <span class="math notranslate nohighlight">\(S_{\mathbf{0}}\)</span> reduces to the Tien-Gordon formula above.</p>
+<p>Three practical points follow:</p>
+<ul class="simple">
+<li><p><strong>Which combinations contribute.</strong> QMix includes all combinations with <span class="math notranslate nohighlight">\(|a_f| \le P\)</span> (the number of harmonics). When the tones are commensurate, combinations with larger indices can land on the same output frequency, e.g., <span class="math notranslate nohighlight">\(2 \, \omega_{LO} - \omega_{LSB} = \omega_{USB}\)</span> for a mixer with the LO, both sidebands and the IF as tones. Some of these are first order in the signals, so QMix also includes every combination whose contribution could exceed a small fraction (<code class="docutils literal notranslate"><span class="pre">MIXING_TOL</span></code>) of the current at that frequency. To decide which frequencies are equal, QMix rounds them to 4 decimal places (normalized), so tones closer together than about <span class="math notranslate nohighlight">\(10^{-4} f_\mathrm{gap}\)</span> cannot be told apart.</p></li>
+<li><p><strong>Cost.</strong> Equation <a class="reference internal" href="#equation-mtsda-sum">(1)</a> has <span class="math notranslate nohighlight">\(\prod_f (2 B_f + 1)\)</span> terms for every bias voltage and every combination <span class="math notranslate nohighlight">\(\mathbf{a}\)</span>. QMix evaluates the response function once at all of the shifted voltages (<a class="reference internal" href="qmix.html#qmix.qtcurrent.interpolate_respfn" title="qmix.qtcurrent.interpolate_respfn"><code class="xref py py-func docutils literal notranslate"><span class="pre">qmix.qtcurrent.interpolate_respfn()</span></code></a>) and then evaluates all of the combinations together, in batches. The cost still grows <em>multiplicatively</em> with the number of tones. With five or more tones, or with large summation limits, the <a class="reference internal" href="fourier-shift-method.html#fourier-shift-method"><span class="std std-ref">The Fourier-Shift Method</span></a> is more efficient.</p></li>
+<li><p><strong>The junction voltage must be known.</strong> These equations give the current for a given voltage across the junction, <span class="math notranslate nohighlight">\(V_{f,p}\)</span> for every tone <span class="math notranslate nohighlight">\(f\)</span> and harmonic <span class="math notranslate nohighlight">\(p\)</span>. In a real circuit, this voltage depends on the current that the junction draws. Harmonic balance (next page) solves this.</p></li>
+</ul>
+<p>In QMix, the voltages are stored in an array <code class="docutils literal notranslate"><span class="pre">vj[f,</span> <span class="pre">p,</span> <span class="pre">i]</span></code> (tone, harmonic, bias voltage) with the tone and harmonic axes indexed from 1. The current is calculated with <a class="reference internal" href="qmix.html#qmix.qtcurrent.qtcurrent" title="qmix.qtcurrent.qtcurrent"><code class="xref py py-func docutils literal notranslate"><span class="pre">qmix.qtcurrent.qtcurrent()</span></code></a>, which takes the junction voltage, the embedding circuit (for the frequencies), the response function, and the output frequencies.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="theory.html" class="btn btn-neutral float-left" title="3. Theory" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="harmonic-balance.html" class="btn btn-neutral float-right" title="3.2. Harmonic Balance" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2017-2026, John Garrett.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

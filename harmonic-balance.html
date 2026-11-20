@@ -1,0 +1,190 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>3.2. Harmonic Balance &mdash; QMix latest documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=c6e86fd7"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="3.3. The Fourier-Shift Method" href="fourier-shift-method.html" />
+    <link rel="prev" title="3.1. Multi-Tone Spectral Domain Analysis" href="mtsda.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            QMix
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="setup.html">1. Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="qmix.html">2. Package API</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="theory.html">3. Theory</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="mtsda.html">3.1. Multi-Tone Spectral Domain Analysis</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">3.2. Harmonic Balance</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#the-embedding-circuit">3.2.1. The embedding circuit</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#the-harmonic-balance-equations">3.2.2. The harmonic balance equations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#newton-s-method">3.2.3. Newton’s method</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#robustness">3.2.4. Robustness</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#convergence">3.2.5. Convergence</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#choosing-the-parameters">3.2.6. Choosing the parameters</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="fourier-shift-method.html">3.3. The Fourier-Shift Method</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="single-tone-simulation.html">4. Example #1: Creating a simple 1 tone simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multi-tone-simulation.html">5. Example #2: Simulating an SIS mixer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analyze-experimental-data.html">6. Example #3: Analyzing experimental data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="references.html">7. References</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">QMix</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="theory.html"><span class="section-number">3. </span>Theory</a></li>
+      <li class="breadcrumb-item active"><span class="section-number">3.2. </span>Harmonic Balance</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/harmonic-balance.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="harmonic-balance">
+<span id="id1"></span><h1><span class="section-number">3.2. </span>Harmonic Balance<a class="headerlink" href="#harmonic-balance" title="Link to this heading"></a></h1>
+<p>The tunneling current calculation on the previous page needs the voltage across the junction. In practice, the junction is embedded in an RF circuit (the waveguide probe, tuning circuit, IF circuit, etc.), and the voltage across it depends on how much current it draws, which in turn depends on the voltage. Harmonic balance solves for the junction voltage that satisfies both at the same time.</p>
+<p>As before, all values are normalized to the gap voltage, gap current, normal-state resistance and gap frequency.</p>
+<section id="the-embedding-circuit">
+<h2><span class="section-number">3.2.1. </span>The embedding circuit<a class="headerlink" href="#the-embedding-circuit" title="Link to this heading"></a></h2>
+<p>The embedding circuit is linear, so at each frequency it can be reduced to a Thevenin equivalent: a voltage source <span class="math notranslate nohighlight">\(V_{T}\)</span> in series with an impedance <span class="math notranslate nohighlight">\(Z_{T}\)</span>. QMix uses one Thevenin circuit for every tone <span class="math notranslate nohighlight">\(f\)</span> and harmonic <span class="math notranslate nohighlight">\(p\)</span> (<a class="reference internal" href="qmix.html#qmix.circuit.EmbeddingCircuit" title="qmix.circuit.EmbeddingCircuit"><code class="xref py py-class docutils literal notranslate"><span class="pre">qmix.circuit.EmbeddingCircuit</span></code></a>, attributes <code class="docutils literal notranslate"><span class="pre">vt[f,</span> <span class="pre">p]</span></code> and <code class="docutils literal notranslate"><span class="pre">zt[f,</span> <span class="pre">p]</span></code>). A source can be zero: for example, a harmonic of the LO, or the IF of a mixer, is generated by the junction itself, and it develops a voltage only through the embedding impedance at that frequency.</p>
+<p>The DC bias is treated as an ideal voltage source, so the DC voltage across the junction is the bias voltage <span class="math notranslate nohighlight">\(V_0\)</span>.</p>
+</section>
+<section id="the-harmonic-balance-equations">
+<h2><span class="section-number">3.2.2. </span>The harmonic balance equations<a class="headerlink" href="#the-harmonic-balance-equations" title="Link to this heading"></a></h2>
+<p>At each frequency, the junction voltage <span class="math notranslate nohighlight">\(V_{J}\)</span> and current <span class="math notranslate nohighlight">\(I_{J}\)</span> must satisfy Kirchhoff’s voltage law around the Thevenin circuit:</p>
+<div class="math notranslate nohighlight">
+\[V_{J,fp} = V_{T,fp} - Z_{T,fp} \, I_{J,fp}(\mathbf{V}_J),\]</div>
+<p>for every tone <span class="math notranslate nohighlight">\(f\)</span> and harmonic <span class="math notranslate nohighlight">\(p\)</span>. The current at each frequency is calculated with MTSDA from the voltages at <em>all</em> frequencies, <span class="math notranslate nohighlight">\(\mathbf{V}_J\)</span>, so these equations are coupled and strongly non-linear. For <span class="math notranslate nohighlight">\(F\)</span> tones with <span class="math notranslate nohighlight">\(P\)</span> harmonics each, there are <span class="math notranslate nohighlight">\(N = F P\)</span> complex unknowns at every bias voltage. The bias voltages are independent of each other, so QMix solves them all at once, as vectors.</p>
+<p>The equations are written as an error function that is zero at the solution:</p>
+<div class="math notranslate nohighlight">
+\[\mathbf{e}(\mathbf{V}_J) = \mathbf{V}_T - \mathbf{Z}_T \, \mathbf{I}_J(\mathbf{V}_J) - \mathbf{V}_J = 0,\]</div>
+<p>where the products are taken element by element.</p>
+</section>
+<section id="newton-s-method">
+<h2><span class="section-number">3.2.3. </span>Newton’s method<a class="headerlink" href="#newton-s-method" title="Link to this heading"></a></h2>
+<p><a class="reference internal" href="qmix.html#qmix.harmonic_balance.harmonic_balance" title="qmix.harmonic_balance.harmonic_balance"><code class="xref py py-func docutils literal notranslate"><span class="pre">qmix.harmonic_balance.harmonic_balance()</span></code></a> finds the root of <span class="math notranslate nohighlight">\(\mathbf{e}\)</span> with Newton’s method. The first guess treats the junction as a fixed impedance <span class="math notranslate nohighlight">\(Z_J\)</span> (<code class="docutils literal notranslate"><span class="pre">zj_guess</span></code>, 0.67 by default):</p>
+<div class="math notranslate nohighlight">
+\[\mathbf{V}_J^{(0)} = \mathbf{V}_T \, \frac{Z_J}{Z_J + \mathbf{Z}_T}.\]</div>
+<p>Then each iteration linearizes the error around the current estimate and solves for a correction.</p>
+<p>The current is not an analytic function of the complex voltage: it depends on the magnitude and phase of each voltage separately, through the Bessel functions. QMix therefore treats the real and imaginary parts of each voltage as separate unknowns. The Jacobian is a real <span class="math notranslate nohighlight">\(2N \times 2N\)</span> matrix, built from <span class="math notranslate nohighlight">\(2 \times 2\)</span> blocks</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\mathbf{J}_{pq} =
+\begin{bmatrix}
+  \partial \, \mathrm{Re}\, e_p / \partial \, \mathrm{Re}\, V_q &amp; \partial \, \mathrm{Re}\, e_p / \partial \, \mathrm{Im}\, V_q \\
+  \partial \, \mathrm{Im}\, e_p / \partial \, \mathrm{Re}\, V_q &amp; \partial \, \mathrm{Im}\, e_p / \partial \, \mathrm{Im}\, V_q
+\end{bmatrix},\end{split}\]</div>
+<p>for every pair of signals <span class="math notranslate nohighlight">\(p, q\)</span>. The derivatives are calculated numerically, with steps of <span class="math notranslate nohighlight">\(10^{-3}\)</span> in the real and imaginary part of each voltage. The Newton step is</p>
+<div class="math notranslate nohighlight">
+\[\Delta \mathbf{V}_J = - \mathbf{J}^{-1} \, \mathbf{e}(\mathbf{V}_J).\]</div>
+<p>Building the Jacobian takes <span class="math notranslate nohighlight">\(2N\)</span> tunneling current calculations, which is most of the run time. QMix therefore keeps the same Jacobian for further iterations as long as each iteration still at least halves the largest relative error (<code class="docutils literal notranslate"><span class="pre">reuse_jacobian=True</span></code>, <code class="docutils literal notranslate"><span class="pre">JACOBIAN_REUSE_RATIO</span></code>). Near the solution, Newton’s method converges so quickly that an outdated Jacobian is usually good enough.</p>
+</section>
+<section id="robustness">
+<h2><span class="section-number">3.2.4. </span>Robustness<a class="headerlink" href="#robustness" title="Link to this heading"></a></h2>
+<p>When the junction loads the embedding circuit strongly (e.g., a large embedding impedance near the gap voltage), the full Newton step can overshoot and the iteration can diverge. QMix guards against this in three ways (<code class="docutils literal notranslate"><span class="pre">line_search=True</span></code>, the default):</p>
+<ul class="simple">
+<li><p><strong>Line search.</strong> At each bias voltage, the Newton step is only accepted if it reduces the squared error <span class="math notranslate nohighlight">\(|\mathbf{e}|^2\)</span> enough (the sufficient decrease condition). Otherwise the step is shortened, by backtracking, until it does. The error at the accepted step is also the error for the next iteration, so full steps cost nothing extra.</p></li>
+<li><p><strong>New Jacobian.</strong> If no acceptable step exists with an outdated Jacobian, the voltage at that bias point is kept and a new Jacobian is calculated.</p></li>
+<li><p><strong>Restart.</strong> If no acceptable step exists even with a new Jacobian (the iteration is stuck near a local minimum of the error rather than a root), the bias point is restarted from the solution at the nearest bias voltage that has already converged.</p></li>
+</ul>
+<p>For multi-tone simulations with one strong tone (e.g., an LO with weak signals), <code class="docutils literal notranslate"><span class="pre">warm_start=True</span></code> first solves the strongest tone on its own, which is cheap, and uses the result as the starting point for that tone. This often cuts the number of multi-tone iterations by 2-3 times, but not always, so it is not the default.</p>
+</section>
+<section id="convergence">
+<h2><span class="section-number">3.2.5. </span>Convergence<a class="headerlink" href="#convergence" title="Link to this heading"></a></h2>
+<p>The iteration stops when the relative error, <span class="math notranslate nohighlight">\(|e_{fp}| / |V_{J,fp}|\)</span>, is below <code class="docutils literal notranslate"><span class="pre">stop_rerror</span></code> (<span class="math notranslate nohighlight">\(10^{-3}\)</span> by default) for every signal and bias voltage, or after <code class="docutils literal notranslate"><span class="pre">max_it</span></code> iterations. Bias voltages that have converged keep being updated while the others are still converging, so most of them end up much more accurate than the tolerance (typically <span class="math notranslate nohighlight">\(\sim 10^{-12}\)</span>). The solution can be checked independently with <a class="reference internal" href="qmix.html#qmix.harmonic_balance.check_hb_error" title="qmix.harmonic_balance.check_hb_error"><code class="xref py py-func docutils literal notranslate"><span class="pre">qmix.harmonic_balance.check_hb_error()</span></code></a>.</p>
+<p>The result is the junction voltage <code class="docutils literal notranslate"><span class="pre">vj[f,</span> <span class="pre">p,</span> <span class="pre">i]</span></code> for every tone, harmonic and bias voltage. It can be passed to <a class="reference internal" href="qmix.html#qmix.qtcurrent.qtcurrent" title="qmix.qtcurrent.qtcurrent"><code class="xref py py-func docutils literal notranslate"><span class="pre">qmix.qtcurrent.qtcurrent()</span></code></a> to calculate the currents at any frequency, e.g., the DC current (the pumped I-V curve) or the current at the IF (the output power of a mixer).</p>
+</section>
+<section id="choosing-the-parameters">
+<h2><span class="section-number">3.2.6. </span>Choosing the parameters<a class="headerlink" href="#choosing-the-parameters" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">num_b</span></code>: the summation limit for the phase factor coefficients, one value per tone or one for all. It must be larger than the drive level of each tone, <span class="math notranslate nohighlight">\(|V_{J,f1}| / \omega_f\)</span>. Tones that are driven hard at a low frequency need many terms, e.g., an IF tone with a large voltage swing. After a first solution, <a class="reference internal" href="qmix.html#qmix.qtcurrent.suggest_num_b" title="qmix.qtcurrent.suggest_num_b"><code class="xref py py-func docutils literal notranslate"><span class="pre">qmix.qtcurrent.suggest_num_b()</span></code></a> estimates the limits from the junction voltage. It uses the junction voltage rather than <code class="docutils literal notranslate"><span class="pre">vt</span></code>, since tones with no source can still have large voltages.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">num_p</span></code> (in <a class="reference internal" href="qmix.html#qmix.circuit.EmbeddingCircuit" title="qmix.circuit.EmbeddingCircuit"><code class="xref py py-class docutils literal notranslate"><span class="pre">qmix.circuit.EmbeddingCircuit</span></code></a>): the number of harmonics of each tone. Each harmonic adds unknowns and widens the range of the sums. One or two harmonics are usually enough, since the junction capacitance shorts out the higher harmonics.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">method</span></code>: how the sums in the tunneling current are evaluated: directly or with the <a class="reference internal" href="fourier-shift-method.html#fourier-shift-method"><span class="std std-ref">The Fourier-Shift Method</span></a>. <code class="docutils literal notranslate"><span class="pre">'auto'</span></code> picks the Fourier-shift method only when the direct method would need too much memory.</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="mtsda.html" class="btn btn-neutral float-left" title="3.1. Multi-Tone Spectral Domain Analysis" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="fourier-shift-method.html" class="btn btn-neutral float-right" title="3.3. The Fourier-Shift Method" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2017-2026, John Garrett.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

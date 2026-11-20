@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>4. Example #2: Simulating an SIS mixer &mdash; QMix latest documentation</title>
+  <title>5. Example #2: Simulating an SIS mixer &mdash; QMix latest documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="_static/nbsphinx-code-cells.css?v=2aa19091" />
@@ -23,8 +23,8 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="5. The Fourier-Shift Method" href="fourier-shift-method.html" />
-    <link rel="prev" title="3. Example #1: Creating a simple 1 tone simulation" href="single-tone-simulation.html" /> 
+    <link rel="next" title="6. Example #3: Analyzing experimental data" href="analyze-experimental-data.html" />
+    <link rel="prev" title="4. Example #1: Creating a simple 1 tone simulation" href="single-tone-simulation.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -49,20 +49,20 @@
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="setup.html">1. Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="qmix.html">2. Package API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="single-tone-simulation.html">3. Example #1: Creating a simple 1 tone simulation</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">4. Example #2: Simulating an SIS mixer</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#Define-the-junction-properties">4.1. Define the junction properties</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#Define-the-embedding-circuit">4.2. Define the embedding circuit</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#Generate-the-response-function">4.3. Generate the response function</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#Perform-harmonic-balance">4.4. Perform harmonic balance</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#Calculate-tunnelling-currents">4.5. Calculate tunnelling currents</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#Calculate-mixer-gain">4.5.1. Calculate mixer gain</a></li>
+<li class="toctree-l1"><a class="reference internal" href="theory.html">3. Theory</a></li>
+<li class="toctree-l1"><a class="reference internal" href="single-tone-simulation.html">4. Example #1: Creating a simple 1 tone simulation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">5. Example #2: Simulating an SIS mixer</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#Define-the-junction-properties">5.1. Define the junction properties</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Define-the-embedding-circuit">5.2. Define the embedding circuit</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Generate-the-response-function">5.3. Generate the response function</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Perform-harmonic-balance">5.4. Perform harmonic balance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Calculate-tunnelling-currents">5.5. Calculate tunnelling currents</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Calculate-mixer-gain">5.5.1. Calculate mixer gain</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#Plot-Results">4.6. Plot Results</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Plot-Results">5.6. Plot Results</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="fourier-shift-method.html">5. The Fourier-Shift Method</a></li>
 <li class="toctree-l1"><a class="reference internal" href="analyze-experimental-data.html">6. Example #3: Analyzing experimental data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="references.html">7. References</a></li>
 </ul>
@@ -81,7 +81,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active"><span class="section-number">4. </span>Example #2: Simulating an SIS mixer</li>
+      <li class="breadcrumb-item active"><span class="section-number">5. </span>Example #2: Simulating an SIS mixer</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/multi-tone-simulation.ipynb.txt" rel="nofollow"> View page source</a>
       </li>
@@ -92,7 +92,7 @@
            <div itemprop="articleBody">
              
   <section id="Example-#2:-Simulating-an-SIS-mixer">
-<h1><span class="section-number">4. </span>Example #2: Simulating an SIS mixer<a class="headerlink" href="#Example-#2:-Simulating-an-SIS-mixer" title="Link to this heading"></a></h1>
+<h1><span class="section-number">5. </span>Example #2: Simulating an SIS mixer<a class="headerlink" href="#Example-#2:-Simulating-an-SIS-mixer" title="Link to this heading"></a></h1>
 <ul class="simple">
 <li><p>This example will simulate a simple SIS mixer.</p></li>
 <li><p>The input will consists of 3 signals:</p>
@@ -142,7 +142,7 @@ OMP: Info #276: omp_set_nested routine deprecated, please use omp_set_max_active
 </pre></div></div>
 </div>
 <section id="Define-the-junction-properties">
-<h2><span class="section-number">4.1. </span>Define the junction properties<a class="headerlink" href="#Define-the-junction-properties" title="Link to this heading"></a></h2>
+<h2><span class="section-number">5.1. </span>Define the junction properties<a class="headerlink" href="#Define-the-junction-properties" title="Link to this heading"></a></h2>
 <ul class="simple">
 <li><p>These are common parameters that describe the electrical properties of SIS junctions. QMix only uses normalized values, so these values will be used to de-normalize whatever voltages, currents and frequencies that QMix calculates.</p></li>
 </ul>
@@ -159,7 +159,7 @@ OMP: Info #276: omp_set_nested routine deprecated, please use omp_set_max_active
 </div>
 </section>
 <section id="Define-the-embedding-circuit">
-<h2><span class="section-number">4.2. </span>Define the embedding circuit<a class="headerlink" href="#Define-the-embedding-circuit" title="Link to this heading"></a></h2>
+<h2><span class="section-number">5.2. </span>Define the embedding circuit<a class="headerlink" href="#Define-the-embedding-circuit" title="Link to this heading"></a></h2>
 <ul class="simple">
 <li><p>We will load the <code class="docutils literal notranslate"><span class="pre">EmbeddingCircuit</span></code> class with all of the information about the embedding circuit. This includes the Thevenin voltage, the Thevenin impedance, and the frequency of each signal that is applied to the junction.</p></li>
 <li><p>Note:</p>
@@ -260,7 +260,7 @@ Embedding circuit (Tones:3, Harmonics:1)
 </div>
 </section>
 <section id="Generate-the-response-function">
-<h2><span class="section-number">4.3. </span>Generate the response function<a class="headerlink" href="#Generate-the-response-function" title="Link to this heading"></a></h2>
+<h2><span class="section-number">5.3. </span>Generate the response function<a class="headerlink" href="#Generate-the-response-function" title="Link to this heading"></a></h2>
 <ul class="simple">
 <li><p>Here, the response function is generated from an experimental DC I-V curve.</p></li>
 </ul>
@@ -321,7 +321,7 @@ DC I-V data:</span>
 </div>
 </section>
 <section id="Perform-harmonic-balance">
-<h2><span class="section-number">4.4. </span>Perform harmonic balance<a class="headerlink" href="#Perform-harmonic-balance" title="Link to this heading"></a></h2>
+<h2><span class="section-number">5.4. </span>Perform harmonic balance<a class="headerlink" href="#Perform-harmonic-balance" title="Link to this heading"></a></h2>
 <ul class="simple">
 <li><p>Calculate the voltage drop across the junction for each tone/harmonic using harmonic balance.</p></li>
 </ul>
@@ -412,7 +412,7 @@ Done: Minimum error target was achieved.
 </div>
 </section>
 <section id="Calculate-tunnelling-currents">
-<h2><span class="section-number">4.5. </span>Calculate tunnelling currents<a class="headerlink" href="#Calculate-tunnelling-currents" title="Link to this heading"></a></h2>
+<h2><span class="section-number">5.5. </span>Calculate tunnelling currents<a class="headerlink" href="#Calculate-tunnelling-currents" title="Link to this heading"></a></h2>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">idc</span></code> is the DC tunneling current</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">ilo</span></code> is the AC tunneling current at the LO frequency</p></li>
@@ -442,7 +442,7 @@ Time: 0.0260 s
 </pre></div></div>
 </div>
 <section id="Calculate-mixer-gain">
-<h3><span class="section-number">4.5.1. </span>Calculate mixer gain<a class="headerlink" href="#Calculate-mixer-gain" title="Link to this heading"></a></h3>
+<h3><span class="section-number">5.5.1. </span>Calculate mixer gain<a class="headerlink" href="#Calculate-mixer-gain" title="Link to this heading"></a></h3>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
@@ -462,7 +462,7 @@ Time: 0.0260 s
 </section>
 </section>
 <section id="Plot-Results">
-<h2><span class="section-number">4.6. </span>Plot Results<a class="headerlink" href="#Plot-Results" title="Link to this heading"></a></h2>
+<h2><span class="section-number">5.6. </span>Plot Results<a class="headerlink" href="#Plot-Results" title="Link to this heading"></a></h2>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
@@ -526,8 +526,8 @@ Time: 0.0260 s
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="single-tone-simulation.html" class="btn btn-neutral float-left" title="3. Example #1: Creating a simple 1 tone simulation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="fourier-shift-method.html" class="btn btn-neutral float-right" title="5. The Fourier-Shift Method" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="single-tone-simulation.html" class="btn btn-neutral float-left" title="4. Example #1: Creating a simple 1 tone simulation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="analyze-experimental-data.html" class="btn btn-neutral float-right" title="6. Example #3: Analyzing experimental data" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
