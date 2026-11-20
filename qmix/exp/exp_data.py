@@ -857,14 +857,32 @@ class PumpedData(object):
 
             The IF frequency, the IF load impedance and the physical
             temperature are not part of the experimental data, so they must be
-            given. For the example data, the results hardly depend on them
-            (``g_rf`` and ``t_rf`` change by a few percent for IF frequencies
-            of 4-8 GHz and IF loads of 30-75 ohms).
+            given. The simulated noise temperature of the mixer (referred to
+            its input) does not depend on the IF load, but its gain does, and
+            therefore so does the split of the measured gain into ``g_rf`` and
+            ``g_mix``.
+
+            ``g_mix`` is the gain into ``z_if``. The measured gain, however,
+            is calibrated with the shot noise (``DCData``), ignoring the
+            mismatch between the junction (~``rn`` above the gap) and the IF
+            circuit, i.e., it is referred to a reference plane with an
+            impedance of ``rn`` (Garrett, 2018, Appendix A). The gain into
+            the actual IF impedance ``z_if`` then corresponds to a measured
+            gain of ``g_mix / (1 - |G|^2)``, with
+            ``G = (z_if - rn) / (z_if + rn)``; the IF noise from the shot
+            noise has the same factor, so ``t_if / g_mix`` is unchanged. This
+            factor is not applied here (it is 1 only for ``z_if = rn``). For
+            the example data, with the HFSS IF impedance of the device
+            (7.4 - 17.1j ohms at 5 GHz, ``1 - |G|^2 = 0.56``) and this
+            factor, ``g_rf`` ~0.77 and ``t_rf`` ~23 K; with the default of 50
+            ohms and no factor, ~0.52 and ~21 K. The IF frequency (4-8 GHz)
+            changes the results by a few percent.
 
         Args:
             f_if (float): IF frequency, in [GHz]
             z_if (float, optional): IF load impedance, in [ohms], default is
-                50
+                50 (see the note above about the reference plane of the
+                measured gain)
             temp (float, optional): Physical temperature of the junction, in
                 [K], default is 4
             num_b (int, optional): Summation limit for the phase factor
