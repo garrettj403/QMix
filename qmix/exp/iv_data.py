@@ -16,7 +16,7 @@ Note:
 """
 
 from collections import namedtuple
-from warnings import filterwarnings
+from warnings import filterwarnings, warn
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -91,6 +91,10 @@ def dciv_curve(ivdata, **kwargs):
         i_multiplier (float): Multiply the imported current by this value.
         v_multiplier (float): Multiply the imported voltage by this value.
         filter_data (bool): Filter data
+        vgap (float): Gap voltage, in units [V]. Default is None, in which
+            case it is found from the I-V curve (half the current at the
+            "corner" where the tangent at the steepest point of the gap meets
+            the normal-resistance line).
         vgap_guess (float): Guess of gap voltage. Used to temporarily
             normalize while filtering. Given in units [V].
         igap_guess (float): Guess of gap current. Used to temporarily
@@ -117,6 +121,9 @@ def dciv_curve(ivdata, **kwargs):
 
     # Unpack keyword arguments
     # Use default values from qmix.exp.parameters if they aren't provided
+    if 'vgap_threshold' in kwargs:
+        warn("vgap_threshold is no longer used: the gap voltage is found from the corner of the I-V curve; "
+             "pass vgap to set it manually.", stacklevel=2)
     vgap = kwargs.get('vgap', PARAMS['vgap'])
     v_multiplier = kwargs.get('v_multiplier', PARAMS['v_multiplier'])
     i_multiplier = kwargs.get('i_multiplier', PARAMS['i_multiplier'])
@@ -627,6 +634,11 @@ def _find_normal_resistance(volt_v, curr_a, **kw):
 
 def _find_gap_voltage(volt_v, curr_a, **kw):
     """Find gap voltage.
+
+    A line is fitted to the normal-resistance region (``vrn``) and another
+    one (the tangent) to the steepest point of the I-V curve above 2 mV. The
+    two lines intersect at the "corner" of the I-V curve, and the gap voltage
+    is where the tangent reaches half of the current at the corner.
 
     Args:
         volt_v (ndarray): voltage, in V

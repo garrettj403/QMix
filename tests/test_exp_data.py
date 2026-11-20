@@ -19,7 +19,6 @@ extra_param = dict(vshot = (5.15e-3, 5.65e-3),
                    v_fmt = 'mV', 
                    i_fmt = 'mA', 
                    area = 1.5,
-                   vgap_threshold = 105e-6, 
                    filter_data = True,
                    filter_nwind = 21, 
                    vrn = (3.5e-3, 4.5e-3))
@@ -173,6 +172,18 @@ def test_dciv_coarse_data(filter_data, order):
     _, _, dc = iv.dciv_curve(data, v_fmt='V', i_fmt='A', filter_data=filter_data, verbose=False)
     assert abs(dc.vgap - 2.8e-3) < 0.01e-3
     assert abs(dc.rn - 14.) < 0.05
+
+
+def test_vgap_manual_and_old_threshold():
+    """vgap sets the gap voltage manually; vgap_threshold (removed) warns
+    instead of being silently ignored."""
+
+    data = _coarse_iv_data()
+    _, _, dc = iv.dciv_curve(data, v_fmt='V', i_fmt='A', vgap=2.9e-3)
+    assert dc.vgap == 2.9e-3
+    with pytest.warns(UserWarning, match="vgap_threshold"):
+        _, _, dc = iv.dciv_curve(data, v_fmt='V', i_fmt='A', vgap_threshold=105e-6)
+    assert abs(dc.vgap - 2.8e-3) < 0.01e-3
 
 
 def test_try_loading_list():

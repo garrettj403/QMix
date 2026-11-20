@@ -24,7 +24,7 @@ COOLDOWNS = os.path.join(THESIS, 'Cooldown Data')
 
 # Parameters for the raw lab files (no header, mV / mA)
 PARAMS = dict(delimiter=',', usecols=(0, 1), skip_header=0, v_fmt='mV', i_fmt='mA', area=1.5,
-              vgap_threshold=105e-6, filter_data=True, filter_nwind=21, verbose=False)
+              filter_data=True, filter_nwind=21, verbose=False)
 
 assert os.path.isdir(THESIS), "Thesis data not found: {}".format(THESIS)
 

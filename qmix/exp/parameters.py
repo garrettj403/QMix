@@ -141,6 +141,8 @@ values.
         - ``vmax_plot = 4.0`` : Maximum bias voltage for plots, in units [mV].
     - Junction properties:
         - ``area = 1.5`` : Area of the SIS junction in units [um^2].
+        - ``vgap = None`` : Gap voltage in units [V]. If None, it is found
+          from the DC I-V curve.
     - Local-oscillator (LO) signal:
         - ``freq = None`` : Frequency of the local-oscillator signal in units
           [GHz].

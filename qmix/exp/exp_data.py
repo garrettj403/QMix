@@ -149,7 +149,8 @@ class DCData(object):
         ifdata_sigma (float): Standard deviation of Gaussian used for
             filtering, in units [V]
         area (float): Area of the junction in um^2.
-        vgap_threshold (float): The current to measure the gap voltage at.
+        vgap (float): Gap voltage, in units [V]; default is None (found from
+            the I-V curve).
         rn_vmin (float): Lower voltage range to determine the normal resistance
         rn_vmax (float): Upper voltage range to determine the normal resistance
         vrsg (float): The voltage at which to calculate the subgap
