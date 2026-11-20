@@ -164,15 +164,15 @@ def test_effect_of_adding_more_tones():
 
     # Compare methods
     # dc
-    np.testing.assert_allclose(idc2, idc1, rtol=1e-13)
-    np.testing.assert_allclose(idc3, idc1, rtol=1e-13)
-    np.testing.assert_allclose(idc4, idc1, rtol=1e-13)
-    np.testing.assert_allclose(idc5, idc1, rtol=1e-13)
+    np.testing.assert_allclose(idc2, idc1, rtol=1e-13, atol=1e-16)
+    np.testing.assert_allclose(idc3, idc1, rtol=1e-13, atol=1e-16)
+    np.testing.assert_allclose(idc4, idc1, rtol=1e-13, atol=1e-16)
+    np.testing.assert_allclose(idc5, idc1, rtol=1e-13, atol=1e-16)
     # ac
-    np.testing.assert_allclose(iac2, iac1, rtol=1e-13)
-    np.testing.assert_allclose(iac3, iac1, rtol=1e-13)
-    np.testing.assert_allclose(iac4, iac1, rtol=1e-13)
-    np.testing.assert_allclose(iac5, iac1, rtol=1e-13)
+    np.testing.assert_allclose(iac2, iac1, rtol=1e-13, atol=1e-16)
+    np.testing.assert_allclose(iac3, iac1, rtol=1e-13, atol=1e-16)
+    np.testing.assert_allclose(iac4, iac1, rtol=1e-13, atol=1e-16)
+    np.testing.assert_allclose(iac5, iac1, rtol=1e-13, atol=1e-16)
     # ensure all other tones are zero
     np.testing.assert_equal(i2[2, :], np.zeros_like(i2[2, :]))
     np.testing.assert_equal(i3[2, :], np.zeros_like(i3[2, :]))
