@@ -17,6 +17,7 @@ import qmix.respfn
 import qmix.qtcurrent
 import qmix.harmonic_balance
 import qmix.small_signal
+import qmix.network
 
 import qmix.exp.exp_data
 import qmix.mathfn.kktrans

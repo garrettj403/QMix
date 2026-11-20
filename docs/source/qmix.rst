@@ -29,6 +29,14 @@ qmix.harmonic\_balance module
     :undoc-members:
     :show-inheritance:
 
+qmix.network module
+-------------------
+
+.. automodule:: qmix.network
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 qmix.qtcurrent module
 ---------------------
 

@@ -72,7 +72,7 @@ _file_structure = {'DC IV curve':               'dciv/',
 
 
 MixerNoise = namedtuple('MixerNoise', ['voltage', 'g_mix', 't_mix', 'g_rf', 't_rf', 't_if', 'gain_model',
-                                       'tn_model', 'gain_meas', 'tn_meas', 'fit_mask'])
+                                       'tn_model', 'gain_meas', 'tn_meas', 'fit_mask', 'z_usb', 'z_lsb'])
 MixerNoise.__doc__ = """\
 Results of ``PumpedData.mixer_noise``: measured vs simulated gain and noise.
 
@@ -92,6 +92,8 @@ Args:
     tn_meas (ndarray): Measured receiver noise temperature (interpolated to
         ``voltage``), in [K].
     fit_mask (ndarray): Bias voltages used to fit ``g_rf`` and ``t_rf``.
+    z_usb (complex): Embedding impedance at the USB (normalized).
+    z_lsb (complex): Embedding impedance at the LSB (normalized).
 """
 
 
@@ -824,7 +826,8 @@ class PumpedData(object):
 
         self.err_surf = err_surf
 
-    def mixer_noise(self, f_if, z_if=50., temp=4., num_b=25, fit_range=None, voltage=None, smeared=False):
+    def mixer_noise(self, f_if, z_if=50., temp=4., num_b=25, fit_range=None, voltage=None, smeared=False,
+                    z_emb=None, anchor_lo=False):
         """Compare the measured gain and noise temperature with a small-signal
         simulation of the mixer.
 
@@ -833,8 +836,10 @@ class PumpedData(object):
         the LO, then the small-signal analysis (``qmix.small_signal``), which
         gives the DSB conversion gain ``g_mix`` (USB + LSB to IF) and the DSB
         noise temperature ``t_mix`` of the mixer (from the junction's shot
-        noise). The embedding impedance at both sidebands is assumed to be
-        equal to the one at the LO (``zt``).
+        noise). By default, the embedding impedance at both sidebands is
+        assumed to be equal to the one at the LO (``zt``); ``z_emb`` gives
+        the sideband impedances from a model of the RF circuit instead (e.g.,
+        HFSS S-parameters, see ``qmix.network.embedding_impedance``).
 
         The receiver is modelled as an RF/optics stage (gain ``g_rf``, noise
         temperature ``t_rf``; this also absorbs the IF coupling and the
@@ -878,6 +883,18 @@ class PumpedData(object):
                 signals smearing the gap); for the example data, smearing
                 halves the error in the shape of the simulated gain across the
                 first photon step.
+            z_emb (function, optional): Embedding impedance of the RF
+                circuit, in [ohms], as a function of frequency in [Hz]
+                (including the junction capacitance), e.g., from
+                ``qmix.network.embedding_impedance``. It gives the embedding
+                impedances at the USB (``f_lo + f_if``) and the LSB
+                (``f_lo - f_if``); the LO still uses the recovered ``zt``
+                (which reproduces the pumped I-V curve). Default is None
+                (``zt`` at both sidebands).
+            anchor_lo (bool, optional): Shift ``z_emb`` so that it equals the
+                recovered ``zt`` at the LO, i.e., only use the frequency
+                dependence of ``z_emb`` (``z_sb = z_emb(f_sb) - z_emb(f_lo) +
+                zt``), default is False
 
         Returns:
             MixerNoise: simulated and measured gain and noise temperature
@@ -911,7 +928,17 @@ class PumpedData(object):
         f_if_norm = f_if * 1e9 / self.fgap
         y = admittance_matrix(vj, cct, resp, f_if_norm, num_b=num_b)
         h = noise_matrix(vj, cct, resp, f_if_norm, temp, vgap=self.vgap, num_b=num_b)
-        zt = sideband_impedances(z_if / self.rn, self.zt, self.zt)
+        if z_emb is None:
+            z_usb = z_lsb = self.zt
+        else:
+            f_lo_hz, f_if_hz = self.freq * 1e9, f_if * 1e9
+            z_usb = complex(z_emb(f_lo_hz + f_if_hz)) / self.rn
+            z_lsb = complex(z_emb(f_lo_hz - f_if_hz)) / self.rn
+            if anchor_lo:
+                shift = self.zt - complex(z_emb(f_lo_hz)) / self.rn
+                z_usb, z_lsb = z_usb + shift, z_lsb + shift
+            assert z_usb.real > 0 and z_lsb.real > 0, "The sideband impedances must have a positive real part"
+        zt = sideband_impedances(z_if / self.rn, z_usb, z_lsb)
         g_mix = conversion_gain(y, zt, 1) + conversion_gain(y, zt, -1)
         t_mix = output_noise(y, h, zt, self.vgap, exclude=[-1, 0, 1]) / g_mix
 
@@ -929,7 +956,7 @@ class PumpedData(object):
 
         return MixerNoise(voltage=voltage, g_mix=g_mix, t_mix=t_mix, g_rf=g_rf, t_rf=t_rf, t_if=t_if,
                           gain_model=gain_model, tn_model=tn_model, gain_meas=gain_meas, tn_meas=tn_meas,
-                          fit_mask=mask)
+                          fit_mask=mask, z_usb=z_usb, z_lsb=z_lsb)
 
     def plot_mixer_noise(self, results, fig_name=None, ax=None):  # pragma: no cover
         """Plot the measured and modelled gain and noise temperature (from

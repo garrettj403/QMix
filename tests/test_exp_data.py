@@ -259,6 +259,25 @@ def test_mixer_noise(directory='tests/exp-data/'):
     np.testing.assert_allclose(smeared.gain_model[mask], smeared.gain_meas[mask], rtol=0.15)
     np.testing.assert_allclose(smeared.tn_model[mask], smeared.tn_meas[mask], rtol=0.15)
 
+    # Sideband impedances from a model of the RF circuit: a constant one equal
+    # to the recovered impedance changes nothing
+    z_const = pump.mixer_noise(f_if=6., z_emb=lambda f: pump.zt * pump.rn + 0 * f)
+    np.testing.assert_allclose(z_const.g_mix, results.g_mix, rtol=1e-12)
+    np.testing.assert_allclose(z_const.t_mix, results.t_mix, rtol=1e-12)
+    assert results.z_usb == results.z_lsb == pump.zt
+
+    # Frequency-dependent impedance; with anchor_lo, only the variation matters
+    def z_emb(f):
+        return 5. + 0.5e-9 * (f - 230e9) - 3j
+
+    z_var = pump.mixer_noise(f_if=6., z_emb=z_emb)
+    np.testing.assert_allclose([z_var.z_usb, z_var.z_lsb], np.array([8 - 3j, 2 - 3j]) / pump.rn, rtol=1e-12)
+    assert not np.allclose(z_var.g_mix, results.g_mix)
+    z_anch = pump.mixer_noise(f_if=6., z_emb=z_emb, anchor_lo=True)
+    np.testing.assert_allclose([z_anch.z_usb, z_anch.z_lsb], pump.zt + np.array([3., -3.]) / pump.rn, rtol=1e-12)
+    with pytest.raises(AssertionError):  # negative resistance at the LSB
+        pump.mixer_noise(f_if=6., z_emb=lambda f: 1e-9 * (f - 230e9) + 0j)
+
     # Missing data
     pump_no_if = qe.PumpedData(pumped_iv, dciv, freq=230, **params)
     with pytest.raises(AssertionError):
