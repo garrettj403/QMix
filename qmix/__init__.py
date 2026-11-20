@@ -7,6 +7,7 @@ devices.
 
 """
 
+import qmix._omp  # first: before Numba loads OpenMP
 import qmix.exp
 import qmix.mathfn
 import qmix.exp
