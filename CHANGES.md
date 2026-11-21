@@ -1,13 +1,9 @@
-v1.0.6 (unreleased)
+v1.1.0 (unreleased)
 ===================
 
 Functionality Changes
 ---------------------
 
-- Renamed ``cct.vph`` to ``cct.freq`` (in ``qmix.circuit.EmbeddingCircuit``). The normalized photon voltage is equivalent to the normalized frequency. I think frequency is easier to understand so I changed it.
-- Deleted the command line scripts (``bin/``). There was only one script and it was pretty obscure so I descided to delete it.
-- Moved ``qtcurrent_all_freq()`` function from ``qmix.qtcurrent`` to ``qmix.harmonic_balance``. Again, it's a pretty obscure function and it's only used in the ``harmonic_balance`` module, so I moved it.
-- Deleted ``qtcurrent_std`` from ``qmix.qtcurrent``. This function calculated the "standard" output values, but this was pretty arbitrary. It also didn't really simplify the package at all so I deleted it.
 - Removed the limit of 4 tones. ``qmix.qtcurrent.qtcurrent`` now uses one general current coefficient kernel for any number of tones (replacing the separate 1, 2, 3 and 4 tone functions), and ``qmix.circuit.EmbeddingCircuit`` accepts any ``num_f >= 1``. Results are unchanged (to ~1e-15) and the speed is the same.
 - Added a Fourier-shift method for the summation over the phase factor coefficients (new ``method`` argument of ``qmix.qtcurrent.qtcurrent``, ``qmix.qtcurrent.interpolate_respfn`` and ``qmix.harmonic_balance.harmonic_balance``: ``'direct'``, ``'fourier'`` or ``'auto'``). With ``'fourier'``, the response function is represented by a windowed Fourier series so that the cost scales with the *sum* of ``2 * num_b + 1`` over the tones instead of the *product*, and the large interpolated response function matrix is not needed. This makes 5 or more tones (or large ``num_b``) practical. The accuracy is limited by the smoothness of the response function splines: ~1e-7 (relative to the direct method) with the default cubic splines and ~1e-9 or better with ``spline_order=5``. The default, ``'auto'``, uses the direct method unless the response function matrix would exceed ``qmix.qtcurrent.MAX_RESP_MATRIX_BYTES`` (2 GB). ``interpolate_respfn`` returns a ``qmix.qtcurrent.FourierResp`` object in this case, which can be passed to ``qtcurrent`` as ``resp_matrix``.
 - Response functions (``qmix.respfn.RespFn`` and subclasses) are now exactly symmetric: the DC I-V spline is odd and the KK spline is even (to ~1e-14). Previously, the spline knots were not placed symmetrically about zero, so the two sides differed by up to ~5e-5 near the gap (within the interpolation error). The knots at positive voltages are now mirrored. Tunneling currents change by up to ~1e-5 for strongly pumped junctions.
@@ -37,12 +33,6 @@ Optimization
 ------------
 
 - ``qmix.qtcurrent.qtcurrent`` (direct method) now evaluates all of the current coefficients of all output frequencies together, in batches of up to 32 terms per pass over the interpolated response function matrix (``_current_coeff_batched``), instead of one pass per term. The kernel is limited by memory bandwidth, so this matters most with many terms, i.e., commensurate tones with the mixing products that are now included: e.g., ~2.4x faster for 4 strong commensurate tones and ~2x for 5 tones; the 4-tone harmonic balance benchmark takes 2.6 s instead of 4.0 s. 1 and 2 tone calculations are also ~1.3-1.9x faster. Results agree with the previous kernel to ~5e-15.
-
-- Added two example notebooks (also on the documentation website): ``hfss-embedding-impedance.ipynb`` (the embedding impedance from HFSS S-parameters with ``qmix.network``, compared with the impedances recovered over an LO sweep, and used in the noise model) and ``lo-saturation.ipynb`` (power saturation: gain and noise vs LO power compared with hot/cold measurements, and gain compression by a strong RF signal compared with a measurement of the IF output). The HFSS notebook also simulates the broken photon step at 240 GHz (a spurious tone at 3/2 f_LO with the HFSS embedding impedance at f_LO / 2). Their data are in ``notebooks/example-data/hfss/``, ``lo-sweep/``, ``lo-saturation/`` and ``rf-saturation/``.
-- Added a Theory section to the documentation (before the examples): multi-tone spectral domain analysis, harmonic balance, and the Fourier-shift method (which moved under it).
-- Added more detailed benchmarking and profiling scripts (found in ``QMix/profile/``).
-- ``qmix.qtcurrent.qtcurrent`` is now ~20% faster for 1 tone.
-- ``qmix.harmonic_balance.harmonic_balance`` is ~20% faster for 1 or 2 tones, and ~10% faster for 3 tones.
 - ``qmix.harmonic_balance.harmonic_balance`` now reuses the Jacobian from the previous iteration while the error is still decreasing quickly (new ``reuse_jacobian`` argument, default ``True``). Combined with faster current coefficient calculations in ``qmix.qtcurrent`` (for 2-4 tones), harmonic balance is ~2x faster for 3 or 4 tones.
 - The current coefficient calculations in ``qmix.qtcurrent`` now run in parallel (multi-threaded, via Numba) for 3 or 4 tones. Harmonic balance is ~2.5x faster for 4 tones.
 - Added ``qmix.qtcurrent.suggest_num_b``, which suggests the summation limits (``num_b``) for each tone based on the junction voltage. Weakly driven tones need far fewer terms, so this can make 3 or 4 tone simulations several times faster (e.g., ~3x for the 4 tone benchmark).
@@ -51,12 +41,37 @@ Optimization
 Documentation
 -------------
 
+- Added two example notebooks (also on the documentation website): ``hfss-embedding-impedance.ipynb`` (the embedding impedance from HFSS S-parameters with ``qmix.network``, compared with the impedances recovered over an LO sweep, and used in the noise model) and ``lo-saturation.ipynb`` (power saturation: gain and noise vs LO power compared with hot/cold measurements, and gain compression by a strong RF signal compared with a measurement of the IF output). The HFSS notebook also simulates the broken photon step at 240 GHz (a spurious tone at 3/2 f_LO with the HFSS embedding impedance at f_LO / 2). Their data are in ``notebooks/example-data/hfss/``, ``lo-sweep/``, ``lo-saturation/`` and ``rf-saturation/``.
+- Added a Theory section to the documentation (before the examples): multi-tone spectral domain analysis, harmonic balance, and the Fourier-shift method (which moved under it).
 - Added the ``qmix.exp.if_response`` module to the API documentation (it was missing).
 - Updated ``environment.yml``: added ``scienceplots`` (required by the notebooks) and removed unused or unmaintained packages.
-- Added information on how to contribute to QMix to README.
-- Added docstrings to many private functions. This should allow new users to understand the inner workings a bit better.
 - Added a page to the online documentation describing the Fourier-shift method (``docs/source/fourier-shift-method.rst``).
 - Added a Theory page on the small-signal analysis (``docs/source/small-signal.rst``): the admittance and noise correlation matrices, gain and noise for one junction, and for several junctions coupled by a multi-port embedding network (Thevenin reduction of the junction ports, network noise from Twiss' theorem), with the limits of the analysis.
+
+v1.0.6 (8-Jul-2020)
+===================
+
+Functionality Changes
+---------------------
+
+- Renamed ``cct.vph`` to ``cct.freq`` (in ``qmix.circuit.EmbeddingCircuit``). The normalized photon voltage is equivalent to the normalized frequency. I think frequency is easier to understand so I changed it.
+- Deleted the command line scripts (``bin/``). There was only one script and it was pretty obscure so I descided to delete it.
+- Moved ``qtcurrent_all_freq()`` function from ``qmix.qtcurrent`` to ``qmix.harmonic_balance``. Again, it's a pretty obscure function and it's only used in the ``harmonic_balance`` module, so I moved it.
+- Deleted ``qtcurrent_std`` from ``qmix.qtcurrent``. This function calculated the "standard" output values, but this was pretty arbitrary. It also didn't really simplify the package at all so I deleted it.
+
+Optimization
+------------
+
+- Added more detailed benchmarking and profiling scripts (found in ``QMix/profile/``).
+- ``qmix.qtcurrent.qtcurrent`` is now ~20% faster for 1 tone.
+- ``qmix.harmonic_balance.harmonic_balance`` is ~20% faster for 1 or 2 tones, and ~10% faster for 3 tones.
+
+Documentation
+-------------
+
+- Travis CI now automatically rebuilds the online documentation on each new commit.
+- Added information on how to contribute to QMix to README.
+- Added docstrings to many private functions. This should allow new users to understand the inner workings a bit better.
 
 Miscellaneous Minor Changes
 ---------------------------

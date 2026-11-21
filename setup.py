@@ -39,7 +39,7 @@ class PyTest(TestCommand):
 
 setup(
     name="qmix",
-    version="1.0.6",
+    version="1.1.0",
     author="John Garrett",
     author_email="garrettj403@gmail.com",
     url="https://garrettj403.github.io/QMix/",
