@@ -55,6 +55,7 @@ Documentation
 - Added information on how to contribute to QMix to README.
 - Added docstrings to many private functions. This should allow new users to understand the inner workings a bit better.
 - Added a page to the online documentation describing the Fourier-shift method (``docs/source/fourier-shift-method.rst``).
+- Added a Theory page on the small-signal analysis (``docs/source/small-signal.rst``): the admittance and noise correlation matrices, gain and noise for one junction, and for several junctions coupled by a multi-port embedding network (Thevenin reduction of the junction ports, network noise from Twiss' theorem), with the limits of the analysis.
 
 Miscellaneous Minor Changes
 ---------------------------
