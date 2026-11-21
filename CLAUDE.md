@@ -62,6 +62,17 @@ Worked end-to-end examples (single-tone and multi-tone simulations, experimental
 - **Numba kernels**: the hot kernels use `@nb.njit` with explicit signatures (eager compilation) and `cache=True`. They carry `# pragma: no cover` because coverage can't trace compiled code — the surrounding pure-Python wrappers are what tests exercise directly. Kernels avoid temporary array allocations (explicit loops over bias points, pair products pre-computed with `_pair_products`, invariant products hoisted per loop level); preserve that style when editing.
 - **Parallel kernels**: `_current_coeff_batched` and `_eval_resp_poly` use `parallel=True` with `prange`. The current kernel parallelizes over 4 chunks of rows per thread (64 per thread was ~1.5x slower once batched), each accumulating into its own slot per term (no shared writes; the slots' memory, terms x chunks x npts, is capped by `BATCH_ACC_BYTES`); keep the bias-point loop innermost so memory access stays contiguous (parallelizing over bias points instead was ~3x slower). With `cache=True`, never compile the same Python function twice with different flags (e.g., serial and parallel): the cache keys on function and signature, so one silently loads the other. With Anaconda's Numba (OpenMP threading layer), a harmless `OMP: Info #276 ... omp_set_nested` notice prints once per process; `qmix/_omp.py` (imported first in `qmix/__init__.py`) silences it with `KMP_WARNINGS=0` (setdefault, so the user can override; no effect if Numba ran a parallel kernel before `qmix` was imported).
 
+## Roadmap (open items, Nov 2026)
+
+The SuperMix capability gap is mostly closed (noise, multiple junctions, S-parameter circuits, analytic HB Jacobian, superconducting microstrip are done). Still open, roughly in order of value:
+
+- **Series arrays**: every junction in a `MultiJunctionCircuit` is voltage biased at its own `vb[j]` (no DC network), so series arrays (one bias across N junctions, DC current shared) can't be simulated yet. Needs a DC embedding (the DC voltages become unknowns in the harmonic balance, constrained by the shared current), and a way to pass one bias for several junctions.
+- **Small-signal analysis from a multi-tone LO state**: `qmix.small_signal` assumes a single-tone LO (`vj` with one tone and its harmonics). With two LOs or a sub-harmonic/spurious tone (e.g., the 3/2 f_LO tone in Example #4, or the two-LO data in `profile/thesis/two_lo.py`), gain and noise currently need full multi-tone simulations. The admittance and noise matrices would generalize over the mixing products of all LO tones.
+- **Multi-tone noise**: shot noise (the H matrix) is only available in the small-signal analysis, i.e., for a single-tone LO; the same generalization as above.
+- **Lossy superconducting CPW** (deliberately left out of the microstrip work: SuperMix's CPW is lossless, so there is no reference to check against).
+- **Different junctions in one circuit**: `MultiJunctionCircuit` has one `vgap`/`rn` for all junctions (only `area` differs; `resp` can already be a list).
+- Small items: `profile/benchmark/benchmark-harmonic-balance.py` times `two_tone` in the 3-tone section (`timeit.Timer(two_tone)` should be `three_tone`; leave fixing it and re-recording timings to the user). The small-signal analysis needs f_if > 0.
+
 ## Code style
 
 - Google-style docstrings for public modules/functions/classes; private (`_`-prefixed) functions may use inline comments instead.
