@@ -50,7 +50,8 @@
 <li class="toctree-l2"><a class="reference internal" href="mtsda.html">3.1. Multi-Tone Spectral Domain Analysis</a></li>
 <li class="toctree-l2"><a class="reference internal" href="harmonic-balance.html">3.2. Harmonic Balance</a></li>
 <li class="toctree-l2"><a class="reference internal" href="small-signal.html">3.3. Small-Signal Analysis</a></li>
-<li class="toctree-l2"><a class="reference internal" href="fourier-shift-method.html">3.4. The Fourier-Shift Method</a></li>
+<li class="toctree-l2"><a class="reference internal" href="superconducting-lines.html">3.4. Superconducting Transmission Lines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="fourier-shift-method.html">3.5. The Fourier-Shift Method</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="single-tone-simulation.html">4. Example #1: Creating a simple 1 tone simulation</a></li>
@@ -94,7 +95,7 @@
 <li><p><strong>Harmonic balance</strong> finds the voltage across the junction when the junction is embedded in a circuit, i.e., the voltage that is consistent with both the tunneling current and the embedding circuit. This is what <a class="reference internal" href="qmix.html#qmix.harmonic_balance.harmonic_balance" title="qmix.harmonic_balance.harmonic_balance"><code class="xref py py-func docutils literal notranslate"><span class="pre">qmix.harmonic_balance.harmonic_balance()</span></code></a> calculates. It calls the tunneling current calculation many times.</p></li>
 <li><p><strong>Small-signal analysis</strong> gives the conversion gain and noise of a mixer from the LO state alone, when the RF and IF signals are weak (Tucker theory), for one junction or several junctions in one network. This is what <a class="reference internal" href="qmix.html#module-qmix.small_signal" title="qmix.small_signal"><code class="xref py py-mod docutils literal notranslate"><span class="pre">qmix.small_signal</span></code></a> calculates.</p></li>
 </ol>
-<p>The last page describes the <strong>Fourier-shift method</strong>, an alternative way to evaluate the sums in MTSDA that makes simulations with many tones practical.</p>
+<p>The embedding circuit can be built from <strong>superconducting transmission lines</strong>: the next page describes the models for the films (Mattis-Bardeen theory) and for microstrip lines in <a class="reference internal" href="qmix.html#module-qmix.superconductor" title="qmix.superconductor"><code class="xref py py-mod docutils literal notranslate"><span class="pre">qmix.superconductor</span></code></a> and <a class="reference internal" href="qmix.html#module-qmix.network" title="qmix.network"><code class="xref py py-mod docutils literal notranslate"><span class="pre">qmix.network</span></code></a>. The last page describes the <strong>Fourier-shift method</strong>, an alternative way to evaluate the sums in MTSDA that makes simulations with many tones practical.</p>
 <p>The methods follow Kittara’s thesis (2002), Withington, Kittara and Yassin (2003), and Kittara, Withington and Yassin (2007); see <a class="reference internal" href="references.html#references"><span class="std std-ref">References</span></a>. Equation numbers in the text and in the QMix source code (e.g., “Eqn. 5.25”) refer to Chapter 5 of Kittara’s thesis.</p>
 <div class="toctree-wrapper compound">
 <ul>
@@ -125,13 +126,21 @@
 <li class="toctree-l2"><a class="reference internal" href="small-signal.html#limits-of-the-small-signal-analysis">3.3.5. Limits of the small-signal analysis</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="fourier-shift-method.html">3.4. The Fourier-Shift Method</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="fourier-shift-method.html#the-sum-that-has-to-be-evaluated">3.4.1. The sum that has to be evaluated</a></li>
-<li class="toctree-l2"><a class="reference internal" href="fourier-shift-method.html#factorizing-the-shift">3.4.2. Factorizing the shift</a></li>
-<li class="toctree-l2"><a class="reference internal" href="fourier-shift-method.html#constructing-the-fourier-series">3.4.3. Constructing the Fourier series</a></li>
-<li class="toctree-l2"><a class="reference internal" href="fourier-shift-method.html#accuracy">3.4.4. Accuracy</a></li>
-<li class="toctree-l2"><a class="reference internal" href="fourier-shift-method.html#cost">3.4.5. Cost</a></li>
-<li class="toctree-l2"><a class="reference internal" href="fourier-shift-method.html#using-it">3.4.6. Using it</a></li>
+<li class="toctree-l1"><a class="reference internal" href="superconducting-lines.html">3.4. Superconducting Transmission Lines</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="superconducting-lines.html#the-energy-gap">3.4.1. The energy gap</a></li>
+<li class="toctree-l2"><a class="reference internal" href="superconducting-lines.html#the-mattis-bardeen-conductivity">3.4.2. The Mattis-Bardeen conductivity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="superconducting-lines.html#surface-impedance-of-a-film">3.4.3. Surface impedance of a film</a></li>
+<li class="toctree-l2"><a class="reference internal" href="superconducting-lines.html#microstrip-lines">3.4.4. Microstrip lines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="superconducting-lines.html#comparison-with-supermix">3.4.5. Comparison with SuperMix</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="fourier-shift-method.html">3.5. The Fourier-Shift Method</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="fourier-shift-method.html#the-sum-that-has-to-be-evaluated">3.5.1. The sum that has to be evaluated</a></li>
+<li class="toctree-l2"><a class="reference internal" href="fourier-shift-method.html#factorizing-the-shift">3.5.2. Factorizing the shift</a></li>
+<li class="toctree-l2"><a class="reference internal" href="fourier-shift-method.html#constructing-the-fourier-series">3.5.3. Constructing the Fourier series</a></li>
+<li class="toctree-l2"><a class="reference internal" href="fourier-shift-method.html#accuracy">3.5.4. Accuracy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="fourier-shift-method.html#cost">3.5.5. Cost</a></li>
+<li class="toctree-l2"><a class="reference internal" href="fourier-shift-method.html#using-it">3.5.6. Using it</a></li>
 </ul>
 </li>
 </ul>

@@ -117,9 +117,13 @@
 <li class="toctree-l3"><a class="reference internal" href="qmix.html#qmix.network.Network"><code class="docutils literal notranslate"><span class="pre">Network</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="qmix.html#qmix.network.embedding_impedance"><code class="docutils literal notranslate"><span class="pre">embedding_impedance()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="qmix.html#qmix.network.impedance_matrix"><code class="docutils literal notranslate"><span class="pre">impedance_matrix()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qmix.html#qmix.network.microstrip"><code class="docutils literal notranslate"><span class="pre">microstrip()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qmix.html#qmix.network.microstrip_line"><code class="docutils literal notranslate"><span class="pre">microstrip_line()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="qmix.html#qmix.network.read_touchstone"><code class="docutils literal notranslate"><span class="pre">read_touchstone()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="qmix.html#qmix.network.set_thevenin"><code class="docutils literal notranslate"><span class="pre">set_thevenin()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qmix.html#qmix.network.tee"><code class="docutils literal notranslate"><span class="pre">tee()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="qmix.html#qmix.network.thevenin"><code class="docutils literal notranslate"><span class="pre">thevenin()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qmix.html#qmix.network.transmission_line"><code class="docutils literal notranslate"><span class="pre">transmission_line()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="qmix.html#module-qmix.qtcurrent">2.6. qmix.qtcurrent module</a><ul>
@@ -158,7 +162,16 @@
 <li class="toctree-l3"><a class="reference internal" href="qmix.html#qmix.small_signal.solve_sidebands"><code class="docutils literal notranslate"><span class="pre">solve_sidebands()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="qmix.html#module-qmix">2.9. Module contents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="qmix.html#module-qmix.superconductor">2.9. qmix.superconductor module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="qmix.html#qmix.superconductor.Multilayer"><code class="docutils literal notranslate"><span class="pre">Multilayer</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qmix.html#qmix.superconductor.NormalFilm"><code class="docutils literal notranslate"><span class="pre">NormalFilm</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qmix.html#qmix.superconductor.SuperconductingFilm"><code class="docutils literal notranslate"><span class="pre">SuperconductingFilm</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qmix.html#qmix.superconductor.energy_gap"><code class="docutils literal notranslate"><span class="pre">energy_gap()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qmix.html#qmix.superconductor.film_impedance"><code class="docutils literal notranslate"><span class="pre">film_impedance()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qmix.html#qmix.superconductor.mattis_bardeen"><code class="docutils literal notranslate"><span class="pre">mattis_bardeen()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="qmix.html#module-qmix">2.10. Module contents</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="theory.html">3. Theory</a><ul>
@@ -189,13 +202,21 @@
 <li class="toctree-l3"><a class="reference internal" href="small-signal.html#limits-of-the-small-signal-analysis">3.3.5. Limits of the small-signal analysis</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="fourier-shift-method.html">3.4. The Fourier-Shift Method</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="fourier-shift-method.html#the-sum-that-has-to-be-evaluated">3.4.1. The sum that has to be evaluated</a></li>
-<li class="toctree-l3"><a class="reference internal" href="fourier-shift-method.html#factorizing-the-shift">3.4.2. Factorizing the shift</a></li>
-<li class="toctree-l3"><a class="reference internal" href="fourier-shift-method.html#constructing-the-fourier-series">3.4.3. Constructing the Fourier series</a></li>
-<li class="toctree-l3"><a class="reference internal" href="fourier-shift-method.html#accuracy">3.4.4. Accuracy</a></li>
-<li class="toctree-l3"><a class="reference internal" href="fourier-shift-method.html#cost">3.4.5. Cost</a></li>
-<li class="toctree-l3"><a class="reference internal" href="fourier-shift-method.html#using-it">3.4.6. Using it</a></li>
+<li class="toctree-l2"><a class="reference internal" href="superconducting-lines.html">3.4. Superconducting Transmission Lines</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="superconducting-lines.html#the-energy-gap">3.4.1. The energy gap</a></li>
+<li class="toctree-l3"><a class="reference internal" href="superconducting-lines.html#the-mattis-bardeen-conductivity">3.4.2. The Mattis-Bardeen conductivity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="superconducting-lines.html#surface-impedance-of-a-film">3.4.3. Surface impedance of a film</a></li>
+<li class="toctree-l3"><a class="reference internal" href="superconducting-lines.html#microstrip-lines">3.4.4. Microstrip lines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="superconducting-lines.html#comparison-with-supermix">3.4.5. Comparison with SuperMix</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="fourier-shift-method.html">3.5. The Fourier-Shift Method</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="fourier-shift-method.html#the-sum-that-has-to-be-evaluated">3.5.1. The sum that has to be evaluated</a></li>
+<li class="toctree-l3"><a class="reference internal" href="fourier-shift-method.html#factorizing-the-shift">3.5.2. Factorizing the shift</a></li>
+<li class="toctree-l3"><a class="reference internal" href="fourier-shift-method.html#constructing-the-fourier-series">3.5.3. Constructing the Fourier series</a></li>
+<li class="toctree-l3"><a class="reference internal" href="fourier-shift-method.html#accuracy">3.5.4. Accuracy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="fourier-shift-method.html#cost">3.5.5. Cost</a></li>
+<li class="toctree-l3"><a class="reference internal" href="fourier-shift-method.html#using-it">3.5.6. Using it</a></li>
 </ul>
 </li>
 </ul>
@@ -267,14 +288,16 @@
 <li class="toctree-l2"><a class="reference internal" href="multi-junction-mixer.html#Small-signal-analysis:-gain-and-noise">9.4. Small-signal analysis: gain and noise</a></li>
 <li class="toctree-l2"><a class="reference internal" href="multi-junction-mixer.html#Check:-multi-tone-simulation">9.5. Check: multi-tone simulation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="multi-junction-mixer.html#A-lossy-tuning-circuit">9.6. A lossy tuning circuit</a></li>
-<li class="toctree-l2"><a class="reference internal" href="multi-junction-mixer.html#Summary">9.7. Summary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="multi-junction-mixer.html#A-superconducting-tuning-circuit">9.7. A superconducting tuning circuit</a></li>
+<li class="toctree-l2"><a class="reference internal" href="multi-junction-mixer.html#Summary">9.8. Summary</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="references.html">10. References</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="references.html#references-related-to-qmix">10.1. References related to QMix</a></li>
 <li class="toctree-l2"><a class="reference internal" href="references.html#references-related-to-multi-tone-spectral-domain-analysis-mtsda">10.2. References related to multi-tone spectral domain analysis (MTSDA)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="references.html#references-related-to-the-small-signal-analysis">10.3. References related to the small-signal analysis</a></li>
-<li class="toctree-l2"><a class="reference internal" href="references.html#other-references">10.4. Other references</a></li>
+<li class="toctree-l2"><a class="reference internal" href="references.html#references-related-to-superconducting-transmission-lines">10.4. References related to superconducting transmission lines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="references.html#other-references">10.5. Other references</a></li>
 </ul>
 </li>
 </ul>

@@ -121,9 +121,13 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#qmix.network.embedding_impedance"><code class="docutils literal notranslate"><span class="pre">embedding_impedance()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#qmix.network.impedance_matrix"><code class="docutils literal notranslate"><span class="pre">impedance_matrix()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#qmix.network.microstrip"><code class="docutils literal notranslate"><span class="pre">microstrip()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#qmix.network.microstrip_line"><code class="docutils literal notranslate"><span class="pre">microstrip_line()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#qmix.network.read_touchstone"><code class="docutils literal notranslate"><span class="pre">read_touchstone()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#qmix.network.set_thevenin"><code class="docutils literal notranslate"><span class="pre">set_thevenin()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#qmix.network.tee"><code class="docutils literal notranslate"><span class="pre">tee()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#qmix.network.thevenin"><code class="docutils literal notranslate"><span class="pre">thevenin()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#qmix.network.transmission_line"><code class="docutils literal notranslate"><span class="pre">transmission_line()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#module-qmix.qtcurrent">2.6. qmix.qtcurrent module</a><ul>
@@ -189,7 +193,28 @@
 <li class="toctree-l3"><a class="reference internal" href="#qmix.small_signal.solve_sidebands"><code class="docutils literal notranslate"><span class="pre">solve_sidebands()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#module-qmix">2.9. Module contents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-qmix.superconductor">2.9. qmix.superconductor module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#qmix.superconductor.Multilayer"><code class="docutils literal notranslate"><span class="pre">Multilayer</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#qmix.superconductor.Multilayer.thickness"><code class="docutils literal notranslate"><span class="pre">Multilayer.thickness</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#qmix.superconductor.Multilayer.zs"><code class="docutils literal notranslate"><span class="pre">Multilayer.zs()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#qmix.superconductor.NormalFilm"><code class="docutils literal notranslate"><span class="pre">NormalFilm</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#qmix.superconductor.NormalFilm.sigma"><code class="docutils literal notranslate"><span class="pre">NormalFilm.sigma()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#qmix.superconductor.SuperconductingFilm"><code class="docutils literal notranslate"><span class="pre">SuperconductingFilm</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#qmix.superconductor.SuperconductingFilm.fgap"><code class="docutils literal notranslate"><span class="pre">SuperconductingFilm.fgap</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#qmix.superconductor.SuperconductingFilm.penetration_depth"><code class="docutils literal notranslate"><span class="pre">SuperconductingFilm.penetration_depth()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#qmix.superconductor.SuperconductingFilm.sigma"><code class="docutils literal notranslate"><span class="pre">SuperconductingFilm.sigma()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#qmix.superconductor.energy_gap"><code class="docutils literal notranslate"><span class="pre">energy_gap()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#qmix.superconductor.film_impedance"><code class="docutils literal notranslate"><span class="pre">film_impedance()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#qmix.superconductor.mattis_bardeen"><code class="docutils literal notranslate"><span class="pre">mattis_bardeen()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-qmix">2.10. Module contents</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="theory.html">3. Theory</a></li>
@@ -1577,6 +1602,87 @@ see <code class="docutils literal notranslate"><span class="pre">Network.impedan
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="qmix.network.microstrip">
+<span class="sig-prename descclassname"><span class="pre">qmix.network.</span></span><span class="sig-name descname"><span class="pre">microstrip</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">freq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">height</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eps_r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thickness</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strip</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ground</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4.2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tan_d</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eps_up</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tan_up</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.network.microstrip" title="Link to this definition"></a></dt>
+<dd><p>Characteristic impedance and propagation constant of a microstrip line,
+including the surface impedance of its conductors (e.g., superconducting
+films).</p>
+<p>The quasi-static effective permittivity and the effect of the strip
+thickness are from Hammerstad &amp; Jensen (1980), the dispersion from
+Kirschning &amp; Jansen (1982), and the geometric factors for the
+characteristic impedance and the conductor surface impedances from
+Yassin &amp; Withington (1995). This is the same model as SuperMix’s
+<code class="docutils literal notranslate"><span class="pre">microstrip</span></code> class. The surface impedances add to the series impedance
+per unit length, <code class="docutils literal notranslate"><span class="pre">Z</span> <span class="pre">=</span> <span class="pre">j</span> <span class="pre">k</span> <span class="pre">Z0</span> <span class="pre">+</span> <span class="pre">g_strip</span> <span class="pre">Zs_strip</span> <span class="pre">+</span> <span class="pre">g_ground</span> <span class="pre">Zs_ground</span></code>,
+which captures both the loss and the kinetic inductance of
+superconducting films.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>freq</strong> (<em>ndarray</em>) – Frequencies, in [Hz]</p></li>
+<li><p><strong>width</strong> (<em>float</em>) – Width of the strip, in [m]</p></li>
+<li><p><strong>height</strong> (<em>float</em>) – Thickness of the dielectric between the strip and
+the ground plane, in [m]</p></li>
+<li><p><strong>eps_r</strong> (<em>float</em>) – Relative permittivity of the dielectric</p></li>
+<li><p><strong>thickness</strong> (<em>float</em><em>, </em><em>optional</em>) – Thickness of the strip, in [m]; default
+is the thickness of <code class="docutils literal notranslate"><span class="pre">strip</span></code></p></li>
+<li><p><strong>strip</strong> (<em>film</em><em>, </em><em>optional</em>) – Conductor of the strip: an object with a
+<code class="docutils literal notranslate"><span class="pre">zs(freq,</span> <span class="pre">temp)</span></code> method returning the surface impedance in
+[ohms], e.g., <code class="docutils literal notranslate"><span class="pre">qmix.superconductor.SuperconductingFilm</span></code>;
+default is a perfect conductor</p></li>
+<li><p><strong>ground</strong> (<em>film</em><em>, </em><em>optional</em>) – Conductor of the ground plane; default is a
+perfect conductor</p></li>
+<li><p><strong>temp</strong> (<em>float</em><em>, </em><em>optional</em>) – Temperature, in [K], passed to the films;
+default is 4.2</p></li>
+<li><p><strong>tan_d</strong> (<em>float</em><em>, </em><em>optional</em>) – Loss tangent of the dielectric</p></li>
+<li><p><strong>eps_up</strong> (<em>float</em><em>, </em><em>optional</em>) – Relative permittivity above the strip;
+default is 1 (vacuum)</p></li>
+<li><p><strong>tan_up</strong> (<em>float</em><em>, </em><em>optional</em>) – Loss tangent above the strip</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>characteristic impedance <code class="docutils literal notranslate"><span class="pre">zc</span></code> in [ohms] and propagation</dt><dd><p>constant <code class="docutils literal notranslate"><span class="pre">gamma</span></code> in [1/m] (waves vary as <code class="docutils literal notranslate"><span class="pre">exp(-gamma</span> <span class="pre">z)</span></code>),
+one value per frequency (scalars for a scalar <code class="docutils literal notranslate"><span class="pre">freq</span></code>)</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="qmix.network.microstrip_line">
+<span class="sig-prename descclassname"><span class="pre">qmix.network.</span></span><span class="sig-name descname"><span class="pre">microstrip_line</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">freq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">length</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">height</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eps_r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.network.microstrip_line" title="Link to this definition"></a></dt>
+<dd><p>Microstrip transmission line (see <code class="docutils literal notranslate"><span class="pre">microstrip</span></code> for the model).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>freq</strong> (<em>ndarray</em>) – Frequencies, in [Hz]</p></li>
+<li><p><strong>length</strong> (<em>float</em>) – Length of the line, in [m]</p></li>
+<li><p><strong>width</strong> (<em>float</em>) – Width of the strip, in [m]</p></li>
+<li><p><strong>height</strong> (<em>float</em>) – Thickness of the dielectric, in [m]</p></li>
+<li><p><strong>eps_r</strong> (<em>float</em>) – Relative permittivity of the dielectric</p></li>
+<li><p><strong>z0</strong> (<em>complex</em><em> or </em><em>ndarray</em><em>, </em><em>optional</em>) – Reference impedances of the two
+ports, in [ohms]; default is the real part of the characteristic
+impedance</p></li>
+<li><p><strong>kwargs</strong> – Other arguments of <code class="docutils literal notranslate"><span class="pre">microstrip</span></code>: <code class="docutils literal notranslate"><span class="pre">thickness</span></code>, <code class="docutils literal notranslate"><span class="pre">strip</span></code>,
+<code class="docutils literal notranslate"><span class="pre">ground</span></code>, <code class="docutils literal notranslate"><span class="pre">temp</span></code>, <code class="docutils literal notranslate"><span class="pre">tan_d</span></code>, <code class="docutils literal notranslate"><span class="pre">eps_up</span></code>, <code class="docutils literal notranslate"><span class="pre">tan_up</span></code></p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>2-port network</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#qmix.network.Network" title="qmix.network.Network">Network</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="qmix.network.read_touchstone">
 <span class="sig-prename descclassname"><span class="pre">qmix.network.</span></span><span class="sig-name descname"><span class="pre">read_touchstone</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_ports</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.network.read_touchstone" title="Link to this definition"></a></dt>
 <dd><p>Read a Touchstone file (version 1, S-parameters).</p>
@@ -1641,6 +1747,30 @@ or <code class="docutils literal notranslate"><span class="pre">qmix.circuit.Mul
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="qmix.network.tee">
+<span class="sig-prename descclassname"><span class="pre">qmix.network.</span></span><span class="sig-name descname"><span class="pre">tee</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">freq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_ports</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.network.tee" title="Link to this definition"></a></dt>
+<dd><p>Ideal junction of several ports at one node (e.g., a tee).</p>
+<p>All ports have the same voltage and their currents add to zero. With the
+same real reference impedance at all ports, <code class="docutils literal notranslate"><span class="pre">S</span> <span class="pre">=</span> <span class="pre">2</span> <span class="pre">/</span> <span class="pre">N</span> <span class="pre">-</span> <span class="pre">1</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>freq</strong> (<em>ndarray</em>) – Frequencies, in [Hz]</p></li>
+<li><p><strong>z0</strong> (<em>float</em><em>, </em><em>optional</em>) – Reference impedance of all ports, in [ohms]
+(real); default is 50</p></li>
+<li><p><strong>num_ports</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of ports; default is 3</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>network with <code class="docutils literal notranslate"><span class="pre">num_ports</span></code> ports</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#qmix.network.Network" title="qmix.network.Network">Network</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="qmix.network.thevenin">
 <span class="sig-prename descclassname"><span class="pre">qmix.network.</span></span><span class="sig-name descname"><span class="pre">thevenin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">network</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">freq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_port</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">power</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phase</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">terminations</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.network.thevenin" title="Link to this definition"></a></dt>
 <dd><p>Thevenin equivalent circuit seen by a junction at one port of a
@@ -1697,6 +1827,38 @@ shapes <code class="docutils literal notranslate"><span class="pre">freq.shape</
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>tuple</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="qmix.network.transmission_line">
+<span class="sig-prename descclassname"><span class="pre">qmix.network.</span></span><span class="sig-name descname"><span class="pre">transmission_line</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">freq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gamma</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">length</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.network.transmission_line" title="Link to this definition"></a></dt>
+<dd><p>Transmission line from its characteristic impedance and propagation
+constant.</p>
+<p>Waves on the line vary as <code class="docutils literal notranslate"><span class="pre">exp(-gamma</span> <span class="pre">z)</span></code>, so <code class="docutils literal notranslate"><span class="pre">gamma</span> <span class="pre">=</span> <span class="pre">alpha</span> <span class="pre">+</span> <span class="pre">j</span> <span class="pre">beta</span></code>
+(<code class="docutils literal notranslate"><span class="pre">alpha</span></code>: attenuation, <code class="docutils literal notranslate"><span class="pre">beta</span></code>: phase constant; for an ideal line,
+<code class="docutils literal notranslate"><span class="pre">gamma</span> <span class="pre">=</span> <span class="pre">j</span> <span class="pre">2</span> <span class="pre">pi</span> <span class="pre">f</span> <span class="pre">sqrt(eps_eff)</span> <span class="pre">/</span> <span class="pre">c</span></code>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>freq</strong> (<em>ndarray</em>) – Frequencies, in [Hz]</p></li>
+<li><p><strong>zc</strong> (<em>complex</em><em> or </em><em>ndarray</em>) – Characteristic impedance, in [ohms] (scalar
+or one value per frequency)</p></li>
+<li><p><strong>gamma</strong> (<em>complex</em><em> or </em><em>ndarray</em>) – Propagation constant, in [1/m] (scalar or
+one value per frequency)</p></li>
+<li><p><strong>length</strong> (<em>float</em>) – Length of the line, in [m]</p></li>
+<li><p><strong>z0</strong> (<em>complex</em><em> or </em><em>ndarray</em><em>, </em><em>optional</em>) – Reference impedances of the two
+ports, in [ohms] (as for <code class="docutils literal notranslate"><span class="pre">Network</span></code>); default is the real part
+of <code class="docutils literal notranslate"><span class="pre">zc</span></code>, so that a lossless line is matched
+(<code class="docutils literal notranslate"><span class="pre">S21</span> <span class="pre">=</span> <span class="pre">exp(-gamma</span> <span class="pre">length)</span></code>, <code class="docutils literal notranslate"><span class="pre">S11</span> <span class="pre">=</span> <span class="pre">0</span></code>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>2-port network</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#qmix.network.Network" title="qmix.network.Network">Network</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -3250,8 +3412,280 @@ order, with the complex conjugate for m &lt; 0)</p>
 </dd></dl>
 
 </section>
+<section id="module-qmix.superconductor">
+<span id="qmix-superconductor-module"></span><h2><span class="section-number">2.9. </span>qmix.superconductor module<a class="headerlink" href="#module-qmix.superconductor" title="Link to this heading"></a></h2>
+<p>This module contains functions and classes for the surface impedance of
+superconducting and normal metal films, for use in transmission lines (e.g.,
+<code class="docutils literal notranslate"><span class="pre">qmix.network.microstrip</span></code>).</p>
+<p>Description:</p>
+<blockquote>
+<div><p>The tuning circuits of SIS mixers are usually made from superconducting
+films (e.g., Nb or NbTiN). Below the gap frequency, these films have a
+small surface resistance but a large kinetic inductance, which slows the
+waves on the lines by ~10-20% and therefore shifts the frequencies at
+which the tuning circuit resonates. Above the gap frequency (~700 GHz for
+Nb), photons break Cooper pairs and the films become lossy.</p>
+<p>The complex conductivity of a superconductor is calculated with the
+Mattis-Bardeen theory in the local (dirty) limit
+(<code class="docutils literal notranslate"><span class="pre">mattis_bardeen</span></code>), using the BCS temperature dependence of the energy
+gap (<code class="docutils literal notranslate"><span class="pre">energy_gap</span></code>). The surface impedance of a film of finite thickness
+(or of a stack of films) follows from the conductivity by treating the
+film as a section of transmission line (<code class="docutils literal notranslate"><span class="pre">film_impedance</span></code>).</p>
+<p>The film classes (<code class="docutils literal notranslate"><span class="pre">NormalFilm</span></code>, <code class="docutils literal notranslate"><span class="pre">SuperconductingFilm</span></code> and
+<code class="docutils literal notranslate"><span class="pre">Multilayer</span></code>) bundle the material parameters, so that they can be
+passed to the transmission line functions in <code class="docutils literal notranslate"><span class="pre">qmix.network</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">nb</span> <span class="o">=</span> <span class="n">SuperconductingFilm</span><span class="p">(</span><span class="n">vgap</span><span class="o">=</span><span class="mf">2.8e-3</span><span class="p">,</span> <span class="n">tc</span><span class="o">=</span><span class="mf">9.2</span><span class="p">,</span> <span class="n">rho_n</span><span class="o">=</span><span class="mf">5e-8</span><span class="p">,</span> <span class="n">thickness</span><span class="o">=</span><span class="mf">300e-9</span><span class="p">)</span>
+<span class="n">nb</span><span class="o">.</span><span class="n">zs</span><span class="p">(</span><span class="mf">500e9</span><span class="p">,</span> <span class="mf">4.2</span><span class="p">)</span>                 <span class="c1"># surface impedance, in [ohms]</span>
+</pre></div>
+</div>
+</div></blockquote>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Unlike the rest of QMix, the values here are not normalized: frequencies
+are in [Hz], temperatures in [K], voltages in [V], lengths in [m],
+resistivities in [ohm m] and conductivities in [S/m].</p>
+<p>Complex values use the engineering convention <code class="docutils literal notranslate"><span class="pre">exp(+j</span> <span class="pre">w</span> <span class="pre">t)</span></code>, as for
+the impedances in the rest of QMix: an inductive reactance is positive,
+and the conductivity of a superconductor is <code class="docutils literal notranslate"><span class="pre">sigma1</span> <span class="pre">-</span> <span class="pre">j</span> <span class="pre">sigma2</span></code>.</p>
+</div>
+<dl class="py class">
+<dt class="sig sig-object py" id="qmix.superconductor.Multilayer">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">qmix.superconductor.</span></span><span class="sig-name descname"><span class="pre">Multilayer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">films</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z_back</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.superconductor.Multilayer" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Stack of films, e.g., a thin Nb film on top of a NbTiN film.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>films</strong> (<em>list</em>) – Films (<code class="docutils literal notranslate"><span class="pre">NormalFilm</span></code> or <code class="docutils literal notranslate"><span class="pre">SuperconductingFilm</span></code>),
+starting from the one that carries the current (the surface
+facing the dielectric)</p></li>
+<li><p><strong>z_back</strong> (<em>complex</em><em>, </em><em>optional</em>) – Impedance behind the last film, in
+[ohms]; default is the impedance of free space (the <code class="docutils literal notranslate"><span class="pre">z_back</span></code>
+values of the individual films are not used)</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="qmix.superconductor.Multilayer.thickness">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">thickness</span></span><a class="headerlink" href="#qmix.superconductor.Multilayer.thickness" title="Link to this definition"></a></dt>
+<dd><p>Total thickness, in [m].</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qmix.superconductor.Multilayer.zs">
+<span class="sig-name descname"><span class="pre">zs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">freq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temp</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.superconductor.Multilayer.zs" title="Link to this definition"></a></dt>
+<dd><p>Surface impedance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>freq</strong> (<em>float</em><em> or </em><em>ndarray</em>) – Frequency, in [Hz]</p></li>
+<li><p><strong>temp</strong> (<em>float</em>) – Temperature, in [K]</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Surface impedance, in [ohms]</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>complex or ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="qmix.superconductor.NormalFilm">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">qmix.superconductor.</span></span><span class="sig-name descname"><span class="pre">NormalFilm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rho</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thickness</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z_back</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.superconductor.NormalFilm" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">_Film</span></code></p>
+<p>Normal metal film (local conductivity, no anomalous skin effect).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>rho</strong> (<em>float</em>) – Resistivity, in [ohm m]</p></li>
+<li><p><strong>thickness</strong> (<em>float</em>) – Film thickness, in [m]</p></li>
+<li><p><strong>z_back</strong> (<em>complex</em><em>, </em><em>optional</em>) – Impedance behind the film, in [ohms];
+default is the impedance of free space</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="qmix.superconductor.NormalFilm.sigma">
+<span class="sig-name descname"><span class="pre">sigma</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">freq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.superconductor.NormalFilm.sigma" title="Link to this definition"></a></dt>
+<dd><p>Conductivity, in [S/m] (independent of frequency and temperature).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>freq</strong> (<em>float</em><em> or </em><em>ndarray</em>) – Frequency, in [Hz]</p></li>
+<li><p><strong>temp</strong> (<em>float</em><em>, </em><em>optional</em>) – Temperature, in [K] (not used)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Conductivity, in [S/m]</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>complex or ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="qmix.superconductor.SuperconductingFilm">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">qmix.superconductor.</span></span><span class="sig-name descname"><span class="pre">SuperconductingFilm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vgap</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rho_n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thickness</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z_back</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.superconductor.SuperconductingFilm" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">_Film</span></code></p>
+<p>Superconducting film (Mattis-Bardeen theory in the local limit).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>vgap</strong> (<em>float</em>) – Gap voltage of the superconductor (2 Delta(0) / e), in
+[V], e.g., ~2.8e-3 for Nb (1.4 meV per electron for the energy
+gap Delta)</p></li>
+<li><p><strong>tc</strong> (<em>float</em>) – Critical temperature, in [K]</p></li>
+<li><p><strong>rho_n</strong> (<em>float</em>) – Normal-state resistivity (just above Tc), in [ohm m]</p></li>
+<li><p><strong>thickness</strong> (<em>float</em>) – Film thickness, in [m]</p></li>
+<li><p><strong>z_back</strong> (<em>complex</em><em>, </em><em>optional</em>) – Impedance behind the film, in [ohms];
+default is the impedance of free space</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="qmix.superconductor.SuperconductingFilm.fgap">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">fgap</span></span><a class="headerlink" href="#qmix.superconductor.SuperconductingFilm.fgap" title="Link to this definition"></a></dt>
+<dd><p>Gap frequency (2 Delta(0) / h), in [Hz].</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qmix.superconductor.SuperconductingFilm.penetration_depth">
+<span class="sig-name descname"><span class="pre">penetration_depth</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">temp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.superconductor.SuperconductingFilm.penetration_depth" title="Link to this definition"></a></dt>
+<dd><p>London penetration depth in the local (dirty) limit.</p>
+<p><code class="docutils literal notranslate"><span class="pre">lambda</span> <span class="pre">=</span> <span class="pre">sqrt(hbar</span> <span class="pre">rho_n</span> <span class="pre">/</span> <span class="pre">(pi</span> <span class="pre">mu0</span> <span class="pre">Delta(T)</span> <span class="pre">tanh(Delta(T)</span> <span class="pre">/</span> <span class="pre">2</span> <span class="pre">k</span> <span class="pre">T)))</span></code>,
+the low-frequency limit of the Mattis-Bardeen conductivity.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>temp</strong> (<em>float</em><em>, </em><em>optional</em>) – Temperature, in [K]; default is 0</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Penetration depth, in [m]</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qmix.superconductor.SuperconductingFilm.sigma">
+<span class="sig-name descname"><span class="pre">sigma</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">freq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temp</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.superconductor.SuperconductingFilm.sigma" title="Link to this definition"></a></dt>
+<dd><p>Complex conductivity, from the Mattis-Bardeen theory.</p>
+<p>The values are cached, since the integrals are slow (~1 ms per
+point). Changing <code class="docutils literal notranslate"><span class="pre">vgap</span></code> or <code class="docutils literal notranslate"><span class="pre">tc</span></code> clears the cache.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>freq</strong> (<em>float</em><em> or </em><em>ndarray</em>) – Frequency, in [Hz]</p></li>
+<li><p><strong>temp</strong> (<em>float</em>) – Temperature, in [K]</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Conductivity, <code class="docutils literal notranslate"><span class="pre">sigma1</span> <span class="pre">-</span> <span class="pre">j</span> <span class="pre">sigma2</span></code>, in [S/m]</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>complex or ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="qmix.superconductor.energy_gap">
+<span class="sig-prename descclassname"><span class="pre">qmix.superconductor.</span></span><span class="sig-name descname"><span class="pre">energy_gap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">temp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tc</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.superconductor.energy_gap" title="Link to this definition"></a></dt>
+<dd><p>Temperature dependence of the energy gap, from BCS theory.</p>
+<p>Solves the weak-coupling BCS gap equation,
+<code class="docutils literal notranslate"><span class="pre">ln(Delta(0)</span> <span class="pre">/</span> <span class="pre">Delta)</span> <span class="pre">=</span> <span class="pre">2</span> <span class="pre">int_0^inf</span> <span class="pre">f(E)</span> <span class="pre">/</span> <span class="pre">E</span> <span class="pre">d(xi)</span></code> with
+<code class="docutils literal notranslate"><span class="pre">E</span> <span class="pre">=</span> <span class="pre">sqrt(xi^2</span> <span class="pre">+</span> <span class="pre">Delta^2)</span></code> and <code class="docutils literal notranslate"><span class="pre">Delta(0)</span> <span class="pre">=</span> <span class="pre">1.764</span> <span class="pre">k</span> <span class="pre">Tc</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>temp</strong> (<em>float</em><em> or </em><em>ndarray</em>) – Temperature, in [K]</p></li>
+<li><p><strong>tc</strong> (<em>float</em>) – Critical temperature, in [K]</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Delta(T) / Delta(0), zero for T &gt;= Tc</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float or ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="qmix.superconductor.film_impedance">
+<span class="sig-prename descclassname"><span class="pre">qmix.superconductor.</span></span><span class="sig-name descname"><span class="pre">film_impedance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">freq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">layers</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z_back</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.superconductor.film_impedance" title="Link to this definition"></a></dt>
+<dd><p>Surface impedance of a film (or a stack of films) of finite thickness.</p>
+<p>Each layer is treated as a section of transmission line, with the wave
+impedance and wavenumber of a plane wave in the metal (local
+conductivity, including the displacement current). The back of the
+stack is terminated by <code class="docutils literal notranslate"><span class="pre">z_back</span></code>; this models radiation from the back
+side, and only matters for films thinner than a few penetration depths.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>freq</strong> (<em>float</em><em> or </em><em>ndarray</em>) – Frequency, in [Hz]</p></li>
+<li><p><strong>layers</strong> (<em>list</em>) – List of <code class="docutils literal notranslate"><span class="pre">(sigma,</span> <span class="pre">thickness)</span></code> pairs, starting from
+the layer that carries the current (the surface facing the
+dielectric) and moving away from it. <code class="docutils literal notranslate"><span class="pre">sigma</span></code> is the complex
+conductivity in [S/m] (scalar or one value per frequency) and
+<code class="docutils literal notranslate"><span class="pre">thickness</span></code> is in [m].</p></li>
+<li><p><strong>z_back</strong> (<em>complex</em><em>, </em><em>optional</em>) – Impedance behind the last layer, in
+[ohms]; default is the impedance of free space</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Surface impedance, in [ohms]</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>complex or ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="qmix.superconductor.mattis_bardeen">
+<span class="sig-prename descclassname"><span class="pre">qmix.superconductor.</span></span><span class="sig-name descname"><span class="pre">mattis_bardeen</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">freq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vgap</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tc</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.superconductor.mattis_bardeen" title="Link to this definition"></a></dt>
+<dd><p>Complex conductivity of a superconductor from the Mattis-Bardeen theory.</p>
+<p>The conductivity is normalized to the normal-state conductivity, and it
+is calculated in the local (dirty) limit. The energy gap at T = 0 is
+given by the gap voltage (<code class="docutils literal notranslate"><span class="pre">vgap</span> <span class="pre">=</span> <span class="pre">2</span> <span class="pre">Delta(0)</span> <span class="pre">/</span> <span class="pre">e</span></code>), and its temperature
+dependence by BCS theory (<code class="docutils literal notranslate"><span class="pre">energy_gap</span></code>), so <code class="docutils literal notranslate"><span class="pre">vgap</span></code> and <code class="docutils literal notranslate"><span class="pre">tc</span></code> don’t
+need to be consistent with the BCS ratio.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>freq</strong> (<em>float</em><em> or </em><em>ndarray</em>) – Frequency, in [Hz]</p></li>
+<li><p><strong>temp</strong> (<em>float</em>) – Temperature, in [K]</p></li>
+<li><p><strong>vgap</strong> (<em>float</em>) – Gap voltage (2 Delta(0) / e), in [V]</p></li>
+<li><p><strong>tc</strong> (<em>float</em>) – Critical temperature, in [K]</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>Normalized conductivity, <code class="docutils literal notranslate"><span class="pre">sigma1</span> <span class="pre">-</span> <span class="pre">j</span> <span class="pre">sigma2</span></code>;</dt><dd><p>1 above the critical temperature</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>complex or ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
 <section id="module-qmix">
-<span id="module-contents"></span><h2><span class="section-number">2.9. </span>Module contents<a class="headerlink" href="#module-qmix" title="Link to this heading"></a></h2>
+<span id="module-contents"></span><h2><span class="section-number">2.10. </span>Module contents<a class="headerlink" href="#module-qmix" title="Link to this heading"></a></h2>
 <p>Quantum Mixing Software</p>
 <p>QMix is used to simulate Superconductor/Insulator/Superconductor (SIS) mixers.
 It uses multi-tone spectral domain analysis, which makes QMix ideal for

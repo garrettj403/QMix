@@ -36,6 +36,25 @@ Tucker, J. R., & Feldman, M. J. (1985). `Quantum detection at millimeter wavelen
 
 Twiss, R. Q. (1955). Nyquist's and Thevenin's theorems generalized for nonreciprocal linear networks. Journal of Applied Physics, 26(5), 599-602.
 
+References related to superconducting transmission lines
+---------------------------------------------------------
+
+Hammerstad, E., & Jensen, O. (1980). Accurate models for microstrip computer-aided design. In IEEE MTT-S International Microwave Symposium Digest (pp. 407-409).
+
+Kautz, R. L. (1978). Picosecond pulses on superconducting striplines. Journal of Applied Physics, 49(1), 308-314.
+
+Kirschning, M., & Jansen, R. H. (1982). Accurate model for effective dielectric constant of microstrip with validity up to millimetre-wave frequencies. Electronics Letters, 18(6), 272-273.
+
+Mattis, D. C., & Bardeen, J. (1958). Theory of the anomalous skin effect in normal and superconducting metals. Physical Review, 111(2), 412-417.
+
+Mühlschlegel, B. (1959). Die thermodynamischen Funktionen des Supraleiters. Zeitschrift für Physik, 155(3), 313-327.
+
+Swihart, J. C. (1961). Field solution for a thin-film superconducting strip transmission line. Journal of Applied Physics, 32(3), 461-469.
+
+Ward, J., Rice, F., Chattopadhyay, G., & Zmuidzinas, J. (1999). SuperMix: A flexible software library for high-frequency circuit simulation, including SIS mixers and superconducting elements. In Proc. 10th Int. Symp. Space THz Tech. Charlottesville, VA.
+
+Yassin, G., & Withington, S. (1995). Electromagnetic models for superconducting millimetre-wave and sub-millimetre-wave microstrip transmission lines. Journal of Physics D: Applied Physics, 28(9), 1983-1991.
+
 Other references
 ----------------
 
