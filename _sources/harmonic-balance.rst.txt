@@ -75,7 +75,7 @@ For one harmonic, these are the Bessel function identities :math:`2 J_n' = J_{n-
 
 All of the derivatives are evaluated together, in one pass over the response function matrix per batch of terms (see :ref:`mtsda`). The sum over the innermost tone is the same for the current and for the derivatives with respect to every other tone, so it is formed once and reused. Only the derivatives with respect to the innermost tone need their own sums. A Jacobian therefore costs much less than the :math:`2N` tunneling current calculations of finite differences. In the benchmarks, harmonic balance is 1.2-1.5 times faster for one junction (one to four tones) and about 1.9 times faster for two junctions. Since the Jacobian is exact, Newton's method also converges in some cases where the finite-difference Jacobian needs the line search below.
 
-With ``jacobian='numerical'``, the derivatives are calculated with forward differences instead, with steps of :math:`10^{-3}` (``DV``) in the real and imaginary part of each voltage, at a cost of :math:`2N` tunneling current calculations. This was the only method before version 1.0.6.
+With ``jacobian='numerical'``, the derivatives are calculated with forward differences instead, with steps of :math:`10^{-3}` (``DV``) in the real and imaginary part of each voltage, at a cost of :math:`2N` tunneling current calculations. This was the only method before version 1.1.0.
 
 Either way, building the Jacobian is a large part of the run time. QMix therefore keeps the same Jacobian for further iterations as long as each iteration still at least halves the largest relative error (``reuse_jacobian=True``, ``JACOBIAN_REUSE_RATIO``). Near the solution, Newton's method converges so quickly that an outdated Jacobian is usually good enough.
 
