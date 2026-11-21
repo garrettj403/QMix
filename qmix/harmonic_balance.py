@@ -26,13 +26,20 @@ SIS mixer circuits.
 """
 
 # import qmix
+import copy
+
 import numpy as np
 from timeit import default_timer as timer
 from qmix.circuit import EmbeddingCircuit, MultiJunctionCircuit
 from qmix.misc.progbar import progress_bar
-from qmix.qtcurrent import (interpolate_respfn, junction_resp, qtcurrent, qtcurrent_derivatives, _is_multi,
-                            _unpack_num_b)
+from qmix.qtcurrent import (FourierResp, interpolate_respfn, junction_resp, qtcurrent, qtcurrent_derivatives,
+                            _check_respfn_range, _interpolation_voltages, _is_multi, _select_method, _unpack_num_b)
 
+# default maximum number of iterations: most cases converge in ~5, but strong
+# pumping into a large embedding impedance can take ~20, and series arrays (DC
+# bias network) typically 15-30
+MAX_IT = 30
+MAX_IT_DC = 60
 # minimum Thevenin voltage (required to avoid div by 0 errors)
 MIN_VT = 1e-10
 # voltage step for numerical derivatives
@@ -53,6 +60,17 @@ LINE_SEARCH_MAX_BACKTRACK = 8
 # voltage from the solution at the nearest converged bias voltage, up to this
 # many times per bias voltage
 MAX_RESTARTS = 3
+# DC bias network: the error of the DC equations is checked relative to the
+# largest DC voltage at each bias point, but at least this voltage
+DC_VREF = 0.01
+# DC bias network: a bias point that hasn't reduced its squared error norm by
+# STALL_RATIO within STALL_ITERATIONS iterations is restarted from the nearest
+# converged bias point (as if the line search had failed)
+STALL_RATIO = 0.5
+STALL_ITERATIONS = 5
+# DC bias network: step for the central differences with respect to the DC
+# voltages
+DV_DC = 1e-5
 
 
 # Harmonic Balance ----------------------------------------------------------
@@ -61,9 +79,9 @@ MAX_RESTARTS = 3
 # method to find the solution to the highly non-linear equation.
 
 
-def harmonic_balance(cct, resp, num_b=15, max_it=30, stop_rerror=0.001, vj_initial=None, damp_coeff=1., mode="o",
+def harmonic_balance(cct, resp, num_b=15, max_it=None, stop_rerror=0.001, vj_initial=None, damp_coeff=1., mode="o",
                      verbose=True, zj_guess=0.67, reuse_jacobian=True, method='auto', line_search=True,
-                     warm_start=False, jacobian='analytic'):
+                     warm_start=False, jacobian='analytic', vb_initial=None):
     """Perform harmonic balance.
 
     Determine the harmonic balance of the junction + embedding circuit system.
@@ -76,6 +94,12 @@ def harmonic_balance(cct, resp, num_b=15, max_it=30, stop_rerror=0.001, vj_initi
     ``vj[j, f, p, i]``, and ``resp`` can be a list (one response function
     per junction).
 
+    With a DC bias network (``qmix.circuit.MultiJunctionCircuit.set_dc_network``
+    or ``set_series_bias``, e.g., for a series array), the DC voltages of
+    the junctions are unknowns too: they are solved together with the
+    junction voltage and returned with it (``vj, vb``; ``cct.vb`` is only
+    the initial guess).
+
     Args:
         cct (qmix.circuit.EmbeddingCircuit): Embedding circuit (or
             ``qmix.circuit.MultiJunctionCircuit``)
@@ -87,7 +111,8 @@ def harmonic_balance(cct, resp, num_b=15, max_it=30, stop_rerror=0.001, vj_initi
             to sum over the phase factor coefficients: ``'direct'``,
             ``'fourier'`` or ``'auto'``, default is ``'auto'`` (see
             ``qmix.qtcurrent`` for details)
-        max_it (int, optional): Maximum number of iterations, default is 30.
+        max_it (int, optional): Maximum number of iterations, default is 30
+            (``MAX_IT``), or 60 with a DC bias network (``MAX_IT_DC``).
             Most cases converge in ~5 iterations (and stop there), but strong
             pumping into a large embedding impedance can take ~20.
         stop_rerror (float, optional): Maximum acceptable relative error,
@@ -129,12 +154,18 @@ def harmonic_balance(cct, resp, num_b=15, max_it=30, stop_rerror=0.001, vj_initi
             evaluates all of the derivatives together, which is usually
             faster than ``'numerical'`` (finite differences, 2 * num_n calls
             to the tunneling current function, with a forward step of
-            ``DV``).
+            ``DV``). With a DC bias network, the derivatives with respect to
+            the DC voltages are always forward differences.
+        vb_initial (ndarray, optional): With a DC bias network: initial
+            guess of the DC voltages, ``vb[j, i]``, default is ``cct.vb``
 
     Returns:
         ndarray: junction voltage that satisfies the circuit (mode 'o');
         also the number of iterations and whether the solution converged
-        (mode 'x'), or a mask of the converged bias voltages (mode 'm')
+        (mode 'x'), or a mask of the converged bias voltages (mode 'm').
+        With a DC bias network, the DC voltages ``vb[j, i]`` follow the
+        junction voltage (e.g., ``vj, vb`` for mode 'o', or ``vj, vb,
+        iterations, converged`` for mode 'x').
 
     """
 
@@ -158,11 +189,19 @@ def harmonic_balance(cct, resp, num_b=15, max_it=30, stop_rerror=0.001, vj_initi
     num_j = cct.num_j if multi else 1
     num_k = num_j * num_n
 
+    # DC bias network: the DC voltages (one per junction) are unknowns too
+    dc = multi and cct.has_dc_network
+    if dc:
+        assert cct.dc_rhs.shape == (num_j, npts), "dc_rhs must have shape (num_j, vb_npts)"
+    num_u = num_k + num_j if dc else num_k
+    if max_it is None:
+        max_it = MAX_IT_DC if dc else MAX_IT
+
     vt = cct.vt
     zt = cct.zt
 
     # Harmonic balance isn't required if all zt are equal to zero
-    if (zt == 0).all():
+    if (zt == 0).all() and not dc:
         if verbose:
             print("Done.\n")
         return vt[..., None] * np.ones(npts, dtype=complex)
@@ -192,6 +231,10 @@ def harmonic_balance(cct, resp, num_b=15, max_it=30, stop_rerror=0.001, vj_initi
             vj_f = _single_tone_guess(cct, resp, f_strong, _unpack_num_b(num_b, num_f)[f_strong - 1], max_it,
                                       stop_rerror, damp_coeff, zj_guess, reuse_jacobian, method, line_search,
                                       jacobian)
+            if dc:
+                vj_f, vb_f = vj_f
+                if vb_initial is None:
+                    vb_initial = vb_f
             if multi:
                 vj_initial[:, f_strong] = vj_f
             else:
@@ -223,16 +266,27 @@ def harmonic_balance(cct, resp, num_b=15, max_it=30, stop_rerror=0.001, vj_initi
             if multi:
                 msg += " (for each junction)"
             print((msg.format(num_n * 2 + 1)))
+        if dc:
+            print(" - DC bias network (DC voltages solved)")
         print(" - max. iterations: {}".format(max_it))
 
     # Interpolate response function for all required voltages (a list, one
     # per junction, for several junctions)
-    respfn_interp = interpolate_respfn(cct, resp, num_b, method=method, verbose=verbose)
+    # (with a DC bias network, this is done for every error vector instead)
+    if not dc:
+        respfn_interp = interpolate_respfn(cct, resp, num_b, method=method, verbose=verbose)
 
     # Change format of data from [f, p] to [k] (reduce by one dimension).
     # The error vector and the inverse Jacobian are calculated by these
     # functions of vj_2d.
-    if multi:
+    if dc:
+        vb_initial = cct.vb if vb_initial is None else np.asarray(vb_initial, dtype=float)
+        assert vb_initial.shape == (num_j, npts), "vb_initial must have shape (num_j, vb_npts)"
+        vj_2d = np.vstack((vj_initial[:, 1:, 1:, :].reshape((num_k, npts)), vb_initial.astype(complex)))
+        system = _DCBiasSystem(cct, resp, num_b, method, verbose=verbose)
+        error_vector = system.error_vector
+        inv_jacobian = system.inv_jacobian_analytic if analytic else system.inv_jacobian
+    elif multi:
         vj_2d = vj_initial[:, 1:, 1:, :].reshape((num_k, npts))
         system = _MultiJunctionSystem(cct, resp, num_b, respfn_interp)
         error_vector = system.error_vector
@@ -273,6 +327,10 @@ def harmonic_balance(cct, resp, num_b=15, max_it=30, stop_rerror=0.001, vj_initi
     last_max_rel_error = np.inf
     force_new_jacobian = False
     num_restarts = np.zeros(npts, dtype=int)
+    # DC bias network: last iteration at which each bias point made progress
+    # (see STALL_ITERATIONS)
+    best_merit = np.full(npts, np.inf)
+    it_best = np.zeros(npts, dtype=int)
     for iteration in range(max_it + 1):
 
         # Check error at each tone and harmonic
@@ -283,19 +341,28 @@ def harmonic_balance(cct, resp, num_b=15, max_it=30, stop_rerror=0.001, vj_initi
         if multi:
             msg = "\tj:{:d}, " + msg[1:]
         finished_points = np.ones(npts, dtype=bool)
-        for k in range(num_k):
+        if dc:
+            # DC equations: relative to the largest DC voltage (at least DC_VREF)
+            v_ref_dc = np.maximum(np.abs(vj_2d[num_k:].real).max(axis=0), DC_VREF)
+        for k in range(num_u):
             with np.errstate(divide='ignore'):
                 # Check relative error at k
                 abs_error = np.abs(err_all[k, :])
-                rel_error = abs_error / np.abs(vj_2d[k, :])
+                v_ref = v_ref_dc if k >= num_k else np.abs(vj_2d[k, :])
+                rel_error = abs_error / v_ref
                 max_rel_error = max(np.max(rel_error), max_rel_error)
-                med_rel_error = np.median(abs_error / np.abs(vj_2d[k, :]))
+                med_rel_error = np.median(rel_error)
                 good_points = rel_error < stop_rerror
                 finished_points = finished_points & good_points
                 complete = float(np.sum(good_points)) / npts
 
             # Print to terminal
-            if verbose:
+            if verbose and k >= num_k:
+                msg_dc = ("\tj:{:d}, DC,        med. rel. error: {:9.3f},   max. rel. error: {:9.3f},   "
+                          "{:5.1f} % complete")
+                print(msg_dc.format(k - num_k, min(med_rel_error, 99999.999), min(np.max(rel_error), 99999.999),
+                                    complete * 100))
+            elif verbose:
                 f, p = _k_to_fp(k % num_n, num_p)
 
                 if med_rel_error > 99999.999:
@@ -333,9 +400,9 @@ def harmonic_balance(cct, resp, num_b=15, max_it=30, stop_rerror=0.001, vj_initi
         last_max_rel_error = max_rel_error
         if verbose:
             print("Applying correction")
-        corr = np.zeros((num_k, npts), dtype=complex)
-        for p in range(num_k):
-            for q in range(num_k):
+        corr = np.zeros((num_u, npts), dtype=complex)
+        for p in range(num_u):
+            for q in range(num_u):
                 corr[p, :] -= (inv_j[p * 2, q * 2] * np.real(err_all[q]) +
                                inv_j[p * 2, q * 2 + 1] * np.imag(err_all[q]))
                 corr[p, :] -= 1j * (inv_j[p * 2 + 1, q * 2] * np.real(err_all[q]) +
@@ -353,12 +420,23 @@ def harmonic_balance(cct, resp, num_b=15, max_it=30, stop_rerror=0.001, vj_initi
                 print(msg.format(num_backtrack, np.sum(stuck)))
 
             # Stuck despite a new Jacobian: restart from a converged neighbor
-            restart = stuck & new_jacobian & (num_restarts < MAX_RESTARTS)
+            restart = stuck & new_jacobian
+            if dc:
+                # Also restart bias points that have stopped making progress
+                # (a non-root local minimum of the error, which is common with
+                # series arrays: the line search keeps accepting short steps)
+                merit = np.sum(np.abs(err_all) ** 2, axis=0)
+                progress = merit < STALL_RATIO * best_merit
+                best_merit[progress] = merit[progress]
+                it_best[progress] = iteration
+                restart |= ~finished_points & (iteration - it_best >= STALL_ITERATIONS)
+            restart &= num_restarts < MAX_RESTARTS
             if restart.any() and finished_points.any():
                 idx_done = np.flatnonzero(finished_points)
                 for i in np.flatnonzero(restart):
                     vj_2d[:, i] = vj_2d[:, idx_done[np.abs(idx_done - i).argmin()]]
                 num_restarts[restart] += 1
+                best_merit[restart], it_best[restart] = np.inf, iteration
                 err_all = error_vector(vj_2d)
                 # The Jacobian at the restarted points is out of date
                 force_new_jacobian = True
@@ -371,7 +449,7 @@ def harmonic_balance(cct, resp, num_b=15, max_it=30, stop_rerror=0.001, vj_initi
     # Format results (from [k,vb] to [f,p,vb], or [j,f,p,vb])
     if multi:
         vj_out = np.zeros((num_j, num_f + 1, num_p + 1, npts), dtype=complex)
-        vj_out[:, 1:, 1:, :] = vj_2d.reshape((num_j, num_f, num_p, npts))
+        vj_out[:, 1:, 1:, :] = vj_2d[:num_k].reshape((num_j, num_f, num_p, npts))
     else:
         vj_out = np.zeros((num_f + 1, num_p + 1, npts), dtype=complex)
         vj_out[1:, 1:, :] = vj_2d.reshape((num_f, num_p, npts))
@@ -385,13 +463,16 @@ def harmonic_balance(cct, resp, num_b=15, max_it=30, stop_rerror=0.001, vj_initi
             print((msg.format(iteration)))
             print((" - time per iteration:\t{:7.2f} s / {:6.2f} min / {:5.2f} hrs".format(tit, tit / 60., tit / 3600.)))
 
+    # With a DC bias network, the DC voltages follow vj
+    out = (vj_out, vj_2d[num_k:].real.copy()) if dc else (vj_out,)
+
     if mode == "o":  # return vj
-        return vj_out
+        return out if dc else vj_out
     elif mode == "x":  # return vj, number of iterations, and if converged
         converged = max_rel_error <= stop_rerror
-        return vj_out, iteration, converged
+        return out + (iteration, converged)
     elif mode == "m":  # return vj and mask
-        return vj_out, finished_points
+        return out + (finished_points,)
 
 
 # Check results -------------------------------------------------------------
@@ -400,7 +481,7 @@ def harmonic_balance(cct, resp, num_b=15, max_it=30, stop_rerror=0.001, vj_initi
 # for debugging purposes to ensure that everything was done properly.
 
 
-def check_hb_error(vj_check, cct, resp, num_b=15, stop_rerror=0.001):
+def check_hb_error(vj_check, cct, resp, num_b=15, stop_rerror=0.001, vb=None):
     """Check the results from the `harmonic_balance` function.
 
     Just to double check. Mostly for debugging purposes.
@@ -415,6 +496,9 @@ def check_hb_error(vj_check, cct, resp, num_b=15, stop_rerror=0.001):
             default is 15
         stop_rerror (float, optional): Maximum acceptable relative error,
             default is 0.001
+        vb (ndarray, optional): DC voltages from ``harmonic_balance``, for a
+            circuit with a DC bias network (the DC equations are checked
+            too), default is ``cct.vb``
 
     Raises:
         AssertionError: If the stop error is not met
@@ -424,6 +508,10 @@ def check_hb_error(vj_check, cct, resp, num_b=15, stop_rerror=0.001):
     # Note: speed is not important here...
 
     print("Double-checking harmonic balance error:")
+
+    if vb is not None:
+        cct = copy.copy(cct)
+        cct.vb = vb
 
     # Tunnelling current for all tones/harmonics (see below)
     ij_all = _qtcurrent_all_freq(vj_check, cct, resp, num_b)
@@ -453,6 +541,15 @@ def check_hb_error(vj_check, cct, resp, num_b=15, stop_rerror=0.001):
                     msg = "\tj:{4}," + msg
                 print((msg.format(f, p, max_rel_error, err_str, j)))
                 assert good_error
+
+    # DC bias network
+    if multi and cct.has_dc_network:
+        i0 = qtcurrent(vj_check, cct, resp, [0.], num_b, verbose=False)[:, 0].real
+        error_dc = cct.dc_rhs - cct.dc_a @ cct.vb - cct.dc_b @ i0
+        max_rel_error = np.max(np.abs(error_dc) / np.maximum(np.abs(cct.vb).max(axis=0), DC_VREF))
+        good_error = max_rel_error < stop_rerror
+        print("\tDC network,\tmax rel. error: {0:.2E},\tPass? {1}".format(max_rel_error, 'Yes' if good_error else 'No'))
+        assert good_error
     print("")
 
 
@@ -641,6 +738,13 @@ def _single_tone_guess(cct, resp, f, num_b, max_it, stop_rerror, damp_coeff, zj_
         cct_1.freq[1] = cct.freq[f]
         cct_1.vt[:, 1] = cct.vt[:, f]
         cct_1.zt[:, :, 1] = cct.zt[:, :, f]
+        if cct.has_dc_network:
+            cct_1.dc_a, cct_1.dc_b, cct_1.dc_rhs = cct.dc_a, cct.dc_b, cct.dc_rhs
+            vj_1, vb_1 = harmonic_balance(cct_1, resp, num_b=num_b, max_it=max_it, stop_rerror=stop_rerror,
+                                          damp_coeff=damp_coeff, verbose=False, zj_guess=zj_guess,
+                                          reuse_jacobian=reuse_jacobian, method=method, line_search=line_search,
+                                          jacobian=jacobian)
+            return vj_1[:, 1], vb_1
         vj_1 = harmonic_balance(cct_1, resp, num_b=num_b, max_it=max_it, stop_rerror=stop_rerror,
                                 damp_coeff=damp_coeff, verbose=False, zj_guess=zj_guess,
                                 reuse_jacobian=reuse_jacobian, method=method, line_search=line_search,
@@ -780,6 +884,191 @@ class _MultiJunctionSystem(object):
         jacobian = jacobian.reshape((2 * num_k, 2 * num_k, npts))
 
         return np.linalg.inv(jacobian.transpose(2, 0, 1)).transpose(1, 2, 0)
+
+
+class _DCBiasSystem(object):
+    """Error vector and inverse Jacobian for several junctions with a DC bias
+    network (``MultiJunctionCircuit.set_dc_network``).
+
+    The unknowns are vj_2d[k, i]: k = j * num_n + n for the signals (as in
+    _MultiJunctionSystem), followed by the DC voltages v0[j] at
+    k = num_j * num_n + j (stored as complex numbers; their imaginary parts
+    are pinned to zero). The errors are
+
+        e[j, n] = vt[j, n] - sum_l zt[j, l, n] ij[l, n] - vj[j, n]
+        e[r]    = rhs[r] - sum_l a[r, l] v0[l] - sum_l b[r, l] i0[l] - j Im(v0[r])
+
+    The response function matrix depends on the DC voltage, so it is
+    interpolated again for every error vector. The derivatives with respect
+    to the signals are the same as in _MultiJunctionSystem (plus those of
+    the DC currents); the derivatives with respect to v0 are central
+    differences (step DV_DC), with v0 of all junctions perturbed at once
+    (the currents of junction l only depend on v0[l]), i.e., two more
+    current calculations per Jacobian. (A forward step of DV is too crude
+    at the sharp gap knee of the DC I-V curve.)
+
+    """
+
+    def __init__(self, cct, resp, num_b, method, verbose=False):
+
+        self.num_j, self.num_n, self.npts = cct.num_j, cct.num_n, cct.vb_npts
+        self.num_k = self.num_j * self.num_n
+        self.num_b = num_b
+        self.nb_list = _unpack_num_b(num_b, cct.num_f)
+        self.freq = cct.freq.copy()
+        self.ccts = [cct.junction(j) for j in range(self.num_j)]
+        self.resp = junction_resp(resp, self.num_j)
+        self.area = cct.area.copy()
+        self.dc_a, self.dc_b, self.dc_rhs = cct.dc_a, cct.dc_b, cct.dc_rhs
+        self.vt_2d = cct.vt[:, 1:, 1:].reshape(self.num_k)
+        # [n, j, l]
+        self.zt_2d = cct.zt[:, :, 1:, 1:].reshape(self.num_j, self.num_j, self.num_n).transpose(2, 0, 1)
+        # Output frequencies: DC, then all tones and harmonics
+        self.freq_list = [0.] + _hb_freq_list(cct)
+
+        # The DC voltages are unknown: interpolation range from the bias network
+        v_max = max(np.abs(self.dc_rhs).max(), np.abs(cct.vb).max()) * 1.2 + 0.1
+        self.fourier = _select_method(method, self.nb_list, self.npts, verbose) == 'fourier'
+        for resp_j in set(self.resp):
+            _check_respfn_range(resp_j, np.array([-v_max, v_max]), self.freq, self.nb_list)
+        if self.fourier:
+            # One Fourier series per response function, covering all DC voltages
+            fresp = {}
+            for resp_j in self.resp:
+                if resp_j not in fresp:
+                    fresp[resp_j] = FourierResp(resp_j, np.array([-v_max, v_max]), self.freq, self.nb_list)
+            self.fresp = [fresp[resp_j] for resp_j in self.resp]
+
+    def resp_matrix(self, j, v0):
+        """Interpolated response function of junction j at DC voltages v0."""
+        if self.fourier:
+            fresp = copy.copy(self.fresp[j])
+            fresp.vb = v0
+            return fresp
+        return self.resp[j](_interpolation_voltages(v0, self.freq, self.nb_list))
+
+    def _split(self, vj_2d):
+        """Signals [j, n, i] and DC voltages [j, i]."""
+        return vj_2d[:self.num_k].reshape((self.num_j, self.num_n, self.npts)), vj_2d[self.num_k:].real
+
+    def _vj(self, vj_n):
+        """[n, i] -> [f, p, i] for one junction."""
+        cct = self.ccts[0]
+        vj = np.zeros((cct.num_f + 1, cct.num_p + 1, self.npts), dtype=complex)
+        vj[1:, 1:, :] = vj_n.reshape((cct.num_f, cct.num_p, self.npts))
+        return vj
+
+    def currents(self, vj_2d, dv0=0.):
+        """DC currents i0[j, i] and AC currents ij[j, n, i] (incl. area), with
+        all DC voltages shifted by dv0."""
+        vj_3d, v0 = self._split(vj_2d)
+        out = np.array([self.area[j] * qtcurrent(self._vj(vj_3d[j]), self.ccts[j], self.resp[j], self.freq_list,
+                                                 self.num_b, verbose=False,
+                                                 resp_matrix=self.resp_matrix(j, v0[j] + dv0))
+                        for j in range(self.num_j)])
+        return out[:, 0].real, out[:, 1:]
+
+    def _errors(self, vj_2d, i0, ij):
+        vj_3d, v0 = self._split(vj_2d)
+        err_ac = self.vt_2d[:, None] - np.einsum('njl,lni->jni', self.zt_2d, ij).reshape(self.num_k, -1) - \
+            vj_2d[:self.num_k]
+        err_dc = self.dc_rhs - self.dc_a @ v0 - self.dc_b @ i0 - 1j * vj_2d[self.num_k:].imag
+        return np.vstack((err_ac, err_dc))
+
+    def error_vector(self, vj_2d):
+        """Harmonic balance error vector, [k, i]."""
+        return self._errors(vj_2d, *self.currents(vj_2d))
+
+    def _dc_derivatives(self, vj_2d):
+        """Central differences with respect to v0 of all junctions:
+        di0[l, i] and dij[l, n, i] (d / d v0[l])."""
+        i0_p, ij_p = self.currents(vj_2d, DV_DC)
+        i0_m, ij_m = self.currents(vj_2d, -DV_DC)
+        return (i0_p - i0_m) / (2 * DV_DC), (ij_p - ij_m) / (2 * DV_DC)
+
+    def _assemble(self, dij, di0, dij_v0, di0_v0):
+        """Inverse Jacobian from the derivatives of the currents.
+
+        Args:
+            dij: d ij[l, n] / d (re, im)[c] vj[l, q], [l, n, q, c, i]
+            di0: d i0[l] / d (re, im)[c] vj[l, q], [l, q, c, i] (real)
+            dij_v0: d ij[l, n] / d v0[l], [l, n, i]
+            di0_v0: d i0[l] / d v0[l], [l, i]
+
+        """
+
+        num_j, num_n, num_k, npts = self.num_j, self.num_n, self.num_k, self.npts
+        num_u = num_k + num_j
+        # Complex derivative of each error with respect to each real
+        # parameter: [error, unknown, re/im of the unknown, i]
+        derr = np.zeros((num_u, num_u, 2, npts), dtype=complex)
+
+        # Signal errors with respect to the signals
+        d_ac = -np.einsum('njl,lnqci->jnlqci', self.zt_2d, dij)
+        for j in range(num_j):
+            for q in range(num_n):
+                d_ac[j, q, j, q, 0] -= 1.
+                d_ac[j, q, j, q, 1] -= 1j
+        derr[:num_k, :num_k] = d_ac.reshape((num_k, num_k, 2, npts))
+
+        # Signal errors with respect to v0 (real part only)
+        derr[:num_k, num_k:, 0] = -np.einsum('njl,lni->jnli', self.zt_2d, dij_v0).reshape((num_k, num_j, npts))
+
+        # DC errors with respect to the signals: -b[r, l] di0[l] / dvj[l, q]
+        d_dc = -self.dc_b[:, :, None, None, None] * di0[None]
+        derr[num_k:, :num_k] = d_dc.reshape((num_j, num_k, 2, npts))
+
+        # DC errors with respect to v0: real part -a - b di0/dv0, imaginary part -j (pins Im v0)
+        derr[num_k:, num_k:, 0] = -self.dc_a[:, :, None] - self.dc_b[:, :, None] * di0_v0[None]
+        idx = np.arange(num_j)
+        derr[num_k + idx, num_k + idx, 1] -= 1j
+
+        # [error, re/im of the error, unknown, re/im of the unknown, i]
+        jacobian = np.empty((num_u, 2, num_u, 2, npts))
+        jacobian[:, 0] = derr.real
+        jacobian[:, 1] = derr.imag
+        jacobian = jacobian.reshape((2 * num_u, 2 * num_u, npts))
+
+        return np.linalg.inv(jacobian.transpose(2, 0, 1)).transpose(1, 2, 0)
+
+    def inv_jacobian_analytic(self, err_all, vj_2d, verbose=True):
+        """Inverse Jacobian, analytic derivatives with respect to the signals."""
+
+        vj_3d, v0 = self._split(vj_2d)
+        d = np.array([self.area[j] * qtcurrent_derivatives(self._vj(vj_3d[j]), self.ccts[j], self.resp[j],
+                                                           self.freq_list, self.num_b,
+                                                           resp_matrix=self.resp_matrix(j, v0[j]))
+                      for j in range(self.num_j)])  # [l, o, f, p, c, i]
+        d = d[:, :, 1:, 1:].reshape((self.num_j, self.num_n + 1, self.num_n, 2, self.npts))
+        di0_v0, dij_v0 = self._dc_derivatives(vj_2d)
+
+        return self._assemble(d[:, 1:], d[:, 0].real, dij_v0, di0_v0)
+
+    def inv_jacobian(self, err_all, vj_2d, verbose=True):
+        """Inverse Jacobian, forward differences."""
+
+        num_j, num_n, npts = self.num_j, self.num_n, self.npts
+        i0, ij = self.currents(vj_2d)
+        dij = np.zeros((num_j, num_n, num_n, 2, npts), dtype=complex)
+        di0 = np.zeros((num_j, num_n, 2, npts))
+        for q in range(num_n):
+
+            if verbose:
+                progress_bar(q, num_n, prefix="Calculating inverse Jacobian")
+
+            dvj = np.zeros_like(vj_2d, dtype=float)
+            dvj[:self.num_k].reshape((num_j, num_n, npts))[:, q, :] = DV
+            for c, unit in enumerate((1., 1j)):
+                i0_d, ij_d = self.currents(vj_2d + unit * dvj)
+                dij[:, :, q, c] = (ij_d - ij) / DV
+                di0[:, q, c] = (i0_d - i0) / DV
+
+        if verbose:
+            progress_bar(num_n, num_n, prefix="Calculating inverse Jacobian")
+
+        di0_v0, dij_v0 = self._dc_derivatives(vj_2d)
+
+        return self._assemble(dij, di0, dij_v0, di0_v0)
 
 
 # Line search -----------------------------------------------------------------

@@ -619,10 +619,25 @@ class MultiJunctionCircuit(object):
         each junction (pass a list to ``harmonic_balance`` or
         ``qmix.qtcurrent.qtcurrent``).
 
-        Each junction is voltage biased: its DC voltage is set by ``vb[j]``.
-        By default, all junctions get the same bias sweep. For ``N``
-        identical junctions in series, for example, set ``cct.vb = vb / N``
-        (a 1-D array is used for all junctions).
+        By default, each junction is voltage biased: its DC voltage is set
+        by ``vb[j]``, and all junctions get the same bias sweep (a 1-D array
+        is used for all junctions). For ``N`` identical, identically pumped
+        junctions in series, ``cct.vb = vb / N`` is enough.
+
+        **DC bias network:** otherwise (e.g., a series array of junctions
+        with different areas or different pumping, or a bias resistor), the
+        DC voltages depend on the DC tunneling currents. A linear DC network
+        (``set_dc_network``, or ``set_series_bias`` for series strings) adds
+        ``num_j`` equations::
+
+            sum_l dc_a[r, l] * v0[l] + sum_l dc_b[r, l] * i0[l] = dc_rhs[r, i]
+
+        between the DC voltages ``v0[j]`` and the DC tunneling currents
+        ``i0[j]`` (including ``area``). ``harmonic_balance`` then solves for
+        the DC voltages too, and returns them along with the junction
+        voltage (``vj, vb = harmonic_balance(...)``); ``vb`` is only the
+        initial guess. Set ``cct.vb = vb`` before using other functions
+        (e.g., ``qmix.qtcurrent.qtcurrent``).
 
     Example:
 
@@ -657,6 +672,10 @@ class MultiJunctionCircuit(object):
             (normalized to the normal-state resistance).
         area (numpy.ndarray): Relative area of each junction (scales its
             tunneling current), default is 1.
+        dc_a, dc_b (numpy.ndarray): DC bias network (``num_j`` x ``num_j``),
+            or None (voltage bias, the default)
+        dc_rhs (numpy.ndarray): Right-hand side of the DC bias network,
+            ``dc_rhs[r, i]``, or None
         num_j (int): Number of junctions.
         num_f (int): Number of tones.
         num_p (int): Number of harmonics.
@@ -686,6 +705,9 @@ class MultiJunctionCircuit(object):
         self.zt = np.zeros((num_j, num_j, num_f + 1, num_p + 1), dtype=complex)
         self.area = np.ones(num_j, dtype=float)
         self.vb = single.vb
+        self.dc_a = None
+        self.dc_b = None
+        self.dc_rhs = None
 
     def __str__(self):
 
@@ -731,6 +753,116 @@ class MultiJunctionCircuit(object):
         """
 
         return np.zeros((self.num_j, self.num_f + 1, self.num_p + 1, self.vb_npts), dtype=complex)
+
+    @property
+    def has_dc_network(self):
+        """Is there a DC bias network (i.e., are the DC voltages unknowns)?"""
+        return self.dc_a is not None
+
+    def set_dc_network(self, a, b, rhs):
+        """Set a linear DC bias network.
+
+        The DC voltages ``v0[j]`` and the DC tunneling currents ``i0[j]``
+        (normalized, including ``area``) of the junctions satisfy ``num_j``
+        equations::
+
+            sum_l a[r, l] * v0[l] + sum_l b[r, l] * i0[l] = rhs[r, i]
+
+        at each bias point ``i``. For example, ``a = 1``, ``b = 0`` is
+        voltage bias (``v0 = rhs``), ``a = 1``, ``b = R`` is a DC Thevenin
+        circuit, and ``a = 0``, ``b = 1`` is current bias. See
+        ``set_series_bias`` for series strings. The bias voltages ``vb`` are
+        set to an initial guess (each junction replaced by its normal
+        resistance), unless that is singular.
+
+        Args:
+            a (ndarray): Coefficients of the DC voltages, ``num_j`` x ``num_j``
+            b (ndarray): Coefficients of the DC currents, ``num_j`` x ``num_j``
+            rhs (ndarray): Right-hand side, ``rhs[r, i]``; a 1-D array of
+                length ``num_j`` is used for all bias points
+
+        """
+
+        num_j = self.num_j
+        a = np.array(a, dtype=float)
+        b = np.array(b, dtype=float)
+        rhs = np.array(rhs, dtype=float)
+        assert a.shape == (num_j, num_j) and b.shape == (num_j, num_j), "a and b must have shape (num_j, num_j)"
+        if rhs.ndim == 1:
+            assert rhs.size == num_j, "a 1-D rhs must have length num_j"
+            rhs = np.tile(rhs[:, None], (1, self.vb_npts))
+        assert rhs.shape == (num_j, self.vb_npts), "rhs must have shape (num_j, vb_npts)"
+        self.dc_a, self.dc_b, self.dc_rhs = a, b, rhs
+
+        # Initial guess: junction j replaced by its normal resistance (i0 = area * v0)
+        try:
+            self.vb = np.linalg.solve(a + b * self.area[None, :], rhs)
+        except np.linalg.LinAlgError:
+            pass
+
+    def set_series_bias(self, vbias, r_bias=0., junctions=None):
+        """Bias junctions in series with one voltage source.
+
+        All junctions are connected in series (or several series strings in
+        parallel, see ``junctions``) across the bias voltage ``vbias``,
+        through a bias resistance ``r_bias``. The DC current is the same in
+        all junctions of a string, and the DC voltages of a string add up to
+        ``vbias - r_bias * (total DC current)``. The DC voltages are found
+        by ``harmonic_balance`` (see ``set_dc_network``).
+
+        Note:
+
+            Below the gap, the DC I-V curve is almost flat, so the split of
+            the bias voltage between different junctions is very sensitive
+            to the leakage current. Pumped I-V curves with negative
+            differential resistance can have several solutions;
+            ``harmonic_balance`` finds the one closest to the initial guess
+            (``vb``, set here assuming that the junctions are resistors).
+
+        Args:
+            vbias (ndarray): Bias voltage across the series string(s),
+                normalized to the gap voltage, ``vbias[i]``
+            r_bias (float, optional): Bias resistance (normalized to ``rn``),
+                default is 0
+            junctions (list, optional): Junctions in each series string, as a
+                list of lists of junction indices (starting from 0); every
+                junction must be in exactly one string. The strings are in
+                parallel. Default is one string with all junctions.
+
+        """
+
+        num_j = self.num_j
+        vbias = np.asarray(vbias, dtype=float)
+        assert vbias.ndim == 1, "vbias must be 1-D"
+        if junctions is None:
+            junctions = [list(range(num_j))]
+        junctions = [list(string) for string in junctions]
+        assert sorted(j for string in junctions for j in string) == list(range(num_j)), \
+            "every junction must be in exactly one series string"
+
+        a = np.zeros((num_j, num_j))
+        b = np.zeros((num_j, num_j))
+        rhs = np.zeros((num_j, vbias.size))
+        r = 0
+        for string in junctions:
+            # Voltage across the string and the bias resistance (total current of all strings)
+            a[r, string] = 1.
+            for other in junctions:
+                b[r, other[0]] = r_bias
+            rhs[r] = vbias
+            r += 1
+            # Same DC current through the junctions of the string
+            for j1, j2 in zip(string[:-1], string[1:]):
+                b[r, j1], b[r, j2] = 1., -1.
+                r += 1
+
+        if vbias.size != self.vb_npts:
+            self.vb = np.zeros((num_j, vbias.size))
+        self.set_dc_network(a, b, rhs)
+
+    def clear_dc_network(self):
+        """Remove the DC bias network (back to voltage bias at ``vb``)."""
+        self.dc_a, self.dc_b, self.dc_rhs = None, None, None
 
     def junction(self, j):
         """Single-junction view of junction ``j`` (starting from 0).

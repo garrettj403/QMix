@@ -323,3 +323,170 @@ def test_multi_junction_verbose_and_shortcuts(capsys):
     assert converged and num_it <= 1
     with pytest.raises(AssertionError):
         harmonic_balance(cct, RESP, 10, vj_initial=vj[0], verbose=False)
+
+
+# DC bias network (series arrays) ---------------------------------------------
+
+# Leakage current, so that the split of the bias voltage below the gap is
+# defined, and a smeared gap (as in typical simulations; with a near-ideal gap,
+# Newton's method crawls when the junctions of a string sit on the gap)
+RESP_LEAK = qmix.respfn.RespFnExponential(verbose=False, v_smear=0.02)
+NPTS_DC = 31
+VBIAS_DC = np.linspace(0.2, 3.6, NPTS_DC)
+
+
+def _pumped_pair(num_f=1, npts=NPTS_DC):
+    """Two coupled, differently pumped junctions with different areas."""
+
+    cct = qmix.circuit.MultiJunctionCircuit(2, num_f, 2, vb_npts=npts)
+    cct.freq[1] = 0.33
+    cct.area[:] = 1., 1.5
+    cct.vt[:, 1, 1] = 0.5, 0.3
+    cct.zt[:, :, 1, 1] = [[0.5 - 0.2j, 0.1j], [0.1j, 0.4 - 0.1j]]
+    cct.zt[:, :, 1, 2] = [[0.3, 0.], [0., 0.3]]
+    if num_f > 1:
+        cct.freq[2] = 0.35
+        cct.vt[:, 2, 1] = 0.01
+        cct.zt[:, :, 2] = cct.zt[:, :, 1]
+    return cct
+
+
+def _voltage_biased(cct, vb):
+    """The same circuit, voltage biased at vb (no DC network)."""
+
+    out = qmix.circuit.MultiJunctionCircuit(cct.num_j, cct.num_f, cct.num_p, vb_npts=vb.shape[1])
+    out.freq[:], out.vt[:], out.zt[:], out.area[:] = cct.freq, cct.vt, cct.zt, cct.area
+    out.vb = vb
+    return out
+
+
+def test_dc_network_voltage_bias():
+    """A DC network with a = 1, b = 0 is voltage bias: the same solution, and
+    the DC voltages are rhs."""
+
+    cct = _pumped_pair()
+    vb = np.array([VBIAS_DC / 2, VBIAS_DC / 3])
+    ref = harmonic_balance(_voltage_biased(cct, vb), RESP_LEAK, 15, stop_rerror=1e-8, verbose=False)
+    cct.set_dc_network(np.eye(2), np.zeros((2, 2)), vb)
+    vj, vb_out = harmonic_balance(cct, RESP_LEAK, 15, stop_rerror=1e-8, verbose=False)
+    np.testing.assert_allclose(vb_out, vb, rtol=0, atol=1e-12)
+    np.testing.assert_allclose(vj, ref, rtol=0, atol=1e-8)
+
+
+def test_series_identical_junctions():
+    """Two identical, identically pumped junctions in series split the bias
+    voltage equally: the same as voltage bias at vbias / 2."""
+
+    cct = qmix.circuit.MultiJunctionCircuit(2, 1, 1, vb_npts=NPTS_DC)
+    cct.freq[1] = 0.33
+    cct.vt[:, 1, 1] = 0.4
+    cct.zt[0, 0, 1, 1] = cct.zt[1, 1, 1, 1] = 0.4 - 0.2j
+    cct.set_series_bias(2 * VBIAS_DC)
+    vj, vb = harmonic_balance(cct, RESP_LEAK, 15, stop_rerror=1e-8, verbose=False)
+    np.testing.assert_allclose(vb, [VBIAS_DC, VBIAS_DC], rtol=0, atol=1e-8)
+    ref = harmonic_balance(_voltage_biased(cct, np.array([VBIAS_DC, VBIAS_DC])), RESP_LEAK, 15, stop_rerror=1e-8,
+                           verbose=False)
+    np.testing.assert_allclose(vj, ref, rtol=0, atol=1e-8)
+
+
+def test_series_unpumped():
+    """Without pumping, the DC voltages follow from the DC I-V curve: two
+    junctions with different areas in series (equal currents), and one
+    junction behind a bias resistor."""
+
+    from scipy.optimize import brentq
+
+    idc = RESP_LEAK.idc
+    cct = qmix.circuit.MultiJunctionCircuit(2, 1, 1, vb_npts=NPTS_DC)
+    cct.freq[1] = 0.33
+    cct.zt[0, 0, 1, 1] = cct.zt[1, 1, 1, 1] = 0.3
+    cct.area[:] = 1., 2.
+    cct.set_series_bias(VBIAS_DC)
+    _, vb, _, converged = harmonic_balance(cct, RESP_LEAK, 15, stop_rerror=1e-9, verbose=False, mode='x')
+    assert converged
+    ref = [brentq(lambda v: idc(v) - 2 * idc(vt - v), 0, vt, xtol=1e-14) for vt in VBIAS_DC]
+    np.testing.assert_allclose(vb[0], ref, rtol=0, atol=1e-8)
+    np.testing.assert_allclose(vb.sum(axis=0), VBIAS_DC, rtol=0, atol=1e-12)
+
+    cct = qmix.circuit.MultiJunctionCircuit(1, 1, 1, vb_npts=NPTS_DC)
+    cct.freq[1] = 0.33
+    cct.set_series_bias(VBIAS_DC, r_bias=0.5)
+    _, vb = harmonic_balance(cct, RESP_LEAK, 15, stop_rerror=1e-9, verbose=False)
+    ref = [brentq(lambda v: v + 0.5 * idc(v) - vt, 0, vt, xtol=1e-14) for vt in VBIAS_DC]
+    np.testing.assert_allclose(vb[0], ref, rtol=0, atol=1e-8)
+
+
+def test_series_pumped():
+    """Pumped junctions in series with a bias resistor: the DC currents are
+    equal, the voltages add up, and the same circuit voltage biased at the
+    solved DC voltages gives the same junction voltage."""
+
+    cct = _pumped_pair()
+    cct.set_series_bias(VBIAS_DC, r_bias=0.1)
+    vj, vb, _, converged = harmonic_balance(cct, RESP_LEAK, 15, stop_rerror=1e-6, verbose=False, mode='x')
+    assert converged and vb.shape == (2, NPTS_DC)
+    check_hb_error(vj, cct, RESP_LEAK, 15, stop_rerror=1e-5, vb=vb)
+
+    cct_vb = _voltage_biased(cct, vb)
+    i0 = qtcurrent(vj, cct_vb, RESP_LEAK, 0., 15, verbose=False)
+    np.testing.assert_allclose(i0[0], i0[1], rtol=0, atol=1e-6)
+    np.testing.assert_allclose(vb.sum(axis=0) + 0.1 * i0[0], VBIAS_DC, rtol=0, atol=1e-6)
+    ref = harmonic_balance(cct_vb, RESP_LEAK, 15, stop_rerror=1e-8, verbose=False)
+    np.testing.assert_allclose(vj, ref, rtol=0, atol=1e-5)
+
+    # check_hb_error checks the DC equations
+    with pytest.raises(AssertionError):
+        check_hb_error(vj, cct, RESP_LEAK, 15, stop_rerror=1e-5, vb=vb * 1.01)
+
+
+def test_series_jacobian_methods():
+    """Analytic and numerical Jacobians, the Fourier-shift method and the
+    warm start (two tones) give the same solution with a DC network."""
+
+    # (a coarse grid: points on the steps of the staircase converge slowly)
+    npts = 11
+    vbias = np.linspace(0.5, 3.5, npts)
+    cct = _pumped_pair(npts=npts)
+    cct.set_series_bias(vbias, r_bias=0.1)
+    vj, vb, _, converged = harmonic_balance(cct, RESP_LEAK, 12, stop_rerror=1e-7, verbose=False, mode='x')
+    assert converged
+    for kwargs, atol in (({'jacobian': 'numerical'}, 1e-6), ({'method': 'fourier'}, 1e-5)):
+        vj_2, vb_2, _, converged = harmonic_balance(cct, RESP_LEAK, 12, stop_rerror=1e-7, verbose=False, mode='x',
+                                                    **kwargs)
+        assert converged
+        np.testing.assert_allclose(vj_2, vj, rtol=0, atol=atol)
+        np.testing.assert_allclose(vb_2, vb, rtol=0, atol=atol)
+
+    cct = _pumped_pair(num_f=2, npts=npts)
+    cct.set_series_bias(vbias, r_bias=0.1)
+    nb = (12, 4)
+    vj, vb, mask = harmonic_balance(cct, RESP_LEAK, nb, stop_rerror=1e-6, verbose=False, mode='m')
+    vj_2, vb_2, mask_2 = harmonic_balance(cct, RESP_LEAK, nb, stop_rerror=1e-6, verbose=False, mode='m',
+                                          warm_start=True)
+    assert mask.all() and mask_2.all()
+    np.testing.assert_allclose(vb_2, vb, rtol=0, atol=1e-5)
+    np.testing.assert_allclose(vj_2, vj, rtol=0, atol=1e-5)
+
+
+def test_series_verbose_and_inputs(capsys):
+    """Verbose output, no AC coupling (zt = 0), vb_initial and input checks."""
+
+    cct = qmix.circuit.MultiJunctionCircuit(2, 1, 1, vb_npts=NPTS_DC)
+    cct.freq[1] = 0.33
+    cct.vt[:, 1, 1] = 0.3
+    cct.area[1] = 2.
+    cct.set_series_bias(VBIAS_DC)
+    # zt = 0 still needs the DC solve
+    vj, vb = harmonic_balance(cct, RESP_LEAK, 15, verbose=True)
+    out = capsys.readouterr().out
+    assert "DC bias network" in out and "j:1, DC" in out
+    np.testing.assert_allclose(vj, cct.vt[..., None] * np.ones(NPTS_DC), rtol=0, atol=1e-12)
+    assert not np.allclose(vb[0], vb[1])
+
+    _, _, num_it, converged = harmonic_balance(cct, RESP_LEAK, 15, vb_initial=vb, verbose=False, mode='x')
+    assert converged and num_it <= 1
+    with pytest.raises(AssertionError):
+        harmonic_balance(cct, RESP_LEAK, 15, vb_initial=vb[0], verbose=False)
+    cct.dc_rhs = cct.dc_rhs[:, :-1]
+    with pytest.raises(AssertionError):
+        harmonic_balance(cct, RESP_LEAK, 15, verbose=False)

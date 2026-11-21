@@ -259,3 +259,53 @@ def test_multi_junction_circuit():
         cct.junction(3)
     with pytest.raises(AssertionError):
         MultiJunctionCircuit(0)
+
+
+def test_dc_network():
+    """MultiJunctionCircuit DC bias network: series strings (rows and initial
+    guess), several strings in parallel, input checks."""
+
+    cct = MultiJunctionCircuit(3, 1, 1, vb_npts=5)
+    assert not cct.has_dc_network
+    cct.area[:] = 1., 2., 4.
+    vbias = np.linspace(0, 2, 5)
+    cct.set_series_bias(vbias, r_bias=0.5)
+    assert cct.has_dc_network
+    np.testing.assert_equal(cct.dc_a, [[1, 1, 1], [0, 0, 0], [0, 0, 0]])
+    np.testing.assert_equal(cct.dc_b, [[0.5, 0, 0], [1, -1, 0], [0, 1, -1]])
+    np.testing.assert_equal(cct.dc_rhs, [vbias, 0 * vbias, 0 * vbias])
+    # Initial guess: resistors rn / area (equal currents, voltages add up to vbias - r_bias * i)
+    i_guess = cct.vb * cct.area[:, None]
+    np.testing.assert_allclose(i_guess, i_guess[[0, 0, 0]], atol=1e-14)
+    np.testing.assert_allclose(cct.vb.sum(axis=0) + 0.5 * i_guess[0], vbias, atol=1e-14)
+
+    # Two strings ([0, 2] and [1]) in parallel, sharing the bias resistor
+    cct.set_series_bias(vbias, r_bias=0.5, junctions=[[0, 2], [1]])
+    np.testing.assert_equal(cct.dc_a, [[1, 0, 1], [0, 0, 0], [0, 1, 0]])
+    np.testing.assert_equal(cct.dc_b, [[0.5, 0.5, 0], [1, 0, -1], [0.5, 0.5, 0]])
+    np.testing.assert_allclose(cct.vb[0] + cct.vb[2], cct.vb[1], atol=1e-14)
+
+    # A new number of bias points
+    cct.set_series_bias(np.linspace(0, 2, 7))
+    assert cct.vb.shape == (3, 7) and cct.dc_rhs.shape == (3, 7)
+
+    # Current bias: singular initial guess is skipped (a = b = 0 is invalid anyway)
+    cct.set_dc_network(np.zeros((3, 3)), np.eye(3), [0.1, 0.2, 0.3])
+    np.testing.assert_allclose(cct.vb * cct.area[:, None], [[0.1] * 7, [0.2] * 7, [0.3] * 7])
+    vb = cct.vb.copy()
+    cct.set_dc_network(np.zeros((3, 3)), np.zeros((3, 3)), [0.1, 0.2, 0.3])
+    np.testing.assert_equal(cct.vb, vb)
+
+    cct.clear_dc_network()
+    assert not cct.has_dc_network and cct.dc_a is None
+
+    with pytest.raises(AssertionError):
+        cct.set_dc_network(np.eye(2), np.eye(3), np.zeros(3))
+    with pytest.raises(AssertionError):
+        cct.set_dc_network(np.eye(3), np.eye(3), np.zeros(2))
+    with pytest.raises(AssertionError):
+        cct.set_dc_network(np.eye(3), np.eye(3), np.zeros((3, 2)))
+    with pytest.raises(AssertionError):
+        cct.set_series_bias(vbias, junctions=[[0, 1]])
+    with pytest.raises(AssertionError):
+        cct.set_series_bias(np.zeros((2, 5)))
