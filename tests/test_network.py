@@ -4,7 +4,9 @@ import numpy as np
 import pytest
 
 from qmix.circuit import EmbeddingCircuit, MultiJunctionCircuit
-from qmix.network import Network, embedding_impedance, impedance_matrix, read_touchstone, set_thevenin, thevenin
+from qmix.network import (Network, embedding_impedance, impedance_matrix, microstrip, microstrip_line, read_touchstone,
+                          set_thevenin, tee, thevenin, transmission_line)
+from qmix.superconductor import NormalFilm, SuperconductingFilm
 
 FREQ = np.linspace(1e9, 300e9, 300)
 
@@ -424,3 +426,97 @@ def test_impedance_matrix():
         impedance_matrix(cut, 1.2e9, [1, 2])
     with pytest.raises(AssertionError):
         impedance_matrix(ntwk, f, [1, 1])
+
+
+# Circuit elements -------------------------------------------------------------
+
+def test_transmission_line():
+    """Lines from zc and gamma: matched lossless line, a lossy line with a
+    complex zc vs its Z-matrix, and the old ideal line."""
+
+    zc, length = 30., 2.3e-3
+    ideal, beta = _line(zc, length, eps=4.)
+    line = transmission_line(FREQ, zc, 1j * beta, length)
+    np.testing.assert_allclose(line.s, ideal.s, atol=1e-15)
+    np.testing.assert_allclose(line.z0, zc)
+
+    # Lossy line with a complex characteristic impedance: Z11 = zc coth(gl), Z21 = zc / sinh(gl)
+    zc = 20. - 3j * FREQ / FREQ.max()
+    gamma = 0.1 * beta + 1j * beta
+    line = transmission_line(FREQ, zc, gamma, length)
+    z = _z_matrix(line)
+    gl = gamma * length
+    np.testing.assert_allclose(z[:, 0, 0], zc / np.tanh(gl), rtol=1e-10)
+    np.testing.assert_allclose(z[:, 1, 1], zc / np.tanh(gl), rtol=1e-10)
+    np.testing.assert_allclose(z[:, 1, 0], zc / np.sinh(gl), rtol=1e-10)
+    np.testing.assert_allclose(z[:, 0, 1], zc / np.sinh(gl), rtol=1e-10)
+    # Terminated in zc: input impedance zc
+    np.testing.assert_allclose(line.impedance(1, {2: zc}), zc, rtol=1e-12)
+    # Passive: singular values of S below 1
+    assert np.linalg.svd(line.s, compute_uv=False).max() < 1
+
+    # Other reference impedances
+    line50 = transmission_line(FREQ, zc, gamma, length, z0=50.)
+    np.testing.assert_allclose(line50.z0, 50.)
+    np.testing.assert_allclose(_z_matrix(line50), z, rtol=1e-10)
+
+
+def test_tee():
+    """Ideal tee: the other two ports in parallel."""
+
+    t = tee(FREQ, 50.)
+    assert t.num_ports == 3
+    np.testing.assert_allclose(t.impedance(1, {2: 30., 3: 70. - 5j}), 1 / (1 / 30. + 1 / (70. - 5j)), rtol=1e-12)
+    np.testing.assert_allclose(t.impedance(2), 25., rtol=1e-12)
+    t4 = tee(FREQ[:3], 10., num_ports=4)
+    np.testing.assert_allclose(t4.impedance(1), 10. / 3, rtol=1e-12)
+
+
+def test_microstrip():
+    """Microstrip lines: lossless with perfect conductors, dispersion,
+    kinetic inductance of superconducting films (Swihart's parallel-plate
+    formula for a wide line), loss above the gap, and normal metal loss."""
+
+    freq = np.array([1e9, 100e9, 300e9, 1e12])
+    zc, gamma = microstrip(freq, 1e-3, 1e-3, 4., thickness=1e-6)
+    np.testing.assert_equal(gamma.real, 0)
+    np.testing.assert_equal(zc.imag, 0)
+    eps_eff = (gamma.imag * 299792458. / (2 * np.pi * freq)) ** 2
+    assert eps_eff[0] == pytest.approx(2.92, abs=0.02)  # w = h, eps 4: textbook ~2.9
+    assert zc[0] == pytest.approx(74., rel=0.03)        # textbook ~73-74 ohm
+    assert np.all(np.diff(eps_eff) > 0) and eps_eff[-1] < 4  # dispersion: eps_eff -> eps_r
+
+    # Wide superconducting line at low frequency: (beta / beta_0)^2 = 1 + 2 lambda / h coth(t / lambda)
+    h, t = 0.25e-6, 400e-9
+    nb = SuperconductingFilm(2.8e-3, 9.2, 5e-8, t)
+    lam = nb.penetration_depth(0.5)
+    _, gamma = microstrip(10e9, 100 * h, h, 4., strip=nb, ground=nb, temp=0.5)
+    _, gamma0 = microstrip(10e9, 100 * h, h, 4., thickness=t)
+    assert (gamma.imag / gamma0.imag) ** 2 == pytest.approx(1 + 2 * lam / h / np.tanh(t / lam), rel=0.015)
+
+    # A typical Nb tuning line: low loss below the gap, lossy above
+    freq = np.array([200e9, 600e9, 800e9, 1e12])
+    zc, gamma = microstrip(freq, 5e-6, 0.25e-6, 3.8, strip=nb, ground=nb, temp=4.2)
+    q = gamma.imag / (2 * gamma.real)  # quality factor of the line
+    assert q[0] > 200 and q[1] > 200 and q[2] < 20 and q[3] < 10   # 4.2 K: Q ~ 300 below the gap, ~10 above
+    _, gamma = microstrip(freq, 5e-6, 0.25e-6, 3.8, strip=nb, ground=nb, temp=2.)
+    assert np.all(gamma.imag[:2] / (2 * gamma.real[:2]) > 1e4)       # 2 K: few thermal quasiparticles
+    assert np.all(np.abs(zc.imag) < 0.2 * zc.real)
+
+    # Normal metal, thicker than the skin depth, on a thick (low-loss) line: attenuation ~ sqrt(f)
+    al = NormalFilm(5e-9, 5e-6)
+    _, gamma = microstrip(np.array([1e9, 4e9]), 100e-6, 100e-6, 3.8, strip=al, ground=al)
+    assert gamma.real[1] / gamma.real[0] == pytest.approx(2, rel=0.05)
+
+    # Dielectric loss
+    _, g1 = microstrip(100e9, 5e-6, 0.25e-6, 3.8, thickness=t, tan_d=1e-3)
+    assert g1.real / g1.imag == pytest.approx(0.5e-3, rel=0.1)  # mostly in the dielectric
+
+    # Network
+    line = microstrip_line(freq, 100e-6, 5e-6, 0.25e-6, 3.8, strip=nb, ground=nb, temp=4.2)
+    ref = transmission_line(freq, *microstrip(freq, 5e-6, 0.25e-6, 3.8, strip=nb, ground=nb, temp=4.2), 100e-6)
+    np.testing.assert_allclose(line.s, ref.s, rtol=1e-14)
+    np.testing.assert_allclose(line.s[:, 0, 1], line.s[:, 1, 0], rtol=1e-14)  # reciprocal
+    assert np.linalg.svd(line.s, compute_uv=False).max() < 1                  # passive
+    with pytest.raises(AssertionError):
+        microstrip(freq, 5e-6, 0.25e-6, 3.8)  # no thickness

@@ -41,6 +41,14 @@ at `reference/supermix` (git-ignored), or set `SUPERMIXDIR`.
   contains every voltage evaluated, so the test checks `qtcurrent` and
   `harmonic_balance` independently of QMix's response function code. Only
   rerun this if the cases need to change.
+- `smx_lines.cc` and `compare_lines.py`: SuperMix's superconducting and normal
+  films (`super_film` without interpolation, `normal_film`) and its
+  `microstrip` class vs `qmix.superconductor` and `qmix.network.microstrip`,
+  for several lines from 10 GHz to 3 THz (SI units; QMix is run with
+  SuperMix's CODATA-1986 constants and mu_0 = 4 pi 1e-7, `--scipy` for
+  SciPy's). `--save` writes SuperMix's results to
+  `tests/supermix-data/supermix_lines.npz` (checked by `test_microstrip` in
+  `tests/test_supermix_reference.py`). Doesn't need the tight build.
 
 ## Usage
 
@@ -50,6 +58,8 @@ cd profile/supermix
 python compare.py                                    # stock SuperMix
 SMX_DRIVER=bin/smx_driver_tight python compare.py    # tight Bessel tolerance
 python compare.py --plot                             # also save plots to work/
+
+./build.sh smx_lines.cc && python compare_lines.py   # films and microstrip
 ```
 
 SuperMix's own tests can be run against their stored outputs (e.g.,
@@ -100,3 +110,26 @@ I-V curve, order 50):
 - Speed: SuperMix balances a 199-point sweep in a few ms (4-7 Newton iterations
   per point, about 15 us each), versus a few tenths of a second for QMix (two
   harmonic-balance passes; vectorized over bias, numerical Jacobian).
+- Films and microstrip (`compare_lines.py`, max relative difference over
+  66 frequencies, 10 GHz - 3 THz):
+
+  | Case | sigma | Zs strip | Zchar | gamma |
+  |---|---|---|---|---|
+  | Nb/SiO2/Nb, 0.3 K | 1.7e-06 | 8.8e-07 | 1.8e-07 | 1.8e-07 |
+  | Nb/SiO2/Nb, 4.2 K | 1.5e-04 | 7.7e-05 | 1.6e-05 | 1.6e-05 |
+  | Nb/SiO/Nb narrow (u < 2), 0.3 K | 1.7e-06 | 8.6e-07 | 1.4e-07 | 1.4e-07 |
+  | Nb/SiO/Nb wide (u > 5), 2 K | 1.8e-05 | 1.0e-05 | 2.3e-06 | 2.3e-06 |
+  | NbTiN, lossy dielectric + superstrate, 4.2 K | 3.6e-05 | 3.0e-05 | 1.1e-05 | 1.1e-05 |
+  | Thin Nb (50 nm), 0.3 K | 1.7e-06 | 1.6e-06 | 4.4e-07 | 4.4e-07 |
+  | Al, normal metal, 4.2 K | 0 | 6.5e-16 | 3.7e-16 | 3.8e-16 |
+
+  The normal-metal case shows that the microstrip model (Hammerstad & Jensen,
+  Kirschning & Jansen, Yassin & Withington) is the same to round-off. For
+  superconductors, SuperMix's integration of the Mattis-Bardeen integrals is
+  accurate to ~2e-8, except at the gap edge (1.7e-6 at 677 GHz); QMix agrees
+  with the T = 0 closed form (elliptic integrals) to ~1e-12 there, and at
+  0.3 K (T / Tc < 0.04) the gap is exactly Delta(0) in both codes. At higher
+  temperatures, SuperMix interpolates Muhlschlegel's 4-digit table of
+  Delta(T), which differs from QMix's BCS gap equation by up to ~8e-5 (4e-5 at
+  4.2 K for Nb); the thermally excited quasiparticles scale as
+  exp(-Delta / kT), so sigma differs by ~Delta / kT times that.

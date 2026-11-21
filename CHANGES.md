@@ -1,3 +1,23 @@
+Unreleased
+==========
+
+Functionality Changes
+---------------------
+
+- Added superconducting transmission lines. The new module ``qmix.superconductor`` gives the complex conductivity of superconducting films from the Mattis-Bardeen theory in the local limit (``mattis_bardeen``), with the temperature dependence of the energy gap from the BCS gap equation (``energy_gap``), and the surface impedance of films of finite thickness and of stacks of films (``film_impedance``; classes ``SuperconductingFilm``, ``NormalFilm`` and ``Multilayer``). ``qmix.network.microstrip`` gives the characteristic impedance and propagation constant of a microstrip line with these films (Hammerstad & Jensen, Kirschning & Jansen and Yassin & Withington, as in SuperMix), including the kinetic inductance and the loss of the films, and ``qmix.network.microstrip_line`` the line as a ``Network``. The results agree with SuperMix (to round-off for normal metals; for superconductors to the accuracy of SuperMix's integration, ~2e-8, and of its table of the energy gap vs temperature, ~1e-4; see ``profile/supermix/compare_lines.py``).
+- Added ``qmix.network.transmission_line`` (a line from its characteristic impedance and propagation constant) and ``qmix.network.tee`` (an ideal junction of several ports).
+
+Packaging
+---------
+
+- QMix now requires Python 3.10 or later (the classifiers listed 3.5-3.8). The ``tests`` package is no longer installed with QMix, and ``pytest-cov`` is now part of the ``test`` extra. Removed the obsolete ``python setup.py test`` command.
+
+Documentation
+-------------
+
+- Added a Theory page on superconducting transmission lines (Mattis-Bardeen conductivity, surface impedance of films, microstrip model, comparison with SuperMix).
+- Example #6 (multiple junctions) has a new section that designs the twin-junction tuning circuit from Nb microstrip, and shows how far the resonance moves if the kinetic inductance is ignored (from 230 to ~180 GHz).
+
 v1.1.0 (20-Nov-2026)
 ====================
 

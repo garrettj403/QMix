@@ -291,3 +291,49 @@ def test_noise(case, monkeypatch):
     # (SuperMix's volt-to-frequency constant differs slightly from its e / h,
     # which limits the agreement of the embedding noise to ~1e-9)
     np.testing.assert_allclose(ss.output_noise(y, h, zt, vgap, v_noise=v_noise), _get(case, 'tout_term'), rtol=1e-7)
+
+
+# Superconducting films and microstrip lines --------------------------------
+
+LINES = np.load(os.path.join(os.path.dirname(__file__), 'supermix-data', 'supermix_lines.npz'))
+LINE_CASES = list(range(len(LINES['names'])))
+
+
+@pytest.mark.parametrize('k', LINE_CASES, ids=[str(n) for n in LINES['names']])
+def test_microstrip(k, monkeypatch):
+    """Film conductivity and surface impedance, and the characteristic
+    impedance and propagation constant of microstrip lines, vs SuperMix's
+    ``super_film``/``normal_film`` and ``microstrip`` classes
+    (``profile/supermix/compare_lines.py``), with SuperMix's constants.
+
+    For normal metals, the two agree to round-off. For superconductors, the
+    agreement is limited by SuperMix: its integration of the Mattis-Bardeen
+    integrals (errors up to ~2e-8, ~2e-6 at the gap edge; QMix agrees with the
+    T = 0 closed form to ~1e-12) and, above T / Tc = 0.04, its table of the
+    energy gap vs temperature (4 digits; up to ~1e-4 from BCS theory)."""
+
+    import qmix.network
+    import qmix.superconductor
+    from qmix.network import microstrip
+    from qmix.superconductor import NormalFilm, SuperconductingFilm
+
+    constants = SimpleNamespace(e=1.60217733e-19, k=1.380658e-23, h=6.6260755e-34,
+                                hbar=6.6260755e-34 / (2 * np.pi), mu_0=4e-7 * np.pi, c=299792458.)
+    monkeypatch.setattr(qmix.superconductor, 'sc', constants)
+    monkeypatch.setattr(qmix.network, 'sc', constants)
+
+    vgap, tc, rho, t1, t2, w, h, eps, tand, eps_up, tand_up, temp = LINES['case{}_inputs'.format(k)]
+    freq = LINES['freq']
+    if str(LINES['case{}_type'.format(k)]) == 'super':
+        strip, ground = SuperconductingFilm(vgap, tc, rho, t1), SuperconductingFilm(vgap, tc, rho, t2)
+        rtol = 3e-6 if temp < 0.04 * tc else 3e-4
+    else:
+        strip, ground = NormalFilm(rho, t1), NormalFilm(rho, t2)
+        rtol = 1e-12
+    zc, gamma = microstrip(freq, w, h, eps, strip=strip, ground=ground, temp=temp, tan_d=tand, eps_up=eps_up,
+                           tan_up=tand_up)
+
+    for key, value in (('sigma', strip.sigma(freq, temp)), ('zs_strip', strip.zs(freq, temp)),
+                       ('zs_ground', ground.zs(freq, temp)), ('zchar', zc), ('gamma', gamma)):
+        ref = LINES['case{}_{}'.format(k, key)]
+        np.testing.assert_allclose(value, ref, rtol=rtol, err_msg=key)

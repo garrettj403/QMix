@@ -51,6 +51,7 @@ Note:
 """
 
 import numpy as np
+import scipy.constants as sc
 from scipy.interpolate import CubicSpline
 
 
@@ -552,6 +553,253 @@ def _with_source(terminations, source_port, port):
     terminations = {} if terminations is None else dict(terminations)
     assert source_port not in terminations, "The source port can't also be terminated"
     return terminations
+
+
+# Circuit elements ------------------------------------------------------------
+
+def transmission_line(freq, zc, gamma, length, z0=None):
+    """Transmission line from its characteristic impedance and propagation
+    constant.
+
+    Waves on the line vary as ``exp(-gamma z)``, so ``gamma = alpha + j beta``
+    (``alpha``: attenuation, ``beta``: phase constant; for an ideal line,
+    ``gamma = j 2 pi f sqrt(eps_eff) / c``).
+
+    Args:
+        freq (ndarray): Frequencies, in [Hz]
+        zc (complex or ndarray): Characteristic impedance, in [ohms] (scalar
+            or one value per frequency)
+        gamma (complex or ndarray): Propagation constant, in [1/m] (scalar or
+            one value per frequency)
+        length (float): Length of the line, in [m]
+        z0 (complex or ndarray, optional): Reference impedances of the two
+            ports, in [ohms] (as for ``Network``); default is the real part
+            of ``zc``, so that a lossless line is matched
+            (``S21 = exp(-gamma length)``, ``S11 = 0``)
+
+    Returns:
+        Network: 2-port network
+
+    """
+
+    freq = np.atleast_1d(np.asarray(freq, dtype=float))
+    zc = np.asarray(zc, dtype=complex) * np.ones(freq.size)
+    gl = np.asarray(gamma, dtype=complex) * length * np.ones(freq.size)
+    ref = zc.real
+
+    # ABCD matrix -> S-parameters with the (real) reference zc.real at both ports
+    a = np.cosh(gl)
+    b = zc * np.sinh(gl) / ref
+    c = np.sinh(gl) / zc * ref
+    den = 2 * a + b + c
+    s = np.empty((freq.size, 2, 2), dtype=complex)
+    s[:, 0, 0] = s[:, 1, 1] = (b - c) / den
+    s[:, 0, 1] = s[:, 1, 0] = 2 / den
+    net = Network(freq, s, ref[:, None] * np.ones(2))
+
+    return net if z0 is None else net.renormalize(z0)
+
+
+def tee(freq, z0=50., num_ports=3):
+    """Ideal junction of several ports at one node (e.g., a tee).
+
+    All ports have the same voltage and their currents add to zero. With the
+    same real reference impedance at all ports, ``S = 2 / N - 1``.
+
+    Args:
+        freq (ndarray): Frequencies, in [Hz]
+        z0 (float, optional): Reference impedance of all ports, in [ohms]
+            (real); default is 50
+        num_ports (int, optional): Number of ports; default is 3
+
+    Returns:
+        Network: network with ``num_ports`` ports
+
+    """
+
+    freq = np.atleast_1d(np.asarray(freq, dtype=float))
+    assert np.isreal(z0) and z0 > 0, "The reference impedance must be real and positive"
+    s = np.full((freq.size, num_ports, num_ports), 2 / num_ports, dtype=complex)
+    idx = np.arange(num_ports)
+    s[:, idx, idx] -= 1
+
+    return Network(freq, s, z0)
+
+
+def microstrip(freq, width, height, eps_r, thickness=None, strip=None, ground=None, temp=4.2,
+               tan_d=0., eps_up=1., tan_up=0.):
+    """Characteristic impedance and propagation constant of a microstrip line,
+    including the surface impedance of its conductors (e.g., superconducting
+    films).
+
+    The quasi-static effective permittivity and the effect of the strip
+    thickness are from Hammerstad & Jensen (1980), the dispersion from
+    Kirschning & Jansen (1982), and the geometric factors for the
+    characteristic impedance and the conductor surface impedances from
+    Yassin & Withington (1995). This is the same model as SuperMix's
+    ``microstrip`` class. The surface impedances add to the series impedance
+    per unit length, ``Z = j k Z0 + g_strip Zs_strip + g_ground Zs_ground``,
+    which captures both the loss and the kinetic inductance of
+    superconducting films.
+
+    Args:
+        freq (ndarray): Frequencies, in [Hz]
+        width (float): Width of the strip, in [m]
+        height (float): Thickness of the dielectric between the strip and
+            the ground plane, in [m]
+        eps_r (float): Relative permittivity of the dielectric
+        thickness (float, optional): Thickness of the strip, in [m]; default
+            is the thickness of ``strip``
+        strip (film, optional): Conductor of the strip: an object with a
+            ``zs(freq, temp)`` method returning the surface impedance in
+            [ohms], e.g., ``qmix.superconductor.SuperconductingFilm``;
+            default is a perfect conductor
+        ground (film, optional): Conductor of the ground plane; default is a
+            perfect conductor
+        temp (float, optional): Temperature, in [K], passed to the films;
+            default is 4.2
+        tan_d (float, optional): Loss tangent of the dielectric
+        eps_up (float, optional): Relative permittivity above the strip;
+            default is 1 (vacuum)
+        tan_up (float, optional): Loss tangent above the strip
+
+    Returns:
+        tuple: characteristic impedance ``zc`` in [ohms] and propagation
+            constant ``gamma`` in [1/m] (waves vary as ``exp(-gamma z)``),
+            one value per frequency (scalars for a scalar ``freq``)
+
+    """
+
+    scalar = np.ndim(freq) == 0
+    freq = np.atleast_1d(np.asarray(freq, dtype=float))
+    if thickness is None:
+        assert strip is not None, "Need the strip thickness (or a strip film with a thickness)"
+        thickness = strip.thickness
+    assert width > 0 and height > 0 and thickness > 0, "The dimensions must be positive"
+    assert eps_r >= eps_up >= 1, "Need eps_r >= eps_up >= 1"
+
+    g1, g_strip, g_ground = _microstrip_geometry(width, height, thickness)
+    eps_eff, tan_eff = _microstrip_permittivity(freq, width, height, thickness, eps_r, tan_d, eps_up, tan_up)
+    z_0 = sc.mu_0 * sc.c * g1 / np.sqrt(eps_eff)  # lossless characteristic impedance
+
+    # Series impedance and shunt admittance per unit length
+    k = 2 * np.pi * freq * np.sqrt(eps_eff) / sc.c
+    z_series = 1j * k * z_0
+    if strip is not None:
+        z_series = z_series + g_strip * strip.zs(freq, temp)
+    if ground is not None:
+        z_series = z_series + g_ground * ground.zs(freq, temp)
+    y_shunt = (k / z_0) * (2 * tan_eff + 1j * (1 - tan_eff ** 2))
+
+    zc, gamma = np.sqrt(z_series / y_shunt), np.sqrt(z_series * y_shunt)
+
+    return (zc[0], gamma[0]) if scalar else (zc, gamma)
+
+
+def microstrip_line(freq, length, width, height, eps_r, z0=None, **kwargs):
+    """Microstrip transmission line (see ``microstrip`` for the model).
+
+    Args:
+        freq (ndarray): Frequencies, in [Hz]
+        length (float): Length of the line, in [m]
+        width (float): Width of the strip, in [m]
+        height (float): Thickness of the dielectric, in [m]
+        eps_r (float): Relative permittivity of the dielectric
+        z0 (complex or ndarray, optional): Reference impedances of the two
+            ports, in [ohms]; default is the real part of the characteristic
+            impedance
+        kwargs: Other arguments of ``microstrip``: ``thickness``, ``strip``,
+            ``ground``, ``temp``, ``tan_d``, ``eps_up``, ``tan_up``
+
+    Returns:
+        Network: 2-port network
+
+    """
+
+    zc, gamma = microstrip(freq, width, height, eps_r, **kwargs)
+
+    return transmission_line(freq, zc, gamma, length, z0)
+
+
+def _microstrip_geometry(width, height, thickness):
+    """Geometric factors of a microstrip line (Yassin & Withington 1995).
+
+    Returns ``g1`` (the external inductance per unit length over mu_0; the
+    characteristic impedance of the lossless line is ``Z_vac g1 /
+    sqrt(eps_eff)``) and the factors ``g_strip``, ``g_ground`` (in [1/m]) by
+    which the surface impedances of the strip and ground plane add to the
+    series impedance per unit length.
+
+    """
+
+    u = width / height
+    t = thickness / height
+
+    # Conformal mapping parameters
+    p = 2 * (1 + t) * (1 + t + np.sqrt((1 + t) ** 2 - 1)) - 1
+    sp = np.sqrt(p)
+    log_4p = np.log(4 / (p - 1))
+    atanh_p = np.arctanh(1 / sp)
+    log_ra = np.log(p) + log_4p - (p + 1) * atanh_p / sp - 1 - 0.5 * np.pi * u
+    ra = np.exp(log_ra)
+    q = 0.5 * np.pi * u * sp + 0.5 * (p + 1) * (1 + log_4p) - 2 * sp * atanh_p
+    rb = q + 0.5 * (p + 1) * np.log(max(p, q))
+    if u < 5:
+        r = np.sqrt((rb - p) / (rb - 1))
+        rb += (p + 1) * np.arctanh(r) - 2 * sp * np.arctanh(r / sp) + 0.5 * np.pi * sp * u - \
+            np.sqrt((rb - 1) * (rb - p))
+
+    g1 = 0.5 * np.pi / (np.log(2 * rb) - log_ra)
+
+    # Current distributions on the strip and ground plane
+    is1 = np.log((2 * p - (p + 1) * ra + 2 * np.sqrt(p * (1 - ra) * (p - ra))) / (p - 1)) - log_ra
+    is2 = -np.log(((p + 1) * rb - 2 * p - 2 * np.sqrt(p * (rb - 1) * (rb - p))) / rb / (p - 1))
+    ig1 = -np.log(((p + 1) * rb + 2 * p + 2 * np.sqrt(p * (rb + 1) * (rb + p))) / rb / (p - 1))
+    ig2 = np.log(((p + 1) * ra + 2 * p + 2 * np.sqrt(p * (ra + 1) * (ra + p))) / (p - 1)) - log_ra
+    norm = g1 / height / ((np.log(rb) if u < 2 else np.log(2 * rb)) - log_ra)
+
+    return g1, (np.pi + is1 + is2) * norm, (ig1 + ig2) * norm
+
+
+def _microstrip_permittivity(freq, width, height, thickness, eps_r, tan_d, eps_up, tan_up):
+    """Effective permittivity (Hammerstad & Jensen 1980 with the dispersion
+    of Kirschning & Jansen 1982) and effective loss tangent of a microstrip
+    line (with the convention of SuperMix: half of the loss tangent of the
+    propagation constant)."""
+
+    e = eps_r / eps_up
+    u = width / height
+    t = thickness / height
+
+    # Quasi-static, with the strip thickness as a correction to the width
+    coth = 1 / np.tanh(np.sqrt(6.517 * u))
+    d1 = t / np.pi * np.log(1 + 4 * np.e / (t * coth ** 2))
+    u1 = u + d1
+    ur = u + (0.5 + 0.5 / np.cosh(np.sqrt(e - 1))) * d1
+    a = 1 + np.log((ur ** 2 + 1 / 2704) / (ur ** 2 + 0.432 / ur ** 2)) / 49 + np.log(1 + ur ** 3 / 5929.741) / 18.7
+    b = 0.564 * ((e - 0.9) / (e + 3)) ** 0.053
+    ee0 = 0.5 * ((e + 1) + (e - 1) * (1 + 10 / ur) ** (-a * b))
+
+    def z_hj(x):  # Hammerstad & Jensen's Z0(u), up to a constant
+        f = 6 + (2 * np.pi - 6) * np.exp(-(30.666 / x) ** 0.7528)
+        return np.log(f / x + np.sqrt(1 + 4 / x ** 2))
+
+    ee0 *= (z_hj(u1) / z_hj(ur)) ** 2
+
+    # Dispersion (frequency normalized as f h in [GHz mm])
+    fn = freq * height / 1e6
+    p1 = 0.27488 - 0.065683 * np.exp(-8.7513 * u) + u * (0.6315 + 0.525 * (1 + 0.0157 * fn) ** -20)
+    p2 = 0.33622 * (1 - np.exp(-0.03442 * e))
+    p3 = 0.0363 * np.exp(-4.6 * u) * (1 - np.exp(-(fn / 38.7) ** 4.97))
+    p4 = 1 + 2.751 * (1 - np.exp(-(e / 15.916) ** 8))
+    pf = p1 * p2 * ((0.1844 + p3 * p4) * fn) ** 1.5763
+    eps_eff = (ee0 + pf * e) / (1 + pf)
+
+    # Loss tangent: dielectric losses weighted by the filling factor
+    q = (eps_eff - 1) / (e - 1) if e > 1 else np.ones_like(eps_eff)
+    tan_eff = 0.5 * ((1 - q) * tan_up + q * e * tan_d) / eps_eff
+
+    return eps_eff * eps_up, tan_eff
 
 
 # Touchstone files ------------------------------------------------------------

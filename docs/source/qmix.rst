@@ -61,6 +61,14 @@ qmix.small\_signal module
     :undoc-members:
     :show-inheritance:
 
+qmix.superconductor module
+--------------------------
+
+.. automodule:: qmix.superconductor
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 
 Module contents
 ---------------
