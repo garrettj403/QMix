@@ -223,3 +223,39 @@ def test_vph_alias():
 if __name__ == "__main__":
 
     test_setting_alpha()
+
+
+def test_multi_junction_circuit():
+    """MultiJunctionCircuit: shapes (junction axis first), bias voltages and
+    the single-junction view."""
+
+    cct = MultiJunctionCircuit(3, 2, 2, vb_min=0.1, vb_max=1.5, vb_npts=11, vgap=2.8e-3, rn=14.)
+    assert cct.vt.shape == (3, 3, 3)
+    assert cct.zt.shape == (3, 3, 3, 3)
+    assert cct.vb.shape == (3, 11)
+    assert cct.initialize_vj().shape == (3, 3, 3, 11)
+    np.testing.assert_equal(cct.area, 1.)
+    assert cct.fgap == EmbeddingCircuit(vgap=2.8e-3).fgap
+    assert str(cct) == "Multi-junction embedding circuit (Junctions:3, Tones:2, Harmonics:2)"
+
+    # A 1-D bias voltage is used for all junctions
+    vb = np.linspace(0, 0.7, 21)
+    cct.vb = vb
+    assert cct.vb_npts == 21 and cct.vb.shape == (3, 21)
+    cct.vb = np.array([vb, vb / 2, vb / 3])
+    with pytest.raises(AssertionError):
+        cct.vb = np.ones((2, 21))
+
+    cct.freq[1:] = 0.3, 0.33
+    cct.vt[1, 1, 1] = 0.5
+    cct.zt[1, 1, 2, 1] = 0.3 - 0.2j
+    single = cct.junction(1)
+    assert isinstance(single, EmbeddingCircuit)
+    np.testing.assert_equal(single.vb, vb / 2)
+    np.testing.assert_equal(single.freq, cct.freq)
+    assert single.vt[1, 1] == 0.5 and single.zt[2, 1] == 0.3 - 0.2j
+    assert single.vb_npts == 21 and single.vgap == cct.vgap and single.rn == cct.rn
+    with pytest.raises(AssertionError):
+        cct.junction(3)
+    with pytest.raises(AssertionError):
+        MultiJunctionCircuit(0)

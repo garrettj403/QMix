@@ -114,6 +114,13 @@ def qtcurrent(vj, cct, resp, freq_list, num_b=15, verbose=True, resp_matrix=None
         module docstring for the two summation methods (``'direct'`` and
         ``'fourier'``).
 
+        For several junctions (``qmix.circuit.MultiJunctionCircuit``),
+        ``vj`` has the junction axis first (``vj[j, f, p, i]``), ``resp``
+        can be one response function or a list (one per junction), and
+        ``resp_matrix`` a list from ``interpolate_respfn``. The currents are
+        returned with the junction axis first, scaled by the relative area
+        of each junction (``cct.area``).
+
     Args:
         vj (ndarray): Voltage across the SIS junction
         cct (qmix.circuit.EmbeddingCircuit): Embedding circuit
@@ -145,6 +152,11 @@ def qtcurrent(vj, cct, resp, freq_list, num_b=15, verbose=True, resp_matrix=None
         ndarray: Quasiparticle tunneling current
 
     """
+
+    # Several junctions: one call per junction (see qmix.circuit.MultiJunctionCircuit)
+    if _is_multi(cct):
+        return _qtcurrent_multi(vj, cct, resp, freq_list, num_b, verbose, resp_matrix, method, num_modes,
+                                mixing_tol)
 
     # Load, prepare and check input data -------------------------------------
 
@@ -416,9 +428,25 @@ def interpolate_respfn(cct, resp, num_b, method='auto', num_modes=None, verbose=
 
     Returns:
         ndarray/FourierResp: The interpolated response function as a matrix
-        (direct method) or as a Fourier representation (Fourier-shift method)
+        (direct method) or as a Fourier representation (Fourier-shift method);
+        a list of these (one per junction) for a
+        ``qmix.circuit.MultiJunctionCircuit``
 
     """
+
+    if _is_multi(cct):
+        # One per junction; junctions with the same response function and
+        # bias voltages share it
+        resp_list = junction_resp(resp, cct.num_j)
+        out = []
+        for j in range(cct.num_j):
+            for i in range(j):
+                if resp_list[i] is resp_list[j] and np.array_equal(cct.vb[i], cct.vb[j]):
+                    out.append(out[i])
+                    break
+            else:
+                out.append(interpolate_respfn(cct.junction(j), resp_list[j], num_b, method, num_modes, verbose))
+        return out
 
     nb_list = _unpack_num_b(num_b, cct.num_f)
 
@@ -428,6 +456,46 @@ def interpolate_respfn(cct, resp, num_b, method='auto', num_modes=None, verbose=
         return FourierResp(resp, cct.vb, cct.freq, nb_list, num_modes)
 
     return resp(_interpolation_voltages(cct.vb, cct.freq, nb_list))
+
+
+def _is_multi(cct):
+    """Is this a circuit with several junctions (``MultiJunctionCircuit``)?"""
+    return hasattr(cct, 'num_j')
+
+
+def junction_resp(resp, num_j):
+    """Response function of each junction.
+
+    Args:
+        resp (qmix.respfn.RespFn or list): One response function for all
+            junctions, or a list with one per junction
+        num_j (int): Number of junctions
+
+    Returns:
+        list: Response function of each junction
+
+    """
+
+    if isinstance(resp, (list, tuple)):
+        assert len(resp) == num_j, "Need one response function per junction ({} given for {} junctions)".format(
+            len(resp), num_j)
+        return list(resp)
+    return [resp] * num_j
+
+
+def _qtcurrent_multi(vj, cct, resp, freq_list, num_b, verbose, resp_matrix, method, num_modes, mixing_tol):
+    """Tunneling currents of all junctions (junction axis first)."""
+
+    assert vj.ndim == 4 and vj.shape[0] == cct.num_j, "vj needs the junction axis first: vj[j, f, p, i]"
+    resp_list = junction_resp(resp, cct.num_j)
+    if resp_matrix is None:
+        resp_matrix = interpolate_respfn(cct, resp, num_b, method=method, num_modes=num_modes, verbose=verbose)
+    assert len(resp_matrix) == cct.num_j, "resp_matrix: need one per junction (from interpolate_respfn)"
+    out = [cct.area[j] * qtcurrent(vj[j], cct.junction(j), resp_list[j], freq_list, num_b, verbose=verbose,
+                                   resp_matrix=resp_matrix[j], mixing_tol=mixing_tol)
+           for j in range(cct.num_j)]
+
+    return np.array(out)
 
 
 def _check_respfn_range(resp, vb, freq, nb_list):
@@ -810,6 +878,9 @@ def suggest_num_b(vj, cct, tol=1e-5, max_b=50):
         function, and then use the result for subsequent simulations with
         similar drive levels (e.g., sweeps).
 
+        For several junctions (``qmix.circuit.MultiJunctionCircuit``), the
+        result is the largest limit of each tone over all junctions.
+
     Args:
         vj (ndarray): Voltage across the SIS junction
         cct (qmix.circuit.EmbeddingCircuit): Embedding circuit
@@ -822,6 +893,11 @@ def suggest_num_b(vj, cct, tol=1e-5, max_b=50):
         tuple: Suggested summation limits, one for each tone
 
     """
+
+    # Several junctions: the largest limits over all junctions
+    if _is_multi(cct):
+        nb = np.max([suggest_num_b(vj[j], cct.junction(j), tol, max_b) for j in range(cct.num_j)], axis=0)
+        return tuple(int(b) for b in nb)
 
     ckh = calculate_phase_factor_coeff(vj, cct.freq, cct.num_f, cct.num_p, max_b)
 

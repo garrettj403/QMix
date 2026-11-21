@@ -80,6 +80,23 @@ The iteration stops when the relative error, :math:`|e_{fp}| / |V_{J,fp}|`, is b
 
 The result is the junction voltage ``vj[f, p, i]`` for every tone, harmonic and bias voltage. It can be passed to :func:`qmix.qtcurrent.qtcurrent` to calculate the currents at any frequency, e.g., the DC current (the pumped I-V curve) or the current at the IF (the output power of a mixer).
 
+Several junctions
+-----------------
+
+With several junctions in one linear network (e.g., a twin-junction tuning circuit or a series array; :class:`qmix.circuit.MultiJunctionCircuit`), the embedding circuit at each signal is a multi-port Thevenin equivalent: a vector of open-circuit voltages and an impedance matrix. For junctions :math:`j, l`,
+
+.. math::
+
+   e_{j,fp} = V_{T,j,fp} - \sum_l Z_{T,jl,fp} \, I_{l,fp} - V_{J,j,fp},
+
+and the unknowns are the voltages of all junctions. The current of each junction only depends on its own voltage, so :math:`\partial I_{l,fp} / \partial V_{J,j,q} = 0` for :math:`j \ne l`, and
+
+.. math::
+
+   \frac{\partial e_{j,fp}}{\partial V_{J,l,q}} = - Z_{T,jl,fp} \, \frac{\partial I_{l,fp}}{\partial V_{J,l,q}} - \delta_{jl} \, \delta_{fp,q}.
+
+The derivatives of all junctions' currents are therefore found from the same perturbed voltages (signal :math:`q` of every junction at once), and a new Jacobian costs :math:`2N` tunneling current calculations per junction, as for one junction. The Newton step, line search and restarts are the same. Each junction is voltage biased (``cct.vb[j]``), can have its own response function (pass a list as ``resp``) and a relative area (``cct.area[j]``, which scales its current), and the result is ``vj[j, f, p, i]``. :func:`qmix.network.set_thevenin` sets the Thevenin voltages and impedance matrices from an S-parameter network, with a list of junction ports.
+
 Choosing the parameters
 -----------------------
 

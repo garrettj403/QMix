@@ -14,14 +14,23 @@ SIS mixer circuits.
     junction for each signal that is applied to the junction. This techniques
     uses Newton's method to find the solution numerically.
 
+    Several junctions in one embedding network
+    (``qmix.circuit.MultiJunctionCircuit``) are solved together: the
+    unknowns are the voltages of all junctions, and the Jacobian couples
+    them through the off-diagonal Thevenin impedances. Since the current of
+    each junction only depends on its own voltage, the derivatives of all
+    junctions' currents are found from the same perturbed voltages, so a new
+    Jacobian costs 2 * num_n current calculations per junction (as for one
+    junction).
+
 """
 
 # import qmix
 import numpy as np
 from timeit import default_timer as timer
-from qmix.circuit import EmbeddingCircuit
+from qmix.circuit import EmbeddingCircuit, MultiJunctionCircuit
 from qmix.misc.progbar import progress_bar
-from qmix.qtcurrent import interpolate_respfn, qtcurrent, _unpack_num_b
+from qmix.qtcurrent import interpolate_respfn, junction_resp, qtcurrent, _is_multi, _unpack_num_b
 
 # minimum Thevenin voltage (required to avoid div by 0 errors)
 MIN_VT = 1e-10
@@ -61,9 +70,16 @@ def harmonic_balance(cct, resp, num_b=15, max_it=30, stop_rerror=0.001, vj_initi
     Garrett (2018); Kittara (2002); Kittara, Winthington & Yassin (2007); or
     Withington, Kittara & Yassin (2003). [Full references in online docs.]
 
+    For several junctions, pass a ``qmix.circuit.MultiJunctionCircuit``.
+    The junction voltage then has the junction axis first,
+    ``vj[j, f, p, i]``, and ``resp`` can be a list (one response function
+    per junction).
+
     Args:
-        cct (qmix.circuit.EmbeddingCircuit): Embedding circuit
-        resp (qmix.respfn.RespFn): Response function
+        cct (qmix.circuit.EmbeddingCircuit): Embedding circuit (or
+            ``qmix.circuit.MultiJunctionCircuit``)
+        resp (qmix.respfn.RespFn): Response function (or a list, one per
+            junction)
         num_b (int/tuple, optional): Summation limits for phase factor
             coefficients, default is 15
         method (str, optional): Method used by ``qmix.qtcurrent.qtcurrent``
@@ -126,6 +142,11 @@ def harmonic_balance(cct, resp, num_b=15, max_it=30, stop_rerror=0.001, vj_initi
     num_n = cct.num_n
     npts = cct.vb_npts
 
+    # Several junctions: num_j * num_n unknowns per bias voltage
+    multi = _is_multi(cct)
+    num_j = cct.num_j if multi else 1
+    num_k = num_j * num_n
+
     vt = cct.vt
     zt = cct.zt
 
@@ -133,29 +154,38 @@ def harmonic_balance(cct, resp, num_b=15, max_it=30, stop_rerror=0.001, vj_initi
     if (zt == 0).all():
         if verbose:
             print("Done.\n")
-        return vt[:, :, None] * np.ones(npts, dtype=complex)
+        return vt[..., None] * np.ones(npts, dtype=complex)
 
     # Check whether any Thevenin voltages are zero (prevents div0 errors) ----
 
     vt[np.abs(vt) < MIN_VT] = MIN_VT
-    vt[0, :] = 0  # TODO: is this needed?
-    vt[:, 0] = 0
+    vt[..., 0, :] = 0  # TODO: is this needed?
+    vt[..., :, 0] = 0
 
     # Initial guess of the junction voltage (vj) -----------------------------
 
     if vj_initial is None:
-        vj_initial = vt[:, :, None] * \
-                     zj_guess / (zj_guess + zt[:, :, None]) * \
-                     np.ones(npts, dtype=complex)
+        if multi:
+            vj_initial = _initial_guess_multi(vt, zt, zj_guess, npts)
+        else:
+            vj_initial = vt[:, :, None] * \
+                         zj_guess / (zj_guess + zt[:, :, None]) * \
+                         np.ones(npts, dtype=complex)
 
         # Warm start: solve the strongest tone on its own
         if warm_start and num_f > 1:
-            f_strong = 1 + int(np.argmax(np.abs(cct.vt[1:, 1:]).max(axis=1)))
+            vt_fp = np.abs(cct.vt[:, 1:, 1:]).max(axis=0) if multi else np.abs(cct.vt[1:, 1:])
+            f_strong = 1 + int(np.argmax(vt_fp.max(axis=1)))
             if verbose:
                 print(" - warm start: solving tone {} on its own".format(f_strong))
-            vj_initial[f_strong] = _single_tone_guess(cct, resp, f_strong, _unpack_num_b(num_b, num_f)[f_strong - 1],
-                                                      max_it, stop_rerror, damp_coeff, zj_guess, reuse_jacobian,
-                                                      method, line_search)
+            vj_f = _single_tone_guess(cct, resp, f_strong, _unpack_num_b(num_b, num_f)[f_strong - 1], max_it,
+                                      stop_rerror, damp_coeff, zj_guess, reuse_jacobian, method, line_search)
+            if multi:
+                vj_initial[:, f_strong] = vj_f
+            else:
+                vj_initial[f_strong] = vj_f
+    elif multi:
+        assert vj_initial.shape == (num_j, num_f + 1, num_p + 1, npts), "vj_initial must have shape (j, f, p, i)"
 
     # Prepare input data ----------------------------------------------------
 
@@ -167,25 +197,47 @@ def harmonic_balance(cct, resp, num_b=15, max_it=30, stop_rerror=0.001, vj_initi
     # variable (with shape (3+1) x (2+1) x npts, where npts = length of bias
     # voltage) will be transformed into a matrix with shape 6 x npts.
 
-    # Change format of data from [f, p] to [p] (reduce by one dimension)
-    vj_2d = vj_initial[1:, 1:, :].reshape((num_n, npts))
-    vt_2d = vt[1:, 1:].reshape(num_n)
-    zt_2d = zt[1:, 1:].reshape(num_n)
+    # For several junctions, the junction is the outer index:
+    # k = j * num_n + (index of [f, p])
 
     if verbose:
+        if multi:
+            print(" - {0} junctions".format(num_j))
         print((" - {0} tone(s) and {1} harmonic(s)".format(num_f, num_p)))
         msg = " - {0} calls to the quasiparticle tunneling current (qtc) function per iteration"
+        if multi:
+            msg += " (for each junction)"
         print((msg.format(num_n * 2 + 1)))
         print(" - max. iterations: {}".format(max_it))
 
-    # Interpolate response function for all required voltages
+    # Interpolate response function for all required voltages (a list, one
+    # per junction, for several junctions)
     respfn_interp = interpolate_respfn(cct, resp, num_b, method=method, verbose=verbose)
+
+    # Change format of data from [f, p] to [k] (reduce by one dimension).
+    # The error vector and the inverse Jacobian are calculated by these
+    # functions of vj_2d.
+    if multi:
+        vj_2d = vj_initial[:, 1:, 1:, :].reshape((num_k, npts))
+        system = _MultiJunctionSystem(cct, resp, num_b, respfn_interp)
+        error_vector, inv_jacobian = system.error_vector, system.inv_jacobian
+    else:
+        vj_2d = vj_initial[1:, 1:, :].reshape((num_n, npts))
+        vt_2d = vt[1:, 1:].reshape(num_n)
+        zt_2d = zt[1:, 1:].reshape(num_n)
+
+        def error_vector(vj_2d):
+            return _error_vector(vj_2d, vt_2d, zt_2d, cct, resp, num_b, respfn_interp)
+
+        def inv_jacobian(err_all, vj_2d, verbose):
+            return _inv_jacobian(err_all, vj_2d, vt_2d, zt_2d, cct, resp, num_b, resp_matrix=respfn_interp,
+                                 verbose=verbose)
 
     # Perform harmonic balance -----------------------------------------------
 
     # Error vector at the initial guess
     time_current = timer()
-    err_all = _error_vector(vj_2d, vt_2d, zt_2d, cct, resp, num_b, respfn_interp)
+    err_all = error_vector(vj_2d)
     if verbose:
         print("Estimated time:")
         call_time = timer() - time_current
@@ -210,8 +262,10 @@ def harmonic_balance(cct, resp, num_b=15, max_it=30, stop_rerror=0.001, vj_initi
             print(("Error after {0} iteration(s):".format(iteration)))
         max_rel_error = 0.  # initialize maximum relative error of all signals
         msg = "\tf:{:d}, p:{:d},   med. rel. error: {:9.3f},   max. rel. error: {:9.3f},   {:5.1f} % complete"
+        if multi:
+            msg = "\tj:{:d}, " + msg[1:]
         finished_points = np.ones(npts, dtype=bool)
-        for k in range(num_n):
+        for k in range(num_k):
             with np.errstate(divide='ignore'):
                 # Check relative error at k
                 abs_error = np.abs(err_all[k, :])
@@ -224,7 +278,7 @@ def harmonic_balance(cct, resp, num_b=15, max_it=30, stop_rerror=0.001, vj_initi
 
             # Print to terminal
             if verbose:
-                f, p = _k_to_fp(k, num_p)
+                f, p = _k_to_fp(k % num_n, num_p)
 
                 if med_rel_error > 99999.999:
                     _med_rel_error = 99999.999
@@ -236,7 +290,8 @@ def harmonic_balance(cct, resp, num_b=15, max_it=30, stop_rerror=0.001, vj_initi
                 else:
                     _rel_error = np.max(rel_error)
 
-                print((msg.format(int(f), int(p), _med_rel_error, _rel_error, complete * 100)))
+                values = (int(f), int(p), _med_rel_error, _rel_error, complete * 100)
+                print((msg.format(*((k // num_n,) + values if multi else values))))
 
         # Exit if the error is good enough
         if max_rel_error <= stop_rerror:
@@ -254,16 +309,15 @@ def harmonic_balance(cct, resp, num_b=15, max_it=30, stop_rerror=0.001, vj_initi
         slow_convergence = max_rel_error > JACOBIAN_REUSE_RATIO * last_max_rel_error
         new_jacobian = inv_j is None or not reuse_jacobian or slow_convergence or force_new_jacobian
         if new_jacobian:
-            inv_j = _inv_jacobian(err_all, vj_2d, vt_2d, zt_2d, cct, resp, num_b, resp_matrix=respfn_interp,
-                                  verbose=verbose)
+            inv_j = inv_jacobian(err_all, vj_2d, verbose)
         elif verbose:
             print("Reusing Jacobian from previous iteration")
         last_max_rel_error = max_rel_error
         if verbose:
             print("Applying correction")
-        corr = np.zeros((num_n, npts), dtype=complex)
-        for p in range(num_n):
-            for q in range(num_n):
+        corr = np.zeros((num_k, npts), dtype=complex)
+        for p in range(num_k):
+            for q in range(num_k):
                 corr[p, :] -= (inv_j[p * 2, q * 2] * np.real(err_all[q]) +
                                inv_j[p * 2, q * 2 + 1] * np.imag(err_all[q]))
                 corr[p, :] -= 1j * (inv_j[p * 2 + 1, q * 2] * np.real(err_all[q]) +
@@ -272,8 +326,7 @@ def harmonic_balance(cct, resp, num_b=15, max_it=30, stop_rerror=0.001, vj_initi
         if line_search:
             # Points that have already converged take the full step
             vj_2d, err_all, num_backtrack, stuck = _line_search(vj_2d, corr, err_all, ~finished_points, damp_coeff,
-                                                                new_jacobian, vt_2d, zt_2d, cct, resp, num_b,
-                                                                respfn_interp)
+                                                                new_jacobian, error_vector)
             # A step that had to be shortened (or failed) with an old Jacobian
             # suggests that the Jacobian is out of date
             force_new_jacobian = not new_jacobian and (num_backtrack > 0 or stuck.any())
@@ -288,18 +341,22 @@ def harmonic_balance(cct, resp, num_b=15, max_it=30, stop_rerror=0.001, vj_initi
                 for i in np.flatnonzero(restart):
                     vj_2d[:, i] = vj_2d[:, idx_done[np.abs(idx_done - i).argmin()]]
                 num_restarts[restart] += 1
-                err_all = _error_vector(vj_2d, vt_2d, zt_2d, cct, resp, num_b, respfn_interp)
+                err_all = error_vector(vj_2d)
                 # The Jacobian at the restarted points is out of date
                 force_new_jacobian = True
                 if verbose:
                     print("Restarted {} bias point(s) from a converged neighbor".format(np.sum(restart)))
         else:
             vj_2d = vj_2d + corr * damp_coeff
-            err_all = _error_vector(vj_2d, vt_2d, zt_2d, cct, resp, num_b, respfn_interp)
+            err_all = error_vector(vj_2d)
 
-    # Format results (from [k,vb] to [f,p,vb])
-    vj_out = np.zeros((num_f + 1, num_p + 1, npts), dtype=complex)
-    vj_out[1:, 1:, :] = vj_2d.reshape((num_f, num_p, npts))
+    # Format results (from [k,vb] to [f,p,vb], or [j,f,p,vb])
+    if multi:
+        vj_out = np.zeros((num_j, num_f + 1, num_p + 1, npts), dtype=complex)
+        vj_out[:, 1:, 1:, :] = vj_2d.reshape((num_j, num_f, num_p, npts))
+    else:
+        vj_out = np.zeros((num_f + 1, num_p + 1, npts), dtype=complex)
+        vj_out[1:, 1:, :] = vj_2d.reshape((num_f, num_p, npts))
 
     time = timer() - start_time
     if verbose:
@@ -332,8 +389,10 @@ def check_hb_error(vj_check, cct, resp, num_b=15, stop_rerror=0.001):
 
     Args:
         vj_check (ndarray): The voltage across junction to check
-        cct (qmix.circuit.EmbeddingCircuit): Embedding circuit
-        resp (qmix.respfn.RespFn): Response function
+        cct (qmix.circuit.EmbeddingCircuit): Embedding circuit (or
+            ``qmix.circuit.MultiJunctionCircuit``)
+        resp (qmix.respfn.RespFn): Response function (or a list, one per
+            junction)
         num_b (optional): Summation limits for phase factor coefficients,
             default is 15
         stop_rerror (float, optional): Maximum acceptable relative error,
@@ -351,21 +410,31 @@ def check_hb_error(vj_check, cct, resp, num_b=15, stop_rerror=0.001):
     # Tunnelling current for all tones/harmonics (see below)
     ij_all = _qtcurrent_all_freq(vj_check, cct, resp, num_b)
 
-    for f in range(1, cct.num_f + 1):
-        for p in range(1, cct.num_p + 1):
-            error_fp = cct.vt[f, p] - \
-                       cct.zt[f, p] * ij_all[f, p, :] - \
-                       vj_check[f, p, :]
-            max_rel_error = np.max(np.abs(error_fp) /
-                                   np.abs(vj_check[f, p, :]))
-            good_error = max_rel_error < stop_rerror
-            if good_error:
-                err_str = 'Yes'
-            else:
-                err_str = 'No'
-            msg = "\tf:{0},\tp:{1},\tmax rel. error: {2:.2E},\tPass? {3}"
-            print((msg.format(f, p, max_rel_error, err_str)))
-            assert good_error
+    # Several junctions: vt - sum_l zt[j, l] ij[l] - vj for each junction
+    multi = _is_multi(cct)
+    if multi:
+        error_all = cct.vt[..., None] - np.einsum('jlfp,lfpi->jfpi', cct.zt, ij_all) - vj_check
+    else:
+        error_all = cct.vt[:, :, None] - cct.zt[:, :, None] * ij_all - vj_check
+
+    for j in range(cct.num_j if multi else 1):
+        for f in range(1, cct.num_f + 1):
+            for p in range(1, cct.num_p + 1):
+                if multi:
+                    error_fp, vj_fp = error_all[j, f, p], vj_check[j, f, p]
+                else:
+                    error_fp, vj_fp = error_all[f, p], vj_check[f, p]
+                max_rel_error = np.max(np.abs(error_fp) / np.abs(vj_fp))
+                good_error = max_rel_error < stop_rerror
+                if good_error:
+                    err_str = 'Yes'
+                else:
+                    err_str = 'No'
+                msg = "\tf:{0},\tp:{1},\tmax rel. error: {2:.2E},\tPass? {3}"
+                if multi:
+                    msg = "\tj:{4}," + msg
+                print((msg.format(f, p, max_rel_error, err_str, j)))
+                assert good_error
     print("")
 
 
@@ -397,6 +466,12 @@ def _qtcurrent_all_freq(vj, cct, resp, num_b=15):
     freq_list = (cct.freq[1:, None] * np.arange(1, num_p + 1)).flatten()
 
     current = qtcurrent(vj, cct, resp, freq_list, num_b, verbose=False)
+
+    # Several junctions: 4D matrix (j x f x p x vb)
+    if _is_multi(cct):
+        current_out = np.zeros((cct.num_j, num_f + 1, num_p + 1, npts), dtype=complex)
+        current_out[:, 1:, 1:] = current.reshape((cct.num_j, num_f, num_p, npts))
+        return current_out
 
     # Arrange back into a 3D matrix (f x p x vb)
     current_out = np.zeros((num_f + 1, num_p + 1, npts), dtype=complex)
@@ -502,9 +577,22 @@ def _single_tone_guess(cct, resp, f, num_b, max_it, stop_rerror, damp_coeff, zj_
     (``warm_start``).
 
     Returns:
-        ndarray: junction voltage for tone f, shape (num_p + 1, npts)
+        ndarray: junction voltage for tone f, shape (num_p + 1, npts), or
+        (num_j, num_p + 1, npts) for several junctions
 
     """
+
+    if _is_multi(cct):
+        cct_1 = MultiJunctionCircuit(cct.num_j, 1, cct.num_p, vb_npts=cct.vb_npts)
+        cct_1.vb = cct.vb.copy()
+        cct_1.area = cct.area.copy()
+        cct_1.freq[1] = cct.freq[f]
+        cct_1.vt[:, 1] = cct.vt[:, f]
+        cct_1.zt[:, :, 1] = cct.zt[:, :, f]
+        vj_1 = harmonic_balance(cct_1, resp, num_b=num_b, max_it=max_it, stop_rerror=stop_rerror,
+                                damp_coeff=damp_coeff, verbose=False, zj_guess=zj_guess,
+                                reuse_jacobian=reuse_jacobian, method=method, line_search=line_search)
+        return vj_1[:, 1]
 
     cct_1 = EmbeddingCircuit(1, cct.num_p, vb_npts=cct.vb_npts)
     cct_1.vb = cct.vb.copy()
@@ -528,6 +616,93 @@ def _error_vector(vj_2d, vt_2d, zt_2d, cct, resp, num_b, resp_matrix):
     return vt_2d[:, None] - zt_2d[:, None] * ij_2d - vj_2d
 
 
+# Several junctions -----------------------------------------------------------
+
+def _initial_guess_multi(vt, zt, zj_guess, npts):
+    """Initial guess of the junction voltages, vj[j, f, p, i], with each
+    junction replaced by the impedance zj_guess: (1 + zt / zj) vj = vt."""
+
+    num_j = vt.shape[0]
+    a = np.eye(num_j)[:, :, None, None] + zt / zj_guess        # [j, l, f, p]
+    v = np.linalg.solve(a.transpose(2, 3, 0, 1), vt.transpose(1, 2, 0)[..., None])[..., 0]  # [f, p, j]
+
+    return v.transpose(2, 0, 1)[..., None] * np.ones(npts, dtype=complex)
+
+
+class _MultiJunctionSystem(object):
+    """Error vector and inverse Jacobian for several junctions.
+
+    The unknowns are vj_2d[k, i] with k = j * num_n + n (junction j, signal
+    n = index of [f, p]). The error is
+
+        e[j, n] = vt[j, n] - sum_l zt[j, l, n] ij[l, n] - vj[j, n]
+
+    The current of junction l only depends on its own voltage, so the
+    derivatives with respect to signal q of all junctions are found by
+    perturbing signal q of all junctions at once:
+    de[j, n] / dvj[l, q] = -zt[j, l, n] dij[l, n] / dvj[l, q] - delta_jl delta_nq.
+
+    """
+
+    def __init__(self, cct, resp, num_b, resp_matrix):
+
+        self.num_j, self.num_n, self.npts = cct.num_j, cct.num_n, cct.vb_npts
+        self.num_b = num_b
+        self.ccts = [cct.junction(j) for j in range(self.num_j)]
+        self.resp = junction_resp(resp, self.num_j)
+        self.resp_matrix = resp_matrix
+        self.area = cct.area.copy()
+        self.vt_2d = cct.vt[:, 1:, 1:].reshape(self.num_j * self.num_n)
+        # [n, j, l]
+        self.zt_2d = cct.zt[:, :, 1:, 1:].reshape(self.num_j, self.num_j, self.num_n).transpose(2, 0, 1)
+
+    def currents(self, vj_2d):
+        """Tunneling currents, ij[j, n, i]."""
+        vj_3d = vj_2d.reshape((self.num_j, self.num_n, self.npts))
+        return np.array([self.area[j] * _qt_current_for_hb(vj_3d[j], self.ccts[j], self.resp[j], self.num_b,
+                                                           resp_matrix=self.resp_matrix[j])
+                         for j in range(self.num_j)])
+
+    def error_vector(self, vj_2d):
+        """Harmonic balance error vector, [k, i]."""
+        zi = np.einsum('njl,lni->jni', self.zt_2d, self.currents(vj_2d))
+        return self.vt_2d[:, None] - zi.reshape(vj_2d.shape) - vj_2d
+
+    def inv_jacobian(self, err_all, vj_2d, verbose=True):
+        """Inverse Jacobian, [2k, 2k, i] (real and imaginary parts, as in
+        _inv_jacobian)."""
+
+        num_j, num_n, npts = self.num_j, self.num_n, self.npts
+        ij_0 = self.currents(vj_2d)
+        # [j, n, re/im of the error, l, q, re/im of the perturbation, i]
+        jacobian = np.zeros((num_j, num_n, 2, num_j, num_n, 2, npts), dtype=float)
+        for q in range(num_n):
+
+            if verbose:
+                progress_bar(q, num_n, prefix="Calculating inverse Jacobian")
+
+            dvj = np.zeros((num_j, num_n, npts), dtype=float)
+            dvj[:, q, :] = DV
+            dvj = dvj.reshape(vj_2d.shape)
+
+            for c, unit in enumerate((1., 1j)):
+                # dij[l, n] / dvj[l, q]
+                dij = (self.currents(vj_2d + unit * dvj) - ij_0) / DV
+                derr = -np.einsum('njl,lni->jnli', self.zt_2d, dij)
+                for j in range(num_j):
+                    derr[j, q, j] -= unit
+                jacobian[:, :, 0, :, q, c] = derr.real
+                jacobian[:, :, 1, :, q, c] = derr.imag
+
+        if verbose:
+            progress_bar(num_n, num_n, prefix="Calculating inverse Jacobian")
+
+        num_k = num_j * num_n
+        jacobian = jacobian.reshape((2 * num_k, 2 * num_k, npts))
+
+        return np.linalg.inv(jacobian.transpose(2, 0, 1)).transpose(1, 2, 0)
+
+
 # Line search -----------------------------------------------------------------
 
 # Backtracking line search along the Newton step, separately at each bias
@@ -537,7 +712,7 @@ def _error_vector(vj_2d, vt_2d, zt_2d, cct, resp, num_b, resp_matrix):
 # f(lam) <= (1 - 2 * alpha * lam) * f(0). Rejected steps are shortened to the
 # minimum of a quadratic fit (limited to 0.1 - 0.5 of the previous length).
 
-def _line_search(vj_2d, corr, err_all, active, lam0, fresh_jacobian, vt_2d, zt_2d, cct, resp, num_b, resp_matrix):
+def _line_search(vj_2d, corr, err_all, active, lam0, fresh_jacobian, error_vector):
     """Apply the Newton correction with a backtracking line search.
 
     Args:
@@ -551,6 +726,8 @@ def _line_search(vj_2d, corr, err_all, active, lam0, fresh_jacobian, vt_2d, zt_2
             bias voltages without an acceptable step keep their old voltage
             (so that the Jacobian can be recalculated); otherwise they take
             the shortest step tried.
+        error_vector (function): error vector as a function of the junction
+            voltage, [k, i]
 
     Returns:
         tuple: new junction voltage, its error vector, the number of step
@@ -562,7 +739,7 @@ def _line_search(vj_2d, corr, err_all, active, lam0, fresh_jacobian, vt_2d, zt_2
     lam = np.full(vj_2d.shape[1], float(lam0))
 
     vj_new = vj_2d + lam * corr
-    err_new = _error_vector(vj_new, vt_2d, zt_2d, cct, resp, num_b, resp_matrix)
+    err_new = error_vector(vj_new)
     merit = np.sum(np.abs(err_new) ** 2, axis=0)
     pending = active & ~(merit <= (1 - 2 * LINE_SEARCH_ALPHA * lam) * merit0)
 
@@ -579,7 +756,7 @@ def _line_search(vj_2d, corr, err_all, active, lam0, fresh_jacobian, vt_2d, zt_2
 
         # Evaluating all bias voltages costs about the same as a subset
         vj_try = vj_2d + lam * corr
-        err_try = _error_vector(vj_try, vt_2d, zt_2d, cct, resp, num_b, resp_matrix)
+        err_try = error_vector(vj_try)
         vj_new[:, pending] = vj_try[:, pending]
         err_new[:, pending] = err_try[:, pending]
         merit[pending] = np.sum(np.abs(err_try[:, pending]) ** 2, axis=0)

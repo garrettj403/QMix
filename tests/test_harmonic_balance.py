@@ -179,3 +179,109 @@ def test_when_zthev_is_zero():
     vj = harmonic_balance(circuit, RESP, NB)
     for i in range(NPTS):
         assert (vj[:,:,i] == circuit.vt).all()
+
+
+# Several junctions ------------------------------------------------------------
+
+def _single(vt, zt, freq, npts=NPTS):
+    cct = qmix.circuit.EmbeddingCircuit(len(freq) - 1, vt.shape[-1] - 1, vb_npts=npts)
+    cct.freq[:] = freq
+    cct.vt[:] = vt
+    cct.zt[:] = zt
+    return cct
+
+
+def test_multi_junction_uncoupled():
+    """Junctions that aren't coupled (diagonal impedance matrices) give the
+    single-junction solutions."""
+
+    cct = qmix.circuit.MultiJunctionCircuit(2, 1, 2, vb_npts=NPTS)
+    cct.freq[1] = 0.3
+    cct.vt[:, 1, 1] = 0.45, 0.3 + 0.2j
+    cct.vt[:, 1, 2] = 0.01
+    cct.zt[0, 0, 1] = 0.3 - 0.3j
+    cct.zt[1, 1, 1] = 0.5 + 0.2j
+    vj, _, converged = harmonic_balance(cct, RESP, 15, stop_rerror=1e-6, mode='x', verbose=False)
+    assert converged and vj.shape == (2, 2, 3, NPTS)
+    for j in range(2):
+        vj_1 = harmonic_balance(_single(cct.vt[j], cct.zt[j, j], cct.freq), RESP, 15, stop_rerror=1e-6,
+                                verbose=False)
+        np.testing.assert_allclose(vj[j], vj_1, rtol=0, atol=1e-6)
+
+
+def test_multi_junction_parallel():
+    """Two identical junctions in parallel (Z = Z_s for all elements) act like
+    one junction with twice the area, i.e., one junction with 2 Z_s. Also with
+    one junction of area 2, and with a list of response functions."""
+
+    zs, vs = 0.2 - 0.25j, 0.4
+    ref = harmonic_balance(_single(np.array([[0, 0], [0, vs]]), np.array([[0, 0], [0, 2 * zs]]), [0, 0.3]), RESP,
+                           15, stop_rerror=1e-6, verbose=False)
+
+    cct = qmix.circuit.MultiJunctionCircuit(2, 1, 1, vb_npts=NPTS)
+    cct.freq[1] = 0.3
+    cct.vt[:, 1, 1] = vs
+    cct.zt[:, :, 1, 1] = zs
+    vj = harmonic_balance(cct, [RESP, RESP], 15, stop_rerror=1e-6, verbose=False)
+    for j in range(2):
+        np.testing.assert_allclose(vj[j], ref, rtol=0, atol=1e-6)
+
+    cct = qmix.circuit.MultiJunctionCircuit(1, 1, 1, vb_npts=NPTS)
+    cct.freq[1] = 0.3
+    cct.vt[0, 1, 1] = vs
+    cct.zt[0, 0, 1, 1] = zs
+    cct.area[0] = 2.
+    vj = harmonic_balance(cct, RESP, 15, stop_rerror=1e-6, verbose=False)
+    np.testing.assert_allclose(vj[0], ref, rtol=0, atol=1e-6)
+
+
+def test_multi_junction_coupled():
+    """Coupled junctions with different response functions and bias voltages:
+    the circuit is balanced (checked independently with qtcurrent for each
+    junction), with and without the line search and warm start."""
+
+    resp_2 = qmix.respfn.RespFnPolynomial(30, verbose=False)
+    cct = qmix.circuit.MultiJunctionCircuit(2, 2, 2, vb_npts=NPTS)
+    cct.vb = [VBIAS, 0.8 * VBIAS]
+    cct.area[1] = 1.3
+    cct.freq[1:] = 0.30, 0.33
+    cct.vt[:, 1, 1] = 0.4, 0.3j
+    cct.vt[:, 1, 2] = 0.02
+    cct.vt[:, 2, 1] = 0.01, 0.
+    for f in (1, 2):
+        for p in (1, 2):
+            cct.zt[:, :, f, p] = [[0.4 - 0.2j, 0.1 + 0.15j], [0.1 + 0.15j, 0.5 + 0.1j]]
+    resp, nb = [RESP, resp_2], (12, 6)
+
+    vj, _, converged = harmonic_balance(cct, resp, nb, stop_rerror=1e-6, mode='x', verbose=False)
+    assert converged
+    check_hb_error(vj, cct, resp, nb, stop_rerror=1e-5)
+    freq_list = [0.30, 0.60, 0.33, 0.66]
+    ij = [cct.area[j] * qtcurrent(vj[j], cct.junction(j), resp[j], freq_list, nb, verbose=False) for j in range(2)]
+    for j in range(2):
+        for n, (f, p) in enumerate([(1, 1), (1, 2), (2, 1), (2, 2)]):
+            err = cct.vt[j, f, p] - sum(cct.zt[j, l, f, p] * ij[l][n] for l in range(2)) - vj[j, f, p]
+            assert np.max(np.abs(err) / np.abs(vj[j, f, p])) < 1e-5
+
+    vj_2, _, converged = harmonic_balance(cct, resp, nb, stop_rerror=1e-6, mode='x', verbose=False,
+                                          line_search=False, warm_start=True)
+    assert converged
+    np.testing.assert_allclose(vj_2, vj, rtol=0, atol=1e-5)
+
+
+def test_multi_junction_verbose_and_shortcuts(capsys):
+    """Verbose output, zt = 0 and vj_initial for several junctions."""
+
+    cct = qmix.circuit.MultiJunctionCircuit(2, 1, 1, vb_npts=NPTS)
+    cct.freq[1] = 0.3
+    cct.vt[:, 1, 1] = 0.4, 0.3
+    vj = harmonic_balance(cct, RESP, 10, verbose=False)
+    np.testing.assert_equal(vj, cct.vt[..., None] * np.ones(NPTS))
+
+    cct.zt[:, :, 1, 1] = [[0.3, 0.1], [0.1, 0.3]]
+    vj = harmonic_balance(cct, RESP, 10, verbose=True)
+    assert "j:1, f:1, p:1" in capsys.readouterr().out
+    _, num_it, converged = harmonic_balance(cct, RESP, 10, vj_initial=vj, verbose=False, mode='x')
+    assert converged and num_it <= 1
+    with pytest.raises(AssertionError):
+        harmonic_balance(cct, RESP, 10, vj_initial=vj[0], verbose=False)

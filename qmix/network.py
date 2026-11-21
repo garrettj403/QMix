@@ -16,7 +16,9 @@ Description:
     ``qmix.exp.PumpedData.mixer_noise``). ``thevenin`` also gives the
     Thevenin voltage when a source (e.g., the LO) drives another port, and
     ``set_thevenin`` puts both into a ``qmix.circuit.EmbeddingCircuit``, so
-    that the S-parameters drive the harmonic balance directly.
+    that the S-parameters drive the harmonic balance directly. With a list
+    of junction ports, both give the multi-port Thevenin equivalent for
+    several junctions (``qmix.circuit.MultiJunctionCircuit``).
 
     Typical workflow (an RF tuning circuit with the junction at port 1, the
     RF input at port 2 and the IF output at port 3)::
@@ -321,26 +323,44 @@ def thevenin(network, freq, port=1, source_port=None, power=0., phase=0., cap=0.
     with cubic splines (the reflection coefficient, as in
     ``embedding_impedance``, and the transmission coefficient).
 
+    **Several junctions:** if ``port`` is a list of ports (one per junction),
+    the result is the multi-port Thevenin equivalent: the open-circuit
+    voltages at all junction ports (a vector) and the impedance matrix of
+    those ports (with ``V = Z I``, ``I`` into the network), as used by
+    ``qmix.circuit.MultiJunctionCircuit``. From the S-matrix of the junction
+    ports, ``Z = F^-1 (1 - S)^-1 (S G + G^*) F`` with
+    ``F = diag(1 / (2 sqrt(Re Z_ref)))`` and ``G = diag(Z_ref)``, and the
+    open-circuit voltages are ``V_T = 2 sqrt(Re Z_ref) (1 - S_JJ)^-1 S_Js a_s``.
+    ``cap`` can then be one capacitance per junction; the capacitances are in
+    parallel with the junction ports: ``(1 + Z Y_c)^-1`` multiplies both
+    ``Z`` and ``V_T``, with ``Y_c = diag(j w cap)``. The junction ports need
+    reference impedances with a positive real part.
+
     Args:
         network (Network): Network
         freq (float or ndarray): Frequency, in [Hz]
-        port (int, optional): Port of the junction (starting from 1), default
-            is 1
+        port (int or list, optional): Port of the junction (starting from 1),
+            or a list of ports for several junctions, default is 1
         source_port (int, optional): Port of the source; default is None (no
             source: ``V_T = 0``, e.g., for the IF, or for harmonics)
         power (float, optional): Available power of the source, in [W],
             default is 0
         phase (float, optional): Phase of the source, in [rad], default is 0
-        cap (float, optional): Junction capacitance, in [F], default is 0
+        cap (float or list, optional): Junction capacitance, in [F] (or one
+            per junction), default is 0
         terminations (dict, optional): Load impedances of the other ports
             (not ``port`` or ``source_port``), see ``Network.impedance``;
             unlisted ports are matched
 
     Returns:
         tuple: Thevenin voltage (peak amplitude, in [V]) and Thevenin
-        impedance (in [ohms]) at each frequency
+        impedance (in [ohms]) at each frequency; for a list of ports, with
+        shapes ``freq.shape + (num_j,)`` and ``freq.shape + (num_j, num_j)``
 
     """
+
+    if np.ndim(port) > 0:
+        return _thevenin_ports(network, freq, list(port), source_port, power, phase, cap, terminations)
 
     freq = np.asarray(freq, dtype=float)
     k = _port_index(port, network.num_ports)
@@ -385,8 +405,13 @@ def set_thevenin(cct, network, f=1, p=1, port=1, source_port=None, power=0., pha
     ``cct.zt[f, p]``. The gap voltage and normal resistance of ``cct`` must
     be set.
 
+    For several junctions (``qmix.circuit.MultiJunctionCircuit``), ``port``
+    is a list with the port of each junction (in the order of the
+    junctions), and ``cct.vt[:, f, p]`` and ``cct.zt[:, :, f, p]`` are set.
+
     Args:
-        cct (qmix.circuit.EmbeddingCircuit): Embedding circuit (modified)
+        cct (qmix.circuit.EmbeddingCircuit): Embedding circuit (modified),
+            or ``qmix.circuit.MultiJunctionCircuit``
         network (Network): Network
         f (int, optional): Tone, default is 1
         p (int, optional): Harmonic, default is 1
@@ -400,11 +425,69 @@ def set_thevenin(cct, network, f=1, p=1, port=1, source_port=None, power=0., pha
     assert cct.vgap is not None and cct.rn is not None, \
         "The gap voltage and normal resistance of the embedding circuit must be set"
     freq = p * cct.freq[f] * cct.fgap
+    if hasattr(cct, 'num_j'):
+        assert np.ndim(port) == 1 and len(port) == cct.num_j, "port: need one port per junction"
+        vt, zt = thevenin(network, freq, port, source_port, power, phase, cap, terminations)
+        cct.vt[:, f, p] = vt / cct.vgap
+        cct.zt[:, :, f, p] = zt / cct.rn
+        return cct.vt[:, f, p], cct.zt[:, :, f, p]
+
     vt, zt = thevenin(network, freq, port, source_port, power, phase, cap, terminations)
     cct.vt[f, p] = complex(vt) / cct.vgap
     cct.zt[f, p] = complex(zt) / cct.rn
 
     return cct.vt[f, p], cct.zt[f, p]
+
+
+def _thevenin_ports(network, freq, ports, source_port, power, phase, cap, terminations):
+    """Multi-port Thevenin equivalent at several junction ports (see
+    ``thevenin``)."""
+
+    freq = np.asarray(freq, dtype=float)
+    num_j = len(ports)
+    ks = [_port_index(p, network.num_ports) for p in ports]
+    assert len(set(ks)) == num_j, "The junction ports must be different"
+    _check_freq_range(network.freq, freq)
+    cap = np.broadcast_to(np.asarray(cap, dtype=float), (num_j,))
+    z_ref = network.z0[:, ks]
+    if not np.all(z_ref.real > 0):
+        raise ValueError("The junction ports need reference impedances with a positive real part")
+
+    # Impedance matrix (the source port is matched: left out)
+    s_jj = network._reduced(ports, _with_source(terminations, source_port, ports))
+    s_jj = _spline(network.freq, s_jj, freq)
+    zr = _spline(network.freq, z_ref, freq)
+    r = zr.real
+    eye = np.eye(num_j)
+    m = np.linalg.solve(eye - s_jj, s_jj * zr[..., None, :] + eye * np.conj(zr)[..., None, :])
+    zt = m * np.sqrt(r[..., :, None] / r[..., None, :])  # F^-1 M F
+
+    if source_port is None:
+        assert power == 0, "power needs a source_port"
+        vt = np.zeros(zt.shape[:-1], dtype=complex)
+    else:
+        ms = _port_index(source_port, network.num_ports)
+        assert ms not in ks, "The source must be at another port than the junctions"
+        valid = network.z0[:, ms].real > 0
+        if not np.all(valid[np.argmax(valid):len(valid) - np.argmax(valid[::-1])]):
+            raise ValueError("The frequencies where the source port has a positive reference impedance "
+                             "must be contiguous")
+        fv = network.freq[valid]
+        if fv.size < 2 or np.any(freq < fv.min()) or np.any(freq > fv.max()):
+            raise ValueError("The source port has no positive reference impedance at this frequency (e.g., a "
+                             "waveguide below cutoff)")
+        s_all = _spline(fv, network._reduced(ports + [source_port], terminations)[valid], freq)
+        a_s = np.sqrt(2 * power) * np.exp(1j * phase)
+        a_j = np.linalg.solve(eye - s_all[..., :num_j, :num_j], s_all[..., :num_j, num_j:] * a_s)[..., 0]
+        vt = 2 * np.sqrt(r) * a_j
+
+    # Junction capacitances in parallel: (1 + Z Y_c)^-1
+    yc = 2j * np.pi * freq[..., None] * cap
+    m = eye + zt * yc[..., None, :]
+    zt = np.linalg.solve(m, zt)
+    vt = np.linalg.solve(m, vt[..., None])[..., 0]
+
+    return vt, zt
 
 
 def _with_source(terminations, source_port, port):

@@ -17,7 +17,10 @@ circuit.
         3. the Thevenin impedance of the embedding circuit at this freq.
 
 The main class in this module (``EmbeddingCircuit``) allows the user to
-build an embedding circuit in the proper format.
+build an embedding circuit in the proper format. ``MultiJunctionCircuit``
+does the same for several junctions in one network: a multi-port Thevenin
+equivalent (a vector of voltages and an impedance matrix) for each tone and
+harmonic.
 
 """
 
@@ -578,6 +581,184 @@ class EmbeddingCircuit(object):
         """
 
         return self.freq
+
+
+# MULTI-JUNCTION CIRCUIT CLASS -----------------------------------------------
+
+class MultiJunctionCircuit(object):
+    """Embedding circuit for several junctions in one linear network.
+
+    With ``num_j`` junctions, the embedding circuit at each tone and harmonic
+    is a ``num_j``-port Thevenin equivalent: a vector of open-circuit
+    voltages and an impedance matrix. The voltages across the junctions
+    satisfy::
+
+        vj[j, f, p] = vt[j, f, p] - sum_l zt[j, l, f, p] * ij[l, f, p]
+
+    where ``ij[l]`` is the tunneling current of junction ``l`` (out of the
+    network, into the junction). The coupling between the junctions (e.g., a
+    twin-junction tuning circuit, or a series array) is in the off-diagonal
+    elements of ``zt``. ``qmix.network.set_thevenin`` sets ``vt`` and ``zt``
+    from an S-parameter network.
+
+    Note:
+
+        **The junction axis is first** in all arrays, and the junctions are
+        numbered from 0: ``vt[j]``, ``zt[j, l]``, ``vb[j]`` and ``vj[j]``
+        (from ``harmonic_balance``) have the same shape as for a single
+        junction. The tone and harmonic axes are 1-indexed as in
+        ``EmbeddingCircuit``.
+
+        All values are normalized, with one gap voltage and normal-state
+        resistance for all junctions (the junctions are assumed to be made
+        of the same materials). Junctions can have different areas
+        (``area``, relative to the junction that defines ``rn``): the
+        tunneling current of junction ``j`` is ``area[j]`` times the
+        current from its response function, i.e., its normal resistance is
+        ``rn / area[j]``. The response function can also be different for
+        each junction (pass a list to ``harmonic_balance`` or
+        ``qmix.qtcurrent.qtcurrent``).
+
+        Each junction is voltage biased: its DC voltage is set by ``vb[j]``.
+        By default, all junctions get the same bias sweep. For ``N``
+        identical junctions in series, for example, set ``cct.vb = vb / N``
+        (a 1-D array is used for all junctions).
+
+    Example:
+
+        Two junctions (a twin-junction circuit) with one tone:
+
+        >>> cct = MultiJunctionCircuit(2, 1, 1, vb_npts=51)
+        >>> cct.freq[1] = 0.33
+        >>> cct.vt[:, 1, 1] = [0.4, 0.3j]
+        >>> cct.zt[:, :, 1, 1] = [[0.5, 0.1j], [0.1j, 0.4 - 0.2j]]
+        >>> print(cct)
+        Multi-junction embedding circuit (Junctions:2, Tones:1, Harmonics:1)
+
+    Args:
+        num_j (int, optional, default is 2): Number of junctions.
+        num_f (int, optional, default is 1): Number of tones.
+        num_p (int, optional, default is 1): Number of harmonics.
+        vb_min (float, optional, default is 0): Minimum bias voltage.
+        vb_max (float, optional, default is 2): Maximum bias voltage.
+        vb_npts (int, optional, default is 201): Number of bias voltages.
+        fgap (float, optional): Gap frequency, in [Hz].
+        vgap (float, optional): Gap voltage, in [V].
+        rn (float, optional): Normal-state resistance of a junction with
+            ``area == 1``, in [ohms].
+        name (str, optional): Name used to describe this instance.
+
+    Attributes:
+        freq (numpy.ndarray): Frequencies of the tones, ``freq[f]``
+            (normalized to the gap frequency).
+        vt (numpy.ndarray): Thevenin (open-circuit) voltages, ``vt[j, f, p]``
+            (normalized to the gap voltage).
+        zt (numpy.ndarray): Thevenin impedance matrices, ``zt[j, l, f, p]``
+            (normalized to the normal-state resistance).
+        area (numpy.ndarray): Relative area of each junction (scales its
+            tunneling current), default is 1.
+        num_j (int): Number of junctions.
+        num_f (int): Number of tones.
+        num_p (int): Number of harmonics.
+        num_n (int): Number of signals per junction (``num_f * num_p``).
+        fgap, vgap, igap, rn (float): Junction properties (or None).
+        name (str): Name of this instance.
+
+    """
+
+    def __init__(self, num_j=2, num_f=1, num_p=1, vb_min=0, vb_max=2, vb_npts=201, fgap=None, vgap=None, rn=None,
+                 name=''):
+
+        assert num_j >= 1 and isinstance(num_j, int), \
+            "Number of junctions (num_j) must be an integer equal or greater than 1."
+
+        # The single-junction class checks the input and sets the junction properties
+        single = EmbeddingCircuit(num_f, num_p, vb_min, vb_max, vb_npts, fgap, vgap, rn, name)
+        self.name = name
+        self.num_j = num_j
+        self.num_f = single.num_f
+        self.num_p = single.num_p
+        self.num_n = single.num_n
+        self.fgap, self.vgap, self.igap, self.rn = single.fgap, single.vgap, single.igap, single.rn
+
+        self.freq = np.zeros(num_f + 1, dtype=float)
+        self.vt = np.zeros((num_j, num_f + 1, num_p + 1), dtype=complex)
+        self.zt = np.zeros((num_j, num_j, num_f + 1, num_p + 1), dtype=complex)
+        self.area = np.ones(num_j, dtype=float)
+        self.vb = single.vb
+
+    def __str__(self):
+
+        name = ": " + self.name if self.name != '' else ""
+        msg = "Multi-junction embedding circuit (Junctions:{}, Tones:{}, Harmonics:{}){}"
+
+        return msg.format(self.num_j, self.num_f, self.num_p, name)
+
+    def __repr__(self):  # pragma: no cover
+
+        return self.__str__()
+
+    @property
+    def vb(self):
+        """DC bias voltages, ``vb[j, i]`` (normalized to the gap voltage).
+        Assigning a 1-D array sets it for all junctions."""
+        return self._vb
+
+    @vb.setter
+    def vb(self, value):
+        value = np.asarray(value, dtype=float)
+        if value.ndim == 1:
+            value = np.tile(value, (self.num_j, 1))
+        assert value.ndim == 2 and value.shape[0] == self.num_j, "vb must be 1-D or have shape (num_j, npts)"
+        self._vb = value
+
+    @property
+    def vb_npts(self):
+        """Number of bias voltages."""
+        return self._vb.shape[1]
+
+    @property
+    def vph(self):
+        """Photon voltage (alias for ``freq``)."""
+        return self.freq
+
+    def initialize_vj(self):
+        """Empty junction voltage array, ``vj[j, f, p, i]``.
+
+        Returns:
+            ndarray: An empty matrix for the junction voltages
+
+        """
+
+        return np.zeros((self.num_j, self.num_f + 1, self.num_p + 1, self.vb_npts), dtype=complex)
+
+    def junction(self, j):
+        """Single-junction view of junction ``j`` (starting from 0).
+
+        The result has the frequencies and the bias voltage of junction
+        ``j``, so it can be used with single-junction functions (e.g.,
+        ``qmix.qtcurrent.qtcurrent`` with ``vj[j]``). Its ``vt`` and ``zt``
+        are ``vt[j]`` and ``zt[j, j]``. These are only the Thevenin
+        equivalent circuit of the junction if it isn't coupled to the other
+        junctions.
+
+        Args:
+            j (int): Junction (starting from 0)
+
+        Returns:
+            qmix.circuit.EmbeddingCircuit: Embedding circuit of junction j
+
+        """
+
+        assert 0 <= j < self.num_j, "Invalid junction: {} (junctions are numbered 0 ... {})".format(j, self.num_j - 1)
+        cct = EmbeddingCircuit(self.num_f, self.num_p, vb_npts=self.vb_npts, fgap=self.fgap, vgap=self.vgap,
+                               rn=self.rn, name=self.name)
+        cct.vb = self.vb[j].copy()
+        cct.freq[:] = self.freq
+        cct.vt[:] = self.vt[j]
+        cct.zt[:] = self.zt[j, j]
+
+        return cct
 
 
 def read_circuit(filename):

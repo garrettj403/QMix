@@ -3,7 +3,7 @@
 import numpy as np
 import pytest
 
-from qmix.circuit import EmbeddingCircuit
+from qmix.circuit import EmbeddingCircuit, MultiJunctionCircuit
 from qmix.network import Network, embedding_impedance, read_touchstone, set_thevenin, thevenin
 
 FREQ = np.linspace(1e9, 300e9, 300)
@@ -311,3 +311,85 @@ def test_thevenin_source_below_cutoff():
         thevenin(ntwk, 50e9, port=2, source_port=1, power=1e-9)
     vt, zt = thevenin(ntwk, 200e9, port=2, source_port=1, power=1e-9)
     np.testing.assert_allclose(np.abs(vt) ** 2 / (8 * zt.real), 1e-9, rtol=1e-6)
+
+
+def test_thevenin_multiple_ports_vs_circuit():
+    """Several junction ports (random 4-port with complex reference
+    impedances): the multi-port Thevenin equivalent vs solving the circuit
+    from the impedance matrix (junction ports open, generator with internal
+    impedance Z_ref at the source port, a load at the other port)."""
+
+    ntwk = _random_network(4, seed=7).renormalize(np.array([25. + 3j, 75. - 10j, 13.3, 40. + 20j]))
+    ports, source, other, z_load, power, phase = [3, 1], 4, 2, 7. - 4j, 1e-6, 0.4
+    vt, zt = thevenin(ntwk, ntwk.freq, ports, source, power=power, phase=phase, terminations={other: z_load})
+    assert vt.shape == (ntwk.freq.size, 2) and zt.shape == (ntwk.freq.size, 2, 2)
+    jj, oo = [p - 1 for p in ports], [source - 1, other - 1]
+    for k, z in enumerate(_z_matrix(ntwk)):
+        zg = ntwk.z0[k, source - 1]
+        z_oo = z[oo][:, oo] + np.diag([zg, z_load])
+        z_th = z[jj][:, jj] - z[jj][:, oo] @ np.linalg.solve(z_oo, z[oo][:, jj])
+        np.testing.assert_allclose(zt[k], z_th, rtol=1e-9)
+        vg = np.sqrt(8 * power * zg.real) * np.exp(1j * phase)
+        i_o = np.linalg.solve(z_oo, [vg, 0.])
+        np.testing.assert_allclose(vt[k], z[jj][:, oo] @ i_o, rtol=1e-9)
+
+    # One port in a list: the same as the single-port function
+    for port in (1, 3):
+        vt_1, zt_1 = thevenin(ntwk, 2.2e9, [port], source, power=power, cap=3e-12, terminations={other: z_load})
+        vt_s, zt_s = thevenin(ntwk, 2.2e9, port, source, power=power, cap=3e-12, terminations={other: z_load})
+        np.testing.assert_allclose(vt_1, [vt_s], rtol=1e-12)
+        np.testing.assert_allclose(zt_1, [[zt_s]], rtol=1e-12)
+
+    # Junction capacitances in parallel with the junction ports
+    cap, f = np.array([2e-12, 5e-12]), 3.1e9
+    vt_0, zt_0 = thevenin(ntwk, f, ports, source, power=power)
+    vt_c, zt_c = thevenin(ntwk, f, ports, source, power=power, cap=cap)
+    y = np.linalg.inv(zt_0) + np.diag(2j * np.pi * f * cap)
+    np.testing.assert_allclose(zt_c, np.linalg.inv(y), rtol=1e-10)
+    np.testing.assert_allclose(vt_c, np.linalg.inv(y) @ np.linalg.solve(zt_0, vt_0), rtol=1e-10)
+
+    # No source
+    vt_n, zt_n = thevenin(ntwk, f, ports)
+    np.testing.assert_equal(vt_n, 0.)
+    np.testing.assert_allclose(zt_n, thevenin(ntwk, f, ports, source, power=power)[1], rtol=1e-12)
+
+    with pytest.raises(AssertionError):
+        thevenin(ntwk, f, [1, 1])                       # the same port twice
+    with pytest.raises(AssertionError):
+        thevenin(ntwk, f, [1, 2], 2, power=power)       # source at a junction port
+    with pytest.raises(ValueError):
+        thevenin(ntwk.renormalize(np.array([1j, 50., 50., 50.])), f, [1, 2])  # invalid junction reference
+
+
+def test_set_thevenin_multiple_junctions():
+    """Two identical junctions in parallel, fed through an ideal tee from a
+    source: the harmonic balance gives the same voltage as one junction with
+    twice the area."""
+
+    from qmix.harmonic_balance import harmonic_balance
+    from qmix.respfn import RespFnPolynomial
+
+    freq = np.linspace(200e9, 260e9, 4)
+    s_tee = np.full((4, 3, 3), 2 / 3, dtype=complex)
+    s_tee[:, [0, 1, 2], [0, 1, 2]] = -1 / 3
+    tee = Network(freq, s_tee, 10.)
+    power, cap = 30e-9, 50e-15
+
+    cct = MultiJunctionCircuit(2, 1, 1, vb_npts=41, vgap=2.8e-3, rn=14.)
+    cct.freq[1] = 230e9 / cct.fgap
+    vt, zt = set_thevenin(cct, tee, port=[1, 2], source_port=3, power=power, cap=[cap, cap])
+    assert vt.shape == (2,) and zt.shape == (2, 2)
+    np.testing.assert_allclose(cct.vt[:, 1, 1], vt)
+    single = EmbeddingCircuit(1, 1, vb_npts=41, vgap=2.8e-3, rn=7.)  # two junctions in parallel: Rn / 2
+    single.freq[1] = cct.freq[1]
+    set_thevenin(single, tee.terminate(2, np.inf), port=1, source_port=2, power=power, cap=2 * cap)
+    np.testing.assert_allclose(single.available_power(), power, rtol=1e-9)
+
+    resp = RespFnPolynomial(50, verbose=False)
+    vj = harmonic_balance(cct, resp, 15, stop_rerror=1e-6, verbose=False)
+    vj_1 = harmonic_balance(single, resp, 15, stop_rerror=1e-6, verbose=False)
+    np.testing.assert_allclose(vj[0], vj_1, rtol=0, atol=1e-6)
+    np.testing.assert_allclose(vj[1], vj_1, rtol=0, atol=1e-6)
+
+    with pytest.raises(AssertionError):
+        set_thevenin(cct, tee, port=1, source_port=3, power=power)  # need a port per junction

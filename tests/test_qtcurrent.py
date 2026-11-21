@@ -905,3 +905,46 @@ def test_mixing_products():
         expected = sum(_current_coeff(a, ccc, resp_matrix, _unpack_num_b(num_b, 3))
                        for a in _matching_tuples(freq_out, cct.freq, 3, 1))
         np.testing.assert_array_equal(i_old[i], expected)
+
+
+def test_qtcurrent_multi_junction():
+    """Several junctions: one current per junction (junction axis first),
+    scaled by the relative area, with one response function per junction
+    if given; interpolate_respfn shares the matrix between identical
+    junctions; suggest_num_b takes the largest limits."""
+
+    from qmix.circuit import MultiJunctionCircuit
+
+    resp2 = qmix.respfn.RespFnPolynomial(30, verbose=False)
+    cct = MultiJunctionCircuit(3, 2, 1, vb_npts=41)
+    cct.vb = [np.linspace(0, 2, 41), np.linspace(0, 2, 41), np.linspace(0, 1, 41)]
+    cct.freq[1:] = 0.3, 0.35
+    cct.area[:] = 1., 2., 0.5
+    vj = cct.initialize_vj()
+    vj[:, 1, 1] = np.array([0.3, 0.2, 0.4])[:, None]
+    vj[:, 2, 1] = np.array([0.01, 0.1, 0.02])[:, None]
+    freq_list = [0, 0.3, 0.35, 0.05]
+    resp = [RESP, RESP, resp2]
+
+    rm = interpolate_respfn(cct, resp, (8, 6))
+    assert rm[0] is rm[1] and rm[2] is not rm[0]
+    current = qtcurrent(vj, cct, resp, freq_list, (8, 6), verbose=False)
+    assert current.shape == (3, 4, 41)
+    np.testing.assert_equal(qtcurrent(vj, cct, resp, freq_list, (8, 6), verbose=False, resp_matrix=rm), current)
+    for j in range(3):
+        single = qtcurrent(vj[j], cct.junction(j), resp[j], freq_list, (8, 6), verbose=False)
+        np.testing.assert_allclose(current[j], cct.area[j] * single, rtol=1e-14)
+
+    # One response function for all junctions; DC current only
+    idc = qtcurrent(vj, cct, RESP, 0., (8, 6), verbose=False)
+    assert idc.shape == (3, 41) and np.isrealobj(idc)
+
+    with pytest.raises(AssertionError):
+        qtcurrent(vj, cct, [RESP, RESP], freq_list, (8, 6), verbose=False)
+    with pytest.raises(AssertionError):
+        qtcurrent(vj[0], cct, RESP, freq_list, (8, 6), verbose=False)
+
+    nb = suggest_num_b(vj, cct)
+    nb_j = [suggest_num_b(vj[j], cct.junction(j)) for j in range(3)]
+    assert nb == tuple(max(b[f] for b in nb_j) for f in range(2))
+    assert all(isinstance(b, int) for b in nb)
