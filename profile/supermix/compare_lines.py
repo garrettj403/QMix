@@ -27,6 +27,7 @@ from types import SimpleNamespace
 import numpy as np
 import scipy.constants as sc
 
+import mattisbardeen
 import qmix.network
 import qmix.superconductor
 from qmix.network import microstrip
@@ -98,6 +99,7 @@ def main():
     args = parser.parse_args()
     if not args.scipy:
         qmix.superconductor.sc = SUPERMIX_CONSTANTS
+        mattisbardeen.sc = SUPERMIX_CONSTANTS
         qmix.network.sc = SUPERMIX_CONSTANTS
 
     print("Max relative differences, QMix vs SuperMix, {} frequencies from {:.0f} GHz to {:.0f} THz{}".format(

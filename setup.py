@@ -40,6 +40,7 @@ setup(
     packages=find_packages(exclude=['tests', 'tests.*']),
     python_requires='>=3.10',
     install_requires=[
+        'mattis-bardeen>=1.0.0',
         'matplotlib',
         'numba',
         'numpy',
