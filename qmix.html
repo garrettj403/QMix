@@ -87,13 +87,18 @@
 <li class="toctree-l4"><a class="reference internal" href="#qmix.circuit.MultiJunctionCircuit.vt"><code class="docutils literal notranslate"><span class="pre">MultiJunctionCircuit.vt</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#qmix.circuit.MultiJunctionCircuit.zt"><code class="docutils literal notranslate"><span class="pre">MultiJunctionCircuit.zt</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#qmix.circuit.MultiJunctionCircuit.area"><code class="docutils literal notranslate"><span class="pre">MultiJunctionCircuit.area</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#qmix.circuit.MultiJunctionCircuit.dc_rhs"><code class="docutils literal notranslate"><span class="pre">MultiJunctionCircuit.dc_rhs</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#qmix.circuit.MultiJunctionCircuit.num_j"><code class="docutils literal notranslate"><span class="pre">MultiJunctionCircuit.num_j</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#qmix.circuit.MultiJunctionCircuit.num_f"><code class="docutils literal notranslate"><span class="pre">MultiJunctionCircuit.num_f</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#qmix.circuit.MultiJunctionCircuit.num_p"><code class="docutils literal notranslate"><span class="pre">MultiJunctionCircuit.num_p</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#qmix.circuit.MultiJunctionCircuit.num_n"><code class="docutils literal notranslate"><span class="pre">MultiJunctionCircuit.num_n</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#qmix.circuit.MultiJunctionCircuit.name"><code class="docutils literal notranslate"><span class="pre">MultiJunctionCircuit.name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#qmix.circuit.MultiJunctionCircuit.clear_dc_network"><code class="docutils literal notranslate"><span class="pre">MultiJunctionCircuit.clear_dc_network()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#qmix.circuit.MultiJunctionCircuit.has_dc_network"><code class="docutils literal notranslate"><span class="pre">MultiJunctionCircuit.has_dc_network</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#qmix.circuit.MultiJunctionCircuit.initialize_vj"><code class="docutils literal notranslate"><span class="pre">MultiJunctionCircuit.initialize_vj()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#qmix.circuit.MultiJunctionCircuit.junction"><code class="docutils literal notranslate"><span class="pre">MultiJunctionCircuit.junction()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#qmix.circuit.MultiJunctionCircuit.set_dc_network"><code class="docutils literal notranslate"><span class="pre">MultiJunctionCircuit.set_dc_network()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#qmix.circuit.MultiJunctionCircuit.set_series_bias"><code class="docutils literal notranslate"><span class="pre">MultiJunctionCircuit.set_series_bias()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#qmix.circuit.MultiJunctionCircuit.vb"><code class="docutils literal notranslate"><span class="pre">MultiJunctionCircuit.vb</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#qmix.circuit.MultiJunctionCircuit.vb_npts"><code class="docutils literal notranslate"><span class="pre">MultiJunctionCircuit.vb_npts</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#qmix.circuit.MultiJunctionCircuit.vph"><code class="docutils literal notranslate"><span class="pre">MultiJunctionCircuit.vph</span></code></a></li>
@@ -976,10 +981,24 @@ current from its response function, i.e., its normal resistance is
 <code class="docutils literal notranslate"><span class="pre">rn</span> <span class="pre">/</span> <span class="pre">area[j]</span></code>. The response function can also be different for
 each junction (pass a list to <code class="docutils literal notranslate"><span class="pre">harmonic_balance</span></code> or
 <code class="docutils literal notranslate"><span class="pre">qmix.qtcurrent.qtcurrent</span></code>).</p>
-<p>Each junction is voltage biased: its DC voltage is set by <code class="docutils literal notranslate"><span class="pre">vb[j]</span></code>.
-By default, all junctions get the same bias sweep. For <code class="docutils literal notranslate"><span class="pre">N</span></code>
-identical junctions in series, for example, set <code class="docutils literal notranslate"><span class="pre">cct.vb</span> <span class="pre">=</span> <span class="pre">vb</span> <span class="pre">/</span> <span class="pre">N</span></code>
-(a 1-D array is used for all junctions).</p>
+<p>By default, each junction is voltage biased: its DC voltage is set
+by <code class="docutils literal notranslate"><span class="pre">vb[j]</span></code>, and all junctions get the same bias sweep (a 1-D array
+is used for all junctions). For <code class="docutils literal notranslate"><span class="pre">N</span></code> identical, identically pumped
+junctions in series, <code class="docutils literal notranslate"><span class="pre">cct.vb</span> <span class="pre">=</span> <span class="pre">vb</span> <span class="pre">/</span> <span class="pre">N</span></code> is enough.</p>
+<p><strong>DC bias network:</strong> otherwise (e.g., a series array of junctions
+with different areas or different pumping, or a bias resistor), the
+DC voltages depend on the DC tunneling currents. A linear DC network
+(<code class="docutils literal notranslate"><span class="pre">set_dc_network</span></code>, or <code class="docutils literal notranslate"><span class="pre">set_series_bias</span></code> for series strings) adds
+<code class="docutils literal notranslate"><span class="pre">num_j</span></code> equations:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sum_l</span> <span class="n">dc_a</span><span class="p">[</span><span class="n">r</span><span class="p">,</span> <span class="n">l</span><span class="p">]</span> <span class="o">*</span> <span class="n">v0</span><span class="p">[</span><span class="n">l</span><span class="p">]</span> <span class="o">+</span> <span class="n">sum_l</span> <span class="n">dc_b</span><span class="p">[</span><span class="n">r</span><span class="p">,</span> <span class="n">l</span><span class="p">]</span> <span class="o">*</span> <span class="n">i0</span><span class="p">[</span><span class="n">l</span><span class="p">]</span> <span class="o">=</span> <span class="n">dc_rhs</span><span class="p">[</span><span class="n">r</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>between the DC voltages <code class="docutils literal notranslate"><span class="pre">v0[j]</span></code> and the DC tunneling currents
+<code class="docutils literal notranslate"><span class="pre">i0[j]</span></code> (including <code class="docutils literal notranslate"><span class="pre">area</span></code>). <code class="docutils literal notranslate"><span class="pre">harmonic_balance</span></code> then solves for
+the DC voltages too, and returns them along with the junction
+voltage (<code class="docutils literal notranslate"><span class="pre">vj,</span> <span class="pre">vb</span> <span class="pre">=</span> <span class="pre">harmonic_balance(...)</span></code>); <code class="docutils literal notranslate"><span class="pre">vb</span></code> is only the
+initial guess. Set <code class="docutils literal notranslate"><span class="pre">cct.vb</span> <span class="pre">=</span> <span class="pre">vb</span></code> before using other functions
+(e.g., <code class="docutils literal notranslate"><span class="pre">qmix.qtcurrent.qtcurrent</span></code>).</p>
 </div>
 <p class="rubric">Example</p>
 <p>Two junctions (a twin-junction circuit) with one tone:</p>
@@ -1057,6 +1076,30 @@ tunneling current), default is 1.</p>
 </dd></dl>
 
 <dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">dc_a,</span> <span class="pre">dc_b</span></span></dt>
+<dd><p>DC bias network (<code class="docutils literal notranslate"><span class="pre">num_j</span></code> x <code class="docutils literal notranslate"><span class="pre">num_j</span></code>),
+or None (voltage bias, the default)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qmix.circuit.MultiJunctionCircuit.dc_rhs">
+<span class="sig-name descname"><span class="pre">dc_rhs</span></span><a class="headerlink" href="#qmix.circuit.MultiJunctionCircuit.dc_rhs" title="Link to this definition"></a></dt>
+<dd><p>Right-hand side of the DC bias network,
+<code class="docutils literal notranslate"><span class="pre">dc_rhs[r,</span> <span class="pre">i]</span></code>, or None</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
 <dt class="sig sig-object py" id="qmix.circuit.MultiJunctionCircuit.num_j">
 <span class="sig-name descname"><span class="pre">num_j</span></span><a class="headerlink" href="#qmix.circuit.MultiJunctionCircuit.num_j" title="Link to this definition"></a></dt>
 <dd><p>Number of junctions.</p>
@@ -1123,6 +1166,18 @@ tunneling current), default is 1.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="qmix.circuit.MultiJunctionCircuit.clear_dc_network">
+<span class="sig-name descname"><span class="pre">clear_dc_network</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qmix.circuit.MultiJunctionCircuit.clear_dc_network" title="Link to this definition"></a></dt>
+<dd><p>Remove the DC bias network (back to voltage bias at <code class="docutils literal notranslate"><span class="pre">vb</span></code>).</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="qmix.circuit.MultiJunctionCircuit.has_dc_network">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">has_dc_network</span></span><a class="headerlink" href="#qmix.circuit.MultiJunctionCircuit.has_dc_network" title="Link to this definition"></a></dt>
+<dd><p>Is there a DC bias network (i.e., are the DC voltages unknowns)?</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="qmix.circuit.MultiJunctionCircuit.initialize_vj">
 <span class="sig-name descname"><span class="pre">initialize_vj</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qmix.circuit.MultiJunctionCircuit.initialize_vj" title="Link to this definition"></a></dt>
 <dd><p>Empty junction voltage array, <code class="docutils literal notranslate"><span class="pre">vj[j,</span> <span class="pre">f,</span> <span class="pre">p,</span> <span class="pre">i]</span></code>.</p>
@@ -1155,6 +1210,69 @@ junctions.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="#qmix.circuit.EmbeddingCircuit" title="qmix.circuit.EmbeddingCircuit">qmix.circuit.EmbeddingCircuit</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qmix.circuit.MultiJunctionCircuit.set_dc_network">
+<span class="sig-name descname"><span class="pre">set_dc_network</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rhs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.circuit.MultiJunctionCircuit.set_dc_network" title="Link to this definition"></a></dt>
+<dd><p>Set a linear DC bias network.</p>
+<p>The DC voltages <code class="docutils literal notranslate"><span class="pre">v0[j]</span></code> and the DC tunneling currents <code class="docutils literal notranslate"><span class="pre">i0[j]</span></code>
+(normalized, including <code class="docutils literal notranslate"><span class="pre">area</span></code>) of the junctions satisfy <code class="docutils literal notranslate"><span class="pre">num_j</span></code>
+equations:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sum_l</span> <span class="n">a</span><span class="p">[</span><span class="n">r</span><span class="p">,</span> <span class="n">l</span><span class="p">]</span> <span class="o">*</span> <span class="n">v0</span><span class="p">[</span><span class="n">l</span><span class="p">]</span> <span class="o">+</span> <span class="n">sum_l</span> <span class="n">b</span><span class="p">[</span><span class="n">r</span><span class="p">,</span> <span class="n">l</span><span class="p">]</span> <span class="o">*</span> <span class="n">i0</span><span class="p">[</span><span class="n">l</span><span class="p">]</span> <span class="o">=</span> <span class="n">rhs</span><span class="p">[</span><span class="n">r</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>at each bias point <code class="docutils literal notranslate"><span class="pre">i</span></code>. For example, <code class="docutils literal notranslate"><span class="pre">a</span> <span class="pre">=</span> <span class="pre">1</span></code>, <code class="docutils literal notranslate"><span class="pre">b</span> <span class="pre">=</span> <span class="pre">0</span></code> is
+voltage bias (<code class="docutils literal notranslate"><span class="pre">v0</span> <span class="pre">=</span> <span class="pre">rhs</span></code>), <code class="docutils literal notranslate"><span class="pre">a</span> <span class="pre">=</span> <span class="pre">1</span></code>, <code class="docutils literal notranslate"><span class="pre">b</span> <span class="pre">=</span> <span class="pre">R</span></code> is a DC Thevenin
+circuit, and <code class="docutils literal notranslate"><span class="pre">a</span> <span class="pre">=</span> <span class="pre">0</span></code>, <code class="docutils literal notranslate"><span class="pre">b</span> <span class="pre">=</span> <span class="pre">1</span></code> is current bias. See
+<code class="docutils literal notranslate"><span class="pre">set_series_bias</span></code> for series strings. The bias voltages <code class="docutils literal notranslate"><span class="pre">vb</span></code> are
+set to an initial guess (each junction replaced by its normal
+resistance), unless that is singular.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>a</strong> (<em>ndarray</em>) – Coefficients of the DC voltages, <code class="docutils literal notranslate"><span class="pre">num_j</span></code> x <code class="docutils literal notranslate"><span class="pre">num_j</span></code></p></li>
+<li><p><strong>b</strong> (<em>ndarray</em>) – Coefficients of the DC currents, <code class="docutils literal notranslate"><span class="pre">num_j</span></code> x <code class="docutils literal notranslate"><span class="pre">num_j</span></code></p></li>
+<li><p><strong>rhs</strong> (<em>ndarray</em>) – Right-hand side, <code class="docutils literal notranslate"><span class="pre">rhs[r,</span> <span class="pre">i]</span></code>; a 1-D array of
+length <code class="docutils literal notranslate"><span class="pre">num_j</span></code> is used for all bias points</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qmix.circuit.MultiJunctionCircuit.set_series_bias">
+<span class="sig-name descname"><span class="pre">set_series_bias</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vbias</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r_bias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">junctions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.circuit.MultiJunctionCircuit.set_series_bias" title="Link to this definition"></a></dt>
+<dd><p>Bias junctions in series with one voltage source.</p>
+<p>All junctions are connected in series (or several series strings in
+parallel, see <code class="docutils literal notranslate"><span class="pre">junctions</span></code>) across the bias voltage <code class="docutils literal notranslate"><span class="pre">vbias</span></code>,
+through a bias resistance <code class="docutils literal notranslate"><span class="pre">r_bias</span></code>. The DC current is the same in
+all junctions of a string, and the DC voltages of a string add up to
+<code class="docutils literal notranslate"><span class="pre">vbias</span> <span class="pre">-</span> <span class="pre">r_bias</span> <span class="pre">*</span> <span class="pre">(total</span> <span class="pre">DC</span> <span class="pre">current)</span></code>. The DC voltages are found
+by <code class="docutils literal notranslate"><span class="pre">harmonic_balance</span></code> (see <code class="docutils literal notranslate"><span class="pre">set_dc_network</span></code>).</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Below the gap, the DC I-V curve is almost flat, so the split of
+the bias voltage between different junctions is very sensitive
+to the leakage current. Pumped I-V curves with negative
+differential resistance can have several solutions;
+<code class="docutils literal notranslate"><span class="pre">harmonic_balance</span></code> finds the one closest to the initial guess
+(<code class="docutils literal notranslate"><span class="pre">vb</span></code>, set here assuming that the junctions are resistors).</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>vbias</strong> (<em>ndarray</em>) – Bias voltage across the series string(s),
+normalized to the gap voltage, <code class="docutils literal notranslate"><span class="pre">vbias[i]</span></code></p></li>
+<li><p><strong>r_bias</strong> (<em>float</em><em>, </em><em>optional</em>) – Bias resistance (normalized to <code class="docutils literal notranslate"><span class="pre">rn</span></code>),
+default is 0</p></li>
+<li><p><strong>junctions</strong> (<em>list</em><em>, </em><em>optional</em>) – Junctions in each series string, as a
+list of lists of junction indices (starting from 0); every
+junction must be in exactly one string. The strings are in
+parallel. Default is one string with all junctions.</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -1227,7 +1345,7 @@ junction).</p>
 </div></blockquote>
 <dl class="py function">
 <dt class="sig sig-object py" id="qmix.harmonic_balance.check_hb_error">
-<span class="sig-prename descclassname"><span class="pre">qmix.harmonic_balance.</span></span><span class="sig-name descname"><span class="pre">check_hb_error</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vj_check</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cct</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_b</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">15</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stop_rerror</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.001</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.harmonic_balance.check_hb_error" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">qmix.harmonic_balance.</span></span><span class="sig-name descname"><span class="pre">check_hb_error</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vj_check</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cct</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_b</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">15</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stop_rerror</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vb</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.harmonic_balance.check_hb_error" title="Link to this definition"></a></dt>
 <dd><p>Check the results from the <cite>harmonic_balance</cite> function.</p>
 <p>Just to double check. Mostly for debugging purposes.</p>
 <dl class="field-list simple">
@@ -1242,6 +1360,9 @@ junction)</p></li>
 default is 15</p></li>
 <li><p><strong>stop_rerror</strong> (<em>float</em><em>, </em><em>optional</em>) – Maximum acceptable relative error,
 default is 0.001</p></li>
+<li><p><strong>vb</strong> (<em>ndarray</em><em>, </em><em>optional</em>) – DC voltages from <code class="docutils literal notranslate"><span class="pre">harmonic_balance</span></code>, for a
+circuit with a DC bias network (the DC equations are checked
+too), default is <code class="docutils literal notranslate"><span class="pre">cct.vb</span></code></p></li>
 </ul>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
@@ -1252,7 +1373,7 @@ default is 0.001</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="qmix.harmonic_balance.harmonic_balance">
-<span class="sig-prename descclassname"><span class="pre">qmix.harmonic_balance.</span></span><span class="sig-name descname"><span class="pre">harmonic_balance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cct</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_b</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">15</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_it</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">30</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stop_rerror</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vj_initial</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">damp_coeff</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'o'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zj_guess</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.67</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reuse_jacobian</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'auto'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line_search</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">warm_start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">jacobian</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'analytic'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.harmonic_balance.harmonic_balance" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">qmix.harmonic_balance.</span></span><span class="sig-name descname"><span class="pre">harmonic_balance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cct</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_b</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">15</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_it</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stop_rerror</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vj_initial</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">damp_coeff</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'o'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zj_guess</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.67</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reuse_jacobian</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'auto'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line_search</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">warm_start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">jacobian</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'analytic'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vb_initial</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.harmonic_balance.harmonic_balance" title="Link to this definition"></a></dt>
 <dd><p>Perform harmonic balance.</p>
 <p>Determine the harmonic balance of the junction + embedding circuit system.
 Uses Newton’s method to find the solution. For more information, see
@@ -1262,6 +1383,11 @@ Withington, Kittara &amp; Yassin (2003). [Full references in online docs.]</p>
 The junction voltage then has the junction axis first,
 <code class="docutils literal notranslate"><span class="pre">vj[j,</span> <span class="pre">f,</span> <span class="pre">p,</span> <span class="pre">i]</span></code>, and <code class="docutils literal notranslate"><span class="pre">resp</span></code> can be a list (one response function
 per junction).</p>
+<p>With a DC bias network (<code class="docutils literal notranslate"><span class="pre">qmix.circuit.MultiJunctionCircuit.set_dc_network</span></code>
+or <code class="docutils literal notranslate"><span class="pre">set_series_bias</span></code>, e.g., for a series array), the DC voltages of
+the junctions are unknowns too: they are solved together with the
+junction voltage and returned with it (<code class="docutils literal notranslate"><span class="pre">vj,</span> <span class="pre">vb</span></code>; <code class="docutils literal notranslate"><span class="pre">cct.vb</span></code> is only
+the initial guess).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -1275,7 +1401,8 @@ coefficients, default is 15</p></li>
 to sum over the phase factor coefficients: <code class="docutils literal notranslate"><span class="pre">'direct'</span></code>,
 <code class="docutils literal notranslate"><span class="pre">'fourier'</span></code> or <code class="docutils literal notranslate"><span class="pre">'auto'</span></code>, default is <code class="docutils literal notranslate"><span class="pre">'auto'</span></code> (see
 <code class="docutils literal notranslate"><span class="pre">qmix.qtcurrent</span></code> for details)</p></li>
-<li><p><strong>max_it</strong> (<em>int</em><em>, </em><em>optional</em>) – Maximum number of iterations, default is 30.
+<li><p><strong>max_it</strong> (<em>int</em><em>, </em><em>optional</em>) – Maximum number of iterations, default is 30
+(<code class="docutils literal notranslate"><span class="pre">MAX_IT</span></code>), or 60 with a DC bias network (<code class="docutils literal notranslate"><span class="pre">MAX_IT_DC</span></code>).
 Most cases converge in ~5 iterations (and stop there), but strong
 pumping into a large embedding impedance can take ~20.</p></li>
 <li><p><strong>stop_rerror</strong> (<em>float</em><em>, </em><em>optional</em>) – Maximum acceptable relative error,
@@ -1317,13 +1444,19 @@ Jacobian (<code class="docutils literal notranslate"><span class="pre">qmix.qtcu
 evaluates all of the derivatives together, which is usually
 faster than <code class="docutils literal notranslate"><span class="pre">'numerical'</span></code> (finite differences, 2 * num_n calls
 to the tunneling current function, with a forward step of
-<code class="docutils literal notranslate"><span class="pre">DV</span></code>).</p></li>
+<code class="docutils literal notranslate"><span class="pre">DV</span></code>). With a DC bias network, the derivatives with respect to
+the DC voltages are always forward differences.</p></li>
+<li><p><strong>vb_initial</strong> (<em>ndarray</em><em>, </em><em>optional</em>) – With a DC bias network: initial
+guess of the DC voltages, <code class="docutils literal notranslate"><span class="pre">vb[j,</span> <span class="pre">i]</span></code>, default is <code class="docutils literal notranslate"><span class="pre">cct.vb</span></code></p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>junction voltage that satisfies the circuit (mode ‘o’);
 also the number of iterations and whether the solution converged
-(mode ‘x’), or a mask of the converged bias voltages (mode ‘m’)</p>
+(mode ‘x’), or a mask of the converged bias voltages (mode ‘m’).
+With a DC bias network, the DC voltages <code class="docutils literal notranslate"><span class="pre">vb[j,</span> <span class="pre">i]</span></code> follow the
+junction voltage (e.g., <code class="docutils literal notranslate"><span class="pre">vj,</span> <span class="pre">vb</span></code> for mode ‘o’, or <code class="docutils literal notranslate"><span class="pre">vj,</span> <span class="pre">vb,</span>
+<span class="pre">iterations,</span> <span class="pre">converged</span></code> for mode ‘x’).</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>ndarray</p>
@@ -3431,6 +3564,12 @@ Mattis-Bardeen theory in the local (dirty) limit
 gap (<code class="docutils literal notranslate"><span class="pre">energy_gap</span></code>). The surface impedance of a film of finite thickness
 (or of a stack of films) follows from the conductivity by treating the
 film as a section of transmission line (<code class="docutils literal notranslate"><span class="pre">film_impedance</span></code>).</p>
+<p>The calculations are done by the <code class="docutils literal notranslate"><span class="pre">mattisbardeen</span></code> package
+(<a class="reference external" href="https://github.com/garrettj403/Mattis-Bardeen">https://github.com/garrettj403/Mattis-Bardeen</a>); this module adapts it
+to QMix (film objects for <code class="docutils literal notranslate"><span class="pre">qmix.network.microstrip</span></code>, and the gap
+voltage at T = 0 as the material parameter). Its physical constants come
+from <code class="docutils literal notranslate"><span class="pre">mattisbardeen.sc</span></code> (<code class="docutils literal notranslate"><span class="pre">scipy.constants</span></code>), read when the functions
+are called.</p>
 <p>The film classes (<code class="docutils literal notranslate"><span class="pre">NormalFilm</span></code>, <code class="docutils literal notranslate"><span class="pre">SuperconductingFilm</span></code> and
 <code class="docutils literal notranslate"><span class="pre">Multilayer</span></code>) bundle the material parameters, so that they can be
 passed to the transmission line functions in <code class="docutils literal notranslate"><span class="pre">qmix.network</span></code>:</p>
@@ -3560,7 +3699,8 @@ default is the impedance of free space</p></li>
 <span class="sig-name descname"><span class="pre">penetration_depth</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">temp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.superconductor.SuperconductingFilm.penetration_depth" title="Link to this definition"></a></dt>
 <dd><p>London penetration depth in the local (dirty) limit.</p>
 <p><code class="docutils literal notranslate"><span class="pre">lambda</span> <span class="pre">=</span> <span class="pre">sqrt(hbar</span> <span class="pre">rho_n</span> <span class="pre">/</span> <span class="pre">(pi</span> <span class="pre">mu0</span> <span class="pre">Delta(T)</span> <span class="pre">tanh(Delta(T)</span> <span class="pre">/</span> <span class="pre">2</span> <span class="pre">k</span> <span class="pre">T)))</span></code>,
-the low-frequency limit of the Mattis-Bardeen conductivity.</p>
+the low-frequency limit of the Mattis-Bardeen conductivity
+(<code class="docutils literal notranslate"><span class="pre">mattisbardeen.penetration_depth</span></code>; inf above Tc).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>temp</strong> (<em>float</em><em>, </em><em>optional</em>) – Temperature, in [K]; default is 0</p>
@@ -3578,8 +3718,8 @@ the low-frequency limit of the Mattis-Bardeen conductivity.</p>
 <dt class="sig sig-object py" id="qmix.superconductor.SuperconductingFilm.sigma">
 <span class="sig-name descname"><span class="pre">sigma</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">freq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temp</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.superconductor.SuperconductingFilm.sigma" title="Link to this definition"></a></dt>
 <dd><p>Complex conductivity, from the Mattis-Bardeen theory.</p>
-<p>The values are cached, since the integrals are slow (~1 ms per
-point). Changing <code class="docutils literal notranslate"><span class="pre">vgap</span></code> or <code class="docutils literal notranslate"><span class="pre">tc</span></code> clears the cache.</p>
+<p>The values are cached (the integrals take ~30 us per point).
+Changing <code class="docutils literal notranslate"><span class="pre">vgap</span></code> or <code class="docutils literal notranslate"><span class="pre">tc</span></code> clears the cache.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -3602,7 +3742,7 @@ point). Changing <code class="docutils literal notranslate"><span class="pre">vg
 <dt class="sig sig-object py" id="qmix.superconductor.energy_gap">
 <span class="sig-prename descclassname"><span class="pre">qmix.superconductor.</span></span><span class="sig-name descname"><span class="pre">energy_gap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">temp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tc</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.superconductor.energy_gap" title="Link to this definition"></a></dt>
 <dd><p>Temperature dependence of the energy gap, from BCS theory.</p>
-<p>Solves the weak-coupling BCS gap equation,
+<p>Solves the weak-coupling BCS gap equation (<code class="docutils literal notranslate"><span class="pre">mattisbardeen.gap_voltage</span></code>),
 <code class="docutils literal notranslate"><span class="pre">ln(Delta(0)</span> <span class="pre">/</span> <span class="pre">Delta)</span> <span class="pre">=</span> <span class="pre">2</span> <span class="pre">int_0^inf</span> <span class="pre">f(E)</span> <span class="pre">/</span> <span class="pre">E</span> <span class="pre">d(xi)</span></code> with
 <code class="docutils literal notranslate"><span class="pre">E</span> <span class="pre">=</span> <span class="pre">sqrt(xi^2</span> <span class="pre">+</span> <span class="pre">Delta^2)</span></code> and <code class="docutils literal notranslate"><span class="pre">Delta(0)</span> <span class="pre">=</span> <span class="pre">1.764</span> <span class="pre">k</span> <span class="pre">Tc</span></code>.</p>
 <dl class="field-list simple">
@@ -3629,7 +3769,8 @@ point). Changing <code class="docutils literal notranslate"><span class="pre">vg
 impedance and wavenumber of a plane wave in the metal (local
 conductivity, including the displacement current). The back of the
 stack is terminated by <code class="docutils literal notranslate"><span class="pre">z_back</span></code>; this models radiation from the back
-side, and only matters for films thinner than a few penetration depths.</p>
+side, and only matters for films thinner than a few penetration depths.
+(<code class="docutils literal notranslate"><span class="pre">mattisbardeen.film_impedance</span></code>.)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -3657,10 +3798,11 @@ conductivity in [S/m] (scalar or one value per frequency) and
 <span class="sig-prename descclassname"><span class="pre">qmix.superconductor.</span></span><span class="sig-name descname"><span class="pre">mattis_bardeen</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">freq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vgap</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tc</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.superconductor.mattis_bardeen" title="Link to this definition"></a></dt>
 <dd><p>Complex conductivity of a superconductor from the Mattis-Bardeen theory.</p>
 <p>The conductivity is normalized to the normal-state conductivity, and it
-is calculated in the local (dirty) limit. The energy gap at T = 0 is
-given by the gap voltage (<code class="docutils literal notranslate"><span class="pre">vgap</span> <span class="pre">=</span> <span class="pre">2</span> <span class="pre">Delta(0)</span> <span class="pre">/</span> <span class="pre">e</span></code>), and its temperature
-dependence by BCS theory (<code class="docutils literal notranslate"><span class="pre">energy_gap</span></code>), so <code class="docutils literal notranslate"><span class="pre">vgap</span></code> and <code class="docutils literal notranslate"><span class="pre">tc</span></code> don’t
-need to be consistent with the BCS ratio.</p>
+is calculated in the local (dirty) limit (<code class="docutils literal notranslate"><span class="pre">mattisbardeen.conductance</span></code>).
+The energy gap at T = 0 is given by the gap voltage
+(<code class="docutils literal notranslate"><span class="pre">vgap</span> <span class="pre">=</span> <span class="pre">2</span> <span class="pre">Delta(0)</span> <span class="pre">/</span> <span class="pre">e</span></code>), and its temperature dependence by BCS theory
+(<code class="docutils literal notranslate"><span class="pre">energy_gap</span></code>), so <code class="docutils literal notranslate"><span class="pre">vgap</span></code> and <code class="docutils literal notranslate"><span class="pre">tc</span></code> don’t need to be consistent with
+the BCS ratio.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">

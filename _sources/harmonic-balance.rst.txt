@@ -112,7 +112,30 @@ and the unknowns are the voltages of all junctions. The current of each junction
 
    \frac{\partial e_{j,fp}}{\partial V_{J,l,q}} = - Z_{T,jl,fp} \, \frac{\partial I_{l,fp}}{\partial V_{J,l,q}} - \delta_{jl} \, \delta_{fp,q}.
 
-The derivatives of each junction's current are calculated as for one junction (analytically, or with ``jacobian='numerical'`` from the same perturbed voltages, signal :math:`q` of every junction at once, at a cost of :math:`2N` tunneling current calculations per junction). The Newton step, line search and restarts are the same. Each junction is voltage biased (``cct.vb[j]``), can have its own response function (pass a list as ``resp``) and a relative area (``cct.area[j]``, which scales its current), and the result is ``vj[j, f, p, i]``. :func:`qmix.network.set_thevenin` sets the Thevenin voltages and impedance matrices from an S-parameter network, with a list of junction ports.
+The derivatives of each junction's current are calculated as for one junction (analytically, or with ``jacobian='numerical'`` from the same perturbed voltages, signal :math:`q` of every junction at once, at a cost of :math:`2N` tunneling current calculations per junction). The Newton step, line search and restarts are the same. By default, each junction is voltage biased (``cct.vb[j]``; see below for a DC bias network). Each junction can have its own response function (pass a list as ``resp``) and a relative area (``cct.area[j]``, which scales its current), and the result is ``vj[j, f, p, i]``. :func:`qmix.network.set_thevenin` sets the Thevenin voltages and impedance matrices from an S-parameter network, with a list of junction ports.
+
+DC bias network
+---------------
+
+Voltage bias fixes the DC voltage of each junction. In a series array, one source biases several junctions: the DC current is shared, and the bias voltage splits between the junctions according to their (pumped) DC I-V curves. Unless the junctions are identical and identically pumped, the split isn't known in advance, so the DC voltages :math:`V_{0,j}` become unknowns too. A linear DC network adds one equation per junction,
+
+.. math::
+
+   e_{0,r} = b_r - \sum_l A_{rl} \, V_{0,l} - \sum_l B_{rl} \, I_{0,l} = 0,
+
+where :math:`I_{0,l}` is the DC tunneling current of junction :math:`l` (including its area). For example, :math:`A = 1, B = 0` is voltage bias, :math:`A = 1, B = R` a DC Thevenin circuit, and :math:`A = 0, B = 1` current bias. :meth:`qmix.circuit.MultiJunctionCircuit.set_series_bias` sets up one or several series strings across a bias voltage :math:`V_\mathrm{bias}`, through a bias resistance :math:`R_\mathrm{bias}`: for each string, :math:`\sum_{j \in \mathrm{string}} V_{0,j} + R_\mathrm{bias} I_\mathrm{total} = V_\mathrm{bias}`, plus :math:`I_{0,j} = I_{0,j+1}` along the string (:meth:`~qmix.circuit.MultiJunctionCircuit.set_dc_network` takes :math:`A`, :math:`B` and :math:`b` directly).
+
+The DC voltages are appended to the unknowns (as complex numbers with their imaginary parts pinned to zero, so the Newton step, line search and restarts are unchanged). The response function is shifted by the DC voltage (Eqn. 5.25 uses :math:`\mathrm{resp}(V_0 + k \omega_1 + l \omega_2 + \dots)`), so it is interpolated again for each error vector. The Jacobian has three new blocks: the derivatives of the DC currents with respect to the signals (analytic, the zero-frequency output of the same sums), and the derivatives of all currents with respect to the DC voltages, which are central differences (step ``DV_DC``), with the DC voltages of all junctions perturbed at once. This costs two more current calculations per Jacobian. The DC equations count as converged when :math:`|e_{0,r}|` is below ``stop_rerror`` times the largest DC voltage at that bias point (at least ``DC_VREF``).
+
+:func:`qmix.harmonic_balance.harmonic_balance` then returns the DC voltages with the junction voltage, ``vj, vb = harmonic_balance(cct, resp)``, and ``cct.vb`` is only the initial guess (each junction replaced by its normal resistance). Set ``cct.vb = vb`` before calculating currents with the solution.
+
+Series arrays are harder for Newton's method than voltage-biased junctions:
+
+- Where the DC I-V curve is flat (below the gap, or on a photon step), the current hardly depends on the voltage, so the split between the junctions is set by the small slope there (e.g., the leakage current). It is ill-conditioned, and undefined for an ideal I-V curve without leakage.
+- Pumped I-V curves can have several solutions, and the error can have local minima that are not solutions. A bias point whose squared error hasn't halved in ``STALL_ITERATIONS`` (5) iterations is restarted from the nearest converged bias point.
+- A near-ideal gap (very sharp current rise) makes Newton's method crawl when junctions of a string sit on the gap. Smearing the I-V curve (``v_smear``) helps, as in most simulations.
+
+Typical cases take 15-30 iterations instead of ~5, so the default ``max_it`` is 60 with a DC bias network (30 otherwise). Each iteration solves all bias points at once, so this is still fast (1-2 s for a pumped pair over 40-200 bias points). Solving the bias points one at a time along the sweep (continuation, starting each from its neighbor) needs only 4-10 iterations per point, but was 4-8 times slower overall.
 
 Choosing the parameters
 -----------------------

@@ -5,7 +5,7 @@ Superconducting Transmission Lines
 
 The tuning circuits of SIS mixers are usually made from superconducting microstrip: e.g., a Nb strip on a thin SiO\ :sub:`2` dielectric above a Nb ground plane. Below the gap frequency of the films, the films have very little loss, but they have a large *kinetic inductance*: the supercurrent penetrates the films to a depth :math:`\lambda` (~80 nm for Nb films), and the kinetic energy of the Cooper pairs adds to the inductance of the line. When the dielectric is only a few penetration depths thick, the waves are slowed down by ~20%, which shifts the frequency at which a tuning circuit resonates by the same amount. Above the gap frequency (~700 GHz for Nb), photons break Cooper pairs and the films become lossy.
 
-QMix models these lines in three steps: the complex conductivity of the films (Mattis-Bardeen theory), the surface impedance of a film of finite thickness, and the microstrip line with these surface impedances. The functions are in :mod:`qmix.superconductor` (films) and :mod:`qmix.network` (lines). The model is the same as in SuperMix (Ward et al., 1999), and the results agree with it (see the end of this page).
+QMix models these lines in three steps: the complex conductivity of the films (Mattis-Bardeen theory), the surface impedance of a film of finite thickness, and the microstrip line with these surface impedances. The functions are in :mod:`qmix.superconductor` (films) and :mod:`qmix.network` (lines). The conductivity, the energy gap and the film impedance are calculated by the `Mattis-Bardeen <https://github.com/garrettj403/Mattis-Bardeen>`_ package (``mattisbardeen``), which :mod:`qmix.superconductor` wraps. The model is the same as in SuperMix (Ward et al., 1999), and the results agree with it (see the end of this page).
 
 Unlike the rest of QMix, the values here are not normalized: frequencies are in Hz, temperatures in K, lengths in m and impedances in ohms. Complex values use the engineering convention :math:`e^{+j\omega t}`, as for the impedances in the rest of QMix: inductive reactances are positive.
 
@@ -38,11 +38,11 @@ In the local (dirty) limit, i.e., when the mean free path of the electrons is mu
 
 with :math:`g(x) = x^2 + \Omega x + 1`, the Fermi function :math:`f(x) = 1 / (e^{x / \tau} + 1)`, and the normal-state conductivity :math:`\sigma_n = 1 / \rho_n`. The first term of :math:`\sigma_1` is the absorption by thermally excited quasiparticles, and the second term (only for :math:`h f > 2 \Delta`) is pair breaking. :func:`qmix.superconductor.mattis_bardeen` evaluates the integrals with adaptive quadrature: the inverse square-root singularities at the ends of the intervals are handled with algebraic weights (or the substitution :math:`x = 1 + s^2`), so the integrals converge to ~1e-12, also at the gap edge. Checks:
 
-* At :math:`T = 0`, the integrals have a closed form in terms of complete elliptic integrals (Mattis and Bardeen, 1958), which QMix matches to ~1e-12.
+* At :math:`T = 0`, the integrals have a closed form in terms of complete elliptic integrals (Mattis and Bardeen, 1958), which QMix matches to ~1e-13.
 * At low frequencies, :math:`\sigma_2 / \sigma_n \to (\pi \Delta / h f) \tanh(\Delta / 2 k_B T)`, which gives the London penetration depth in the local limit, :math:`\lambda = \sqrt{\hbar \rho_n / (\pi \mu_0 \Delta \tanh(\Delta / 2 k_B T))}` (:meth:`qmix.superconductor.SuperconductingFilm.penetration_depth`).
 * At high frequencies, :math:`\sigma \to \sigma_n`, and above :math:`T_c`, :math:`\sigma = \sigma_n`.
 
-The integrals take ~0.2 ms per frequency, and :class:`qmix.superconductor.SuperconductingFilm` caches the values.
+The integrals are evaluated with a fixed tanh-sinh (double-exponential) rule, vectorized over frequency (~30 us per frequency), and :class:`qmix.superconductor.SuperconductingFilm` caches the values.
 
 Surface impedance of a film
 ---------------------------
@@ -92,5 +92,5 @@ Comparison with SuperMix
 ``profile/supermix/compare_lines.py`` runs SuperMix's ``super_film``, ``normal_film`` and ``microstrip`` classes (``smx_lines.cc``) on several lines (Nb and NbTiN, narrow and wide strips, thin films, lossy dielectrics and superstrates, 10 GHz to 3 THz), and ``tests/test_supermix_reference.py`` checks QMix against the stored results. With SuperMix's physical constants:
 
 * For normal-metal films, the surface impedances and the line parameters agree to ~1e-15, so the microstrip model is the same.
-* For superconductors below :math:`T / T_c = 0.04` (where both give :math:`\Delta(T) = \Delta(0)`), the conductivities agree to ~2e-8, and to 2e-6 right at the gap edge. This is the accuracy of SuperMix's integration: QMix agrees with the closed form at :math:`T = 0` to ~1e-12. The line parameters agree to ~4e-7.
+* For superconductors below :math:`T / T_c = 0.04` (where both give :math:`\Delta(T) = \Delta(0)`), the conductivities agree to ~2e-8, and to 2e-6 right at the gap edge. This is the accuracy of SuperMix's integration: QMix agrees with the closed form at :math:`T = 0` to ~1e-13. The line parameters agree to ~4e-7.
 * At higher temperatures, SuperMix interpolates Mühlschlegel's (1959) table of :math:`\Delta(T)` (4 digits), which differs from the BCS gap equation by up to ~1e-4, and the conductivities differ by up to ~1.5e-4 (at 4.2 K for Nb; most of it is the thermally excited quasiparticles, which depend on :math:`e^{-\Delta / k_B T}`).
