@@ -312,6 +312,7 @@ def test_microstrip(k, monkeypatch):
     T = 0 closed form to ~1e-12) and, above T / Tc = 0.04, its table of the
     energy gap vs temperature (4 digits; up to ~1e-4 from BCS theory)."""
 
+    import mattisbardeen
     import qmix.network
     import qmix.superconductor
     from qmix.network import microstrip
@@ -320,6 +321,7 @@ def test_microstrip(k, monkeypatch):
     constants = SimpleNamespace(e=1.60217733e-19, k=1.380658e-23, h=6.6260755e-34,
                                 hbar=6.6260755e-34 / (2 * np.pi), mu_0=4e-7 * np.pi, c=299792458.)
     monkeypatch.setattr(qmix.superconductor, 'sc', constants)
+    monkeypatch.setattr(mattisbardeen, 'sc', constants)
     monkeypatch.setattr(qmix.network, 'sc', constants)
 
     vgap, tc, rho, t1, t2, w, h, eps, tand, eps_up, tand_up, temp = LINES['case{}_inputs'.format(k)]

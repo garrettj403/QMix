@@ -18,6 +18,13 @@ Description:
     (or of a stack of films) follows from the conductivity by treating the
     film as a section of transmission line (``film_impedance``).
 
+    The calculations are done by the ``mattisbardeen`` package
+    (https://github.com/garrettj403/Mattis-Bardeen); this module adapts it
+    to QMix (film objects for ``qmix.network.microstrip``, and the gap
+    voltage at T = 0 as the material parameter). Its physical constants come
+    from ``mattisbardeen.sc`` (``scipy.constants``), read when the functions
+    are called.
+
     The film classes (``NormalFilm``, ``SuperconductingFilm`` and
     ``Multilayer``) bundle the material parameters, so that they can be
     passed to the transmission line functions in ``qmix.network``::
@@ -39,21 +46,8 @@ Note:
 
 import numpy as np
 import scipy.constants as sc
-from scipy.integrate import quad
-from scipy.optimize import brentq
-from scipy.special import expit
 
-
-# Impedance of free space, in [ohms]
-Z_VACUUM = sc.mu_0 * sc.c
-
-# BCS weak-coupling ratio between the energy gap at T = 0 and k Tc
-# (pi / exp(Euler's gamma) ~ 1.764)
-BCS_RATIO = np.pi / np.exp(np.euler_gamma)
-
-# Integration tolerances for the Mattis-Bardeen integrals
-_EPSABS = 1e-13
-_EPSREL = 1e-11
+import mattisbardeen as mb
 
 
 # Energy gap -----------------------------------------------------------------
@@ -61,7 +55,7 @@ _EPSREL = 1e-11
 def energy_gap(temp, tc):
     """Temperature dependence of the energy gap, from BCS theory.
 
-    Solves the weak-coupling BCS gap equation,
+    Solves the weak-coupling BCS gap equation (``mattisbardeen.gap_voltage``),
     ``ln(Delta(0) / Delta) = 2 int_0^inf f(E) / E d(xi)`` with
     ``E = sqrt(xi^2 + Delta^2)`` and ``Delta(0) = 1.764 k Tc``.
 
@@ -75,26 +69,8 @@ def energy_gap(temp, tc):
     """
 
     temp = np.asarray(temp, dtype=float)
-    out = np.array([_gap_ratio(t / tc) for t in temp.ravel()]).reshape(temp.shape)
+    out = np.array([mb.gap_voltage(t, Vgap0=1., Tc=tc) for t in temp.ravel()]).reshape(temp.shape)
     return out[()] if out.ndim == 0 else out
-
-
-def _gap_ratio(t):
-    """Delta(T) / Delta(0) for the reduced temperature t = T / Tc."""
-
-    if t >= 1.:
-        return 0.
-    if t <= 0.02:  # the correction is ~exp(-88), far below round-off
-        return 1.
-
-    def residual(d):
-        # with xi = Delta sinh(u), d(xi) / E = du
-        a = d * BCS_RATIO / t  # Delta / k T
-        u_max = np.arccosh(max(800. / a, 1.) + 1.)  # integrand < exp(-800) beyond
-        integral = quad(lambda u: expit(-a * np.cosh(u)), 0., u_max, epsabs=1e-15, epsrel=1e-13, limit=200)[0]
-        return np.log(1. / d) - 2. * integral
-
-    return brentq(residual, 1e-12, 1., xtol=1e-15, rtol=1e-14)
 
 
 # Mattis-Bardeen conductivity ------------------------------------------------
@@ -103,10 +79,11 @@ def mattis_bardeen(freq, temp, vgap, tc):
     """Complex conductivity of a superconductor from the Mattis-Bardeen theory.
 
     The conductivity is normalized to the normal-state conductivity, and it
-    is calculated in the local (dirty) limit. The energy gap at T = 0 is
-    given by the gap voltage (``vgap = 2 Delta(0) / e``), and its temperature
-    dependence by BCS theory (``energy_gap``), so ``vgap`` and ``tc`` don't
-    need to be consistent with the BCS ratio.
+    is calculated in the local (dirty) limit (``mattisbardeen.conductance``).
+    The energy gap at T = 0 is given by the gap voltage
+    (``vgap = 2 Delta(0) / e``), and its temperature dependence by BCS theory
+    (``energy_gap``), so ``vgap`` and ``tc`` don't need to be consistent with
+    the BCS ratio.
 
     Args:
         freq (float or ndarray): Frequency, in [Hz]
@@ -124,84 +101,7 @@ def mattis_bardeen(freq, temp, vgap, tc):
     assert np.all(freq > 0), "Frequencies must be positive"
     assert temp >= 0, "The temperature must not be negative"
 
-    if temp >= tc:
-        out = np.ones(freq.shape, dtype=complex)
-        return out[()] if out.ndim == 0 else out
-
-    delta = 0.5 * vgap * sc.e * _gap_ratio(temp / tc)  # Delta(T), in [J]
-    tau = sc.k * temp / delta
-    omega = sc.h * freq.ravel() / delta
-    out = np.array([_sigma1(w, tau) - 1j * _sigma2(w, tau) for w in omega]).reshape(freq.shape)
-
-    return out[()] if out.ndim == 0 else out
-
-
-def _fermi(x, tau):
-    """Fermi function of the energy x (normalized to Delta)."""
-
-    if tau == 0.:
-        return np.where(x > 0, 0., np.where(x < 0, 1., 0.5))
-    return expit(-x / tau)
-
-
-def _sigma1(omega, tau):
-    """sigma1 / sigma_n for the reduced frequency omega = h f / Delta and
-    reduced temperature tau = k T / Delta."""
-
-    def g(x):
-        return x * (x + omega) + 1.
-
-    result = 0.
-
-    # Thermally excited quasiparticles: (2 / omega) int_1^inf [f(x) - f(x + omega)] g(x) /
-    # sqrt(x^2 - 1) / sqrt((x + omega)^2 - 1) dx; with x = 1 + s^2, dx / sqrt(x - 1) = 2 ds
-    if tau > 0:
-        s_max = np.sqrt(60. * tau)  # f(x) / f(1) < exp(-60) beyond
-
-        def integrand1(s):
-            x = 1. + s * s
-            xo = x + omega
-            return 2. * (_fermi(x, tau) - _fermi(xo, tau)) * g(x) / np.sqrt(x + 1.) / np.sqrt(xo * xo - 1.)
-
-        result += 2. / omega * quad(integrand1, 0., s_max, epsabs=_EPSABS, epsrel=_EPSREL, limit=200)[0]
-
-    # Pair breaking (h f > 2 Delta): (1 / omega) int_{1 - omega}^{-1} [1 - 2 f(x + omega)] |g(x)| /
-    # sqrt(x^2 - 1) / sqrt((x + omega)^2 - 1) dx (g < 0 here; this is the sign of Kautz 1978)
-    if omega > 2.:
-        def integrand2(x):
-            xo = x + omega
-            return (1. - 2. * _fermi(xo, tau)) * (-g(x)) / np.sqrt(1. - x) / np.sqrt(xo + 1.)
-
-        # the weight (x - a)^-1/2 (b - x)^-1/2 holds the square-root singularities at both ends
-        result += quad(integrand2, 1. - omega, -1., weight='alg', wvar=(-0.5, -0.5),
-                       epsabs=_EPSABS, epsrel=_EPSREL, limit=200)[0] / omega
-
-    return result
-
-
-def _sigma2(omega, tau):
-    """sigma2 / sigma_n for the reduced frequency omega = h f / Delta and
-    reduced temperature tau = k T / Delta."""
-
-    # (1 / omega) int_{max(1 - omega, -1)}^1 [1 - 2 f(x + omega)] g(x) / sqrt(1 - x^2) /
-    # sqrt((x + omega)^2 - 1) dx
-    def g(x):
-        return x * (x + omega) + 1.
-
-    if omega >= 2.:
-        def integrand(x):
-            xo = x + omega
-            return (1. - 2. * _fermi(xo, tau)) * g(x) / np.sqrt(xo * xo - 1.)
-        lower = -1.
-    else:
-        def integrand(x):
-            xo = x + omega
-            return (1. - 2. * _fermi(xo, tau)) * g(x) / np.sqrt(1. + x) / np.sqrt(xo + 1.)
-        lower = 1. - omega
-
-    # the weight (x - a)^-1/2 (b - x)^-1/2 holds the square-root singularities at both ends
-    return quad(integrand, lower, 1., weight='alg', wvar=(-0.5, -0.5),
-                epsabs=_EPSABS, epsrel=_EPSREL, limit=200)[0] / omega
+    return mb.conductance(freq, temp, Vgap0=vgap, Tc=tc, sigma_n=1.)
 
 
 # Surface impedance ----------------------------------------------------------
@@ -214,6 +114,7 @@ def film_impedance(freq, layers, z_back=None):
     conductivity, including the displacement current). The back of the
     stack is terminated by ``z_back``; this models radiation from the back
     side, and only matters for films thinner than a few penetration depths.
+    (``mattisbardeen.film_impedance``.)
 
     Args:
         freq (float or ndarray): Frequency, in [Hz]
@@ -230,20 +131,7 @@ def film_impedance(freq, layers, z_back=None):
 
     """
 
-    z_vac = sc.mu_0 * sc.c
-    z_back = z_vac if z_back is None else z_back
-    freq = np.asarray(freq, dtype=float)
-    k0 = 2 * np.pi * freq / sc.c
-    zs = np.asarray(z_back, dtype=complex) * np.ones(freq.shape)
-    for sigma, thickness in reversed(list(layers)):
-        factor = np.sqrt(1. - 1j * z_vac * np.asarray(sigma) / k0 + 0j)
-        factor = np.where(factor.imag > 0, -factor, factor)  # waves decay into the metal
-        k1 = k0 * factor
-        z1 = z_vac / factor
-        gamma = (zs - z1) / (zs + z1) * np.exp(-2j * k1 * thickness)
-        zs = z1 * (1 + gamma) / (1 - gamma)
-
-    return zs[()] if zs.ndim == 0 else zs
+    return mb.film_impedance(freq, layers, z_back)
 
 
 # Film classes ---------------------------------------------------------------
@@ -346,7 +234,8 @@ class SuperconductingFilm(_Film):
         """London penetration depth in the local (dirty) limit.
 
         ``lambda = sqrt(hbar rho_n / (pi mu0 Delta(T) tanh(Delta(T) / 2 k T)))``,
-        the low-frequency limit of the Mattis-Bardeen conductivity.
+        the low-frequency limit of the Mattis-Bardeen conductivity
+        (``mattisbardeen.penetration_depth``; inf above Tc).
 
         Args:
             temp (float, optional): Temperature, in [K]; default is 0
@@ -356,15 +245,13 @@ class SuperconductingFilm(_Film):
 
         """
 
-        delta = 0.5 * self.vgap * sc.e * _gap_ratio(temp / self.tc)
-        tanh = np.tanh(delta / (2 * sc.k * temp)) if temp > 0 else 1.
-        return np.sqrt(sc.hbar * self.rho_n / (np.pi * sc.mu_0 * delta * tanh))
+        return mb.penetration_depth(temp, Vgap0=self.vgap, Tc=self.tc, sigma_n=1. / self.rho_n)
 
     def sigma(self, freq, temp):
         """Complex conductivity, from the Mattis-Bardeen theory.
 
-        The values are cached, since the integrals are slow (~1 ms per
-        point). Changing ``vgap`` or ``tc`` clears the cache.
+        The values are cached (the integrals take ~30 us per point).
+        Changing ``vgap`` or ``tc`` clears the cache.
 
         Args:
             freq (float or ndarray): Frequency, in [Hz]
