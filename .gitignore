@@ -19,6 +19,8 @@ qmix/exp/hfss_data.py
 # raw thesis data (large, not distributed; used by profile/thesis/)
 /thesis/
 
+CfA/
+
 bin/
 dev/
 misc/ 
