@@ -103,12 +103,12 @@ You can also cite a specific version of QMix by citing the appropriate Zenodo ar
 
     @article{Qmix3,
       author       = {J. D. Garrett},
-      title        = {{QMix  (v1.0.6)}},
+      title        = {{QMix}},
       month        = jul,
       year         = 2020,
       publisher    = {Zenodo},
-      doi          = {10.5281/zenodo.3936263},
-      url          = {http://doi.org/10.5281/zenodo.3936263}
+      doi          = {10.5281/zenodo.2538162},
+      url          = {http://doi.org/10.5281/zenodo.2538162}
     }
 
 License
