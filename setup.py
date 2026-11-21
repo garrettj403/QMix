@@ -2,11 +2,9 @@
 """Install QMix."""
 
 import io
-import sys
 
 from os import path
 from setuptools import setup, find_packages
-from setuptools.command.test import test as TestCommand
 
 root = path.abspath(path.dirname(__file__))
 
@@ -22,19 +20,6 @@ def read(*filenames, **kwargs):
 
 
 long_description = read('README.md')
-print(long_description)
-
-
-class PyTest(TestCommand):
-    def finalize_options(self):
-        TestCommand.finalize_options(self)
-        self.test_args = []
-        self.test_suite = True
-
-    def run_tests(self):
-        import pytest
-        errcode = pytest.main(self.test_args)
-        sys.exit(errcode)
 
 
 setup(
@@ -44,7 +29,7 @@ setup(
     author_email="garrettj403@gmail.com",
     url="https://garrettj403.github.io/QMix/",
     description="Simulate SIS mixer operation",
-    license="GPL v3",
+    license="GPL-3.0-only",
     keywords=[
         "SIS mixers",
         "radio astronomy",
@@ -52,28 +37,26 @@ setup(
         "terahertz instrumentation",
         "Python"
     ],
-    packages=find_packages(),
+    packages=find_packages(exclude=['tests', 'tests.*']),
+    python_requires='>=3.10',
     install_requires=[
         'matplotlib',
         'numba',
         'numpy',
         'scipy',
     ],
-    extras_require={'test': ['pytest'], },
-    tests_require=['pytest', 'pytest-cov'],
-    cmdclass={'test': PyTest},
+    extras_require={'test': ['pytest', 'pytest-cov'], },
     long_description=long_description,
     long_description_content_type='text/markdown',
     platforms='any',
     classifiers=[
         "Development Status :: 5 - Production/Stable",
         "Intended Audience :: Science/Research",
-        "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
         "Natural Language :: English",
-        "Programming Language :: Python :: 3.5",
-        "Programming Language :: Python :: 3.6",
-        "Programming Language :: Python :: 3.7",
-        "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
+        "Programming Language :: Python :: 3.12",
+        "Programming Language :: Python :: 3.13",
         "Topic :: Scientific/Engineering :: Physics",
         "Topic :: Scientific/Engineering :: Astronomy",
     ],
