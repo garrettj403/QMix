@@ -14,7 +14,7 @@ import numpy as np
 from scipy.special import jv
 
 import qmix
-from qmix.qtcurrent import qtcurrent, interpolate_respfn, calculate_phase_factor_coeff, suggest_num_b
+from qmix.qtcurrent import qtcurrent, interpolate_respfn, calculate_phase_factor_coeff, suggest_num_b, qtcurrent_derivatives
 from qmix.qtcurrent import FourierResp, _candidate_tuples, _matching_tuples
 from qmix.circuit import EmbeddingCircuit
 
@@ -948,3 +948,45 @@ def test_qtcurrent_multi_junction():
     nb_j = [suggest_num_b(vj[j], cct.junction(j)) for j in range(3)]
     assert nb == tuple(max(b[f] for b in nb_j) for f in range(2))
     assert all(isinstance(b, int) for b in nb)
+
+
+@pytest.mark.parametrize('num_f, num_p, method', [(1, 1, 'direct'), (1, 3, 'direct'), (3, 2, 'direct'),
+                                                  (3, 2, 'fourier')])
+def test_qtcurrent_derivatives(num_f, num_p, method):
+    """The analytic derivatives of the current with respect to the real and
+    imaginary parts of the junction voltage match central differences (for
+    one harmonic, the difference, ~1e-9, is the error of the central
+    differences; with harmonics, the analytic derivatives use the phase
+    factor coefficients without the truncation of their convolution, so
+    num_b must be large enough for the two to agree)."""
+
+    npts = 21
+    cct = EmbeddingCircuit(num_f, num_p, vb_npts=npts)
+    rng = np.random.default_rng(1)
+    vj = np.zeros((num_f + 1, num_p + 1, npts), dtype=complex)
+    for f, (freq, amp) in enumerate(zip([0.3, 0.33, 0.05], [0.3, 0.03, 0.02]), 1):
+        if f > num_f:
+            break
+        cct.freq[f] = freq
+        for p in range(1, num_p + 1):
+            vj[f, p] = amp / p * (rng.normal(size=npts) + 1j * rng.normal(size=npts) + 1)
+    nb = (16, 10, 10)[:num_f]
+    freq_list = [0.] + [p * cct.freq[f] for f in range(1, num_f + 1) for p in range(1, num_p + 1)]
+    rm = interpolate_respfn(cct, RESP, nb, method=method)
+
+    d = qtcurrent_derivatives(vj, cct, RESP, freq_list, nb, resp_matrix=rm)
+    assert d.shape == (len(freq_list), num_f + 1, num_p + 1, 2, npts)
+    step = 1e-5
+    for f in range(1, num_f + 1):
+        for p in range(1, num_p + 1):
+            for c, unit in enumerate((1., 1j)):
+                vj_p, vj_m = vj.copy(), vj.copy()
+                vj_p[f, p] += unit * step
+                vj_m[f, p] -= unit * step
+                fd = (qtcurrent(vj_p, cct, RESP, freq_list, nb, verbose=False, resp_matrix=rm) -
+                      qtcurrent(vj_m, cct, RESP, freq_list, nb, verbose=False, resp_matrix=rm)) / (2 * step)
+                np.testing.assert_allclose(d[:, f, p, c], fd, rtol=0, atol=1e-7 if num_p == 1 else 1e-6)
+
+    # Default resp_matrix, and one output frequency
+    d_1 = qtcurrent_derivatives(vj, cct, RESP, cct.freq[1], nb, method=method)
+    np.testing.assert_allclose(d_1[0], d[1], rtol=0, atol=1e-12 if method == 'direct' else 1e-7)

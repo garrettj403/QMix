@@ -207,13 +207,7 @@ def qtcurrent(vj, cct, resp, freq_list, num_b=15, verbose=True, resp_matrix=None
 
     # Harmonic combinations (a, b, c, ...) that match each output frequency ---
 
-    tuple_lists = [_matching_tuples(freq_out, freq, num_f, num_p) for freq_out in freq_list]
-
-    # Combinations with |a_f| > num_p that also land on an output frequency
-    if mixing_tol is None:
-        mixing_tol = MIXING_TOL
-    if np.isfinite(mixing_tol):
-        tuple_lists = _add_mixing_products(tuple_lists, freq_list, freq, num_p, nb_list, ccc, mixing_tol)
+    tuple_lists = _output_tuples(freq_list, freq, num_f, num_p, nb_list, ccc, mixing_tol)
 
     # Calculate the tunneling currents ----------------------------------------
 
@@ -235,6 +229,22 @@ def qtcurrent(vj, cct, resp, freq_list, num_b=15, verbose=True, resp_matrix=None
             return current_out[0].real
         else:
             return current_out[0]
+
+
+def _output_tuples(freq_list, freq, num_f, num_p, nb_list, ccc, mixing_tol):
+    """For each output frequency, the combinations of tone indices that land
+    on it: all with |a_f| <= num_p, and the mixing products with larger
+    indices whose contribution may be significant (see ``qtcurrent``)."""
+
+    tuple_lists = [_matching_tuples(freq_out, freq, num_f, num_p) for freq_out in freq_list]
+
+    # Combinations with |a_f| > num_p that also land on an output frequency
+    if mixing_tol is None:
+        mixing_tol = MIXING_TOL
+    if np.isfinite(mixing_tol):
+        tuple_lists = _add_mixing_products(tuple_lists, freq_list, freq, num_p, nb_list, ccc, mixing_tol)
+
+    return tuple_lists
 
 
 def _matching_tuples(freq_out, freq, num_f, num_p):
@@ -999,14 +1009,24 @@ def _current_coeffs(tuple_lists, ccc, resp_matrix, nb_list):
     """
 
     npts = ccc.shape[2]
-    num_f = len(nb_list)
-    dims = np.array([2 * num_b + 1 for num_b in nb_list], dtype=np.int64)
-    max_dim = int(dims.max())
-    resp_flat = np.ascontiguousarray(resp_matrix).reshape(-1, npts)
-    num_outer = int(np.prod(dims[:-1]))
-    num_threads = nb.get_num_threads()
+    terms = _signed_terms(tuple_lists)
+    pairs = _PairCache(ccc, nb_list)
+    rs = dict(zip(terms, _sum_terms_direct(_base_keys(terms), pairs, nb_list,
+                                           resp_matrix, npts)))
 
-    # Distinct combinations, and the terms of each (+a, and -a unless a = 0)
+    return _combine_outputs(tuple_lists, rs, npts)
+
+
+def _base_keys(terms):
+    """Terms as tuples of (tone, pair key) for ``_sum_terms_direct``."""
+
+    return [tuple((f, (f, a)) for f, a in enumerate(term)) for term in terms]
+
+
+def _signed_terms(tuple_lists):
+    """Distinct combinations of all output frequencies, and the terms of each
+    (+a, and -a unless a = 0)."""
+
     all_tuples = sorted(set(itertools.chain.from_iterable(tuple_lists)), reverse=True)
     terms = []
     for a_tuple in all_tuples:
@@ -1014,34 +1034,12 @@ def _current_coeffs(tuple_lists, ccc, resp_matrix, nb_list):
         if any(a != 0 for a in a_tuple):
             terms.append(tuple(-a for a in a_tuple))
 
-    # Pair products and validity masks for each (tone, offset), shared
-    # between terms
-    pair_cache = {}
+    return terms
 
-    def pair_and_valid(f, a):
-        if (f, a) not in pair_cache:
-            num_b = nb_list[f]
-            k = _wraparound_indices(num_b)
-            pair_cache[(f, a)] = (_pair_products(ccc[f + 1], a, num_b), np.abs(k + a) <= num_b)
-        return pair_cache[(f, a)]
 
-    # Batches of terms; a few chunks of rows per thread (for load balancing),
-    # each with its own accumulator for every term of the batch
-    rs = {}
-    num_chunks = max(1, min(num_outer, 4 * num_threads))
-    batch_size = max(1, min(MAX_BATCH_TERMS, BATCH_ACC_BYTES // (num_chunks * npts * 16)))
-    for b0 in range(0, len(terms), batch_size):
-        batch = terms[b0:b0 + batch_size]
-        pairs = np.zeros((len(batch), num_f, max_dim, npts), dtype=np.complex128)
-        valid = np.zeros((len(batch), num_f, max_dim), dtype=np.bool_)
-        for t, term in enumerate(batch):
-            for f, a in enumerate(term):
-                pair, mask = pair_and_valid(f, a)
-                pairs[t, f, :dims[f]] = pair
-                valid[t, f, :dims[f]] = mask
-        out = _current_coeff_batched(pairs, valid, dims, resp_flat, num_chunks)
-        for t, term in enumerate(batch):
-            rs[term] = out[t]
+def _combine_outputs(tuple_lists, rs, npts):
+    """Currents at the output frequencies from R + jS of the terms
+    (``rs[a_tuple]``, Eqn. 5.36)."""
 
     current_out = np.zeros((len(tuple_lists), npts), dtype=complex)
     for i, tuple_list in enumerate(tuple_lists):
@@ -1050,6 +1048,87 @@ def _current_coeffs(tuple_lists, ccc, resp_matrix, nb_list):
             current_out[i] += _combine_rs(a_tuple, rs[a_tuple], rs_m)
 
     return current_out
+
+
+class _PairCache(object):
+    """Pair products and validity masks of the terms, shared between terms.
+
+    Keys are (f, a) for tone f (0-indexed) and offset a: the pair products
+    C_k C*_{k+a}. Derivative keys (f, a, d) give the derivative of the pair
+    products with respect to one real parameter of the junction voltage,
+    dC_k C*_{k+a} + C_k dC*_{k+a}, where ``self.dccc[(f, d)]`` is dC
+    (natural order, see ``_phase_factor_derivatives``). The validity masks
+    (where k + a is within the summation limits) are the same for both.
+
+    """
+
+    def __init__(self, ccc, nb_list, dccc=None, ccc_nat=None):
+
+        self.ccc = ccc
+        self.nb_list = nb_list
+        self.dccc = dccc
+        self.ccc_nat = ccc_nat
+        self.cache = {}
+
+    def __getitem__(self, key):
+
+        if key not in self.cache:
+            f, a = key[0], key[1]
+            num_b = self.nb_list[f]
+            k = _wraparound_indices(num_b)
+            mask = np.abs(k + a) <= num_b
+            if len(key) == 2:
+                pair = _pair_products(self.ccc[f + 1], a, num_b)
+            else:
+                c, dc = self.ccc_nat[f], self.dccc[(f, key[2])]
+                dim = 2 * num_b + 1
+                lo, hi = max(0, -a), min(dim, dim - a)
+                pair_nat = np.zeros_like(c)
+                pair_nat[lo:hi] = dc[lo:hi] * np.conj(c[lo + a:hi + a]) + c[lo:hi] * np.conj(dc[lo + a:hi + a])
+                pair = pair_nat[k + num_b]  # wraparound order
+            self.cache[key] = (pair, mask)
+
+        return self.cache[key]
+
+
+def _sum_terms_direct(terms, pairs, nb_list, resp_matrix, npts):
+    """R + jS (Eqn. 5.25) for a list of terms (direct method).
+
+    Each term is a tuple of (tone, pair key) for every tone, with the pair
+    products from ``pairs`` (a ``_PairCache``). All terms are evaluated
+    together, in batches of up to MAX_BATCH_TERMS per pass over the response
+    function matrix.
+
+    Returns:
+        list: R + jS of each term, (npts,)
+
+    """
+
+    num_f = len(nb_list)
+    dims = np.array([2 * num_b + 1 for num_b in nb_list], dtype=np.int64)
+    max_dim = int(dims.max())
+    resp_flat = np.ascontiguousarray(resp_matrix).reshape(-1, npts)
+    num_outer = int(np.prod(dims[:-1]))
+    num_threads = nb.get_num_threads()
+
+    # Batches of terms; a few chunks of rows per thread (for load balancing),
+    # each with its own accumulator for every term of the batch
+    rs = []
+    num_chunks = max(1, min(num_outer, 4 * num_threads))
+    batch_size = max(1, min(MAX_BATCH_TERMS, BATCH_ACC_BYTES // (num_chunks * npts * 16)))
+    for b0 in range(0, len(terms), batch_size):
+        batch = terms[b0:b0 + batch_size]
+        pair_arr = np.zeros((len(batch), num_f, max_dim, npts), dtype=np.complex128)
+        valid = np.zeros((len(batch), num_f, max_dim), dtype=np.bool_)
+        for t, term in enumerate(batch):
+            for f, key in term:
+                pair, mask = pairs[key]
+                pair_arr[t, f, :dims[f]] = pair
+                valid[t, f, :dims[f]] = mask
+        out = _current_coeff_batched(pair_arr, valid, dims, resp_flat, num_chunks)
+        rs.extend(out[t] for t in range(len(batch)))
+
+    return rs
 
 
 def _current_coeff(a_tuple, ccc, resp_matrix, nb_list):
@@ -1073,6 +1152,160 @@ def _current_coeff(a_tuple, ccc, resp_matrix, nb_list):
     """
 
     return _current_coeffs([[tuple(a_tuple)]], ccc, resp_matrix, nb_list)[0]
+
+
+def _phase_factor_derivatives(ccc, freq, num_p, nb_list):
+    """Derivatives of the phase factor coefficients with respect to the real
+    and imaginary parts of the junction voltage.
+
+    Perturbing harmonic q of tone f, v(t) -> v(t) + Re(dV exp(j q w t)),
+    multiplies the phase factor by (1 - j dV_r sin(q w t) / (q w) - j dV_i
+    cos(q w t) / (q w)), i.e., shifts its coefficients by +/- q:
+
+        dC_k / d Re V_q = (C_{k-q} - C_{k+q}) / (2 q w)
+        dC_k / d Im V_q = -j (C_{k-q} + C_{k+q}) / (2 q w)
+
+    (for one harmonic, these are the Bessel function identities). ``ccc``
+    should be calculated with summation limits num_b + num_p, so that the
+    shifted coefficients are available for |k| <= num_b.
+
+    Returns:
+        tuple: ``ccc_nat[f]`` (C_k of tone f for k = -num_b ... num_b, natural
+        order), and ``dccc[(f, (q, c))]`` (its derivatives with respect to
+        the real (c = 0) and imaginary (c = 1) part of harmonic q, natural
+        order); f is 0-indexed
+
+    """
+
+    ccc_nat, dccc = [], {}
+    for f, num_b in enumerate(nb_list):
+        c_ext = ccc[f + 1][_natural_indices(num_b + num_p)]  # k = -num_b - num_p ... num_b + num_p
+        ccc_nat.append(c_ext[num_p:num_p + 2 * num_b + 1])
+        for q in range(1, num_p + 1):
+            c_minus = c_ext[num_p - q:num_p - q + 2 * num_b + 1]  # C_{k-q}
+            c_plus = c_ext[num_p + q:num_p + q + 2 * num_b + 1]   # C_{k+q}
+            w = 2 * q * freq[f + 1]
+            dccc[(f, (q, 0))] = (c_minus - c_plus) / w
+            dccc[(f, (q, 1))] = -1j * (c_minus + c_plus) / w
+
+    return ccc_nat, dccc
+
+
+def qtcurrent_derivatives(vj, cct, resp, freq_list, num_b=15, resp_matrix=None, method='auto', mixing_tol=None):
+    """Derivatives of the tunneling current with respect to the junction
+    voltage (analytic).
+
+    The phase factor coefficients of a tone are shifted by its harmonics
+    when the voltage of a harmonic changes (see
+    ``_phase_factor_derivatives``), so the derivatives are given by the same
+    sums as the current (Eqn. 5.25), with the pair products of one tone
+    replaced by their derivatives. No derivatives of the response function
+    are needed. All of the terms are evaluated together (in batches), so
+    this is usually faster than finite differences, and it is exact (up to
+    the truncation of the summation).
+
+    Args:
+        vj (ndarray): Voltage across the SIS junction, ``vj[f, p, i]``
+        cct (qmix.circuit.EmbeddingCircuit): Embedding circuit
+        resp (qmix.respfn.RespFn): Response function
+        freq_list: Output frequencies (normalized), as for ``qtcurrent``
+        num_b (int/tuple, optional): Summation limits for phase factor
+            coefficients, default is 15
+        resp_matrix (ndarray/FourierResp, optional): Interpolated response
+            function, from ``interpolate_respfn`` (default: calculated here)
+        method (str, optional): ``'direct'``, ``'fourier'`` or ``'auto'``,
+            if ``resp_matrix`` is not given
+        mixing_tol (float, optional): see ``qtcurrent``
+
+    Returns:
+        ndarray: Derivatives ``d[o, f, p, c, i]`` of the current at output
+        frequency o with respect to the real (c = 0) and imaginary (c = 1)
+        part of ``vj[f, p]`` (tones and harmonics 1-indexed, as in ``vj``)
+
+    """
+
+    assert not _is_multi(cct), "One junction at a time (see qmix.circuit.MultiJunctionCircuit.junction)"
+
+    num_f, num_p, npts = cct.num_f, cct.num_p, cct.vb_npts
+    freq = cct.freq
+    nb_list = _unpack_num_b(num_b, num_f)
+    freq_list = [round(freq_val, ROUND_FREQ) for freq_val in np.atleast_1d(freq_list)]
+
+    # The same combinations of tone indices as qtcurrent
+    ccc = calculate_phase_factor_coeff(vj, freq, num_f, num_p, nb_list)
+    tuple_lists = _output_tuples(freq_list, freq, num_f, num_p, nb_list, ccc, mixing_tol)
+
+    # Coefficients and their derivatives (with num_b + num_p for the shifts)
+    ccc_ext = calculate_phase_factor_coeff(vj, freq, num_f, num_p, tuple(num_b + num_p for num_b in nb_list))
+    ccc_nat, dccc = _phase_factor_derivatives(ccc_ext, freq, num_p, nb_list)
+    # Pair products from the same (extended) coefficients, for consistency
+    ccc_pair = np.zeros((num_f + 1, 2 * max(nb_list) + 1, npts), dtype=complex)
+    for f, nb_f in enumerate(nb_list):
+        ccc_pair[f + 1][_natural_indices(nb_f)] = ccc_nat[f]
+    pairs = _PairCache(ccc_pair, nb_list, dccc, ccc_nat)
+
+    if resp_matrix is None:
+        resp_matrix = interpolate_respfn(cct, resp, num_b, method=method)
+
+    # Derivatives of R + jS of every term with respect to every parameter
+    # (tone f, harmonic q, re/im): the same sums, with the pair products of
+    # tone f replaced by their derivatives
+    terms = _signed_terms(tuple_lists)
+    params = [(q, c) for q in range(1, num_p + 1) for c in (0, 1)]
+    if isinstance(resp_matrix, FourierResp):
+        keyed = []
+        for f_d in range(num_f):
+            for d in params:
+                for term in terms:
+                    keyed.append(tuple((f, (f, a, d) if f == f_d else (f, a)) for f, a in enumerate(term)))
+        rs_all = np.array(_sum_terms_fourier(keyed, pairs, resp_matrix, npts))
+        rs_all = rs_all.reshape((num_f, len(params), len(terms), npts)).transpose(2, 0, 1, 3)
+    else:
+        rs_all = _sum_derivatives_direct(terms, params, pairs, nb_list, resp_matrix, npts)
+
+    out = np.zeros((len(freq_list), num_f + 1, num_p + 1, 2, npts), dtype=complex)
+    for f_d in range(num_f):
+        for u, (q, c) in enumerate(params):
+            rs = dict(zip(terms, rs_all[:, f_d, u]))
+            out[:, f_d + 1, q, c] = _combine_outputs(tuple_lists, rs, npts)
+
+    return out
+
+
+def _sum_derivatives_direct(terms, params, pairs, nb_list, resp_matrix, npts):
+    """Derivatives of R + jS of the terms with respect to the parameters of
+    every tone (direct method), with ``_deriv_coeff_batched``.
+
+    Returns:
+        ndarray: ``d[t, f, u, i]`` for term t, tone f and parameter u
+
+    """
+
+    num_f, num_u = len(nb_list), len(params)
+    dims = np.array([2 * num_b + 1 for num_b in nb_list], dtype=np.int64)
+    max_dim = int(dims.max())
+    resp_flat = np.ascontiguousarray(resp_matrix).reshape(-1, npts)
+    num_outer = int(np.prod(dims[:-1]))
+    num_chunks = max(1, min(num_outer, 4 * nb.get_num_threads()))
+    per_term = num_f * num_u * num_chunks * npts * 16
+    batch_size = max(1, min(MAX_BATCH_TERMS, BATCH_ACC_BYTES // per_term))
+
+    out = np.zeros((len(terms), num_f, num_u, npts), dtype=complex)
+    for b0 in range(0, len(terms), batch_size):
+        batch = terms[b0:b0 + batch_size]
+        pair_arr = np.zeros((len(batch), num_f, max_dim, npts), dtype=np.complex128)
+        dpair_arr = np.zeros((len(batch), num_f, num_u, max_dim, npts), dtype=np.complex128)
+        valid = np.zeros((len(batch), num_f, max_dim), dtype=np.bool_)
+        for t, term in enumerate(batch):
+            for f, a in enumerate(term):
+                pair, mask = pairs[(f, a)]
+                pair_arr[t, f, :dims[f]] = pair
+                valid[t, f, :dims[f]] = mask
+                for u, d in enumerate(params):
+                    dpair_arr[t, f, u, :dims[f]] = pairs[(f, a, d)][0]
+        out[b0:b0 + len(batch)] = _deriv_coeff_batched(pair_arr, dpair_arr, valid, dims, resp_flat, num_chunks)
+
+    return out
 
 
 def _combine_rs(a_tuple, rs_p, rs_m):
@@ -1221,6 +1454,149 @@ def _current_coeff_batched(pairs, valid, dims, resp_flat, num_chunks):  # pragma
     return acc.sum(axis=1)
 
 
+@nb.njit("c16[:,:,:,:](c16[:,:,:,:], c16[:,:,:,:,:], b1[:,:,:], i8[:], c16[:,:], i8)", parallel=True, cache=True)
+def _deriv_coeff_batched(pairs, dpairs, valid, dims, resp_flat, num_chunks):  # pragma: no cover
+    """Derivatives of R + jS (Eqn. 5.25) for a batch of terms with respect to
+    the parameters of every tone, in one pass over the response function
+    matrix (see ``_current_coeff_batched`` for the loop structure).
+
+    The derivative with respect to a parameter of tone h is the same sum
+    with the pair products of tone h replaced by their derivatives
+    (``dpairs[t, h, u]``). For the outer tones, the sum over the innermost
+    tone is the same as for the current itself, so it is formed once and
+    multiplied by (product of the other outer tones' pair products) x (the
+    derivative of tone h's), from running prefix and suffix products. Only
+    the derivatives with respect to the innermost tone need their own inner
+    sums.
+
+    Args:
+        pairs (ndarray): Pair products, (terms, tones, 2 * max_b + 1, npts)
+        dpairs (ndarray): Their derivatives, (terms, tones, parameters,
+            2 * max_b + 1, npts)
+        valid (ndarray): Validity masks, (terms, tones, 2 * max_b + 1)
+        dims (ndarray): 2 * num_b + 1 for each tone
+        resp_flat (ndarray): Response function matrix reshaped to 2-D
+        num_chunks (int): Number of parallel chunks
+
+    Returns:
+        ndarray: Derivatives, (terms, tones, parameters, npts)
+
+    """
+
+    num_terms = pairs.shape[0]
+    num_u = dpairs.shape[2]
+    num_f = dims.shape[0]
+    npts = resp_flat.shape[1]
+    d_last = dims[num_f - 1]
+    f_in = num_f - 1  # innermost tone
+
+    num_outer = 1
+    for f in range(num_f - 1):
+        num_outer *= dims[f]
+    rows_per_chunk = (num_outer + num_chunks - 1) // num_chunks
+
+    acc = np.zeros((num_terms, num_f, num_u, num_chunks, npts), dtype=np.complex128)
+
+    last = num_f - 2  # last outer tone (-1 for one tone)
+    num_prefix = max(num_f - 1, 1)
+
+    for c in nb.prange(num_chunks):
+
+        # prefix[t, f] = P_0 * ... * P_f and suffix[t, f] = P_{f+1} * ... *
+        # P_last (outer tones, at the current row)
+        prefix = np.ones((num_terms, num_prefix, npts), dtype=np.complex128)
+        suffix = np.ones((num_prefix, npts), dtype=np.complex128)
+        ok = np.empty(num_terms, dtype=np.bool_)
+        inner = np.empty(npts, dtype=np.complex128)
+        inner_d = np.empty((num_u, npts), dtype=np.complex128)
+        w = np.empty(npts, dtype=np.complex128)
+        s_arr = np.empty(num_f, dtype=np.int64)
+        s_prev = np.full(num_f, -1, dtype=np.int64)
+
+        row_lo = c * rows_per_chunk
+        row_hi = min(num_outer, row_lo + rows_per_chunk)
+        for row in range(row_lo, row_hi):
+
+            r = row
+            for f in range(last, -1, -1):
+                s_arr[f] = r % dims[f]
+                r = r // dims[f]
+
+            any_ok = False
+            for t in range(num_terms):
+                ok_t = True
+                for f in range(last + 1):
+                    if not valid[t, f, s_arr[f]]:
+                        ok_t = False
+                        break
+                ok[t] = ok_t
+                any_ok = any_ok or ok_t
+            if not any_ok:
+                s_prev[0] = -1
+                continue
+
+            start = 0
+            while start <= last and s_arr[start] == s_prev[start]:
+                start += 1
+            for f in range(start, last + 1):
+                s = s_arr[f]
+                s_prev[f] = s
+                for t in range(num_terms):
+                    if f == 0:
+                        for i in range(npts):
+                            prefix[t, 0, i] = pairs[t, 0, s, i]
+                    else:
+                        for i in range(npts):
+                            prefix[t, f, i] = prefix[t, f - 1, i] * pairs[t, f, s, i]
+
+            base = row * d_last
+            for t in range(num_terms):
+                if not ok[t]:
+                    continue
+
+                # Inner sums: of the pair products (for the current and the
+                # outer tones' derivatives) and of their derivatives
+                for i in range(npts):
+                    inner[i] = 0.
+                for u in range(num_u):
+                    for i in range(npts):
+                        inner_d[u, i] = 0.
+                for s in range(d_last):
+                    if valid[t, f_in, s]:
+                        for i in range(npts):
+                            rv = resp_flat[base + s, i]
+                            inner[i] += pairs[t, f_in, s, i] * rv
+                            for u in range(num_u):
+                                inner_d[u, i] += dpairs[t, f_in, u, s, i] * rv
+
+                # Innermost tone
+                for u in range(num_u):
+                    for i in range(npts):
+                        acc[t, f_in, u, c, i] += prefix[t, num_prefix - 1, i] * inner_d[u, i]
+
+                # Outer tones: suffix products, then (prefix) dP_h (suffix)
+                if last >= 0:
+                    for i in range(npts):
+                        suffix[last, i] = inner[i]
+                    for h in range(last - 1, -1, -1):
+                        s = s_arr[h + 1]
+                        for i in range(npts):
+                            suffix[h, i] = suffix[h + 1, i] * pairs[t, h + 1, s, i]
+                    for h in range(last + 1):
+                        s = s_arr[h]
+                        if h == 0:
+                            for i in range(npts):
+                                w[i] = suffix[0, i]
+                        else:
+                            for i in range(npts):
+                                w[i] = prefix[t, h - 1, i] * suffix[h, i]
+                        for u in range(num_u):
+                            for i in range(npts):
+                                acc[t, h, u, c, i] += w[i] * dpairs[t, h, u, s, i]
+
+    return acc.sum(axis=3)
+
+
 def _current_fourier(fresp, ccc, tuple_lists, nb_list):
     """Calculate the tunneling currents with the Fourier-shift method.
 
@@ -1249,41 +1625,31 @@ def _current_fourier(fresp, ccc, tuple_lists, nb_list):
     """
 
     npts = ccc.shape[2]
+    terms = _signed_terms(tuple_lists)
+    pairs = _PairCache(ccc, nb_list)
+    rs = dict(zip(terms, _sum_terms_fourier(_base_keys(terms), pairs, fresp, npts)))
+
+    return _combine_outputs(tuple_lists, rs, npts)
+
+
+def _sum_terms_fourier(terms, pairs, fresp, npts):
+    """R + jS (Eqn. 5.25) for a list of terms (Fourier-shift method; terms
+    as in ``_sum_terms_direct``), accumulated over blocks of modes."""
+
     num_coeff = fresp.coeff.size
-
-    # All distinct index tuples, and the per-tone pair products they need
-    all_tuples = sorted(set(itertools.chain.from_iterable(tuple_lists)), reverse=True)
-    pairs = {}
-    for a_tuple in all_tuples:
-        for f, a in enumerate(a_tuple):
-            for sign in (1, -1):
-                if (f, sign * a) not in pairs:
-                    pairs[(f, sign * a)] = _pair_products(ccc[f + 1], sign * a, nb_list[f])
-
-    # R + jS for +a and -a, accumulated over blocks of modes
-    rs_p = {a_tuple: np.zeros(npts, dtype=complex) for a_tuple in all_tuples}
-    rs_m = {a_tuple: np.zeros(npts, dtype=complex) for a_tuple in all_tuples}
+    keys = sorted(set(key for term in terms for key in term), key=repr)
+    rs = [np.zeros(npts, dtype=complex) for _ in terms]
     for start in range(0, num_coeff, FOURIER_BLOCK):
         modes = slice(start, min(num_coeff, start + FOURIER_BLOCK))
         bias = fresp.bias_phase(modes)
-        factor = {key: fresp.shift[key[0]][modes] @ pair for key, pair in pairs.items()}
-        for a_tuple in all_tuples:
-            prod_p = bias.copy()
-            for f, a in enumerate(a_tuple):
-                prod_p *= factor[(f, a)]
-            rs_p[a_tuple] += prod_p.sum(axis=0)
-            if any(a != 0 for a in a_tuple):
-                prod_m = bias.copy()
-                for f, a in enumerate(a_tuple):
-                    prod_m *= factor[(f, -a)]
-                rs_m[a_tuple] += prod_m.sum(axis=0)
+        factor = {(f, key): fresp.shift[f][modes] @ pairs[key][0] for f, key in keys}
+        for t, term in enumerate(terms):
+            prod = bias.copy()
+            for f_key in term:
+                prod *= factor[f_key]
+            rs[t] += prod.sum(axis=0)
 
-    current_out = np.zeros((len(tuple_lists), npts), dtype=complex)
-    for i, tuple_list in enumerate(tuple_lists):
-        for a_tuple in tuple_list:
-            current_out[i] += _combine_rs(a_tuple, rs_p[a_tuple], rs_m[a_tuple])
-
-    return current_out
+    return rs
 
 
 # Helper functions -----------------------------------------------------------

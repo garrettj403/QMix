@@ -111,10 +111,16 @@ def test_line_search_hard_case():
     assert converged
     check_hb_error(vj, circuit, RESP, 25, stop_rerror=1e-3)
 
-    # Without the line search, some bias voltages don't converge
+    # Without the line search, some bias voltages don't converge with the
+    # finite-difference Jacobian
     _, mask = harmonic_balance(circuit, RESP, 25, max_it=50, stop_rerror=1e-3, mode='m', verbose=False,
-                               line_search=False)
+                               line_search=False, jacobian='numerical')
     assert not mask.all()
+
+    # With the line search, the numerical Jacobian converges too
+    _, _, converged = harmonic_balance(circuit, RESP, 25, max_it=50, stop_rerror=1e-3, mode='x', verbose=False,
+                                       jacobian='numerical')
+    assert converged
 
 
 def test_converged_flag_on_last_iteration():
@@ -267,6 +273,38 @@ def test_multi_junction_coupled():
                                           line_search=False, warm_start=True)
     assert converged
     np.testing.assert_allclose(vj_2, vj, rtol=0, atol=1e-5)
+
+
+@pytest.mark.parametrize('multi', [False, True])
+def test_analytic_jacobian(multi):
+    """The analytic and numerical Jacobians lead to the same solution, with
+    several tones and harmonics (and junctions)."""
+
+    if multi:
+        cct = qmix.circuit.MultiJunctionCircuit(2, 2, 2, vb_npts=NPTS)
+        cct.vb = [VBIAS, 0.8 * VBIAS]
+        cct.area[1] = 1.3
+        cct.vt[:, 1, 1] = 0.4, 0.3j
+        cct.vt[:, 2, 1] = 0.01, 0.
+        zt = np.array([[0.4 - 0.2j, 0.1 + 0.15j], [0.1 + 0.15j, 0.5 + 0.1j]])
+        cct.zt[:, :, 1:, 1:] = zt[:, :, None, None]
+    else:
+        cct = qmix.circuit.EmbeddingCircuit(2, 2, vb_npts=NPTS)
+        cct.vt[1, 1], cct.vt[2, 1] = 0.4, 0.01
+        cct.zt[1:, 1:] = 0.4 - 0.2j
+    cct.freq[1:] = 0.30, 0.33
+    nb = (12, 6)
+
+    results = {}
+    for jacobian in ('analytic', 'numerical'):
+        vj, _, converged = harmonic_balance(cct, RESP, nb, stop_rerror=1e-7, mode='x', verbose=False,
+                                            jacobian=jacobian)
+        assert converged
+        results[jacobian] = vj
+    np.testing.assert_allclose(results['analytic'], results['numerical'], rtol=0, atol=1e-7)
+
+    with pytest.raises(AssertionError):
+        harmonic_balance(cct, RESP, nb, verbose=False, jacobian='exact')
 
 
 def test_multi_junction_verbose_and_shortcuts(capsys):

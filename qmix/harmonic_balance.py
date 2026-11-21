@@ -30,7 +30,8 @@ import numpy as np
 from timeit import default_timer as timer
 from qmix.circuit import EmbeddingCircuit, MultiJunctionCircuit
 from qmix.misc.progbar import progress_bar
-from qmix.qtcurrent import interpolate_respfn, junction_resp, qtcurrent, _is_multi, _unpack_num_b
+from qmix.qtcurrent import (interpolate_respfn, junction_resp, qtcurrent, qtcurrent_derivatives, _is_multi,
+                            _unpack_num_b)
 
 # minimum Thevenin voltage (required to avoid div by 0 errors)
 MIN_VT = 1e-10
@@ -62,7 +63,7 @@ MAX_RESTARTS = 3
 
 def harmonic_balance(cct, resp, num_b=15, max_it=30, stop_rerror=0.001, vj_initial=None, damp_coeff=1., mode="o",
                      verbose=True, zj_guess=0.67, reuse_jacobian=True, method='auto', line_search=True,
-                     warm_start=False):
+                     warm_start=False, jacobian='analytic'):
     """Perform harmonic balance.
 
     Determine the harmonic balance of the junction + embedding circuit system.
@@ -122,6 +123,13 @@ def harmonic_balance(cct, resp, num_b=15, max_it=30, stop_rerror=0.001, vj_initi
             (e.g., the LO) is much stronger than the others, but it is not
             always faster. Ignored if ``vj_initial`` is given or there is
             only one tone.
+        jacobian (str, optional): how the Jacobian is calculated:
+            ``'analytic'`` (default) or ``'numerical'``. The analytic
+            Jacobian (``qmix.qtcurrent.qtcurrent_derivatives``) is exact and
+            evaluates all of the derivatives together, which is usually
+            faster than ``'numerical'`` (finite differences, 2 * num_n calls
+            to the tunneling current function, with a forward step of
+            ``DV``).
 
     Returns:
         ndarray: junction voltage that satisfies the circuit (mode 'o');
@@ -134,6 +142,9 @@ def harmonic_balance(cct, resp, num_b=15, max_it=30, stop_rerror=0.001, vj_initi
         print("Running harmonic balance:")
 
     start_time = timer()
+
+    assert jacobian in ('analytic', 'numerical'), "jacobian must be 'analytic' or 'numerical'"
+    analytic = jacobian == 'analytic'
 
     # Check input data ------------------------------------------------------
 
@@ -179,7 +190,8 @@ def harmonic_balance(cct, resp, num_b=15, max_it=30, stop_rerror=0.001, vj_initi
             if verbose:
                 print(" - warm start: solving tone {} on its own".format(f_strong))
             vj_f = _single_tone_guess(cct, resp, f_strong, _unpack_num_b(num_b, num_f)[f_strong - 1], max_it,
-                                      stop_rerror, damp_coeff, zj_guess, reuse_jacobian, method, line_search)
+                                      stop_rerror, damp_coeff, zj_guess, reuse_jacobian, method, line_search,
+                                      jacobian)
             if multi:
                 vj_initial[:, f_strong] = vj_f
             else:
@@ -204,10 +216,13 @@ def harmonic_balance(cct, resp, num_b=15, max_it=30, stop_rerror=0.001, vj_initi
         if multi:
             print(" - {0} junctions".format(num_j))
         print((" - {0} tone(s) and {1} harmonic(s)".format(num_f, num_p)))
-        msg = " - {0} calls to the quasiparticle tunneling current (qtc) function per iteration"
-        if multi:
-            msg += " (for each junction)"
-        print((msg.format(num_n * 2 + 1)))
+        if analytic:
+            print(" - analytic Jacobian")
+        else:
+            msg = " - {0} calls to the quasiparticle tunneling current (qtc) function per iteration"
+            if multi:
+                msg += " (for each junction)"
+            print((msg.format(num_n * 2 + 1)))
         print(" - max. iterations: {}".format(max_it))
 
     # Interpolate response function for all required voltages (a list, one
@@ -220,7 +235,8 @@ def harmonic_balance(cct, resp, num_b=15, max_it=30, stop_rerror=0.001, vj_initi
     if multi:
         vj_2d = vj_initial[:, 1:, 1:, :].reshape((num_k, npts))
         system = _MultiJunctionSystem(cct, resp, num_b, respfn_interp)
-        error_vector, inv_jacobian = system.error_vector, system.inv_jacobian
+        error_vector = system.error_vector
+        inv_jacobian = system.inv_jacobian_analytic if analytic else system.inv_jacobian
     else:
         vj_2d = vj_initial[1:, 1:, :].reshape((num_n, npts))
         vt_2d = vt[1:, 1:].reshape(num_n)
@@ -230,6 +246,8 @@ def harmonic_balance(cct, resp, num_b=15, max_it=30, stop_rerror=0.001, vj_initi
             return _error_vector(vj_2d, vt_2d, zt_2d, cct, resp, num_b, respfn_interp)
 
         def inv_jacobian(err_all, vj_2d, verbose):
+            if analytic:
+                return _inv_jacobian_analytic(vj_2d, zt_2d, cct, resp, num_b, respfn_interp)
             return _inv_jacobian(err_all, vj_2d, vt_2d, zt_2d, cct, resp, num_b, resp_matrix=respfn_interp,
                                  verbose=verbose)
 
@@ -243,7 +261,7 @@ def harmonic_balance(cct, resp, num_b=15, max_it=30, stop_rerror=0.001, vj_initi
         call_time = timer() - time_current
         msg = ' - time per qtc call:  {:7.2f} s / {:6.2f} min / {:5.2f} hrs'
         print((msg.format(call_time, call_time / 60., call_time / 3600.)))
-        it_time = call_time * (num_n * 2 + 1)
+        it_time = call_time * (num_n * 2 + 1)  # finite differences (an upper bound for the analytic Jacobian)
         msg = ' - time per iteration: {:7.2f} s / {:6.2f} min / {:5.2f} hrs'
         print((msg.format(it_time, it_time / 60., it_time / 3600.)))
         max_time = it_time * max_it
@@ -533,6 +551,45 @@ def _inv_jacobian(error_all, vj_2d, vt_2d, zt_2d, cct, resp, num_b, resp_matrix=
     return inv_jacobian
 
 
+def _hb_freq_list(cct):
+    """Frequencies of all tones and harmonics, in [f, p] order (rounded)."""
+
+    return [round(cct.freq[ft] * pt, ROUND_FREQ) for ft in range(1, cct.num_f + 1) for pt in range(1, cct.num_p + 1)]
+
+
+def _current_derivatives_2d(vj_2d, cct, resp, num_b, resp_matrix):
+    """Analytic derivatives of the currents at all tones and harmonics,
+    d[n, q, c, i] = d ij[n] / d (Re, Im)[c] vj[q], from
+    qmix.qtcurrent.qtcurrent_derivatives (n, q = index of [f, p])."""
+
+    num_n, npts = cct.num_n, cct.vb_npts
+    vj = np.zeros((cct.num_f + 1, cct.num_p + 1, npts), dtype=complex)
+    vj[1:, 1:, :] = vj_2d.reshape((cct.num_f, cct.num_p, npts))
+    d = qtcurrent_derivatives(vj, cct, resp, _hb_freq_list(cct), num_b, resp_matrix=resp_matrix)
+
+    return d[:, 1:, 1:].reshape((num_n, num_n, 2, npts))
+
+
+def _inv_jacobian_analytic(vj_2d, zt_2d, cct, resp, num_b, resp_matrix):
+    """Inverse Jacobian from the analytic derivatives of the current (same
+    layout as _inv_jacobian): de[n] / dvj[q] = -zt[n] dij[n] / dvj[q] -
+    delta_nq."""
+
+    num_n, npts = cct.num_n, cct.vb_npts
+    derr = -zt_2d[:, None, None, None] * _current_derivatives_2d(vj_2d, cct, resp, num_b, resp_matrix)
+    idx = np.arange(num_n)
+    derr[idx, idx, 0] -= 1.
+    derr[idx, idx, 1] -= 1j
+
+    # [n, re/im of the error, q, re/im of the perturbation, i]
+    jacobian = np.empty((num_n, 2, num_n, 2, npts))
+    jacobian[:, 0] = derr.real
+    jacobian[:, 1] = derr.imag
+    jacobian = jacobian.reshape((2 * num_n, 2 * num_n, npts))
+
+    return np.linalg.inv(jacobian.transpose(2, 0, 1)).transpose(1, 2, 0)
+
+
 # Determine mixer current (2D) ------------------------------------------------
 
 def _qt_current_for_hb(vj_2d, cct, resp, num_b, resp_matrix=None):
@@ -559,18 +616,13 @@ def _qt_current_for_hb(vj_2d, cct, resp, num_b, resp_matrix=None):
     vj = np.zeros((cct.num_f + 1, cct.num_p + 1, cct.vb_npts), dtype=complex)
     vj[1:, 1:, :] = vj_2d.reshape((cct.num_f, cct.num_p, cct.vb_npts))
 
-    freq_list = []
-    for ft in range(1, cct.num_f + 1):
-        for pt in range(1, cct.num_p + 1):
-            freq_list.append(round(cct.freq[ft] * pt, ROUND_FREQ))
-
-    current_out = qtcurrent(vj, cct, resp, freq_list, num_b, verbose=False, resp_matrix=resp_matrix)
+    current_out = qtcurrent(vj, cct, resp, _hb_freq_list(cct), num_b, verbose=False, resp_matrix=resp_matrix)
 
     return current_out
 
 
 def _single_tone_guess(cct, resp, f, num_b, max_it, stop_rerror, damp_coeff, zj_guess, reuse_jacobian, method,
-                       line_search):
+                       line_search, jacobian='analytic'):
     """Solve the harmonic balance for tone f on its own (all harmonics).
 
     Used as the initial guess for that tone in a multi-tone harmonic balance
@@ -591,7 +643,8 @@ def _single_tone_guess(cct, resp, f, num_b, max_it, stop_rerror, damp_coeff, zj_
         cct_1.zt[:, :, 1] = cct.zt[:, :, f]
         vj_1 = harmonic_balance(cct_1, resp, num_b=num_b, max_it=max_it, stop_rerror=stop_rerror,
                                 damp_coeff=damp_coeff, verbose=False, zj_guess=zj_guess,
-                                reuse_jacobian=reuse_jacobian, method=method, line_search=line_search)
+                                reuse_jacobian=reuse_jacobian, method=method, line_search=line_search,
+                                jacobian=jacobian)
         return vj_1[:, 1]
 
     cct_1 = EmbeddingCircuit(1, cct.num_p, vb_npts=cct.vb_npts)
@@ -602,7 +655,7 @@ def _single_tone_guess(cct, resp, f, num_b, max_it, stop_rerror, damp_coeff, zj_
 
     vj_1 = harmonic_balance(cct_1, resp, num_b=num_b, max_it=max_it, stop_rerror=stop_rerror, damp_coeff=damp_coeff,
                             verbose=False, zj_guess=zj_guess, reuse_jacobian=reuse_jacobian, method=method,
-                            line_search=line_search)
+                            line_search=line_search, jacobian=jacobian)
 
     return vj_1[1]
 
@@ -667,6 +720,32 @@ class _MultiJunctionSystem(object):
         """Harmonic balance error vector, [k, i]."""
         zi = np.einsum('njl,lni->jni', self.zt_2d, self.currents(vj_2d))
         return self.vt_2d[:, None] - zi.reshape(vj_2d.shape) - vj_2d
+
+    def inv_jacobian_analytic(self, err_all, vj_2d, verbose=True):
+        """Inverse Jacobian from the analytic derivatives of the currents
+        (see inv_jacobian)."""
+
+        num_j, num_n, npts = self.num_j, self.num_n, self.npts
+        vj_3d = vj_2d.reshape((num_j, num_n, npts))
+        # dij[l, n, q, c, i]
+        dij = np.array([self.area[j] * _current_derivatives_2d(vj_3d[j], self.ccts[j], self.resp[j], self.num_b,
+                                                               self.resp_matrix[j])
+                        for j in range(num_j)])
+        # [j, n, l, q, c, i]
+        derr = -np.einsum('njl,lnqci->jnlqci', self.zt_2d, dij)
+        for j in range(num_j):
+            for q in range(num_n):
+                derr[j, q, j, q, 0] -= 1.
+                derr[j, q, j, q, 1] -= 1j
+
+        # [j, n, re/im of the error, l, q, re/im of the perturbation, i]
+        jacobian = np.empty((num_j, num_n, 2, num_j, num_n, 2, npts))
+        jacobian[:, :, 0] = derr.real
+        jacobian[:, :, 1] = derr.imag
+        num_k = num_j * num_n
+        jacobian = jacobian.reshape((2 * num_k, 2 * num_k, npts))
+
+        return np.linalg.inv(jacobian.transpose(2, 0, 1)).transpose(1, 2, 0)
 
     def inv_jacobian(self, err_all, vj_2d, verbose=True):
         """Inverse Jacobian, [2k, 2k, i] (real and imaginary parts, as in
