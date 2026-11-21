@@ -58,13 +58,15 @@
 <li class="toctree-l2"><a class="reference internal" href="#Connecting-the-networks">7.2. Connecting the networks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#The-embedding-impedance">7.3. The embedding impedance</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#Comparing-with-the-recovered-impedances">7.4. Comparing with the recovered impedances</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#Sideband-impedances-in-the-noise-model">7.5. Sideband impedances in the noise model</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#The-embedding-impedance-at-the-sub-harmonic">7.6. The embedding impedance at the sub-harmonic</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#Simulating-the-broken-photon-step">7.7. Simulating the broken photon step</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Driving-the-harmonic-balance-with-the-S-parameters">7.5. Driving the harmonic balance with the S-parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Sideband-impedances-in-the-noise-model">7.6. Sideband impedances in the noise model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#The-embedding-impedance-at-the-sub-harmonic">7.7. The embedding impedance at the sub-harmonic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Simulating-the-broken-photon-step">7.8. Simulating the broken photon step</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="lo-saturation.html">8. Example #5: Power saturation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="references.html">9. References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multi-junction-mixer.html">9. Example #6: Multiple junctions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="references.html">10. References</a></li>
 </ul>
 
         </div>
@@ -356,11 +358,99 @@ Fitted capacitance:  144 fF, rms error 0.122 Rn
 </div>
 <p>With the fitted capacitance (~140 fF), the HFSS model follows the recovered impedances much more closely than with the nominal capacitance, also at 252-255 GHz, which were not used in the fit. With the measured normal resistance (14.2 ohms, i.e., an area of ~1.4 um^2 for the nominal resistance-area product of 20 ohm um^2), this corresponds to a specific capacitance of ~100 fF/um^2.</p>
 </section>
-<section id="Sideband-impedances-in-the-noise-model">
-<h2><span class="section-number">7.5. </span>Sideband impedances in the noise model<a class="headerlink" href="#Sideband-impedances-in-the-noise-model" title="Link to this heading"></a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">PumpedData.mixer_noise</span></code> simulates the mixer with a small-signal analysis (see Example #3). By default, it uses the recovered embedding impedance at the LO for both sidebands. With <code class="docutils literal notranslate"><span class="pre">z_emb</span></code>, the sideband impedances are taken from a function of frequency instead, e.g., the HFSS embedding impedance. With <code class="docutils literal notranslate"><span class="pre">anchor_lo=True</span></code>, this function is shifted so that it matches the recovered impedance at the LO frequency.</p>
+<section id="Driving-the-harmonic-balance-with-the-S-parameters">
+<h2><span class="section-number">7.5. </span>Driving the harmonic balance with the S-parameters<a class="headerlink" href="#Driving-the-harmonic-balance-with-the-S-parameters" title="Link to this heading"></a></h2>
+<p>So far, the S-parameters only gave the embedding impedance. They also give the Thevenin voltage, if we know the power of the source: <code class="docutils literal notranslate"><span class="pre">thevenin</span></code> calculates the Thevenin equivalent seen by the junction when a source (here, the LO) with a given available power drives another port of the network (here, the waveguide, port 3), and <code class="docutils literal notranslate"><span class="pre">set_thevenin</span></code> puts it into an <code class="docutils literal notranslate"><span class="pre">EmbeddingCircuit</span></code>. The simulation is then driven by the LO power in the waveguide, instead of a recovered Thevenin voltage.</p>
+<p>As an example, we will find the LO power in the waveguide at 220.1 GHz, where the HFSS embedding impedance (with the fitted capacitance) is close to the recovered one, by fitting the simulated pumped I-V curve to the measured one:</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">scipy.optimize</span><span class="w"> </span><span class="kn">import</span> <span class="n">minimize_scalar</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">qmix.circuit</span><span class="w"> </span><span class="kn">import</span> <span class="n">EmbeddingCircuit</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">qmix.harmonic_balance</span><span class="w"> </span><span class="kn">import</span> <span class="n">harmonic_balance</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">qmix.qtcurrent</span><span class="w"> </span><span class="kn">import</span> <span class="n">qtcurrent</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">qmix.network</span><span class="w"> </span><span class="kn">import</span> <span class="n">set_thevenin</span>
+
+<span class="k">with</span> <span class="n">quiet</span><span class="p">():</span>
+    <span class="n">pump220</span> <span class="o">=</span> <span class="n">qmix</span><span class="o">.</span><span class="n">exp</span><span class="o">.</span><span class="n">PumpedData</span><span class="p">(</span><span class="n">load</span><span class="p">(</span><span class="s1">'example-data/lo-sweep/f220.1_iv.csv'</span><span class="p">),</span> <span class="n">dciv</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="mf">220.1</span><span class="p">,</span>
+                                  <span class="n">analyze_if</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">simulate_lo</span><span class="p">(</span><span class="n">power</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Pumped I-V curve with an LO of available power ``power`` (W) in the waveguide."""</span>
+    <span class="n">cct</span> <span class="o">=</span> <span class="n">EmbeddingCircuit</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">vb_npts</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">),</span> <span class="n">vgap</span><span class="o">=</span><span class="n">dciv</span><span class="o">.</span><span class="n">vgap</span><span class="p">,</span> <span class="n">rn</span><span class="o">=</span><span class="n">dciv</span><span class="o">.</span><span class="n">rn</span><span class="p">)</span>
+    <span class="n">cct</span><span class="o">.</span><span class="n">vb</span> <span class="o">=</span> <span class="n">v</span>
+    <span class="n">cct</span><span class="o">.</span><span class="n">freq</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">pump220</span><span class="o">.</span><span class="n">vph</span>  <span class="c1"># 220.1 GHz (normalized)</span>
+    <span class="n">set_thevenin</span><span class="p">(</span><span class="n">cct</span><span class="p">,</span> <span class="n">rf</span><span class="p">,</span> <span class="n">f</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">source_port</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">power</span><span class="o">=</span><span class="n">power</span><span class="p">,</span> <span class="n">cap</span><span class="o">=</span><span class="n">cap_fit</span><span class="p">,</span> <span class="n">terminations</span><span class="o">=</span><span class="p">{</span><span class="mi">2</span><span class="p">:</span> <span class="mf">50.</span><span class="p">})</span>
+    <span class="n">vj</span> <span class="o">=</span> <span class="n">harmonic_balance</span><span class="p">(</span><span class="n">cct</span><span class="p">,</span> <span class="n">dciv</span><span class="o">.</span><span class="n">resp</span><span class="p">,</span> <span class="n">num_b</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">qtcurrent</span><span class="p">(</span><span class="n">vj</span><span class="p">,</span> <span class="n">cct</span><span class="p">,</span> <span class="n">dciv</span><span class="o">.</span><span class="n">resp</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="n">num_b</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">real</span><span class="p">,</span> <span class="n">cct</span>
+
+
+<span class="n">v_fit</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">pump220</span><span class="o">.</span><span class="n">vph</span> <span class="o">+</span> <span class="mf">0.03</span><span class="p">,</span> <span class="mf">0.97</span><span class="p">,</span> <span class="mi">25</span><span class="p">)</span>
+<span class="n">i_meas</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">v_fit</span><span class="p">,</span> <span class="n">pump220</span><span class="o">.</span><span class="n">voltage</span><span class="p">,</span> <span class="n">pump220</span><span class="o">.</span><span class="n">current</span><span class="p">)</span>
+<span class="n">fit</span> <span class="o">=</span> <span class="n">minimize_scalar</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">((</span><span class="n">simulate_lo</span><span class="p">(</span><span class="mi">10</span> <span class="o">**</span> <span class="n">x</span><span class="p">,</span> <span class="n">v_fit</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">i_meas</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">),</span>
+                      <span class="n">bounds</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mi">10</span><span class="p">,</span> <span class="o">-</span><span class="mi">6</span><span class="p">),</span> <span class="n">method</span><span class="o">=</span><span class="s1">'bounded'</span><span class="p">)</span>
+<span class="n">p_lo</span> <span class="o">=</span> <span class="mi">10</span> <span class="o">**</span> <span class="n">fit</span><span class="o">.</span><span class="n">x</span>
+<span class="n">_</span><span class="p">,</span> <span class="n">cct</span> <span class="o">=</span> <span class="n">simulate_lo</span><span class="p">(</span><span class="n">p_lo</span><span class="p">,</span> <span class="n">v_fit</span><span class="p">)</span>
+
+<span class="c1"># For comparison: the embedding circuit recovered from the pumped I-V curve</span>
+<span class="n">cct_rec</span> <span class="o">=</span> <span class="n">EmbeddingCircuit</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">vgap</span><span class="o">=</span><span class="n">dciv</span><span class="o">.</span><span class="n">vgap</span><span class="p">,</span> <span class="n">rn</span><span class="o">=</span><span class="n">dciv</span><span class="o">.</span><span class="n">rn</span><span class="p">)</span>
+<span class="n">cct_rec</span><span class="o">.</span><span class="n">vt</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">cct_rec</span><span class="o">.</span><span class="n">zt</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">pump220</span><span class="o">.</span><span class="n">vt</span><span class="p">,</span> <span class="n">pump220</span><span class="o">.</span><span class="n">zt</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">"LO power in the waveguide: </span><span class="si">{:.1f}</span><span class="s2"> nW (rms I-V error </span><span class="si">{:.4f}</span><span class="s2">)"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">p_lo</span> <span class="o">/</span> <span class="mf">1e-9</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">fit</span><span class="o">.</span><span class="n">fun</span><span class="p">)))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Thevenin circuit from HFSS:  vt = </span><span class="si">{:.3f}</span><span class="s2">, zt = </span><span class="si">{:.2f}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cct</span><span class="o">.</span><span class="n">vt</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">cct</span><span class="o">.</span><span class="n">zt</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Recovered Thevenin circuit:  vt = </span><span class="si">{:.3f}</span><span class="s2">, zt = </span><span class="si">{:.2f}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cct_rec</span><span class="o">.</span><span class="n">vt</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">cct_rec</span><span class="o">.</span><span class="n">zt</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Available power at the junction: </span><span class="si">{:.1f}</span><span class="s2"> nW (HFSS), </span><span class="si">{:.1f}</span><span class="s2"> nW (recovered)"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+      <span class="n">cct</span><span class="o">.</span><span class="n">available_power</span><span class="p">(</span><span class="n">units</span><span class="o">=</span><span class="s1">'nW'</span><span class="p">),</span> <span class="n">cct_rec</span><span class="o">.</span><span class="n">available_power</span><span class="p">(</span><span class="n">units</span><span class="o">=</span><span class="s1">'nW'</span><span class="p">)))</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+LO power in the waveguide: 46.8 nW (rms I-V error 0.0095)
+Thevenin circuit from HFSS:  vt = 0.090-0.461j, zt = 0.31-0.44j
+Recovered Thevenin circuit:  vt = 0.480+0.000j, zt = 0.31-0.51j
+Available power at the junction: 45.9 nW (HFSS), 48.2 nW (recovered)
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">1.3</span><span class="p">,</span> <span class="mi">131</span><span class="p">)</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">dciv</span><span class="o">.</span><span class="n">voltage</span><span class="p">,</span> <span class="n">dciv</span><span class="o">.</span><span class="n">current</span><span class="p">,</span> <span class="s1">'k--'</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">'Unpumped'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">pump220</span><span class="o">.</span><span class="n">voltage</span><span class="p">,</span> <span class="n">pump220</span><span class="o">.</span><span class="n">current</span><span class="p">,</span> <span class="s1">'k'</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">'Pumped (measured)'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">simulate_lo</span><span class="p">(</span><span class="n">p_lo</span><span class="p">,</span> <span class="n">v</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span> <span class="s1">'r--'</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">'Simulated, HFSS + </span><span class="si">{:.0f}</span><span class="s1"> nW LO'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">p_lo</span> <span class="o">/</span> <span class="mf">1e-9</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">'Bias voltage ($V_\mathrm</span><span class="si">{gap}</span><span class="s1">$)'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">'DC current ($I_\mathrm</span><span class="si">{gap}</span><span class="s1">$)'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">1.3</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">'220.1 GHz'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">10</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="_images/hfss-embedding-impedance_16_0.png" src="_images/hfss-embedding-impedance_16_0.png" />
+</div>
+</div>
+<p>With ~47 nW of LO power in the waveguide, the HFSS circuit reproduces the pumped I-V curve. The two Thevenin circuits are not identical, since the HFSS embedding impedance differs slightly from the recovered one, but the available power at the junction agrees to ~5% (46 vs 48 nW). The HFSS circuit is nearly lossless between the waveguide and the junction (only the surface impedance of the superconductors), so the available power at the junction is close to the power in the waveguide. Unlike the
+Thevenin voltage, the LO power in the waveguide is a physical quantity that can be compared with the output of the LO source and the loss of the optics.</p>
+<p>The same approach works for any number of tones and harmonics: call <code class="docutils literal notranslate"><span class="pre">set_thevenin</span></code> for each tone <code class="docutils literal notranslate"><span class="pre">f</span></code> and harmonic <code class="docutils literal notranslate"><span class="pre">p</span></code> (with <code class="docutils literal notranslate"><span class="pre">source_port=None</span></code> for frequencies without a source, e.g., the IF or the harmonics).</p>
+</section>
+<section id="Sideband-impedances-in-the-noise-model">
+<h2><span class="section-number">7.6. </span>Sideband impedances in the noise model<a class="headerlink" href="#Sideband-impedances-in-the-noise-model" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">PumpedData.mixer_noise</span></code> simulates the mixer with a small-signal analysis (see Example #3). By default, it uses the recovered embedding impedance at the LO for both sidebands. With <code class="docutils literal notranslate"><span class="pre">z_emb</span></code>, the sideband impedances are taken from a function of frequency instead, e.g., the HFSS embedding impedance. With <code class="docutils literal notranslate"><span class="pre">anchor_lo=True</span></code>, this function is shifted so that it matches the recovered impedance at the LO frequency.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">params_rf</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">t_hot</span><span class="o">=</span><span class="mf">295.</span><span class="p">,</span> <span class="n">t_cold</span><span class="o">=</span><span class="mf">80.</span><span class="p">)</span>  <span class="c1"># hot/cold load temperatures (K)</span>
@@ -406,7 +496,7 @@ HFSS (fitted C), anchored      0.63-0.25j   0.42-0.43j   0.50  20.5 K   3.6 K
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
@@ -418,18 +508,18 @@ HFSS (fitted C), anchored      0.63-0.25j   0.42-0.43j   0.50  20.5 K   3.6 K
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="_images/hfss-embedding-impedance_16_0.png" src="_images/hfss-embedding-impedance_16_0.png" />
+<img alt="_images/hfss-embedding-impedance_20_0.png" src="_images/hfss-embedding-impedance_20_0.png" />
 </div>
 </div>
 <p>Although the HFSS impedances differ noticeably between the two sidebands, they change mostly the fitted gain of the RF/optics stage (<code class="docutils literal notranslate"><span class="pre">G_RF</span></code>, by up to ~25%), and hardly change its noise (<code class="docutils literal notranslate"><span class="pre">T_RF</span></code>) or the noise of the mixer itself (<code class="docutils literal notranslate"><span class="pre">T_mix</span></code>).</p>
 <p>The S-parameters of the RF circuit can also be used to simulate the IF circuit (port 2), but for this mixer, the HFSS IF impedance (with the IF transformer into 50 ohms) is not consistent with the measured gain. The IF circuit is therefore still modelled by a fixed impedance (<code class="docutils literal notranslate"><span class="pre">z_if</span></code>).</p>
 </section>
 <section id="The-embedding-impedance-at-the-sub-harmonic">
-<h2><span class="section-number">7.6. </span>The embedding impedance at the sub-harmonic<a class="headerlink" href="#The-embedding-impedance-at-the-sub-harmonic" title="Link to this heading"></a></h2>
+<h2><span class="section-number">7.7. </span>The embedding impedance at the sub-harmonic<a class="headerlink" href="#The-embedding-impedance-at-the-sub-harmonic" title="Link to this heading"></a></h2>
 <p>Garrett et al. (2019) traced the broken photon steps of this mixer to a spurious harmonic of the LO source at 3/2 f_LO, made worse by the embedding impedance at the sub-harmonic, f_LO / 2. For LO frequencies of 236-255 GHz, the sub-harmonic (118-128 GHz) is below the cutoff frequency of the waveguide (136 GHz). The waveguide port then has an imaginary impedance. <code class="docutils literal notranslate"><span class="pre">qmix.network</span></code> connects such ports directly, without renormalizing them, so the embedding impedance can be calculated below cutoff
 too:</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">f</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">100e9</span><span class="p">,</span> <span class="mf">170e9</span><span class="p">,</span> <span class="mi">701</span><span class="p">)</span>
@@ -456,13 +546,13 @@ too:</p>
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="_images/hfss-embedding-impedance_18_0.png" src="_images/hfss-embedding-impedance_18_0.png" />
+<img alt="_images/hfss-embedding-impedance_22_0.png" src="_images/hfss-embedding-impedance_22_0.png" />
 </div>
 </div>
 <p>The embedding impedance is strongly inductive over exactly this range. (The HFSS data are on a 5 GHz grid, shown by the dots, so the shape of the resonance between the grid points is only approximate.) With <code class="docutils literal notranslate"><span class="pre">qmix.network</span></code>, this impedance can be used directly for a sub-harmonic tone in a multi-tone simulation.</p>
 </section>
 <section id="Simulating-the-broken-photon-step">
-<h2><span class="section-number">7.7. </span>Simulating the broken photon step<a class="headerlink" href="#Simulating-the-broken-photon-step" title="Link to this heading"></a></h2>
+<h2><span class="section-number">7.8. </span>Simulating the broken photon step<a class="headerlink" href="#Simulating-the-broken-photon-step" title="Link to this heading"></a></h2>
 <p>The broken photon step is visible in the pumped I-V curves of this device between ~235 and ~245 GHz: a notch in the first photon step below the gap, followed by a jump at <span class="math notranslate nohighlight">\(V_0 = V_\mathrm{gap} - h f_{LO} / 2e\)</span>, i.e., half a photon step below the gap. Here, we will simulate the pumped I-V curve at 240.0 GHz, following Garrett et al. (2019).</p>
 <p>Since the LO (f_LO), the sub-harmonic (f_LO / 2) and the spurious tone (3/2 f_LO) are all harmonics of f_LO / 2, this only needs one tone with three harmonics:</p>
 <ul class="simple">
@@ -471,7 +561,7 @@ too:</p>
 <li><p>p = 3: the spurious tone at 3/2 f_LO = 360 GHz. This is above the frequency range of the HFSS simulations (300 GHz), so the embedding impedance is approximated by the junction capacitance in parallel with a resistance of <span class="math notranslate nohighlight">\(R_n\)</span>. The capacitance dominates, so the exact resistance hardly matters.</p></li>
 </ul>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">scipy.optimize</span><span class="w"> </span><span class="kn">import</span> <span class="n">minimize</span><span class="p">,</span> <span class="n">minimize_scalar</span>
@@ -516,7 +606,7 @@ Embedding impedance (Rn): f_LO/2: 0.04+0.51j, f_LO: 0.75-0.29j, 3/2 f_LO: 0.04-0
 </div>
 <p>We will fit the Thevenin voltages to the first photon step below the gap: first the LO alone, and then the LO plus the spurious tone. (In this simulation, the phase of the spurious tone relative to the LO hardly changes the DC current, so we take both voltages to be real.)</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">vph</span> <span class="o">=</span> <span class="n">pump240</span><span class="o">.</span><span class="n">vph</span>
@@ -547,12 +637,12 @@ Embedding impedance (Rn): f_LO/2: 0.04+0.51j, f_LO: 0.75-0.29j, 3/2 f_LO: 0.04-0
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 LO only:                 vt = 0.653, rms error = 0.0177
-LO + 3/2 f_LO:           vt = 0.615 and -0.155, rms error = 0.0093
+LO + 3/2 f_LO:           vt = 0.614 and -0.154, rms error = 0.0094
 Same, with Z(f_LO/2) = 0: rms error = 0.0139
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.3</span><span class="p">,</span> <span class="mf">1.1</span><span class="p">,</span> <span class="mi">161</span><span class="p">)</span>
@@ -575,7 +665,7 @@ Same, with Z(f_LO/2) = 0: rms error = 0.0139
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="_images/hfss-embedding-impedance_23_0.png" src="_images/hfss-embedding-impedance_23_0.png" />
+<img alt="_images/hfss-embedding-impedance_27_0.png" src="_images/hfss-embedding-impedance_27_0.png" />
 </div>
 </div>
 <p>With the LO alone, the simulated photon step is smooth. Adding the spurious tone at 3/2 f_LO halves the error and reproduces the notch and the jump at half a photon step below the gap (gray line). The sub-harmonic embedding impedance is essential: with the same sources but <span class="math notranslate nohighlight">\(Z(f_{LO}/2) = 0\)</span>, the notch disappears, as in Garrett et al. (2019). The spurious tone and the LO mix to f_LO / 2, and the inductive embedding impedance at this frequency turns this current into a voltage, which creates

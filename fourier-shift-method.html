@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>3.3. The Fourier-Shift Method &mdash; QMix latest documentation</title>
+  <title>3.4. The Fourier-Shift Method &mdash; QMix latest documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
 
@@ -23,7 +23,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="4. Example #1: Creating a simple 1 tone simulation" href="single-tone-simulation.html" />
-    <link rel="prev" title="3.2. Harmonic Balance" href="harmonic-balance.html" /> 
+    <link rel="prev" title="3.3. Small-Signal Analysis" href="small-signal.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -51,13 +51,14 @@
 <li class="toctree-l1 current"><a class="reference internal" href="theory.html">3. Theory</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="mtsda.html">3.1. Multi-Tone Spectral Domain Analysis</a></li>
 <li class="toctree-l2"><a class="reference internal" href="harmonic-balance.html">3.2. Harmonic Balance</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">3.3. The Fourier-Shift Method</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#the-sum-that-has-to-be-evaluated">3.3.1. The sum that has to be evaluated</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#factorizing-the-shift">3.3.2. Factorizing the shift</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#constructing-the-fourier-series">3.3.3. Constructing the Fourier series</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#accuracy">3.3.4. Accuracy</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#cost">3.3.5. Cost</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#using-it">3.3.6. Using it</a></li>
+<li class="toctree-l2"><a class="reference internal" href="small-signal.html">3.3. Small-Signal Analysis</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">3.4. The Fourier-Shift Method</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#the-sum-that-has-to-be-evaluated">3.4.1. The sum that has to be evaluated</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#factorizing-the-shift">3.4.2. Factorizing the shift</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#constructing-the-fourier-series">3.4.3. Constructing the Fourier series</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#accuracy">3.4.4. Accuracy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#cost">3.4.5. Cost</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#using-it">3.4.6. Using it</a></li>
 </ul>
 </li>
 </ul>
@@ -67,7 +68,8 @@
 <li class="toctree-l1"><a class="reference internal" href="analyze-experimental-data.html">6. Example #3: Analyzing experimental data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="hfss-embedding-impedance.html">7. Example #4: Embedding impedance from HFSS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="lo-saturation.html">8. Example #5: Power saturation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="references.html">9. References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multi-junction-mixer.html">9. Example #6: Multiple junctions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="references.html">10. References</a></li>
 </ul>
 
         </div>
@@ -85,7 +87,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="theory.html"><span class="section-number">3. </span>Theory</a></li>
-      <li class="breadcrumb-item active"><span class="section-number">3.3. </span>The Fourier-Shift Method</li>
+      <li class="breadcrumb-item active"><span class="section-number">3.4. </span>The Fourier-Shift Method</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/fourier-shift-method.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -96,11 +98,11 @@
            <div itemprop="articleBody">
              
   <section id="the-fourier-shift-method">
-<span id="fourier-shift-method"></span><h1><span class="section-number">3.3. </span>The Fourier-Shift Method<a class="headerlink" href="#the-fourier-shift-method" title="Link to this heading"></a></h1>
+<span id="fourier-shift-method"></span><h1><span class="section-number">3.4. </span>The Fourier-Shift Method<a class="headerlink" href="#the-fourier-shift-method" title="Link to this heading"></a></h1>
 <p>QMix provides two ways to evaluate the sum over the phase factor coefficients that gives the quasiparticle tunneling current: the <em>direct</em> summation, which is the method described by Kittara (2002) and used by QMix since its first release, and the <em>Fourier-shift</em> method, which was added to make simulations with many tones (or large summation limits) practical. This page describes the Fourier-shift method, when to use it, and what accuracy to expect.</p>
 <p>All quantities below are normalized in the usual way: voltages to the gap voltage, currents to the gap current, and frequencies to the gap frequency.</p>
 <section id="the-sum-that-has-to-be-evaluated">
-<h2><span class="section-number">3.3.1. </span>The sum that has to be evaluated<a class="headerlink" href="#the-sum-that-has-to-be-evaluated" title="Link to this heading"></a></h2>
+<h2><span class="section-number">3.4.1. </span>The sum that has to be evaluated<a class="headerlink" href="#the-sum-that-has-to-be-evaluated" title="Link to this heading"></a></h2>
 <p>In multi-tone spectral domain analysis, the junction is driven by <span class="math notranslate nohighlight">\(F\)</span> non-harmonically related tones with frequencies <span class="math notranslate nohighlight">\(\omega_1, \ldots, \omega_F\)</span>. For each tone <span class="math notranslate nohighlight">\(f\)</span>, the phase factor coefficients <span class="math notranslate nohighlight">\(C^{(f)}_k\)</span> (Eqn. 5.12 in Kittara’s thesis) are known for <span class="math notranslate nohighlight">\(k = -B_f, \ldots, B_f\)</span>, where <span class="math notranslate nohighlight">\(B_f\)</span> is the summation limit (<code class="docutils literal notranslate"><span class="pre">num_b</span></code> in QMix). The tunneling current at an output frequency <span class="math notranslate nohighlight">\(\omega\)</span> is assembled from the harmonic combinations <span class="math notranslate nohighlight">\(\mathbf{a} = (a_1, \ldots, a_F)\)</span> for which <span class="math notranslate nohighlight">\(a_1 \omega_1 + \cdots + a_F \omega_F = \omega\)</span>. For each such combination, Eqn. 5.25 (and its generalization, Eqn. 5.35) gives</p>
 <div class="math notranslate nohighlight" id="equation-direct-sum">
 <span class="eqno">(1)<a class="headerlink" href="#equation-direct-sum" title="Link to this equation"></a></span>\[R_{\mathbf{a}} + j S_{\mathbf{a}} = \sum_{k_1 = -B_1}^{B_1} \cdots \sum_{k_F = -B_F}^{B_F}
@@ -118,7 +120,7 @@
 <p>values, which are stored in the response function matrix (<code class="docutils literal notranslate"><span class="pre">resp_matrix</span></code> in QMix) and visited once per harmonic combination. Both the memory and the time per current calculation grow <em>multiplicatively</em> with the number of tones. For four tones with <code class="docutils literal notranslate"><span class="pre">num_b</span> <span class="pre">=</span> <span class="pre">(15,</span> <span class="pre">10,</span> <span class="pre">10,</span> <span class="pre">15)</span></code> and 201 bias points, the matrix is 1.4 GB; for five tones with <code class="docutils literal notranslate"><span class="pre">num_b</span> <span class="pre">=</span> <span class="pre">(15,</span> <span class="pre">10,</span> <span class="pre">10,</span> <span class="pre">15,</span> <span class="pre">15)</span></code> it would be 42 GB.</p>
 </section>
 <section id="factorizing-the-shift">
-<h2><span class="section-number">3.3.2. </span>Factorizing the shift<a class="headerlink" href="#factorizing-the-shift" title="Link to this heading"></a></h2>
+<h2><span class="section-number">3.4.2. </span>Factorizing the shift<a class="headerlink" href="#factorizing-the-shift" title="Link to this heading"></a></h2>
 <p>The Fourier-shift method removes the coupling through the response function by writing <span class="math notranslate nohighlight">\(\tilde{I}\)</span> as a Fourier series over a period <span class="math notranslate nohighlight">\(L\)</span> that starts at a voltage <span class="math notranslate nohighlight">\(v_0\)</span>:</p>
 <div class="math notranslate nohighlight" id="equation-fourier-series">
 <span class="eqno">(2)<a class="headerlink" href="#equation-fourier-series" title="Link to this equation"></a></span>\[\tilde{I}(V) \approx \sum_{n=-N}^{N} c_n \, e^{j \tau_n (V - v_0)},
@@ -140,7 +142,7 @@ M^{(f)}_{a}(\tau) = \sum_{k=-B_f}^{B_f} P^{(f)}_{a}(k) \, e^{j \tau k \omega_f}.
 <p>The structure of <a class="reference internal" href="#equation-fourier-sum">(3)</a> is worth a remark. The variable <span class="math notranslate nohighlight">\(\tau\)</span> is conjugate to voltage, so it plays the role of time: the Fourier transform of the response function with respect to voltage is, up to constants, the time-domain response function <span class="math notranslate nohighlight">\(\psi(t)\)</span> of Withington and Kollberg (1989). The sum over <span class="math notranslate nohighlight">\(n\)</span> is therefore a time integral, and <span class="math notranslate nohighlight">\(M^{(f)}_a(\tau)\)</span> is the time-domain autocorrelation of one tone’s phase factor. Withington and Kollberg rejected a time-domain analysis because the response function has to be sampled over many gap-frequency cycles for every current evaluation, and because a multi-tone waveform has no short period over which the output frequency could be extracted. The Fourier-shift method keeps the spectral part of their argument: the output frequency is still selected analytically through the index tuples <span class="math notranslate nohighlight">\(\mathbf{a}\)</span>, and only the shift of the response function is moved to the <span class="math notranslate nohighlight">\(\tau\)</span> domain. The number of modes <span class="math notranslate nohighlight">\(N\)</span> is the counterpart of their number of time samples, which is why, for one or two tones, the direct sum is still cheaper, exactly as they found. With many tones the multiplicative cost of the direct sum takes over and the additive cost of <a class="reference internal" href="#equation-fourier-sum">(3)</a> wins.</p>
 </section>
 <section id="constructing-the-fourier-series">
-<h2><span class="section-number">3.3.3. </span>Constructing the Fourier series<a class="headerlink" href="#constructing-the-fourier-series" title="Link to this heading"></a></h2>
+<h2><span class="section-number">3.4.3. </span>Constructing the Fourier series<a class="headerlink" href="#constructing-the-fourier-series" title="Link to this heading"></a></h2>
 <p>The response function is not periodic: <span class="math notranslate nohighlight">\(I_{dc}(V)\)</span> grows linearly for large <span class="math notranslate nohighlight">\(|V|\)</span>. It is therefore multiplied by a window <span class="math notranslate nohighlight">\(w(V)\)</span> before the series is formed. The window is exactly one on the interval</p>
 <div class="math notranslate nohighlight">
 \[\left[ v_{lo}, \, v_{hi} \right] = \left[ \min V_b - \sum_f B_f \omega_f, \;\; \max V_b + \sum_f B_f \omega_f \right],\]</div>
@@ -158,7 +160,7 @@ M^{(f)}_{a}(\tau) = \sum_{k=-B_f}^{B_f} P^{(f)}_{a}(k) \, e^{j \tau k \omega_f}.
 <p>Two points follow from this construction. First, inside <span class="math notranslate nohighlight">\([v_{lo}, v_{hi}]\)</span> the window is exactly one, so it introduces no approximation whatsoever; the only approximation in the whole method is the truncation of the series at <span class="math notranslate nohighlight">\(|n| \le N\)</span> in <a class="reference internal" href="#equation-fourier-series">(2)</a>. Second, the series is built once per response function, bias voltage grid, set of frequencies and set of summation limits, and it does not depend on the junction voltage. QMix therefore builds it in <a class="reference internal" href="qmix.html#qmix.qtcurrent.interpolate_respfn" title="qmix.qtcurrent.interpolate_respfn"><code class="xref py py-func docutils literal notranslate"><span class="pre">qmix.qtcurrent.interpolate_respfn()</span></code></a>, which returns a <a class="reference internal" href="qmix.html#qmix.qtcurrent.FourierResp" title="qmix.qtcurrent.FourierResp"><code class="xref py py-class docutils literal notranslate"><span class="pre">qmix.qtcurrent.FourierResp</span></code></a> object in place of the response function matrix, and reuses it across all of the current calculations in a harmonic balance run.</p>
 </section>
 <section id="accuracy">
-<h2><span class="section-number">3.3.4. </span>Accuracy<a class="headerlink" href="#accuracy" title="Link to this heading"></a></h2>
+<h2><span class="section-number">3.4.4. </span>Accuracy<a class="headerlink" href="#accuracy" title="Link to this heading"></a></h2>
 <p>How quickly the series converges depends on how smooth the response function is. In QMix the response function is a spline through the DC I-V curve and its Kramers-Kronig transform. A cubic spline has jumps in its third derivative at the knots, so its Fourier coefficients decay only like <span class="math notranslate nohighlight">\(n^{-4}\)</span>; a quintic spline (<code class="docutils literal notranslate"><span class="pre">spline_order=5</span></code> when constructing the <a class="reference internal" href="qmix.html#qmix.respfn.RespFn" title="qmix.respfn.RespFn"><code class="xref py py-class docutils literal notranslate"><span class="pre">qmix.respfn.RespFn</span></code></a>) has jumps in the fifth derivative and its coefficients decay like <span class="math notranslate nohighlight">\(n^{-6}\)</span>. The table lists the largest error of the truncated series, relative to the spline it represents, over a window from -5 to 8 for the polynomial I-V model (<code class="docutils literal notranslate"><span class="pre">RespFnPolynomial(50)</span></code>). The error is always largest at the gap voltage, where the knots are densest.</p>
 <table class="docutils align-default">
 <thead>
@@ -194,7 +196,7 @@ M^{(f)}_{a}(\tau) = \sum_{k=-B_f}^{B_f} P^{(f)}_{a}(k) \, e^{j \tau k \omega_f}.
 <p>Two limitations follow from the dependence on smoothness. The method cannot be used with <a class="reference internal" href="qmix.html#qmix.respfn.RespFnPerfect" title="qmix.respfn.RespFnPerfect"><code class="xref py py-class docutils literal notranslate"><span class="pre">qmix.respfn.RespFnPerfect</span></code></a> without smearing, whose DC I-V curve is discontinuous at the gap: the series then converges too slowly to be useful (Gibbs oscillations). And the direct method remains the reference for the stored benchmark values, which are checked to 14 decimal places.</p>
 </section>
 <section id="cost">
-<h2><span class="section-number">3.3.5. </span>Cost<a class="headerlink" href="#cost" title="Link to this heading"></a></h2>
+<h2><span class="section-number">3.4.5. </span>Cost<a class="headerlink" href="#cost" title="Link to this heading"></a></h2>
 <p>The two methods have opposite scaling, so neither is best everywhere. For a small number of tones with modest summation limits, the direct method is faster: for the four-tone benchmark (<code class="docutils literal notranslate"><span class="pre">num_b</span> <span class="pre">=</span> <span class="pre">(10,</span> <span class="pre">5,</span> <span class="pre">5,</span> <span class="pre">5)</span></code>, 201 bias points) it takes about 40 ms where the Fourier-shift method takes about 0.6 s. The Fourier-shift method takes over when the product of the summation limits becomes large, which is what happens with five or more tones, or with large <code class="docutils literal notranslate"><span class="pre">num_b</span></code> on several tones (for example, a strongly driven IF tone in a saturation study). The following were measured on the same machine for five tones at 201 bias points.</p>
 <table class="docutils align-default">
 <thead>
@@ -221,7 +223,7 @@ M^{(f)}_{a}(\tau) = \sum_{k=-B_f}^{B_f} P^{(f)}_{a}(k) \, e^{j \tau k \omega_f}.
 <p>The time of the Fourier-shift method is almost independent of <code class="docutils literal notranslate"><span class="pre">num_b</span></code>, because the shift matrices are small and the work is dominated by the <span class="math notranslate nohighlight">\((2N+1) \times n_{pts}\)</span> products over the modes.</p>
 </section>
 <section id="using-it">
-<h2><span class="section-number">3.3.6. </span>Using it<a class="headerlink" href="#using-it" title="Link to this heading"></a></h2>
+<h2><span class="section-number">3.4.6. </span>Using it<a class="headerlink" href="#using-it" title="Link to this heading"></a></h2>
 <p>The method is selected with the <code class="docutils literal notranslate"><span class="pre">method</span></code> argument of <a class="reference internal" href="qmix.html#qmix.qtcurrent.qtcurrent" title="qmix.qtcurrent.qtcurrent"><code class="xref py py-func docutils literal notranslate"><span class="pre">qmix.qtcurrent.qtcurrent()</span></code></a>, <a class="reference internal" href="qmix.html#qmix.qtcurrent.interpolate_respfn" title="qmix.qtcurrent.interpolate_respfn"><code class="xref py py-func docutils literal notranslate"><span class="pre">qmix.qtcurrent.interpolate_respfn()</span></code></a> and <a class="reference internal" href="qmix.html#qmix.harmonic_balance.harmonic_balance" title="qmix.harmonic_balance.harmonic_balance"><code class="xref py py-func docutils literal notranslate"><span class="pre">qmix.harmonic_balance.harmonic_balance()</span></code></a>:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">'direct'</span></code>: the direct summation.</p></li>
@@ -261,7 +263,7 @@ M^{(f)}_{a}(\tau) = \sum_{k=-B_f}^{B_f} P^{(f)}_{a}(k) \, e^{j \tau k \omega_f}.
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="harmonic-balance.html" class="btn btn-neutral float-left" title="3.2. Harmonic Balance" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="small-signal.html" class="btn btn-neutral float-left" title="3.3. Small-Signal Analysis" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="single-tone-simulation.html" class="btn btn-neutral float-right" title="4. Example #1: Creating a simple 1 tone simulation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

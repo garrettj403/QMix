@@ -23,6 +23,19 @@ Withington, S., Isaak, K. G., Kovtonyuk, S. A., Panhuyzen, R. A., & Klapwijk, T.
 
 Withington, S., Kittara, P., & Yassin, G. (2003). `Multitone quantum simulations of saturating tunnel junction mixers. <http://aip.scitation.org/doi/10.1063/1.1576515>`_ Journal of Applied Physics, 93(12), 9812–9822.
 
+References related to the small-signal analysis
+-----------------------------------------------
+
+Callen, H. B., & Welton, T. A. (1951). Irreversibility and generalized noise. Physical Review, 83(1), 34-40.
+
+Rice, F., Ward, J., Zmuidzinas, J., & Chattopadhyay, G. (1999). Fast harmonic balance of SIS mixers with multiple junctions and superconducting circuits. In Proc. 10th Int. Symp. Space THz Tech. Charlottesville, VA.
+
+Tucker, J. R. (1979). Quantum limited detection in tunnel junction mixers. IEEE Journal of Quantum Electronics, 15(11), 1234-1258.
+
+Tucker, J. R., & Feldman, M. J. (1985). `Quantum detection at millimeter wavelengths. <https://link.aps.org/doi/10.1103/RevModPhys.57.1055>`_ Reviews of Modern Physics, 57(4), 1055-1113.
+
+Twiss, R. Q. (1955). Nyquist's and Thevenin's theorems generalized for nonreciprocal linear networks. Journal of Applied Physics, 26(5), 599-602.
+
 Other references
 ----------------
 
@@ -35,7 +48,5 @@ Rashid, H., Krause, S., Meledin, D., Desmaris, V., Pavolotsky, A., & Belitsky, V
 Skalare, A. (1989). `Determining embedding circuit parameters from DC measurements on quasiparticle mixers. <http://link.springer.com/10.1007/BF01010125>`_ Journal of Infrared, Millimeter, and Terahertz Waves, 10(11), 1339–1353.
 
 Tien, P. K., & Gordon, J. P. (1963). `Multiphoton process observed in the interaction of microwave fields with the tunneling between superconductor films. <https://link.aps.org/doi/10.1103/PhysRev.129.647>`_ Physical Review, 129(2), 647-651.
-
-Tucker, J. R., & Feldman, M. J. (1985). `Quantum detection at millimeter wavelengths. <https://link.aps.org/doi/10.1103/RevModPhys.57.1055>`_ Reviews of Modern Physics, 57(4), 1055-1113.
 
 Woody, D. P., Miller, R. E., & Wengler, M. J. (1985). `85--115-GHz Receivers for Radio Astronomy. <https://ieeexplore.ieee.org/abstract/document/1132955>`_ IEEE Transactions on Microwave Theory and Techniques, 33(2), 90–95.

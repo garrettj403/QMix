@@ -49,7 +49,8 @@
 <li class="toctree-l1"><a class="reference internal" href="analyze-experimental-data.html">6. Example #3: Analyzing experimental data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="hfss-embedding-impedance.html">7. Example #4: Embedding impedance from HFSS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="lo-saturation.html">8. Example #5: Power saturation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="references.html">9. References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multi-junction-mixer.html">9. Example #6: Multiple junctions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="references.html">10. References</a></li>
 </ul>
 
         </div>
@@ -88,6 +89,7 @@
  | <a href="#G"><strong>G</strong></a>
  | <a href="#H"><strong>H</strong></a>
  | <a href="#I"><strong>I</strong></a>
+ | <a href="#J"><strong>J</strong></a>
  | <a href="#K"><strong>K</strong></a>
  | <a href="#L"><strong>L</strong></a>
  | <a href="#M"><strong>M</strong></a>
@@ -111,6 +113,8 @@
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="qmix.html#qmix.circuit.MultiJunctionCircuit.area">area (qmix.circuit.MultiJunctionCircuit attribute)</a>
+</li>
       <li><a href="qmix.html#qmix.circuit.EmbeddingCircuit.available_power">available_power() (qmix.circuit.EmbeddingCircuit method)</a>
 </li>
   </ul></td>
@@ -207,14 +211,18 @@
         <li><a href="qmix.exp.html#qmix.exp.iv_data.DCIVData.fgap">(qmix.exp.iv_data.DCIVData attribute)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="qmix.exp.html#qmix.exp.exp_data.MixerNoise.fit_mask">fit_mask (qmix.exp.exp_data.MixerNoise attribute)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="qmix.html#qmix.qtcurrent.FourierResp">FourierResp (class in qmix.qtcurrent)</a>
 </li>
       <li><a href="qmix.html#qmix.circuit.EmbeddingCircuit.freq">freq (qmix.circuit.EmbeddingCircuit attribute)</a>
+
+      <ul>
+        <li><a href="qmix.html#qmix.circuit.MultiJunctionCircuit.freq">(qmix.circuit.MultiJunctionCircuit attribute)</a>
 </li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
@@ -269,14 +277,20 @@
       </ul></li>
       <li><a href="qmix.html#qmix.respfn.RespFn.ikk">ikk() (qmix.respfn.RespFn method)</a>
 </li>
+      <li><a href="qmix.html#qmix.network.Network.impedance">impedance() (qmix.network.Network method)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="qmix.html#qmix.network.Network.impedance">impedance() (qmix.network.Network method)</a>
+      <li><a href="qmix.html#qmix.network.impedance_matrix">impedance_matrix() (in module qmix.network)</a>
 </li>
       <li><a href="qmix.exp.html#qmix.exp.exp_data.initialize_dir">initialize_dir() (in module qmix.exp.exp_data)</a>
 </li>
       <li><a href="qmix.html#qmix.circuit.EmbeddingCircuit.initialize_vj">initialize_vj() (qmix.circuit.EmbeddingCircuit method)</a>
+
+      <ul>
+        <li><a href="qmix.html#qmix.circuit.MultiJunctionCircuit.initialize_vj">(qmix.circuit.MultiJunctionCircuit method)</a>
 </li>
+      </ul></li>
       <li><a href="qmix.exp.html#qmix.exp.iv_data.DCIVData.inorm">inorm (qmix.exp.iv_data.DCIVData attribute)</a>
 </li>
       <li><a href="qmix.html#qmix.network.Network.interpolate">interpolate() (qmix.network.Network method)</a>
@@ -286,6 +300,18 @@
       <li><a href="qmix.exp.html#qmix.exp.iv_data.DCIVData.iraw">iraw (qmix.exp.iv_data.DCIVData attribute)</a>
 </li>
       <li><a href="qmix.exp.html#qmix.exp.iv_data.iv_curve">iv_curve() (in module qmix.exp.iv_data)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="J">J</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="qmix.html#qmix.circuit.MultiJunctionCircuit.junction">junction() (qmix.circuit.MultiJunctionCircuit method)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="qmix.html#qmix.qtcurrent.junction_resp">junction_resp() (in module qmix.qtcurrent)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -373,14 +399,28 @@
 </li>
       </ul></li>
   </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="qmix.html#qmix.circuit.MultiJunctionCircuit">MultiJunctionCircuit (class in qmix.circuit)</a>
+</li>
+  </ul></td>
 </tr></table>
 
 <h2 id="N">N</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="qmix.html#qmix.circuit.EmbeddingCircuit.name">name (qmix.circuit.EmbeddingCircuit attribute)</a>
+
+      <ul>
+        <li><a href="qmix.html#qmix.circuit.MultiJunctionCircuit.name">(qmix.circuit.MultiJunctionCircuit attribute)</a>
 </li>
+      </ul></li>
       <li><a href="qmix.html#qmix.network.Network">Network (class in qmix.network)</a>
+</li>
+      <li><a href="qmix.html#qmix.small_signal.network_gain">network_gain() (in module qmix.small_signal)</a>
+</li>
+      <li><a href="qmix.html#qmix.small_signal.network_noise_temperature">network_noise_temperature() (in module qmix.small_signal)</a>
+</li>
+      <li><a href="qmix.html#qmix.small_signal.network_output_noise">network_output_noise() (in module qmix.small_signal)</a>
 </li>
       <li><a href="qmix.html#qmix.small_signal.noise_matrix">noise_matrix() (in module qmix.small_signal)</a>
 </li>
@@ -389,11 +429,25 @@
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="qmix.html#qmix.circuit.EmbeddingCircuit.num_f">num_f (qmix.circuit.EmbeddingCircuit attribute)</a>
+
+      <ul>
+        <li><a href="qmix.html#qmix.circuit.MultiJunctionCircuit.num_f">(qmix.circuit.MultiJunctionCircuit attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="qmix.html#qmix.circuit.MultiJunctionCircuit.num_j">num_j (qmix.circuit.MultiJunctionCircuit attribute)</a>
 </li>
       <li><a href="qmix.html#qmix.circuit.EmbeddingCircuit.num_n">num_n (qmix.circuit.EmbeddingCircuit attribute)</a>
+
+      <ul>
+        <li><a href="qmix.html#qmix.circuit.MultiJunctionCircuit.num_n">(qmix.circuit.MultiJunctionCircuit attribute)</a>
 </li>
+      </ul></li>
       <li><a href="qmix.html#qmix.circuit.EmbeddingCircuit.num_p">num_p (qmix.circuit.EmbeddingCircuit attribute)</a>
+
+      <ul>
+        <li><a href="qmix.html#qmix.circuit.MultiJunctionCircuit.num_p">(qmix.circuit.MultiJunctionCircuit attribute)</a>
 </li>
+      </ul></li>
       <li><a href="qmix.html#qmix.network.Network.num_ports">num_ports (qmix.network.Network property)</a>
 </li>
   </ul></td>
@@ -567,8 +621,6 @@
         <li><a href="qmix.mathfn.html#module-qmix.mathfn">module</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     qmix.mathfn.filters
 
@@ -576,6 +628,8 @@
         <li><a href="qmix.mathfn.html#module-qmix.mathfn.filters">module</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     qmix.mathfn.ivcurve_models
 
@@ -647,6 +701,8 @@
 </li>
       </ul></li>
       <li><a href="qmix.html#qmix.qtcurrent.qtcurrent">qtcurrent() (in module qmix.qtcurrent)</a>
+</li>
+      <li><a href="qmix.html#qmix.qtcurrent.qtcurrent_derivatives">qtcurrent_derivatives() (in module qmix.qtcurrent)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -720,6 +776,8 @@
 </li>
       <li><a href="qmix.html#qmix.circuit.EmbeddingCircuit.set_name">set_name() (qmix.circuit.EmbeddingCircuit method)</a>
 </li>
+      <li><a href="qmix.html#qmix.network.set_thevenin">set_thevenin() (in module qmix.network)</a>
+</li>
       <li><a href="qmix.html#qmix.qtcurrent.FourierResp.shift">shift (qmix.qtcurrent.FourierResp attribute)</a>
 </li>
       <li><a href="qmix.exp.html#qmix.exp.if_data.DCIFData.shot_slope">shot_slope (qmix.exp.if_data.DCIFData attribute)</a>
@@ -729,6 +787,8 @@
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="qmix.html#qmix.small_signal.sideband_impedances">sideband_impedances() (in module qmix.small_signal)</a>
+</li>
+      <li><a href="qmix.html#qmix.small_signal.sideband_networks">sideband_networks() (in module qmix.small_signal)</a>
 </li>
       <li><a href="qmix.html#qmix.small_signal.sideband_voltages">sideband_voltages() (in module qmix.small_signal)</a>
 </li>
@@ -762,6 +822,8 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="qmix.html#qmix.network.Network.terminate">terminate() (qmix.network.Network method)</a>
 </li>
+      <li><a href="qmix.html#qmix.network.thevenin">thevenin() (in module qmix.network)</a>
+</li>
       <li><a href="qmix.misc.html#qmix.misc.terminal.title">title() (in module qmix.misc.terminal)</a>
 </li>
       <li><a href="qmix.exp.html#qmix.exp.exp_data.MixerNoise.tn_meas">tn_meas (qmix.exp.exp_data.MixerNoise attribute)</a>
@@ -789,11 +851,17 @@
       <li><a href="qmix.html#qmix.circuit.EmbeddingCircuit.vb">vb (qmix.circuit.EmbeddingCircuit attribute)</a>
 
       <ul>
+        <li><a href="qmix.html#qmix.circuit.MultiJunctionCircuit.vb">(qmix.circuit.MultiJunctionCircuit property)</a>
+</li>
         <li><a href="qmix.html#qmix.qtcurrent.FourierResp.vb">(qmix.qtcurrent.FourierResp attribute)</a>
 </li>
       </ul></li>
       <li><a href="qmix.html#qmix.circuit.EmbeddingCircuit.vb_npts">vb_npts (qmix.circuit.EmbeddingCircuit attribute)</a>
+
+      <ul>
+        <li><a href="qmix.html#qmix.circuit.MultiJunctionCircuit.vb_npts">(qmix.circuit.MultiJunctionCircuit property)</a>
 </li>
+      </ul></li>
       <li><a href="qmix.html#qmix.circuit.EmbeddingCircuit.vgap">vgap (qmix.circuit.EmbeddingCircuit attribute)</a>
 
       <ul>
@@ -817,11 +885,19 @@
       <li><a href="qmix.html#qmix.respfn.RespFn.voltage_kk">voltage_kk (qmix.respfn.RespFn attribute)</a>
 </li>
       <li><a href="qmix.html#qmix.circuit.EmbeddingCircuit.vph">vph (qmix.circuit.EmbeddingCircuit property)</a>
+
+      <ul>
+        <li><a href="qmix.html#qmix.circuit.MultiJunctionCircuit.vph">(qmix.circuit.MultiJunctionCircuit property)</a>
 </li>
+      </ul></li>
       <li><a href="qmix.exp.html#qmix.exp.iv_data.DCIVData.vraw">vraw (qmix.exp.iv_data.DCIVData attribute)</a>
 </li>
       <li><a href="qmix.html#qmix.circuit.EmbeddingCircuit.vt">vt (qmix.circuit.EmbeddingCircuit attribute)</a>
+
+      <ul>
+        <li><a href="qmix.html#qmix.circuit.MultiJunctionCircuit.vt">(qmix.circuit.MultiJunctionCircuit attribute)</a>
 </li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
@@ -838,12 +914,16 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="qmix.exp.html#qmix.exp.exp_data.MixerNoise.z_lsb">z_lsb (qmix.exp.exp_data.MixerNoise attribute)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="qmix.exp.html#qmix.exp.exp_data.MixerNoise.z_usb">z_usb (qmix.exp.exp_data.MixerNoise attribute)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="qmix.html#qmix.circuit.EmbeddingCircuit.zt">zt (qmix.circuit.EmbeddingCircuit attribute)</a>
+
+      <ul>
+        <li><a href="qmix.html#qmix.circuit.MultiJunctionCircuit.zt">(qmix.circuit.MultiJunctionCircuit attribute)</a>
 </li>
+      </ul></li>
   </ul></td>
 </tr></table>
 

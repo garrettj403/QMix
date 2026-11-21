@@ -1,0 +1,236 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>3.3. Small-Signal Analysis &mdash; QMix latest documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=c6e86fd7"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="3.4. The Fourier-Shift Method" href="fourier-shift-method.html" />
+    <link rel="prev" title="3.2. Harmonic Balance" href="harmonic-balance.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            QMix
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="setup.html">1. Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="qmix.html">2. Package API</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="theory.html">3. Theory</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="mtsda.html">3.1. Multi-Tone Spectral Domain Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="harmonic-balance.html">3.2. Harmonic Balance</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">3.3. Small-Signal Analysis</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#sidebands">3.3.1. Sidebands</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#the-admittance-matrix">3.3.2. The admittance matrix</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#one-junction">3.3.3. One junction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#several-junctions">3.3.4. Several junctions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#limits-of-the-small-signal-analysis">3.3.5. Limits of the small-signal analysis</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="fourier-shift-method.html">3.4. The Fourier-Shift Method</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="single-tone-simulation.html">4. Example #1: Creating a simple 1 tone simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multi-tone-simulation.html">5. Example #2: Simulating an SIS mixer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analyze-experimental-data.html">6. Example #3: Analyzing experimental data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hfss-embedding-impedance.html">7. Example #4: Embedding impedance from HFSS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lo-saturation.html">8. Example #5: Power saturation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multi-junction-mixer.html">9. Example #6: Multiple junctions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="references.html">10. References</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">QMix</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="theory.html"><span class="section-number">3. </span>Theory</a></li>
+      <li class="breadcrumb-item active"><span class="section-number">3.3. </span>Small-Signal Analysis</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/small-signal.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="small-signal-analysis">
+<span id="small-signal"></span><h1><span class="section-number">3.3. </span>Small-Signal Analysis<a class="headerlink" href="#small-signal-analysis" title="Link to this heading"></a></h1>
+<p>In an SIS mixer, a strong local oscillator (LO) pumps the junction, and the signals (the RF input and the IF output) are weak. Harmonic balance can simulate the LO and the signals together as tones, but this is slow, since every tone multiplies the cost of the tunneling current calculation. If the signals are weak enough, they don’t change the LO state, and their response is linear. This is the small-signal analysis of Tucker (1979; Tucker and Feldman, 1985): from a single-tone harmonic balance of the LO alone, it gives the conversion gain and the noise of the mixer at any IF frequency. The functions are in <a class="reference internal" href="qmix.html#module-qmix.small_signal" title="qmix.small_signal"><code class="xref py py-mod docutils literal notranslate"><span class="pre">qmix.small_signal</span></code></a>.</p>
+<p>As on the previous pages, all values are normalized to the gap voltage, gap current, normal-state resistance and gap frequency. Phasors are peak amplitudes.</p>
+<section id="sidebands">
+<h2><span class="section-number">3.3.1. </span>Sidebands<a class="headerlink" href="#sidebands" title="Link to this heading"></a></h2>
+<p>The LO at frequency <span class="math notranslate nohighlight">\(\omega\)</span> (with harmonics <span class="math notranslate nohighlight">\(p \omega\)</span>) mixes a weak signal at the IF frequency <span class="math notranslate nohighlight">\(\omega_\mathrm{IF}\)</span> with the sidebands of every LO harmonic. QMix labels them by an integer <span class="math notranslate nohighlight">\(m\)</span>, from <span class="math notranslate nohighlight">\(-M\)</span> to <span class="math notranslate nohighlight">\(M\)</span> (<code class="docutils literal notranslate"><span class="pre">num_sb</span></code>):</p>
+<div class="math notranslate nohighlight">
+\[\omega_m = m \, \omega + \omega_\mathrm{IF}.\]</div>
+<p>Sideband 0 is the IF, sideband <span class="math notranslate nohighlight">\(p &gt; 0\)</span> is the upper sideband (USB) of harmonic <span class="math notranslate nohighlight">\(p\)</span>, and sideband <span class="math notranslate nohighlight">\(-p\)</span> is its lower sideband (LSB). For <span class="math notranslate nohighlight">\(m &lt; 0\)</span> the frequency is negative, so the phasors at these sidebands are the complex conjugates of the phasors at the physical LSB frequency <span class="math notranslate nohighlight">\(p \omega - \omega_\mathrm{IF}\)</span>, and so are the impedances. The helper functions (<a class="reference internal" href="qmix.html#qmix.small_signal.sideband_impedances" title="qmix.small_signal.sideband_impedances"><code class="xref py py-func docutils literal notranslate"><span class="pre">qmix.small_signal.sideband_impedances()</span></code></a>, <a class="reference internal" href="qmix.html#qmix.small_signal.sideband_voltages" title="qmix.small_signal.sideband_voltages"><code class="xref py py-func docutils literal notranslate"><span class="pre">qmix.small_signal.sideband_voltages()</span></code></a> and <a class="reference internal" href="qmix.html#qmix.small_signal.sideband_networks" title="qmix.small_signal.sideband_networks"><code class="xref py py-func docutils literal notranslate"><span class="pre">qmix.small_signal.sideband_networks()</span></code></a>) take the physical values and do this conversion, and <a class="reference internal" href="qmix.html#qmix.small_signal.lsb" title="qmix.small_signal.lsb"><code class="xref py py-func docutils literal notranslate"><span class="pre">qmix.small_signal.lsb()</span></code></a> converts results back. Arrays over sidebands are stored in natural order: sideband <span class="math notranslate nohighlight">\(m\)</span> is at index <code class="docutils literal notranslate"><span class="pre">m</span> <span class="pre">+</span> <span class="pre">num_sb</span></code>.</p>
+</section>
+<section id="the-admittance-matrix">
+<h2><span class="section-number">3.3.2. </span>The admittance matrix<a class="headerlink" href="#the-admittance-matrix" title="Link to this heading"></a></h2>
+<p>The small signals at all sidebands are linearly related by the conversion admittance matrix:</p>
+<div class="math notranslate nohighlight">
+\[I_m = \sum_{n=-M}^{M} Y_{mn} V_n,\]</div>
+<p>where <span class="math notranslate nohighlight">\(V_n\)</span> and <span class="math notranslate nohighlight">\(I_n\)</span> are the small-signal voltage and current phasors of the junction at sideband <span class="math notranslate nohighlight">\(n\)</span>. The matrix depends on the LO state through the phase factor coefficients <span class="math notranslate nohighlight">\(C_k\)</span> of the LO (see <a class="reference internal" href="mtsda.html#mtsda"><span class="std std-ref">Multi-Tone Spectral Domain Analysis</span></a>), and on the junction through its response function <span class="math notranslate nohighlight">\(\tilde{I}(V) = I_{kk}(V) + j I_{dc}(V)\)</span>. With <span class="math notranslate nohighlight">\(T(V) = -j \tilde{I}(V) = I_{dc}(V) - j I_{kk}(V)\)</span>,</p>
+<div class="math notranslate nohighlight" id="equation-ss-admittance">
+<span class="eqno">(1)<a class="headerlink" href="#equation-ss-admittance" title="Link to this equation"></a></span>\[Y_{mn} = \frac{1}{2 \omega_n} \sum_k C_k \, C^*_{k+m-n}
+\Big[ T(V_0 + k \omega) - T(V_0 + (k - n) \omega - \omega_\mathrm{IF})
++ T^*(V_0 + (k + m) \omega + \omega_\mathrm{IF}) - T^*(V_0 + (k + m - n) \omega) \Big],\]</div>
+<p>at bias voltage <span class="math notranslate nohighlight">\(V_0\)</span>. This is Tucker’s admittance matrix, written as one expression for sidebands of either sign. It is equivalent to Eqn. 29 of Rice et al. (1999) and to SuperMix’s <code class="docutils literal notranslate"><span class="pre">small_signal</span></code>. QMix calculates it with <a class="reference internal" href="qmix.html#qmix.small_signal.admittance_matrix" title="qmix.small_signal.admittance_matrix"><code class="xref py py-func docutils literal notranslate"><span class="pre">qmix.small_signal.admittance_matrix()</span></code></a>, from the junction voltage of a single-tone harmonic balance (the LO and its harmonics). The matrix is real only in the classical limit; the Kramers-Kronig part of the response function makes it complex. It needs <span class="math notranslate nohighlight">\(\omega_\mathrm{IF} &gt; 0\)</span>. The limit <span class="math notranslate nohighlight">\(\omega_\mathrm{IF} \to 0\)</span> would need the derivatives of the response function.</p>
+<p>The junction also generates shot noise. The noise currents at different sidebands are correlated, because they come from the same pumped tunneling current. Their correlation matrix (Tucker and Feldman, 1985) is</p>
+<div class="math notranslate nohighlight" id="equation-ss-noise">
+<span class="eqno">(2)<a class="headerlink" href="#equation-ss-noise" title="Link to this equation"></a></span>\[\langle \delta I_m \, \delta I_n^* \rangle = H_{mn} \, e \, I_\mathrm{gap} \, \Delta f,
+\qquad
+H_{mn} = \sum_k C_k \, C^*_{k+m-n}
+\Big[ N(V_0 + (k + m) \omega + \omega_\mathrm{IF}) + N(V_0 + (k - n) \omega - \omega_\mathrm{IF}) \Big],\]</div>
+<p>where <span class="math notranslate nohighlight">\(\Delta f\)</span> is the bandwidth, the noise currents are RMS values (so <span class="math notranslate nohighlight">\(H\)</span> is a one-sided spectral density), and</p>
+<div class="math notranslate nohighlight">
+\[N(V) = I_{dc}(V) \coth\left( \frac{V}{2 T} \right)\]</div>
+<p>is the noise of the unpumped junction, with the normalized temperature <span class="math notranslate nohighlight">\(T = k_B T_\mathrm{phys} / e V_\mathrm{gap}\)</span>. This includes the thermal and quantum limits of shot noise, but not the noise of the embedding circuit. QMix calculates <span class="math notranslate nohighlight">\(H\)</span> with <a class="reference internal" href="qmix.html#qmix.small_signal.noise_matrix" title="qmix.small_signal.noise_matrix"><code class="xref py py-func docutils literal notranslate"><span class="pre">qmix.small_signal.noise_matrix()</span></code></a>, which needs the physical temperature and the gap voltage.</p>
+</section>
+<section id="one-junction">
+<h2><span class="section-number">3.3.3. </span>One junction<a class="headerlink" href="#one-junction" title="Link to this heading"></a></h2>
+<p>At each sideband, the embedding circuit seen by the junction is a Thevenin equivalent circuit: a source voltage <span class="math notranslate nohighlight">\(V_{T,m}\)</span> in series with an impedance <span class="math notranslate nohighlight">\(Z_m\)</span> (<a class="reference internal" href="qmix.html#qmix.small_signal.sideband_impedances" title="qmix.small_signal.sideband_impedances"><code class="xref py py-func docutils literal notranslate"><span class="pre">qmix.small_signal.sideband_impedances()</span></code></a>). Usually, only the source at the input sideband is nonzero. The junction voltages satisfy <span class="math notranslate nohighlight">\(V_m = V_{T,m} - Z_m I_m\)</span>, so</p>
+<div class="math notranslate nohighlight">
+\[(\mathbf{1} + \mathbf{Z} \mathbf{Y}) \, \mathbf{V} = \mathbf{V}_T,\]</div>
+<p>where <span class="math notranslate nohighlight">\(\mathbf{Z}\)</span> is the diagonal matrix of the embedding impedances (<a class="reference internal" href="qmix.html#qmix.small_signal.solve_sidebands" title="qmix.small_signal.solve_sidebands"><code class="xref py py-func docutils literal notranslate"><span class="pre">qmix.small_signal.solve_sidebands()</span></code></a>). The transducer gain from sideband <span class="math notranslate nohighlight">\(m\)</span> to sideband <span class="math notranslate nohighlight">\(m'\)</span> is the power delivered to the embedding impedance at <span class="math notranslate nohighlight">\(m'\)</span>, divided by the power available from the source at <span class="math notranslate nohighlight">\(m\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[G_{m' m} = 4 \, \mathrm{Re}\, Z_m \, \mathrm{Re}\, Z_{m'} \left| \frac{I_{m'}}{V_{T,m}} \right|^2\]</div>
+<p>(<a class="reference internal" href="qmix.html#qmix.small_signal.conversion_gain" title="qmix.small_signal.conversion_gain"><code class="xref py py-func docutils literal notranslate"><span class="pre">qmix.small_signal.conversion_gain()</span></code></a>). For a mixer, <span class="math notranslate nohighlight">\(m = \pm 1\)</span> and <span class="math notranslate nohighlight">\(m' = 0\)</span>.</p>
+<p>The noise sources are the junction’s noise currents <span class="math notranslate nohighlight">\(\delta \mathbf{I}\)</span>, and the thermal noise voltages <span class="math notranslate nohighlight">\(\mathbf{E}\)</span> of the embedding impedances, in series with the sources. Then <span class="math notranslate nohighlight">\(V_m = E_m - Z_m I_m\)</span> and <span class="math notranslate nohighlight">\(\mathbf{I} = \mathbf{Y} \mathbf{V} + \delta \mathbf{I}\)</span>, so</p>
+<div class="math notranslate nohighlight">
+\[\mathbf{I} = \mathbf{A} \left( \delta \mathbf{I} + \mathbf{Y} \mathbf{E} \right),
+\qquad
+\mathbf{A} = (\mathbf{1} + \mathbf{Y} \mathbf{Z})^{-1},\]</div>
+<p>and the correlation matrix of the noise currents is <span class="math notranslate nohighlight">\(\mathbf{A} (\mathbf{H} + \mathbf{Y} \mathbf{S} \mathbf{Y}^\dagger) \mathbf{A}^\dagger\)</span>. <span class="math notranslate nohighlight">\(\mathbf{S}\)</span> is the diagonal matrix of the spectral densities of <span class="math notranslate nohighlight">\(\mathbf{E}\)</span>, given by the Callen-Welton (1951) formula:</p>
+<div class="math notranslate nohighlight">
+\[S_m = 4 k_B T_{cw} \, \mathrm{Re}\, Z_m,
+\qquad
+T_{cw} = \frac{h f}{2 k_B} \coth\left( \frac{h f}{2 k_B T_\mathrm{phys}} \right),\]</div>
+<p>at the physical frequency of the sideband, <span class="math notranslate nohighlight">\(f = |\omega_m|\)</span> (<a class="reference internal" href="qmix.html#qmix.small_signal.embedding_noise" title="qmix.small_signal.embedding_noise"><code class="xref py py-func docutils literal notranslate"><span class="pre">qmix.small_signal.embedding_noise()</span></code></a>). <span class="math notranslate nohighlight">\(T_{cw}\)</span> includes the zero-point fluctuations: it tends to <span class="math notranslate nohighlight">\(T_\mathrm{phys}\)</span> at low frequencies, and to <span class="math notranslate nohighlight">\(h f / 2 k_B\)</span> at zero temperature. The noise power delivered to the load at the output sideband, per unit bandwidth and in units of <span class="math notranslate nohighlight">\(k_B\)</span>, is</p>
+<div class="math notranslate nohighlight">
+\[T_\mathrm{out} = \mathrm{Re}\, Z_{m'} \left[ \mathbf{A} (\mathbf{H} + \mathbf{Y} \mathbf{S} \mathbf{Y}^\dagger) \mathbf{A}^\dagger \right]_{m' m'} \frac{e V_\mathrm{gap}}{k_B},\]</div>
+<p>without the noise of the load itself (<a class="reference internal" href="qmix.html#qmix.small_signal.output_noise" title="qmix.small_signal.output_noise"><code class="xref py py-func docutils literal notranslate"><span class="pre">qmix.small_signal.output_noise()</span></code></a>). The single-sideband (SSB) noise temperature of the mixer is the output noise, without the noise of the source at the input sideband, referred to the input: <span class="math notranslate nohighlight">\(T_\mathrm{SSB} = T_\mathrm{out} / G_{m' m}\)</span> (<a class="reference internal" href="qmix.html#qmix.small_signal.noise_temperature" title="qmix.small_signal.noise_temperature"><code class="xref py py-func docutils literal notranslate"><span class="pre">qmix.small_signal.noise_temperature()</span></code></a>). For the double-sideband (DSB) noise temperature, the noise of both sidebands is left out, and the output noise is divided by the sum of the gains from the USB and the LSB. With the junction noise only (<span class="math notranslate nohighlight">\(\mathbf{S} = 0\)</span>), the zero-point fluctuations of the embedding are missing, so the noise temperature can be below the quantum limit (<span class="math notranslate nohighlight">\(h f / 2 k_B\)</span> for a DSB mixer).</p>
+</section>
+<section id="several-junctions">
+<h2><span class="section-number">3.3.4. </span>Several junctions<a class="headerlink" href="#several-junctions" title="Link to this heading"></a></h2>
+<p>With several junctions (<a class="reference internal" href="qmix.html#qmix.circuit.MultiJunctionCircuit" title="qmix.circuit.MultiJunctionCircuit"><code class="xref py py-class docutils literal notranslate"><span class="pre">qmix.circuit.MultiJunctionCircuit</span></code></a>), each junction <span class="math notranslate nohighlight">\(j\)</span> has its own admittance and noise matrices, <span class="math notranslate nohighlight">\(\mathbf{Y}_j\)</span> and <span class="math notranslate nohighlight">\(\mathbf{H}_j\)</span>, from its own LO state. They are scaled by the relative area of the junction (<code class="docutils literal notranslate"><span class="pre">cct.area[j]</span></code>), and the noise of different junctions is uncorrelated. <a class="reference internal" href="qmix.html#qmix.small_signal.admittance_matrix" title="qmix.small_signal.admittance_matrix"><code class="xref py py-func docutils literal notranslate"><span class="pre">qmix.small_signal.admittance_matrix()</span></code></a> and <a class="reference internal" href="qmix.html#qmix.small_signal.noise_matrix" title="qmix.small_signal.noise_matrix"><code class="xref py py-func docutils literal notranslate"><span class="pre">qmix.small_signal.noise_matrix()</span></code></a> return them as <code class="docutils literal notranslate"><span class="pre">y[j,</span> <span class="pre">m,</span> <span class="pre">n,</span> <span class="pre">i]</span></code> and <code class="docutils literal notranslate"><span class="pre">h[j,</span> <span class="pre">m,</span> <span class="pre">n,</span> <span class="pre">i]</span></code>.</p>
+<p>The junctions are coupled by the embedding network. At each sideband, the network is described by its impedance matrix over the <span class="math notranslate nohighlight">\(J\)</span> junction ports and one external port <span class="math notranslate nohighlight">\(x\)</span>: the RF input (or the image termination) at the RF sidebands, and the IF load at the IF. With the currents <span class="math notranslate nohighlight">\(I^\mathrm{net}\)</span> into the network and the open-circuit noise voltages <span class="math notranslate nohighlight">\(\mathbf{e}\)</span> of a lossy network,</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{bmatrix} \mathbf{V}_J \\ V_x \end{bmatrix} =
+\begin{bmatrix} \mathbf{Z}_{JJ} &amp; \mathbf{Z}_{Jx} \\ \mathbf{Z}_{xJ} &amp; Z_{xx} \end{bmatrix}
+\begin{bmatrix} \mathbf{I}^\mathrm{net}_J \\ I_x \end{bmatrix}
++ \begin{bmatrix} \mathbf{e}_J \\ e_x \end{bmatrix},\end{split}\]</div>
+<p>with the junction capacitances in parallel with the junction ports. <a class="reference internal" href="qmix.html#qmix.network.impedance_matrix" title="qmix.network.impedance_matrix"><code class="xref py py-func docutils literal notranslate"><span class="pre">qmix.network.impedance_matrix()</span></code></a> gives this matrix from S-parameters, and <a class="reference internal" href="qmix.html#qmix.small_signal.sideband_networks" title="qmix.small_signal.sideband_networks"><code class="xref py py-func docutils literal notranslate"><span class="pre">qmix.small_signal.sideband_networks()</span></code></a> collects the matrices of all sidebands. The external port is terminated by an impedance <span class="math notranslate nohighlight">\(z_x\)</span> (the source or load impedance, <code class="docutils literal notranslate"><span class="pre">z_ext</span></code>), with a source voltage <span class="math notranslate nohighlight">\(V_s\)</span> and a thermal noise voltage <span class="math notranslate nohighlight">\(e_\mathrm{ext}\)</span> in series: <span class="math notranslate nohighlight">\(V_x = V_s + e_\mathrm{ext} - z_x I_x\)</span>. The junction currents flow out of the network, <span class="math notranslate nohighlight">\(\mathbf{I}^\mathrm{net}_J = -\mathbf{I}\)</span>, so eliminating the external port gives</p>
+<div class="math notranslate nohighlight">
+\[I_x = \frac{V_s + e_\mathrm{ext} - e_x}{D} + \mathbf{w} \cdot \mathbf{I},
+\qquad
+\mathbf{V}_J = \mathbf{n} - \mathbf{Z}_T \, \mathbf{I},\]</div>
+<p>with <span class="math notranslate nohighlight">\(D = Z_{xx} + z_x\)</span>, <span class="math notranslate nohighlight">\(\mathbf{w} = \mathbf{Z}_{xJ} / D\)</span> and <span class="math notranslate nohighlight">\(\mathbf{k} = \mathbf{Z}_{Jx} / D\)</span>. The Thevenin impedance matrix of the junction ports is</p>
+<div class="math notranslate nohighlight">
+\[\mathbf{Z}_T = \mathbf{Z}_{JJ} - \frac{\mathbf{Z}_{Jx} \mathbf{Z}_{xJ}}{D},\]</div>
+<p>and the voltages that drive the junction ports are <span class="math notranslate nohighlight">\(\mathbf{n} = \mathbf{e}_J + \mathbf{k} \, (V_s + e_\mathrm{ext} - e_x)\)</span>. Each junction obeys <span class="math notranslate nohighlight">\(\mathbf{I}_j = \mathbf{Y}_j \mathbf{V}_j + \delta \mathbf{I}_j\)</span> over the sidebands. Together:</p>
+<div class="math notranslate nohighlight">
+\[(\mathbf{1} + \mathbf{Y} \mathbf{Z}_T) \, \mathbf{I} = \delta \mathbf{I} + \mathbf{Y} \mathbf{n},\]</div>
+<p>where the vectors run over all junctions and sidebands. <span class="math notranslate nohighlight">\(\mathbf{Y}\)</span> is block diagonal over the junctions (it couples the sidebands of one junction), and <span class="math notranslate nohighlight">\(\mathbf{Z}_T\)</span> is block diagonal over the sidebands (it couples the junctions at one sideband). For <span class="math notranslate nohighlight">\(J\)</span> junctions and <span class="math notranslate nohighlight">\(2M + 1\)</span> sidebands, this is a linear system of size <span class="math notranslate nohighlight">\(J (2M + 1)\)</span> at each bias voltage.</p>
+<p>The gain is the transducer gain between the external ports, from the source at sideband <span class="math notranslate nohighlight">\(m\)</span> to the load at sideband <span class="math notranslate nohighlight">\(m'\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[G_{m' m} = 4 \, \mathrm{Re}\, z_{x,m} \, \mathrm{Re}\, z_{x,m'} \left| \frac{I_{x,m'}}{V_{s,m}} \right|^2\]</div>
+<p>(<a class="reference internal" href="qmix.html#qmix.small_signal.network_gain" title="qmix.small_signal.network_gain"><code class="xref py py-func docutils literal notranslate"><span class="pre">qmix.small_signal.network_gain()</span></code></a>). It includes the loss of the network.</p>
+<p>The noise in the load (<a class="reference internal" href="qmix.html#qmix.small_signal.network_output_noise" title="qmix.small_signal.network_output_noise"><code class="xref py py-func docutils literal notranslate"><span class="pre">qmix.small_signal.network_output_noise()</span></code></a>) has three sources, which are uncorrelated between sidebands:</p>
+<ul>
+<li><p>the junctions, with the correlation matrices <span class="math notranslate nohighlight">\(\mathbf{H}_j\)</span>;</p></li>
+<li><p>the embedding network, if it is lossy (temperature <code class="docutils literal notranslate"><span class="pre">temp</span></code>). A passive network has open-circuit noise voltages with the correlation matrix (Twiss, 1955)</p>
+<div class="math notranslate nohighlight">
+\[\langle \mathbf{e} \, \mathbf{e}^\dagger \rangle = 2 k_B T_{cw} \left( \mathbf{Z} + \mathbf{Z}^\dagger \right) \Delta f,\]</div>
+<p>with <span class="math notranslate nohighlight">\(\mathbf{Z}\)</span> the full <span class="math notranslate nohighlight">\((J + 1)\)</span>-port matrix at the sideband. A lossless network (<span class="math notranslate nohighlight">\(\mathbf{Z} + \mathbf{Z}^\dagger = 0\)</span>) has no noise of its own;</p>
+</li>
+<li><p>the terminations of the external port (temperature <code class="docutils literal notranslate"><span class="pre">temp_ext</span></code>), with <span class="math notranslate nohighlight">\(\langle |e_\mathrm{ext}|^2 \rangle = 4 k_B T_{cw} \, \mathrm{Re}\, z_x \, \Delta f\)</span>. The load at the output sideband is left out.</p></li>
+</ul>
+<p>The output noise temperature is <span class="math notranslate nohighlight">\(T_\mathrm{out} = \mathrm{Re}\, z_{x,m'} \langle |I_{x,m'}|^2 \rangle / k_B \Delta f\)</span>. <a class="reference internal" href="qmix.html#qmix.small_signal.network_noise_temperature" title="qmix.small_signal.network_noise_temperature"><code class="xref py py-func docutils literal notranslate"><span class="pre">qmix.small_signal.network_noise_temperature()</span></code></a> divides it by the gain to give the SSB noise temperature, as for one junction. The admittance and noise matrices may also be given without a junction axis, for one junction behind a lossy network.</p>
+<p>These equations are checked in the test suite in four ways. One junction behind a lossless network gives the same gain and noise as the single-junction functions. Two identical junctions in parallel give the same results as one junction of twice the area. A multi-junction, multi-tone harmonic balance with a weak RF signal gives the same gain to about <span class="math notranslate nohighlight">\(10^{-6}\)</span>. In thermal equilibrium (unpumped junctions at zero bias, a lossy network and the terminations all at one temperature), the noise delivered to the IF load is <span class="math notranslate nohighlight">\(k_B T_{cw} (1 - |\Gamma|^2)\)</span>, where <span class="math notranslate nohighlight">\(\Gamma\)</span> is the reflection coefficient at the IF port. This holds in the quantum regime too, as the fluctuation-dissipation theorem requires.</p>
+</section>
+<section id="limits-of-the-small-signal-analysis">
+<h2><span class="section-number">3.3.5. </span>Limits of the small-signal analysis<a class="headerlink" href="#limits-of-the-small-signal-analysis" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><strong>The signals must be weak.</strong> The analysis is linear in the signals and doesn’t include saturation. Use a multi-tone harmonic balance for strong signals, e.g., <a class="reference internal" href="lo-saturation.html"><span class="doc">Example #5: Power saturation</span></a>. At a low IF, “weak” is stricter than it seems: the IF photon voltage <span class="math notranslate nohighlight">\(\omega_\mathrm{IF}\)</span> is small, so even a small IF voltage gives a large IF drive level <span class="math notranslate nohighlight">\(|V_\mathrm{IF}| / \omega_\mathrm{IF}\)</span>. When comparing with a multi-tone simulation at a 5 GHz IF, an RF signal of 1 pW gave errors of 0.5%, and <span class="math notranslate nohighlight">\(10^{-16}\)</span> W was needed to agree to <span class="math notranslate nohighlight">\(10^{-6}\)</span>.</p></li>
+<li><p><strong>The number of sidebands.</strong> <code class="docutils literal notranslate"><span class="pre">num_sb</span></code> sets how many LO harmonics have sidebands, <span class="math notranslate nohighlight">\(M\)</span>. The default, the number of LO harmonics in the circuit (<code class="docutils literal notranslate"><span class="pre">cct.num_p</span></code>), is usually enough, since the junction capacitance shorts out the higher sidebands.</p></li>
+<li><p><strong>The LO state is fixed.</strong> It comes from the single-tone harmonic balance, so the LO must be strong compared with all signals, including the noise.</p></li>
+</ul>
+<p><a class="reference internal" href="qmix.exp.html#qmix.exp.exp_data.PumpedData.mixer_noise" title="qmix.exp.exp_data.PumpedData.mixer_noise"><code class="xref py py-meth docutils literal notranslate"><span class="pre">qmix.exp.exp_data.PumpedData.mixer_noise()</span></code></a> uses the single-junction analysis to compare measured gain and noise with a simulation. The <a class="reference internal" href="multi-junction-mixer.html"><span class="doc">Example #6: Multiple junctions</span></a> example shows the multi-junction analysis for a twin-junction mixer, including a check against a multi-tone harmonic balance.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="harmonic-balance.html" class="btn btn-neutral float-left" title="3.2. Harmonic Balance" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="fourier-shift-method.html" class="btn btn-neutral float-right" title="3.4. The Fourier-Shift Method" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2017-2026, John Garrett.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

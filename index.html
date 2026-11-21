@@ -51,7 +51,8 @@
 <li class="toctree-l1"><a class="reference internal" href="analyze-experimental-data.html">6. Example #3: Analyzing experimental data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="hfss-embedding-impedance.html">7. Example #4: Embedding impedance from HFSS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="lo-saturation.html">8. Example #5: Power saturation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="references.html">9. References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multi-junction-mixer.html">9. Example #6: Multiple junctions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="references.html">10. References</a></li>
 </ul>
 
         </div>
@@ -103,6 +104,7 @@
 <li class="toctree-l2"><a class="reference internal" href="qmix.html#submodules">2.2. Submodules</a></li>
 <li class="toctree-l2"><a class="reference internal" href="qmix.html#module-qmix.circuit">2.3. qmix.circuit module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="qmix.html#qmix.circuit.EmbeddingCircuit"><code class="docutils literal notranslate"><span class="pre">EmbeddingCircuit</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qmix.html#qmix.circuit.MultiJunctionCircuit"><code class="docutils literal notranslate"><span class="pre">MultiJunctionCircuit</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="qmix.html#qmix.circuit.read_circuit"><code class="docutils literal notranslate"><span class="pre">read_circuit()</span></code></a></li>
 </ul>
 </li>
@@ -114,14 +116,19 @@
 <li class="toctree-l2"><a class="reference internal" href="qmix.html#module-qmix.network">2.5. qmix.network module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="qmix.html#qmix.network.Network"><code class="docutils literal notranslate"><span class="pre">Network</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="qmix.html#qmix.network.embedding_impedance"><code class="docutils literal notranslate"><span class="pre">embedding_impedance()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qmix.html#qmix.network.impedance_matrix"><code class="docutils literal notranslate"><span class="pre">impedance_matrix()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="qmix.html#qmix.network.read_touchstone"><code class="docutils literal notranslate"><span class="pre">read_touchstone()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qmix.html#qmix.network.set_thevenin"><code class="docutils literal notranslate"><span class="pre">set_thevenin()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qmix.html#qmix.network.thevenin"><code class="docutils literal notranslate"><span class="pre">thevenin()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="qmix.html#module-qmix.qtcurrent">2.6. qmix.qtcurrent module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="qmix.html#qmix.qtcurrent.FourierResp"><code class="docutils literal notranslate"><span class="pre">FourierResp</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="qmix.html#qmix.qtcurrent.calculate_phase_factor_coeff"><code class="docutils literal notranslate"><span class="pre">calculate_phase_factor_coeff()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="qmix.html#qmix.qtcurrent.interpolate_respfn"><code class="docutils literal notranslate"><span class="pre">interpolate_respfn()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qmix.html#qmix.qtcurrent.junction_resp"><code class="docutils literal notranslate"><span class="pre">junction_resp()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="qmix.html#qmix.qtcurrent.qtcurrent"><code class="docutils literal notranslate"><span class="pre">qtcurrent()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qmix.html#qmix.qtcurrent.qtcurrent_derivatives"><code class="docutils literal notranslate"><span class="pre">qtcurrent_derivatives()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="qmix.html#qmix.qtcurrent.resp_matrix_size"><code class="docutils literal notranslate"><span class="pre">resp_matrix_size()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="qmix.html#qmix.qtcurrent.suggest_num_b"><code class="docutils literal notranslate"><span class="pre">suggest_num_b()</span></code></a></li>
 </ul>
@@ -139,10 +146,14 @@
 <li class="toctree-l3"><a class="reference internal" href="qmix.html#qmix.small_signal.conversion_gain"><code class="docutils literal notranslate"><span class="pre">conversion_gain()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="qmix.html#qmix.small_signal.embedding_noise"><code class="docutils literal notranslate"><span class="pre">embedding_noise()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="qmix.html#qmix.small_signal.lsb"><code class="docutils literal notranslate"><span class="pre">lsb()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qmix.html#qmix.small_signal.network_gain"><code class="docutils literal notranslate"><span class="pre">network_gain()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qmix.html#qmix.small_signal.network_noise_temperature"><code class="docutils literal notranslate"><span class="pre">network_noise_temperature()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qmix.html#qmix.small_signal.network_output_noise"><code class="docutils literal notranslate"><span class="pre">network_output_noise()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="qmix.html#qmix.small_signal.noise_matrix"><code class="docutils literal notranslate"><span class="pre">noise_matrix()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="qmix.html#qmix.small_signal.noise_temperature"><code class="docutils literal notranslate"><span class="pre">noise_temperature()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="qmix.html#qmix.small_signal.output_noise"><code class="docutils literal notranslate"><span class="pre">output_noise()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="qmix.html#qmix.small_signal.sideband_impedances"><code class="docutils literal notranslate"><span class="pre">sideband_impedances()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qmix.html#qmix.small_signal.sideband_networks"><code class="docutils literal notranslate"><span class="pre">sideband_networks()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="qmix.html#qmix.small_signal.sideband_voltages"><code class="docutils literal notranslate"><span class="pre">sideband_voltages()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="qmix.html#qmix.small_signal.solve_sidebands"><code class="docutils literal notranslate"><span class="pre">solve_sidebands()</span></code></a></li>
 </ul>
@@ -163,18 +174,28 @@
 <li class="toctree-l3"><a class="reference internal" href="harmonic-balance.html#the-embedding-circuit">3.2.1. The embedding circuit</a></li>
 <li class="toctree-l3"><a class="reference internal" href="harmonic-balance.html#the-harmonic-balance-equations">3.2.2. The harmonic balance equations</a></li>
 <li class="toctree-l3"><a class="reference internal" href="harmonic-balance.html#newton-s-method">3.2.3. Newton’s method</a></li>
-<li class="toctree-l3"><a class="reference internal" href="harmonic-balance.html#robustness">3.2.4. Robustness</a></li>
-<li class="toctree-l3"><a class="reference internal" href="harmonic-balance.html#convergence">3.2.5. Convergence</a></li>
-<li class="toctree-l3"><a class="reference internal" href="harmonic-balance.html#choosing-the-parameters">3.2.6. Choosing the parameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="harmonic-balance.html#the-jacobian">3.2.4. The Jacobian</a></li>
+<li class="toctree-l3"><a class="reference internal" href="harmonic-balance.html#robustness">3.2.5. Robustness</a></li>
+<li class="toctree-l3"><a class="reference internal" href="harmonic-balance.html#convergence">3.2.6. Convergence</a></li>
+<li class="toctree-l3"><a class="reference internal" href="harmonic-balance.html#several-junctions">3.2.7. Several junctions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="harmonic-balance.html#choosing-the-parameters">3.2.8. Choosing the parameters</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="fourier-shift-method.html">3.3. The Fourier-Shift Method</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="fourier-shift-method.html#the-sum-that-has-to-be-evaluated">3.3.1. The sum that has to be evaluated</a></li>
-<li class="toctree-l3"><a class="reference internal" href="fourier-shift-method.html#factorizing-the-shift">3.3.2. Factorizing the shift</a></li>
-<li class="toctree-l3"><a class="reference internal" href="fourier-shift-method.html#constructing-the-fourier-series">3.3.3. Constructing the Fourier series</a></li>
-<li class="toctree-l3"><a class="reference internal" href="fourier-shift-method.html#accuracy">3.3.4. Accuracy</a></li>
-<li class="toctree-l3"><a class="reference internal" href="fourier-shift-method.html#cost">3.3.5. Cost</a></li>
-<li class="toctree-l3"><a class="reference internal" href="fourier-shift-method.html#using-it">3.3.6. Using it</a></li>
+<li class="toctree-l2"><a class="reference internal" href="small-signal.html">3.3. Small-Signal Analysis</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="small-signal.html#sidebands">3.3.1. Sidebands</a></li>
+<li class="toctree-l3"><a class="reference internal" href="small-signal.html#the-admittance-matrix">3.3.2. The admittance matrix</a></li>
+<li class="toctree-l3"><a class="reference internal" href="small-signal.html#one-junction">3.3.3. One junction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="small-signal.html#several-junctions">3.3.4. Several junctions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="small-signal.html#limits-of-the-small-signal-analysis">3.3.5. Limits of the small-signal analysis</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="fourier-shift-method.html">3.4. The Fourier-Shift Method</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="fourier-shift-method.html#the-sum-that-has-to-be-evaluated">3.4.1. The sum that has to be evaluated</a></li>
+<li class="toctree-l3"><a class="reference internal" href="fourier-shift-method.html#factorizing-the-shift">3.4.2. Factorizing the shift</a></li>
+<li class="toctree-l3"><a class="reference internal" href="fourier-shift-method.html#constructing-the-fourier-series">3.4.3. Constructing the Fourier series</a></li>
+<li class="toctree-l3"><a class="reference internal" href="fourier-shift-method.html#accuracy">3.4.4. Accuracy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="fourier-shift-method.html#cost">3.4.5. Cost</a></li>
+<li class="toctree-l3"><a class="reference internal" href="fourier-shift-method.html#using-it">3.4.6. Using it</a></li>
 </ul>
 </li>
 </ul>
@@ -219,9 +240,10 @@
 <li class="toctree-l2"><a class="reference internal" href="hfss-embedding-impedance.html#Connecting-the-networks">7.2. Connecting the networks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="hfss-embedding-impedance.html#The-embedding-impedance">7.3. The embedding impedance</a></li>
 <li class="toctree-l2"><a class="reference internal" href="hfss-embedding-impedance.html#Comparing-with-the-recovered-impedances">7.4. Comparing with the recovered impedances</a></li>
-<li class="toctree-l2"><a class="reference internal" href="hfss-embedding-impedance.html#Sideband-impedances-in-the-noise-model">7.5. Sideband impedances in the noise model</a></li>
-<li class="toctree-l2"><a class="reference internal" href="hfss-embedding-impedance.html#The-embedding-impedance-at-the-sub-harmonic">7.6. The embedding impedance at the sub-harmonic</a></li>
-<li class="toctree-l2"><a class="reference internal" href="hfss-embedding-impedance.html#Simulating-the-broken-photon-step">7.7. Simulating the broken photon step</a></li>
+<li class="toctree-l2"><a class="reference internal" href="hfss-embedding-impedance.html#Driving-the-harmonic-balance-with-the-S-parameters">7.5. Driving the harmonic balance with the S-parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="hfss-embedding-impedance.html#Sideband-impedances-in-the-noise-model">7.6. Sideband impedances in the noise model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="hfss-embedding-impedance.html#The-embedding-impedance-at-the-sub-harmonic">7.7. The embedding impedance at the sub-harmonic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="hfss-embedding-impedance.html#Simulating-the-broken-photon-step">7.8. Simulating the broken photon step</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="lo-saturation.html">8. Example #5: Power saturation</a><ul>
@@ -238,10 +260,21 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="references.html">9. References</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="references.html#references-related-to-qmix">9.1. References related to QMix</a></li>
-<li class="toctree-l2"><a class="reference internal" href="references.html#references-related-to-multi-tone-spectral-domain-analysis-mtsda">9.2. References related to multi-tone spectral domain analysis (MTSDA)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="references.html#other-references">9.3. Other references</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multi-junction-mixer.html">9. Example #6: Multiple junctions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="multi-junction-mixer.html#The-junctions">9.1. The junctions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="multi-junction-mixer.html#The-twin-junction-tuning-circuit">9.2. The twin-junction tuning circuit</a></li>
+<li class="toctree-l2"><a class="reference internal" href="multi-junction-mixer.html#Pumping-the-junctions-with-the-LO">9.3. Pumping the junctions with the LO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="multi-junction-mixer.html#Small-signal-analysis:-gain-and-noise">9.4. Small-signal analysis: gain and noise</a></li>
+<li class="toctree-l2"><a class="reference internal" href="multi-junction-mixer.html#Check:-multi-tone-simulation">9.5. Check: multi-tone simulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="multi-junction-mixer.html#A-lossy-tuning-circuit">9.6. A lossy tuning circuit</a></li>
+<li class="toctree-l2"><a class="reference internal" href="multi-junction-mixer.html#Summary">9.7. Summary</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="references.html">10. References</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="references.html#references-related-to-qmix">10.1. References related to QMix</a></li>
+<li class="toctree-l2"><a class="reference internal" href="references.html#references-related-to-multi-tone-spectral-domain-analysis-mtsda">10.2. References related to multi-tone spectral domain analysis (MTSDA)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="references.html#references-related-to-the-small-signal-analysis">10.3. References related to the small-signal analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="references.html#other-references">10.4. Other references</a></li>
 </ul>
 </li>
 </ul>
