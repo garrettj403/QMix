@@ -13,7 +13,10 @@ Description:
     sits) follows from ``Network.impedance``. ``embedding_impedance`` wraps
     this into a function of frequency, including the junction's capacitance,
     which can be used for the embedding impedances at the sidebands (e.g.,
-    ``qmix.exp.PumpedData.mixer_noise``).
+    ``qmix.exp.PumpedData.mixer_noise``). ``thevenin`` also gives the
+    Thevenin voltage when a source (e.g., the LO) drives another port, and
+    ``set_thevenin`` puts both into a ``qmix.circuit.EmbeddingCircuit``, so
+    that the S-parameters drive the harmonic balance directly.
 
     Typical workflow (an RF tuning circuit with the junction at port 1, the
     RF input at port 2 and the IF output at port 3)::
@@ -23,6 +26,12 @@ Description:
         rf = tuner.connect(2, finline, 2)            # ports: junction, IF, waveguide
         z_emb = embedding_impedance(rf, 1, cap=120e-15, terminations={3: 288.})
         z_emb(230e9)                                 # in ohms
+
+        # LO with an available power of 50 nW at the waveguide port (port 3)
+        cct = EmbeddingCircuit(1, 1, vgap=2.7e-3, rn=14.)
+        cct.freq[1] = 230e9 / cct.fgap
+        set_thevenin(cct, rf, f=1, p=1, port=1, source_port=3, power=50e-9,
+                     cap=120e-15, terminations={2: 50.})
 
 Note:
 
@@ -205,8 +214,8 @@ class Network(object):
             terminations (dict, optional): Load impedances of the other
                 ports, in [ohms], as ``{port: z_load}`` (each a scalar or one
                 value per frequency); ports that are not listed are matched
-                (terminated by the conjugate of their reference impedance,
-                i.e., no reflection)
+                (terminated by their reference impedance, i.e., no
+                reflection)
 
         Returns:
             ndarray: Impedance at each frequency, in [ohms]
@@ -223,11 +232,17 @@ class Network(object):
         impedance), with the other ports terminated (see
         ``Network.impedance``)."""
 
-        k = _port_index(port, self.num_ports)
+        return self._reduced([port], terminations)[:, 0, 0]
+
+    def _reduced(self, ports, terminations=None):
+        """S-matrix of the given ports (in that order), with all other ports
+        terminated (``terminations``, see ``Network.impedance``; unlisted
+        ports are matched)."""
+
+        keep = [_port_index(p, self.num_ports) for p in ports]
+        assert len(set(keep)) == len(keep), "Ports must be different"
         terminations = {} if terminations is None else terminations
-        others = [i for i in range(self.num_ports) if i != k]
-        if not others:
-            return self.s[:, k, k].copy()
+        others = [i for i in range(self.num_ports) if i not in keep]
         for p in terminations:
             assert _port_index(p, self.num_ports) in others, "Invalid port in terminations: {}".format(p)
         conn = np.zeros((self.freq.size, len(others), len(others)), dtype=complex)
@@ -235,8 +250,11 @@ class Network(object):
             if i + 1 in terminations:
                 z_load = np.broadcast_to(np.asarray(terminations[i + 1], dtype=complex), self.freq.shape)
                 conn[:, j, j] = _reflection(z_load, self.z0[:, i])
+        s = _reduce(self.s, others, conn) if others else self.s
+        # _reduce keeps the remaining ports in their original order
+        order = np.argsort(np.argsort(keep))
 
-        return _reduce(self.s, others, conn)[:, 0, 0]
+        return s[:, order][:, :, order]
 
 
 # Embedding impedance ---------------------------------------------------------
@@ -281,6 +299,120 @@ def embedding_impedance(network, port=1, cap=0., terminations=None):
             return 1 / y
 
     return z_emb
+
+
+def thevenin(network, freq, port=1, source_port=None, power=0., phase=0., cap=0., terminations=None):
+    """Thevenin equivalent circuit seen by a junction at one port of a
+    network, with a source at another port.
+
+    The source (e.g., the LO, coupled through the waveguide) has an internal
+    impedance equal to the reference impedance of ``source_port`` (so it
+    doesn't reflect the wave leaving the network) and an available power of
+    ``power``. The Thevenin impedance is the embedding impedance
+    (``embedding_impedance``), and the Thevenin voltage is the open-circuit
+    voltage at ``port``. With power waves, an incident wave ``a_s`` at the
+    source port (``|a_s|^2 / 2 = power``, peak amplitudes) gives
+    ``V_T = 2 sqrt(Re Z_ref) S_js a_s / (1 - S_jj)`` at the junction port
+    j, from the S-matrix of the two ports with all other ports terminated.
+    The junction capacitance ``cap`` is in parallel with the junction port:
+    ``V_T`` and ``Z_T`` are both divided by ``1 + j w cap Z_T``.
+
+    The S-parameters are interpolated between the frequencies of the network
+    with cubic splines (the reflection coefficient, as in
+    ``embedding_impedance``, and the transmission coefficient).
+
+    Args:
+        network (Network): Network
+        freq (float or ndarray): Frequency, in [Hz]
+        port (int, optional): Port of the junction (starting from 1), default
+            is 1
+        source_port (int, optional): Port of the source; default is None (no
+            source: ``V_T = 0``, e.g., for the IF, or for harmonics)
+        power (float, optional): Available power of the source, in [W],
+            default is 0
+        phase (float, optional): Phase of the source, in [rad], default is 0
+        cap (float, optional): Junction capacitance, in [F], default is 0
+        terminations (dict, optional): Load impedances of the other ports
+            (not ``port`` or ``source_port``), see ``Network.impedance``;
+            unlisted ports are matched
+
+    Returns:
+        tuple: Thevenin voltage (peak amplitude, in [V]) and Thevenin
+        impedance (in [ohms]) at each frequency
+
+    """
+
+    freq = np.asarray(freq, dtype=float)
+    k = _port_index(port, network.num_ports)
+    z_emb = embedding_impedance(network, port, cap=0., terminations=_with_source(terminations, source_port, port))
+    zt = z_emb(freq)
+
+    if source_port is None:
+        assert power == 0, "power needs a source_port"
+        vt = np.zeros_like(zt)
+    else:
+        m = _port_index(source_port, network.num_ports)
+        assert m != k, "The source must be at another port than the junction"
+        # Only where the source port has a valid (power-wave) reference impedance, e.g., a waveguide port above
+        # cutoff (below cutoff, its port impedance is imaginary and no power reaches the junction)
+        valid = network.z0[:, m].real > 0
+        if not np.all(valid[np.argmax(valid):len(valid) - np.argmax(valid[::-1])]):
+            raise ValueError("The frequencies where the source port has a positive reference impedance "
+                             "must be contiguous")
+        fv = network.freq[valid]
+        if fv.size < 2 or np.any(freq < fv.min()) or np.any(freq > fv.max()):
+            raise ValueError("The source port has no positive reference impedance at this frequency (e.g., a "
+                             "waveguide below cutoff)")
+        s2 = network._reduced([port, source_port], terminations)[valid]
+        s_jj = CubicSpline(fv, s2[:, 0, 0])(freq)
+        s_js = CubicSpline(fv, s2[:, 0, 1])(freq)
+        r_j = CubicSpline(fv, network.z0[valid, k].real)(freq)
+        a_s = np.sqrt(2 * power) * np.exp(1j * phase)
+        vt = 2 * np.sqrt(r_j) * s_js * a_s / (1 - s_jj)
+
+    # Junction capacitance in parallel
+    denom = 1 + 2j * np.pi * freq * cap * zt
+
+    return vt / denom, zt / denom
+
+
+def set_thevenin(cct, network, f=1, p=1, port=1, source_port=None, power=0., phase=0., cap=0., terminations=None):
+    """Set the embedding circuit of one tone and harmonic from a network.
+
+    The Thevenin voltage and impedance (``thevenin``) at the frequency of
+    tone ``f`` and harmonic ``p`` (``p * cct.freq[f]``, de-normalized with the
+    gap frequency) are normalized and stored in ``cct.vt[f, p]`` and
+    ``cct.zt[f, p]``. The gap voltage and normal resistance of ``cct`` must
+    be set.
+
+    Args:
+        cct (qmix.circuit.EmbeddingCircuit): Embedding circuit (modified)
+        network (Network): Network
+        f (int, optional): Tone, default is 1
+        p (int, optional): Harmonic, default is 1
+        port, source_port, power, phase, cap, terminations: see ``thevenin``
+
+    Returns:
+        tuple: Thevenin voltage and impedance (normalized)
+
+    """
+
+    assert cct.vgap is not None and cct.rn is not None, \
+        "The gap voltage and normal resistance of the embedding circuit must be set"
+    freq = p * cct.freq[f] * cct.fgap
+    vt, zt = thevenin(network, freq, port, source_port, power, phase, cap, terminations)
+    cct.vt[f, p] = complex(vt) / cct.vgap
+    cct.zt[f, p] = complex(zt) / cct.rn
+
+    return cct.vt[f, p], cct.zt[f, p]
+
+
+def _with_source(terminations, source_port, port):
+    """Terminations for the impedance at ``port`` (the source port is matched:
+    it is left out)."""
+    terminations = {} if terminations is None else dict(terminations)
+    assert source_port not in terminations, "The source port can't also be terminated"
+    return terminations
 
 
 # Touchstone files ------------------------------------------------------------
@@ -387,9 +519,14 @@ def _spline(x, y, x_new):
 
 
 def _reflection(z_load, z_ref):
-    """Reflection coefficient of a load (power waves)."""
+    """Reflection coefficient of a load at a port of a network (power waves):
+    ``a = gamma b``, with ``a`` the wave entering the network. A load
+    ``V = -z_load I`` (``I`` into the network) gives
+    ``gamma = (z_load - z_ref) / (z_load + z_ref^*)``, so the matched load is
+    ``z_ref`` itself (not its complex conjugate; the two are the same for
+    real reference impedances)."""
     with np.errstate(divide='ignore', invalid='ignore'):
-        gamma = (z_load - np.conj(z_ref)) / (z_load + z_ref)
+        gamma = (z_load - z_ref) / (z_load + np.conj(z_ref))
     return np.where(np.isinf(z_load), 1., gamma)
 
 

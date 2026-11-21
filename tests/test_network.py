@@ -3,7 +3,8 @@
 import numpy as np
 import pytest
 
-from qmix.network import Network, embedding_impedance, read_touchstone
+from qmix.circuit import EmbeddingCircuit
+from qmix.network import Network, embedding_impedance, read_touchstone, set_thevenin, thevenin
 
 FREQ = np.linspace(1e9, 300e9, 300)
 
@@ -203,3 +204,110 @@ def test_read_touchstone_hfss_port_impedance(tmp_path):
     path.write_text(text)
     with pytest.raises(AssertionError):
         read_touchstone(str(path), num_ports=3)
+
+
+def test_thevenin_matched_line():
+    """Source through a matched line: Z_T = Z_c and |V_T|^2 / (8 Z_c) = P,
+    with the phase delay of the line."""
+
+    zc, length, power = 50., 3.1e-3, 40e-9
+    line, beta = _line(zc, length)
+    f = FREQ[10:20]
+    vt, zt = thevenin(line, f, port=2, source_port=1, power=power, phase=0.3)
+    np.testing.assert_allclose(zt, zc, rtol=1e-10)
+    v_expected = 2 * np.sqrt(zc) * np.sqrt(2 * power) * np.exp(0.3j) * np.exp(-1j * beta[10:20] * length)
+    np.testing.assert_allclose(vt, v_expected, rtol=1e-9)
+    np.testing.assert_allclose(np.abs(vt) ** 2 / (8 * zc), power, rtol=1e-9)
+
+    # No source
+    vt, zt = thevenin(line, f, port=2)
+    assert np.all(vt == 0)
+
+
+@pytest.mark.parametrize("port,source,other", [(1, 3, 2), (3, 1, 2), (2, 3, 1)])
+def test_thevenin_vs_circuit(port, source, other):
+    """Random 3-port with complex reference impedances: the Thevenin
+    equivalent vs solving the circuit from the impedance matrix (generator
+    with internal impedance Z_ref at the source port, a load at the third
+    port, the junction port open)."""
+
+    ntwk = _random_network(3, seed=4).renormalize(np.array([25. + 3j, 75. - 10j, 13.3]))
+    z_load, power = 7. - 4j, 1e-6
+    vt, zt = thevenin(ntwk, ntwk.freq, port, source, power=power, terminations={other: z_load})
+    np.testing.assert_allclose(zt, ntwk.impedance(port, {other: z_load}), rtol=1e-10)
+    z_mat = _z_matrix(ntwk)
+    j, s_, o = port - 1, source - 1, other - 1
+    for k, z in enumerate(z_mat):  # Z_T: source replaced by its internal impedance
+        zo = z[[s_, o]][:, [s_, o]] + np.diag([ntwk.z0[k, s_], z_load])
+        x = np.linalg.solve(zo, -z[[s_, o], j])
+        np.testing.assert_allclose(zt[k], z[j, j] + z[j, [s_, o]] @ x, rtol=1e-9)
+
+    for k, z in enumerate(z_mat):
+        zg = ntwk.z0[k, s_]
+        vg = np.sqrt(8 * power * zg.real)
+        # Unknown currents I_s, I_o (I_j = 0): V_s = vg - zg I_s, V_o = -z_load I_o
+        a = np.array([[z[s_, s_] + zg, z[s_, o]], [z[o, s_], z[o, o] + z_load]])
+        i_s, i_o = np.linalg.solve(a, [vg, 0.])
+        v_open = z[j, s_] * i_s + z[j, o] * i_o
+        np.testing.assert_allclose(vt[k], v_open, rtol=1e-9)
+
+
+def test_thevenin_capacitance_and_set_thevenin():
+    """Junction capacitance in parallel; set_thevenin normalizes and keeps the
+    available power."""
+
+    zc, length, power, cap = 20., 1.7e-3, 25e-9, 100e-15
+    line, beta = _line(zc, length)
+    f = 230e9
+    vt0, zt0 = thevenin(line, f, 2, 1, power=power)
+    vt, zt = thevenin(line, f, 2, 1, power=power, cap=cap)
+    np.testing.assert_allclose(zt, 1 / (1 / zt0 + 2j * np.pi * f * cap), rtol=1e-12)
+    np.testing.assert_allclose(vt, vt0 * zt / zt0, rtol=1e-12)
+    np.testing.assert_allclose(zt, embedding_impedance(line, 2, cap=cap)(f), rtol=1e-12)
+
+    cct = EmbeddingCircuit(1, 2, vgap=2.8e-3, rn=14.)
+    cct.freq[1] = f / 2 / cct.fgap  # p = 2 is at 230 GHz
+    vt_n, zt_n = set_thevenin(cct, line, f=1, p=2, port=2, source_port=1, power=power)
+    np.testing.assert_allclose(vt_n * cct.vgap, vt0, rtol=1e-12)
+    np.testing.assert_allclose(zt_n * cct.rn, zt0, rtol=1e-12)
+    np.testing.assert_allclose(cct.available_power(1, 2), power, rtol=1e-9)
+
+    with pytest.raises(AssertionError):
+        thevenin(line, f, 2, 2, power=power)          # source at the junction port
+    with pytest.raises(AssertionError):
+        thevenin(line, f, 2, power=power)             # power without a source
+    with pytest.raises(AssertionError):
+        set_thevenin(EmbeddingCircuit(1, 1), line, source_port=1)  # no vgap / rn
+    with pytest.raises(ValueError):
+        thevenin(line, 500e9, 2, 1, power=power)      # outside the frequency range
+
+
+def test_terminations_complex_reference():
+    """Loads at ports with complex reference impedances vs the impedance
+    matrix (this used to use the conjugate reference impedance)."""
+
+    ntwk = _random_network(3, seed=4).renormalize(np.array([25. + 3j, 75. - 10j, 13.3 - 6j]))
+    zl2, zl3 = 7. - 4j, 30. + 12j
+    zin = ntwk.impedance(1, {2: zl2, 3: zl3})
+    zin_t = ntwk.terminate(3, zl3).terminate(2, zl2).impedance(1)
+    for k, z in enumerate(_z_matrix(ntwk)):
+        x = np.linalg.solve(z[1:, 1:] + np.diag([zl2, zl3]), -z[1:, 0])
+        np.testing.assert_allclose(zin[k], z[0, 0] + z[0, 1:] @ x, rtol=1e-10)
+        np.testing.assert_allclose(zin_t[k], zin[k], rtol=1e-10)
+
+    # Matched (unlisted) ports are terminated by their reference impedance
+    np.testing.assert_allclose(ntwk.impedance(1), ntwk.impedance(1, {2: 75. - 10j, 3: 13.3 - 6j}), rtol=1e-12)
+
+
+def test_thevenin_source_below_cutoff():
+    """No source power below the cutoff of a waveguide port (imaginary
+    reference impedance); above cutoff it works."""
+
+    line, _ = _line(50., 2e-3)
+    z0 = np.ones((FREQ.size, 2), dtype=complex) * 50.
+    z0[FREQ < 100e9, 0] = 300j  # port 1 below cutoff
+    ntwk = Network(line.freq, line.s, z0)
+    with pytest.raises(ValueError):
+        thevenin(ntwk, 50e9, port=2, source_port=1, power=1e-9)
+    vt, zt = thevenin(ntwk, 200e9, port=2, source_port=1, power=1e-9)
+    np.testing.assert_allclose(np.abs(vt) ** 2 / (8 * zt.real), 1e-9, rtol=1e-6)
