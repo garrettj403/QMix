@@ -38,6 +38,28 @@ Description:
         h = noise_matrix(vj, cct, resp, f_if, temp, vgap)
         tn = noise_temperature(y, h, zt, vgap, 1)         # SSB, USB input
 
+    **Several junctions** (``qmix.circuit.MultiJunctionCircuit``):
+    ``admittance_matrix`` and ``noise_matrix`` return one matrix per junction
+    (junction axis first). The junctions are coupled by the embedding
+    network, which is described at each sideband by its impedance matrix
+    over the junction ports and one external port (``sideband_networks``):
+    the port of the RF source (or image termination) at the RF sidebands,
+    and of the IF load at the IF. The external port is terminated by
+    ``z_ext`` (the source or load impedance). ``network_gain``,
+    ``network_output_noise`` and ``network_noise_temperature`` then give the
+    gain and noise between external ports, including the thermal noise of a
+    lossy network. This also works for one junction (e.g., to include the
+    loss of its tuning circuit)::
+
+        vj = harmonic_balance(cct, resp)                  # several junctions
+        y = admittance_matrix(vj, cct, resp, f_if)        # y[j, m, n, i]
+        h = noise_matrix(vj, cct, resp, f_if, temp)
+        z_net = sideband_networks(z_if, z_usb, z_lsb)     # (J+1)-port matrices
+        z_ext = sideband_impedances(r_if, r_rf, r_rf)     # terminations
+        gain = network_gain(y, z_net, z_ext, 1)
+        tn = network_noise_temperature(y, h, z_net, z_ext, vgap, f_lo, f_if, 1,
+                                       temp=temp, temp_ext=temp)
+
 Note:
 
     **Phasors at negative frequencies.** For m < 0, the frequency
@@ -60,7 +82,7 @@ Note:
 import numpy as np
 import scipy.constants as sc
 
-from qmix.qtcurrent import calculate_phase_factor_coeff, _natural_indices
+from qmix.qtcurrent import calculate_phase_factor_coeff, junction_resp, _is_multi, _natural_indices
 
 
 # Small-signal admittance matrix ---------------------------------------------
@@ -86,9 +108,17 @@ def admittance_matrix(vj, cct, resp, f_if, num_sb=None, num_b=15):
 
     Returns:
         ndarray: Admittance matrix ``y[m + num_sb, n + num_sb, i]`` for
-        sidebands m, n = -num_sb ... num_sb (complex, normalized to 1 / Rn)
+        sidebands m, n = -num_sb ... num_sb (complex, normalized to 1 / Rn);
+        for a ``qmix.circuit.MultiJunctionCircuit`` (``vj[j, 1, p, i]``,
+        ``resp`` one or a list), one per junction, ``y[j, m, n, i]``, scaled
+        by the relative area of each junction
 
     """
+
+    if _is_multi(cct):
+        resp_list = junction_resp(resp, cct.num_j)
+        return np.array([cct.area[j] * admittance_matrix(vj[j], cct.junction(j), resp_list[j], f_if, num_sb, num_b)
+                         for j in range(cct.num_j)])
 
     assert cct.num_f == 1, "The LO state must be a single tone (cct.num_f == 1)"
     f_lo = cct.freq[1]
@@ -156,9 +186,18 @@ def noise_matrix(vj, cct, resp, f_if, temp, vgap=None, num_sb=None, num_b=15):
 
     Returns:
         ndarray: Noise correlation matrix ``h[m + num_sb, n + num_sb, i]``
-        (Hermitian, normalized to ``e * Igap``)
+        (Hermitian, normalized to ``e * Igap``); for a
+        ``qmix.circuit.MultiJunctionCircuit``, one per junction,
+        ``h[j, m, n, i]``, scaled by the relative area of each junction (the
+        noise of different junctions is uncorrelated)
 
     """
+
+    if _is_multi(cct):
+        resp_list = junction_resp(resp, cct.num_j)
+        return np.array([cct.area[j] * noise_matrix(vj[j], cct.junction(j), resp_list[j], f_if, temp, vgap, num_sb,
+                                                    num_b)
+                         for j in range(cct.num_j)])
 
     assert cct.num_f == 1, "The LO state must be a single tone (cct.num_f == 1)"
     f_lo = cct.freq[1]
@@ -398,12 +437,20 @@ def embedding_noise(zt, temp, f_lo, f_if, vgap):
     freq = np.abs(m * f_lo + f_if) * sc.e * vgap / sc.h  # in [Hz]
     temp = np.broadcast_to(np.asarray(temp, dtype=float), m.shape)
 
+    t_cw = _callen_welton(freq, temp)
+
+    return 4 * sc.k * t_cw * zt.real / (sc.e * vgap)
+
+
+def _callen_welton(freq, temp):
+    """Callen-Welton temperature (h f / 2 k) coth(h f / 2 k T), in [K], at
+    frequency freq [Hz] (T at f = 0, h f / 2 k at T = 0)."""
+
     x = sc.h * freq / (2 * sc.k)
     with np.errstate(divide='ignore', invalid='ignore'):
         t_cw = np.where(temp > 0, x / np.tanh(x / np.maximum(temp, 1e-300)), x)  # T -> 0: h f / 2 k
-    t_cw = np.where(freq == 0, temp, t_cw)
 
-    return 4 * sc.k * t_cw * zt.real / (sc.e * vgap)
+    return np.where(freq == 0, temp, t_cw)
 
 
 def output_noise(y, h, zt, vgap, m_out=0, v_noise=None, exclude=None):
@@ -490,3 +537,236 @@ def noise_temperature(y, h, zt, vgap, m_in, m_out=0, v_noise=None):
     noise = output_noise(y, h, zt, vgap, m_out, v_noise=v_noise, exclude=[m_in, m_out])
 
     return noise / conversion_gain(y, zt, m_in, m_out)
+
+
+# Embedding networks (several junctions) --------------------------------------
+
+def sideband_networks(z_if, z_usb, z_lsb):
+    """Embedding networks at all sidebands, for several junctions.
+
+    At each sideband, the embedding network is described by its impedance
+    matrix over the ``num_j`` junction ports and one external port (the
+    last port; e.g., the RF input at the RF sidebands and the IF output at
+    the IF), with ``V = Z I`` (``I`` into the network). The junction
+    capacitances should be included (in parallel with the junction ports;
+    see ``qmix.network.impedance_matrix``). The external port is terminated
+    by ``z_ext`` (see ``network_gain``).
+
+    Args:
+        z_if (ndarray): Impedance matrix at the IF, shape (J+1, J+1)
+        z_usb (ndarray): Impedance matrices at the USB of each LO harmonic
+            p = 1 ... num_sb, shape (num_sb, J+1, J+1) (or (J+1, J+1) for
+            one)
+        z_lsb (ndarray): The same at the LSB of each LO harmonic (at the
+            physical frequency ``p * f_lo - f_if``)
+
+    Returns:
+        ndarray: Impedance matrices at sidebands m = -num_sb ... num_sb,
+        ``z_net[m + num_sb]`` (with the complex conjugate for m < 0, see
+        module docstring), normalized to Rn
+
+    """
+
+    z_if = np.asarray(z_if, dtype=complex)
+    z_usb = np.asarray(z_usb, dtype=complex)
+    z_lsb = np.asarray(z_lsb, dtype=complex)
+    if z_usb.ndim == 2:
+        z_usb = z_usb[None]
+    if z_lsb.ndim == 2:
+        z_lsb = z_lsb[None]
+    num_sb, n = z_usb.shape[0], z_if.shape[0]
+    assert z_if.shape == (n, n) and z_usb.shape == (num_sb, n, n) and z_lsb.shape == (num_sb, n, n), \
+        "Need one (J+1) x (J+1) matrix per sideband"
+
+    out = np.zeros((2 * num_sb + 1, n, n), dtype=complex)
+    out[num_sb] = z_if
+    out[num_sb + 1:] = z_usb
+    out[:num_sb] = np.conj(z_lsb[::-1])
+
+    return out
+
+
+def _network_response(y, z_net, z_ext, m_out):
+    """Linear response of the sideband network with several junctions.
+
+    The junction voltages and currents at all sidebands, V and I (index
+    k = j * dim + (m + num_sb)), satisfy I = Y V + dI (block diagonal over
+    the junctions) and V = n - Z_T I (block diagonal over the sidebands),
+    where Z_T is the Thevenin impedance matrix of the junction ports with the
+    external port terminated by z_ext, and n are the voltages driving the
+    junction ports (sources and noise). So (1 + Y Z_T) I = dI + Y n. The
+    current in the external load at m_out is w . I_out + (source and noise
+    at the external port) / D, with D = Z_xx + z_ext.
+
+    Returns:
+        tuple: r (response of the load current to dI, (npts, K)),
+        ry (to n, (npts, K)), k (n per unit voltage at the external port,
+        (dim, J)), d (D, (dim,)), num_j, dim
+
+    """
+
+    if y.ndim == 3:
+        y = y[None]
+    num_j, dim, _, npts = y.shape
+    assert z_net.shape == (dim, num_j + 1, num_j + 1), "z_net must have shape (2 num_sb + 1, J+1, J+1)"
+    assert z_ext.shape == (dim,), "z_ext must have one value per sideband"
+    num_sb = (dim - 1) // 2
+
+    z_jj = z_net[:, :num_j, :num_j]
+    z_jx = z_net[:, :num_j, num_j]
+    z_xj = z_net[:, num_j, :num_j]
+    d = z_net[:, num_j, num_j] + z_ext
+    z_t = z_jj - z_jx[:, :, None] * z_xj[:, None, :] / d[:, None, None]
+    k = z_jx / d[:, None]
+    w = z_xj / d[:, None]
+
+    num_k = num_j * dim
+    jj, ll, mm = np.meshgrid(np.arange(num_j), np.arange(num_j), np.arange(dim), indexing='ij')
+    z_big = np.zeros((num_k, num_k), dtype=complex)
+    z_big[jj * dim + mm, ll * dim + mm] = z_t[mm, jj, ll]
+    y_big = np.zeros((npts, num_k, num_k), dtype=complex)
+    for j in range(num_j):
+        y_big[:, j * dim:(j + 1) * dim, j * dim:(j + 1) * dim] = np.moveaxis(y[j], -1, 0)
+
+    a = np.linalg.inv(np.eye(num_k)[None] + y_big @ z_big)
+    w_row = np.zeros(num_k, dtype=complex)
+    w_row[np.arange(num_j) * dim + m_out + num_sb] = w[m_out + num_sb]
+    r = w_row @ a                                   # (npts, K)
+    ry = np.einsum('ik,ikl->il', r, y_big)          # (npts, K)
+
+    return r, ry, k, d, num_j, dim
+
+
+def network_gain(y, z_net, z_ext, m_in, m_out=0):
+    """Transducer gain from the external port at sideband m_in to the
+    external port at sideband m_out (default: the IF), with several
+    junctions.
+
+    The ratio of the power delivered to the load ``z_ext`` at m_out to the
+    power available from a source with impedance ``z_ext`` at m_in.
+
+    Args:
+        y (ndarray): Admittance matrices, ``y[j, m, n, i]``, from
+            ``admittance_matrix`` (or ``y[m, n, i]`` for one junction)
+        z_net (ndarray): Embedding networks, from ``sideband_networks``
+        z_ext (ndarray): Impedances terminating the external port at all
+            sidebands (source / load impedances), from
+            ``sideband_impedances`` (normalized to Rn, with positive real
+            parts)
+        m_in (int): Input sideband (e.g., 1 for the USB)
+        m_out (int, optional): Output sideband, default is 0 (the IF)
+
+    Returns:
+        ndarray: Gain at each bias voltage
+
+    """
+
+    _, ry, k, d, num_j, dim = _network_response(y, z_net, z_ext, m_out)
+    num_sb = (dim - 1) // 2
+    i_in = m_in + num_sb
+    i_load = ry[:, np.arange(num_j) * dim + i_in] @ k[i_in]
+    if m_in == m_out:
+        i_load = i_load + 1 / d[i_in]
+
+    return 4 * z_ext[i_in].real * z_ext[m_out + num_sb].real * np.abs(i_load) ** 2
+
+
+def network_output_noise(y, h, z_net, z_ext, vgap, f_lo, f_if, m_out=0, temp=None, temp_ext=None, exclude=None):
+    """Noise power delivered to the load at the external port at sideband
+    m_out (default: the IF), per unit bandwidth and in units of the
+    Boltzmann constant (a noise temperature, in [K]), with several
+    junctions.
+
+    The noise sources are the junctions (``h``; uncorrelated between
+    junctions), the embedding network (if ``temp`` is given) and the
+    terminations of the external port (if ``temp_ext`` is given). A passive
+    network at temperature T has open-circuit noise voltages with the
+    correlation matrix ``2 k T_cw (Z + Z^dagger)`` (Twiss), and a
+    termination ``4 k T_cw Re(z_ext)``, with the Callen-Welton temperature
+    ``T_cw`` at the physical frequency of each sideband (see
+    ``embedding_noise``). A lossless network has no noise of its own.
+
+    Args:
+        y (ndarray): Admittance matrices, from ``admittance_matrix``
+        h (ndarray): Noise correlation matrices, from ``noise_matrix``
+        z_net (ndarray): Embedding networks, from ``sideband_networks``
+        z_ext (ndarray): Terminations of the external port, see
+            ``network_gain``
+        vgap (float): Gap voltage, in [V]
+        f_lo (float): LO frequency (normalized)
+        f_if (float): IF frequency (normalized)
+        m_out (int, optional): Output sideband, default is 0 (the IF)
+        temp (float or ndarray, optional): Physical temperature of the
+            embedding network, in [K] (scalar or one per sideband), default
+            is None (no network noise)
+        temp_ext (float or ndarray, optional): Temperature of the
+            terminations of the external port, in [K] (scalar or one per
+            sideband), default is None (no termination noise)
+        exclude (list, optional): Sidebands whose termination noise is not
+            included, default is ``[m_out]`` (the load itself)
+
+    Returns:
+        ndarray: Output noise temperature at each bias voltage, in [K]
+
+    """
+
+    if h.ndim == 3:
+        h = h[None]
+    r, ry, k, d, num_j, dim = _network_response(y, z_net, z_ext, m_out)
+    num_sb = (dim - 1) // 2
+    assert h.shape[:3] == (num_j, dim, dim), "h must match y"
+
+    # Junction noise
+    noise = np.zeros(r.shape[0])
+    for j in range(num_j):
+        r_j = r[:, j * dim:(j + 1) * dim]
+        noise += np.einsum('im,mni,in->i', r_j, h[j], np.conj(r_j)).real
+
+    # Noise of the network and of the terminations (uncorrelated between sidebands)
+    if temp is not None or temp_ext is not None:
+        m = np.arange(-num_sb, num_sb + 1)
+        freq = np.abs(m * f_lo + f_if) * sc.e * vgap / sc.h  # in [Hz]
+        exclude = [m_out] if exclude is None else exclude
+        for idx in range(dim):
+            # Response of the load current to the noise voltages (e_J, e_x, e_ext) at this sideband
+            ry_m = ry[:, np.arange(num_j) * dim + idx]
+            q = np.zeros((r.shape[0], num_j + 2), dtype=complex)
+            q[:, :num_j] = ry_m
+            q[:, num_j] = -ry_m @ k[idx]
+            q[:, num_j + 1] = ry_m @ k[idx]
+            if idx == m_out + num_sb:
+                q[:, num_j] -= 1 / d[idx]
+                q[:, num_j + 1] += 1 / d[idx]
+            cov = np.zeros((num_j + 2, num_j + 2), dtype=complex)
+            if temp is not None:
+                t_net = _callen_welton(freq[idx], np.broadcast_to(np.asarray(temp, dtype=float), m.shape)[idx])
+                cov[:num_j + 1, :num_j + 1] = 2 * sc.k * t_net * (z_net[idx] + np.conj(z_net[idx]).T) / (sc.e * vgap)
+            if temp_ext is not None and m[idx] not in exclude:
+                t_ext = _callen_welton(freq[idx], np.broadcast_to(np.asarray(temp_ext, dtype=float), m.shape)[idx])
+                cov[num_j + 1, num_j + 1] = 4 * sc.k * t_ext * z_ext[idx].real / (sc.e * vgap)
+            noise += np.einsum('ia,ab,ib->i', q, cov, np.conj(q)).real
+
+    return noise * z_ext[m_out + num_sb].real * sc.e * vgap / sc.k
+
+
+def network_noise_temperature(y, h, z_net, z_ext, vgap, f_lo, f_if, m_in, m_out=0, temp=None, temp_ext=None):
+    """Input noise temperature (SSB) referred to the external port at
+    sideband m_in, with several junctions: ``network_output_noise``
+    (without the termination noise at m_in and m_out) divided by
+    ``network_gain``. See ``noise_temperature`` for the DSB noise
+    temperature.
+
+    Args:
+        y, h, z_net, z_ext, vgap, f_lo, f_if: see ``network_output_noise``
+        m_in (int): Input sideband (e.g., 1 for the USB)
+        m_out (int, optional): Output sideband, default is 0 (the IF)
+        temp, temp_ext: see ``network_output_noise``
+
+    Returns:
+        ndarray: Noise temperature at each bias voltage, in [K]
+
+    """
+
+    noise = network_output_noise(y, h, z_net, z_ext, vgap, f_lo, f_if, m_out, temp, temp_ext, exclude=[m_in, m_out])
+
+    return noise / network_gain(y, z_net, z_ext, m_in, m_out)

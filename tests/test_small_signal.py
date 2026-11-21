@@ -205,3 +205,199 @@ def test_noise_temperature():
     # The embedding noise (image sideband) adds to the junction's noise
     tn_junction = noise_temperature(y, h, zt, VGAP, 1)
     assert (tn > tn_junction).all()
+
+
+# Several junctions --------------------------------------------------------------
+
+from qmix.circuit import MultiJunctionCircuit  # noqa: E402
+from qmix.small_signal import (embedding_noise, network_gain, network_noise_temperature,  # noqa: E402
+                               network_output_noise, noise_matrix, noise_temperature, sideband_networks)
+
+Z_LO2 = np.array([[0.4 - 0.2j, 0.1 + 0.15j], [0.1 + 0.15j, 0.5 + 0.1j]])
+
+
+def _lo_state_multi(area=(1., 1.)):
+    cct = MultiJunctionCircuit(2, 1, 1, vb_min=VBIAS[0], vb_max=VBIAS[-1], vb_npts=len(VBIAS))
+    cct.freq[1] = F_LO
+    cct.area[:] = area
+    cct.vt[:, 1, 1] = 0.5, 0.3j
+    cct.zt[:, :, 1, 1] = Z_LO2
+    vj = harmonic_balance(cct, RESP, num_b=20, stop_rerror=1e-10, max_it=50, verbose=False)
+    return cct, vj
+
+
+def _t_network(z1, z2, z3):
+    """Z-matrix of a T network (series z1 at the junction port, shunt z2,
+    series z3 at the external port): ports (junction, external)."""
+    return np.array([[z1 + z2, z2], [z2, z2 + z3]])
+
+
+def test_multi_junction_matrices():
+    """admittance_matrix and noise_matrix: one per junction, scaled by the
+    area, and one response function per junction."""
+
+    resp_2 = qmix.respfn.RespFnPolynomial(30, verbose=False)
+    cct, vj = _lo_state_multi(area=(1., 1.5))
+    y = admittance_matrix(vj, cct, [RESP, resp_2], F_IF, num_b=20)
+    h = noise_matrix(vj, cct, [RESP, resp_2], F_IF, 4.2, num_b=20, vgap=VGAP)
+    assert y.shape == (2, 3, 3, len(VBIAS)) and h.shape == y.shape
+    for j, resp in enumerate([RESP, resp_2]):
+        single = cct.junction(j)
+        np.testing.assert_allclose(y[j], cct.area[j] * admittance_matrix(vj[j], single, resp, F_IF, num_b=20),
+                                   rtol=1e-14)
+        np.testing.assert_allclose(h[j], cct.area[j] * noise_matrix(vj[j], single, resp, F_IF, 4.2, vgap=VGAP,
+                                                                    num_b=20), rtol=1e-14)
+
+
+def test_network_one_junction_lossless():
+    """One junction behind a lossless T network: the gain and noise between
+    the external ports are the same as for the Thevenin equivalent at the
+    junction (conversion_gain, noise_temperature with embedding_noise), and
+    the network adds no noise of its own."""
+
+    cct, vj = _lo_state()
+    y = admittance_matrix(vj, cct, RESP, F_IF, num_b=20)
+    h = noise_matrix(vj, cct, RESP, F_IF, 4.2, vgap=VGAP, num_b=20)
+    nets = {'if': _t_network(0.2j, -1.5j, 0.4j), 'usb': _t_network(0.3j, -0.8j, -0.2j),
+            'lsb': _t_network(-0.1j, -0.7j, 0.5j)}
+    r_ext = {'if': 1.2, 'usb': 0.7, 'lsb': 0.9}
+    z_net = sideband_networks(nets['if'], nets['usb'], nets['lsb'])
+    z_ext = sideband_impedances(r_ext['if'], r_ext['usb'], r_ext['lsb'])
+
+    # Thevenin equivalent at the junction (external port terminated)
+    def thevenin_z(z, r):
+        return z[0, 0] - z[0, 1] * z[1, 0] / (z[1, 1] + r)
+    zt = sideband_impedances(*[thevenin_z(nets[k], r_ext[k]) for k in ('if', 'usb', 'lsb')])
+
+    for m_in in (1, -1):
+        np.testing.assert_allclose(network_gain(y, z_net, z_ext, m_in), conversion_gain(y, zt, m_in), rtol=1e-10)
+        v_noise = embedding_noise(zt, 4.2, F_LO, F_IF, VGAP)
+        expected = noise_temperature(y, h, zt, VGAP, m_in, v_noise=v_noise)
+        for temp in (None, 100.):  # lossless: no noise from the network
+            tn = network_noise_temperature(y, h, z_net, z_ext, VGAP, F_LO, F_IF, m_in, temp=temp, temp_ext=4.2)
+            np.testing.assert_allclose(tn, expected, rtol=1e-9)
+        np.testing.assert_allclose(network_noise_temperature(y, h, z_net, z_ext, VGAP, F_LO, F_IF, m_in),
+                                   noise_temperature(y, h, zt, VGAP, m_in), rtol=1e-9)
+
+    # One junction: y and h without the junction axis are accepted
+    np.testing.assert_allclose(network_gain(y[None], z_net, z_ext, 1), network_gain(y, z_net, z_ext, 1))
+
+
+def test_network_parallel_junctions():
+    """Two identical junctions at the same node of a network act like one
+    junction with twice the area (gain and noise)."""
+
+    def nets(num_j, z2, z3):
+        z = np.full((num_j + 1, num_j + 1), z2, dtype=complex)
+        z[num_j, num_j] += z3
+        return z
+
+    cct1 = EmbeddingCircuit(1, 1, vb_min=VBIAS[0], vb_max=VBIAS[-1], vb_npts=len(VBIAS))
+    cct1.freq[1] = F_LO
+    cct1.vt[1, 1] = 0.5
+    cct1.zt[1, 1] = 0.3 - 0.3j  # area 1 with 2 zs = area 2 with zs (for the LO state)
+    vj1 = harmonic_balance(cct1, RESP, num_b=20, stop_rerror=1e-10, max_it=50, verbose=False)
+    y1 = 2 * admittance_matrix(vj1, cct1, RESP, F_IF, num_b=20)
+    h1 = 2 * noise_matrix(vj1, cct1, RESP, F_IF, 4.2, vgap=VGAP, num_b=20)
+
+    cct2 = MultiJunctionCircuit(2, 1, 1, vb_min=VBIAS[0], vb_max=VBIAS[-1], vb_npts=len(VBIAS))
+    cct2.freq[1] = F_LO
+    cct2.vt[:, 1, 1] = 0.5
+    cct2.zt[:, :, 1, 1] = 0.15 - 0.15j  # two junctions at one node: each sees zs (i_1 + i_2)
+    vj2 = harmonic_balance(cct2, RESP, num_b=20, stop_rerror=1e-10, max_it=50, verbose=False)
+    y2 = admittance_matrix(vj2, cct2, RESP, F_IF, num_b=20)
+    h2 = noise_matrix(vj2, cct2, RESP, F_IF, 4.2, vgap=VGAP, num_b=20)
+
+    z2, z3 = (-1.1j, 0.6 + 0.3j, -0.9j), (0.1 + 0.2j, 0.05j, 0.3)
+    z_ext = sideband_impedances(1.0, 0.8, 0.6)
+    net1 = sideband_networks(nets(1, z2[0], z3[0]), nets(1, z2[1], z3[1]), nets(1, z2[2], z3[2]))
+    net2 = sideband_networks(nets(2, z2[0], z3[0]), nets(2, z2[1], z3[1]), nets(2, z2[2], z3[2]))
+    np.testing.assert_allclose(network_gain(y2, net2, z_ext, 1), network_gain(y1, net1, z_ext, 1), rtol=1e-6)
+    args = (VGAP, F_LO, F_IF, 1)
+    np.testing.assert_allclose(network_noise_temperature(y2, h2, net2, z_ext, *args, temp=4.2, temp_ext=4.2),
+                               network_noise_temperature(y1, h1, net1, z_ext, *args, temp=4.2, temp_ext=4.2),
+                               rtol=1e-6)
+
+
+def test_network_thermal_equilibrium():
+    """Unpumped junctions at zero bias in a lossy network, with everything at
+    the same temperature: the noise delivered to the IF load is that of a
+    passive one-port at that temperature, k T_cw (1 - |Gamma|^2) (the
+    junction noise, the network noise and the noise of the terminations must
+    add up to this, including the quantum limit)."""
+
+    import scipy.constants as sc
+
+    temp = 0.5
+    cct = MultiJunctionCircuit(2, 1, 1, vb_min=0, vb_max=0, vb_npts=1)
+    cct.freq[1] = F_LO
+    cct.area[1] = 0.7
+    vj = cct.initialize_vj()  # no LO
+    y = admittance_matrix(vj, cct, RESP, F_IF, num_b=5)
+    h = noise_matrix(vj, cct, RESP, F_IF, temp, vgap=VGAP, num_b=5)
+
+    rng = np.random.default_rng(3)
+    nets = []
+    for _ in range(3):
+        a = rng.normal(size=(3, 3))
+        x = rng.normal(size=(3, 3))
+        nets.append(0.3 * (a @ a.T) + 0.2 * np.eye(3) + 1j * (x + x.T) * 0.4)  # passive: Re part pos. def.
+    z_net = sideband_networks(*nets)
+    z_ext = sideband_impedances(0.8, 1.1, 0.9)
+    noise = network_output_noise(y, h, z_net, z_ext, VGAP, F_LO, F_IF, temp=temp, temp_ext=temp)
+
+    # Impedance seen by the IF load: junction ports terminated by the junctions (1 / Y at the IF)
+    z = nets[0]
+    z_j = np.diag(1 / y[:, 1, 1, 0])
+    z_in = z[2, 2] - z[2, :2] @ np.linalg.solve(z[:2, :2] + z_j, z[:2, 2])
+    r_l = z_ext[1].real
+    x = sc.h * F_IF * sc.e * VGAP / sc.h / (2 * sc.k)
+    t_cw = x / np.tanh(x / temp)
+    expected = t_cw * 4 * z_in.real * r_l / np.abs(z_in + r_l) ** 2
+    assert t_cw > 1.2 * temp  # the quantum correction matters here
+    np.testing.assert_allclose(noise, expected, rtol=1e-6)
+
+
+def test_network_gain_vs_multitone():
+    """Two coupled junctions: the gain from the small-signal analysis (USB at
+    the external RF port to the IF load) vs a multi-junction, multi-tone
+    harmonic balance with a weak RF signal (LO, USB, IF; LSB shorted)."""
+
+    cct_lo, vj_lo = _lo_state_multi()
+    y = admittance_matrix(vj_lo, cct_lo, RESP, F_IF, num_b=20)
+
+    z_if = np.array([[0.8, 0.5, 0.7], [0.5, 0.8, 0.7], [0.7, 0.7, 0.8]])
+    z_usb = np.array([[0.35 - 0.3j, 0.1, 0.3], [0.1, 0.35 - 0.3j, 0.3j], [0.3, 0.3j, 0.4]])
+    z_net = sideband_networks(z_if, z_usb, np.zeros((3, 3)))  # LSB shorted
+    z_ext = sideband_impedances(1.0, 0.8, 1.0)
+    gain = network_gain(y, z_net, z_ext, 1)
+
+    def thevenin_z(z, r):
+        return z[:2, :2] - np.outer(z[:2, 2], z[2, :2]) / (z[2, 2] + r)
+
+    # Multi-tone simulation: weak source at the external RF port at the USB
+    amp = 1e-4
+    cct = MultiJunctionCircuit(2, 3, 1, vb_min=VBIAS[0], vb_max=VBIAS[-1], vb_npts=len(VBIAS))
+    cct.freq[1:] = F_LO, F_LO + F_IF, F_IF
+    cct.vt[:, 1, 1] = cct_lo.vt[:, 1, 1]
+    cct.zt[:, :, 1, 1] = Z_LO2
+    cct.vt[:, 2, 1] = z_usb[:2, 2] / (z_usb[2, 2] + z_ext[2]) * amp
+    cct.zt[:, :, 2, 1] = thevenin_z(z_usb, z_ext[2])
+    cct.zt[:, :, 3, 1] = thevenin_z(z_if, z_ext[1])
+    num_b = (20, 3, 3)
+    vj = harmonic_balance(cct, RESP, num_b=num_b, stop_rerror=1e-10, max_it=50, verbose=False, warm_start=True)
+    i_if = qtcurrent(vj, cct, RESP, F_IF, num_b=num_b, verbose=False)  # junction currents
+    i_load = z_if[2, :2] @ i_if / (z_if[2, 2] + z_ext[1])
+    gain_multitone = 0.5 * np.abs(i_load) ** 2 * z_ext[1].real / (amp ** 2 / (8 * z_ext[2].real))
+
+    assert gain.max() > 0.02
+    np.testing.assert_allclose(gain, gain_multitone, rtol=0, atol=1e-5 * gain.max())
+
+
+def test_network_input_checks():
+    cct, vj = _lo_state_multi()
+    y = admittance_matrix(vj, cct, RESP, F_IF, num_b=20)
+    with pytest.raises(AssertionError):
+        network_gain(y, sideband_networks(np.eye(2), np.eye(2), np.eye(2)), sideband_impedances(1, 1, 1), 1)
+    with pytest.raises(AssertionError):
+        sideband_networks(np.eye(3), np.eye(2), np.eye(3))

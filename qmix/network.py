@@ -454,13 +454,9 @@ def _thevenin_ports(network, freq, ports, source_port, power, phase, cap, termin
         raise ValueError("The junction ports need reference impedances with a positive real part")
 
     # Impedance matrix (the source port is matched: left out)
-    s_jj = network._reduced(ports, _with_source(terminations, source_port, ports))
-    s_jj = _spline(network.freq, s_jj, freq)
-    zr = _spline(network.freq, z_ref, freq)
-    r = zr.real
+    zt = impedance_matrix(network, freq, ports, terminations=_with_source(terminations, source_port, ports))
+    r = _spline(network.freq, z_ref, freq).real
     eye = np.eye(num_j)
-    m = np.linalg.solve(eye - s_jj, s_jj * zr[..., None, :] + eye * np.conj(zr)[..., None, :])
-    zt = m * np.sqrt(r[..., :, None] / r[..., None, :])  # F^-1 M F
 
     if source_port is None:
         assert power == 0, "power needs a source_port"
@@ -488,6 +484,66 @@ def _thevenin_ports(network, freq, ports, source_port, power, phase, cap, termin
     vt = np.linalg.solve(m, vt[..., None])[..., 0]
 
     return vt, zt
+
+
+def impedance_matrix(network, freq, ports, cap=0., terminations=None):
+    """Impedance matrix of several ports of a network, with the other ports
+    terminated.
+
+    ``V = Z I`` for the voltages and currents (into the network) at
+    ``ports``. With power waves, ``Z = F^-1 (1 - S)^-1 (S G + G^*) F`` from
+    the S-matrix of these ports (``F = diag(1 / (2 sqrt(Re Z_ref)))``,
+    ``G = diag(Z_ref)``), interpolated with cubic splines. Capacitances
+    ``cap`` (e.g., of the junctions) are in parallel with the ports:
+    ``Z' = (1 + Z Y_c)^-1 Z`` with ``Y_c = diag(j w cap)``. This gives the
+    embedding networks of several junctions for the small-signal analysis
+    (``qmix.small_signal.sideband_networks``), with the junction ports and
+    one external port (with ``cap = 0``).
+
+    The ports need reference impedances with a positive real part; only the
+    frequencies of the network where all of them do (e.g., a waveguide port
+    above cutoff) are used.
+
+    Args:
+        network (Network): Network
+        freq (float or ndarray): Frequency, in [Hz]
+        ports (list): Ports (starting from 1)
+        cap (float or list, optional): Capacitance in parallel with each
+            port, in [F], default is 0
+        terminations (dict, optional): Load impedances of the other ports,
+            see ``Network.impedance``; unlisted ports are matched
+
+    Returns:
+        ndarray: Impedance matrix in [ohms], shape ``freq.shape + (n, n)``
+
+    """
+
+    freq = np.asarray(freq, dtype=float)
+    ports = list(ports)
+    num = len(ports)
+    ks = [_port_index(p, network.num_ports) for p in ports]
+    assert len(set(ks)) == num, "The ports must be different"
+    cap = np.broadcast_to(np.asarray(cap, dtype=float), (num,))
+
+    valid = np.all(network.z0[:, ks].real > 0, axis=1)
+    if not np.all(valid[np.argmax(valid):len(valid) - np.argmax(valid[::-1])]):
+        raise ValueError("The frequencies where the ports have positive reference impedances must be contiguous")
+    fv = network.freq[valid]
+    if fv.size < 2:
+        raise ValueError("The ports need reference impedances with a positive real part")
+    _check_freq_range(fv, freq)
+
+    s = _spline(fv, network._reduced(ports, terminations)[valid], freq)
+    zr = _spline(fv, network.z0[valid][:, ks], freq)
+    r = zr.real
+    eye = np.eye(num)
+    m = np.linalg.solve(eye - s, s * zr[..., None, :] + eye * np.conj(zr)[..., None, :])
+    z = m * np.sqrt(r[..., :, None] / r[..., None, :])  # F^-1 M F
+
+    # Capacitances in parallel: (1 + Z Y_c)^-1 Z
+    yc = 2j * np.pi * freq[..., None] * cap
+
+    return np.linalg.solve(eye + z * yc[..., None, :], z)
 
 
 def _with_source(terminations, source_port, port):

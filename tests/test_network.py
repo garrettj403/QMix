@@ -4,7 +4,7 @@ import numpy as np
 import pytest
 
 from qmix.circuit import EmbeddingCircuit, MultiJunctionCircuit
-from qmix.network import Network, embedding_impedance, read_touchstone, set_thevenin, thevenin
+from qmix.network import Network, embedding_impedance, impedance_matrix, read_touchstone, set_thevenin, thevenin
 
 FREQ = np.linspace(1e9, 300e9, 300)
 
@@ -393,3 +393,34 @@ def test_set_thevenin_multiple_junctions():
 
     with pytest.raises(AssertionError):
         set_thevenin(cct, tee, port=1, source_port=3, power=power)  # need a port per junction
+
+
+def test_impedance_matrix():
+    """Impedance matrix of several ports vs the Z-matrix (other ports
+    terminated), with capacitances in parallel; only frequencies where all
+    ports have valid references are used."""
+
+    ntwk = _random_network(4, seed=11).renormalize(np.array([25. + 3j, 75. - 10j, 13.3, 40. + 20j]))
+    ports, z_load = [4, 1, 3], 9. + 2j
+    z = impedance_matrix(ntwk, ntwk.freq, ports, terminations={2: z_load})
+    kk = [p - 1 for p in ports]
+    for k, zf in enumerate(_z_matrix(ntwk)):
+        expected = zf[kk][:, kk] - np.outer(zf[kk, 1], zf[1, kk]) / (zf[1, 1] + z_load)
+        np.testing.assert_allclose(z[k], expected, rtol=1e-9)
+
+    f, cap = 2.5e9, np.array([1e-12, 0., 4e-12])
+    z0 = impedance_matrix(ntwk, f, ports)
+    zc = impedance_matrix(ntwk, f, ports, cap=cap)
+    np.testing.assert_allclose(zc, np.linalg.inv(np.linalg.inv(z0) + np.diag(2j * np.pi * f * cap)), rtol=1e-10)
+    np.testing.assert_allclose(impedance_matrix(ntwk, f, [1], cap=2e-12)[0, 0],
+                               embedding_impedance(ntwk, 1, cap=2e-12)(f), rtol=1e-10)
+
+    # Port 2 below cutoff at the lowest frequency: only the others are used
+    z0_ref = ntwk.z0.copy()
+    z0_ref[0, 1] = 30j
+    cut = Network(ntwk.freq, ntwk.s, z0_ref)
+    impedance_matrix(cut, 3e9, [1, 2])
+    with pytest.raises(ValueError):
+        impedance_matrix(cut, 1.2e9, [1, 2])
+    with pytest.raises(AssertionError):
+        impedance_matrix(ntwk, f, [1, 1])
