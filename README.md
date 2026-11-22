@@ -14,6 +14,33 @@ In order to calculate the quasiparticle tunneling currents, QMix uses *multi-ton
 
 **Website:** https://garrettj403.github.io/QMix/
 
+Capabilities
+------------
+
+**Tunneling currents and harmonic balance**
+- Quasiparticle tunneling currents for any number of tones and harmonics (multi-tone spectral domain analysis), with a Fourier-shift method that keeps simulations with many tones practical.
+- Harmonic balance with an analytic Jacobian and a line search, to find the junction voltages for a given embedding circuit.
+- Response functions from ideal or model I-V curves, or from measured DC I-V data (Kramers-Kronig transform included).
+
+**Mixer analysis**
+- Small-signal (Tucker) analysis: conversion gain, shot noise (including its thermal and quantum limits) and noise temperature, at any IF frequency, including an IF of zero.
+- Thermal noise of the embedding circuit (Callen-Welton), and of lossy embedding networks.
+
+**Several junctions**
+- Twin-junction circuits and series arrays, coupled through a multi-port embedding network.
+- Junctions with different areas, gap voltages, normal-state resistances and I-V curves.
+- DC bias networks for series arrays (e.g., with a bias resistor).
+
+**Embedding circuits**
+- S-parameter networks: read Touchstone files (e.g., from HFSS), connect and terminate networks, and get Thevenin equivalent circuits from them.
+- Circuit elements: transmission lines, microstrip, coplanar waveguide, rectangular waveguide, radial stubs, lumped elements, and ideal components (transformers, hybrids, circulators, attenuators, antennas, de-embedding).
+- Superconducting films: Mattis-Bardeen conductivity and surface impedance, including the kinetic inductance and loss of superconducting microstrip.
+
+**Experimental data**
+- Analysis of measured DC and pumped I-V curves and IF spectra: recover the embedding impedance and voltage, and the gain and noise temperature (Y-factor, shot-noise calibration).
+
+Many of these results are checked against [SuperMix](http://www.submm.caltech.edu/supermix/), an independent C++ library for SIS mixers.
+
 Getting Started
 ---------------
 
