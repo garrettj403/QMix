@@ -60,6 +60,28 @@ Limitations
 - Frequencies are matched after rounding, so tones closer than ~1e-4 of the gap frequency are treated as the same frequency.
 - Harmonic balance can converge slowly for very strong pumping, sharp gap knees and series arrays.
 
+QMix vs SuperMix
+----------------
+
+[SuperMix](http://www.submm.caltech.edu/supermix/) (Ward et al., 1999) is Caltech's C++ library for simulating SIS mixers. The two packages overlap a lot, and QMix is checked against SuperMix (see [``profile/supermix/``](https://github.com/garrettj403/QMix/tree/master/profile/supermix)), but they are built around different methods:
+
+| | QMix | SuperMix |
+|---|---|---|
+| Language | Python | C++ |
+| Large-signal simulation | Any number of tones and harmonics (multi-tone spectral domain analysis) | One LO and its harmonics (single-tone spectral domain analysis) |
+| Strong second signals (saturation, two LOs, spurious tones) | Yes | No (signals must be weak) |
+| Small-signal gain and noise (Tucker theory) | Yes | Yes |
+| Several junctions, with different properties | Yes | Yes |
+| Passive circuit elements | Yes (SuperMix's set) | Yes |
+| Superconducting films (Mattis-Bardeen) | Yes | Yes |
+| Noise temperature of each circuit element | No (one temperature per network) | Yes |
+| Active devices (e.g., HEMT amplifiers) | No | Yes |
+| Optimizer, Monte Carlo, parameter sweeps | No (use SciPy) | Yes |
+| Analysis of experimental data (I-V curves, IF spectra) | Yes | No |
+| Speed (single-tone harmonic balance) | Slower | Faster |
+
+With the same inputs, the two agree to round-off or close to it: tunneling currents to ~1e-15, harmonic balance to ~1e-9, small-signal admittance and noise matrices to ~1e-14 (with SuperMix's physical constants, which are older CODATA values), passive circuit elements to ~1e-14, and normal-metal lines to round-off. For superconducting films, the agreement is set by SuperMix's numerical integration (~1e-8) and its table of the energy gap vs temperature (~1e-4 above T/Tc = 0.04).
+
 Getting Started
 ---------------
 
