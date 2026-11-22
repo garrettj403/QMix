@@ -15,6 +15,7 @@ Contents
    :numbered:
    
    setup
+   capabilities
    qmix
    theory
    single-tone-simulation
