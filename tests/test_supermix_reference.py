@@ -366,3 +366,101 @@ def test_microstrip(k, monkeypatch):
                        ('zs_ground', ground.zs(freq, temp)), ('zchar', zc), ('gamma', gamma)):
         ref = LINES['case{}_{}'.format(k, key)]
         np.testing.assert_allclose(value, ref, rtol=rtol, err_msg=key)
+
+
+# Passive circuit elements (qmix.network) ---------------------------------------
+
+def qmix_element(element, z0, params, freq):
+    """QMix's version of a SuperMix passive element (the cases of
+    profile/supermix/compare_elements.py, which imports this function):
+    returns the Network, or the inductance for 'via'."""
+
+    import qmix.network as qn
+    from qmix.superconductor import NormalFilm
+
+    p = list(params)
+    if element.startswith(('resistor', 'capacitor', 'inductor')):
+        func = {'resistor': qn.resistor, 'capacitor': qn.capacitor, 'inductor': qn.inductor}[element.split('_')[0]]
+        return func(freq, p[0], shunt=element.endswith('shunt'), z0=z0)
+    if element.startswith('series_rlc'):
+        return qn.series_rlc(freq, *p, shunt=element.endswith('shunt'), z0=z0)
+    if element.startswith('parallel_rlc'):
+        return qn.parallel_rlc(freq, *p, shunt=element.endswith('shunt'), z0=z0)
+    simple = {'series_tee': qn.series_tee, 'circulator': qn.circulator, 'hybrid90': qn.hybrid90,
+              'hybrid180': qn.hybrid180, 'power_divider': qn.power_divider}
+    if element in simple:
+        return simple[element](freq, z0)
+    if element == 'branch':
+        return qn.tee(freq, z0, int(p[0]))
+    if element == 'zterm':
+        return qn.load(freq, p[0] + 1j * p[1], z0)
+    if element == 'yterm':
+        y = p[0] + 1j * p[1]
+        return qn.load(freq, np.inf if y == 0 else 1 / y, z0)
+    if element == 'attenuator':
+        return qn.attenuator(freq, p[0], z0)
+    if element == 'time_delay':
+        return qn.time_delay(freq, p[0], z0)
+    if element == 'transformer':
+        return qn.transformer(freq, p[0] + 1j * p[1], p[2] + 1j * p[3], z0)
+    if element == 'slot_antenna':
+        return qn.slot_antenna(freq, p[0] + 1j * p[1], z0)
+    if element == 'twin_slot_1':
+        return qn.twin_slot_antenna(qn.load(freq, p[0] + 1j * p[1], z0))
+    if element == 'twin_slot_2':
+        return qn.twin_slot_antenna(qn.series_rlc(freq, *p, shunt=True, z0=z0))
+    if element == 'trline':
+        return qn.ideal_line(freq, p[0] + 1j * p[1], p[2], p[3], p[4], z0=z0)
+    if element == 'deembed':
+        zc, theta, f_ref, c_out, r, ind, c = p
+        inp = qn.ideal_line(freq, zc, theta, f_ref, z0=z0)
+        out = qn.capacitor(freq, c_out, shunt=True, z0=z0)
+        measured = inp.connect(2, qn.series_rlc(freq, r, ind, c, z0=z0), 1).connect(2, out, 1)
+        return qn.deembed(measured, inp, out, z0)
+    if element == 'r_waveguide':
+        a, b, length, eps, tand, rho, thick = p
+        wall = NormalFilm(rho, thick) if rho != 0 else None
+        return qn.rectangular_waveguide_line(freq, length, a, b, z0=z0, eps_r=eps, tan_d=tand, wall=wall, temp=4.2)
+    if element == 'cpw':
+        width, space, height, eps, backed, length = p
+        return qn.cpw_line(freq, length, width, space, height, eps, backed=bool(backed), z0=z0)
+    if element == 'radial_stub':
+        radius, angle, length, width, height, eps, rho, t1, t2 = p
+        return qn.radial_stub(freq, radius, angle, length, width, height, eps, z0=z0, strip=NormalFilm(rho, t1),
+                              ground=NormalFilm(rho, t2), temp=4.2)
+    if element == 'via':
+        return qn.via_inductance(*p)
+    raise ValueError(element)
+
+
+ELEMENTS = np.load(os.path.join(os.path.dirname(__file__), 'supermix-data', 'supermix_elements.npz'))
+ELEMENT_CASES = [str(name) for name in ELEMENTS['names']]
+
+
+@pytest.mark.parametrize('case', ELEMENT_CASES,
+                         ids=['{}-{}'.format(c, ELEMENTS[c + '_element']) for c in ELEMENT_CASES])
+def test_passive_element(case, monkeypatch):
+    """S-parameters of the passive elements in qmix.network (lumped
+    elements, connectors, terminations, attenuator, delay, transformer,
+    circulator, hybrids, antennas, de-embedding, lines, waveguide, CPW,
+    radial stub; via inductance) vs SuperMix's
+    (``profile/supermix/compare_elements.py``), with SuperMix's mu_0."""
+
+    import mattisbardeen
+    import qmix.network
+    import qmix.superconductor
+
+    constants = SimpleNamespace(e=1.60217733e-19, k=1.380658e-23, h=6.6260755e-34,
+                                hbar=6.6260755e-34 / (2 * np.pi), mu_0=4e-7 * np.pi, c=299792458.)
+    for module in (qmix.network, qmix.superconductor, mattisbardeen):
+        monkeypatch.setattr(module, 'sc', constants)
+
+    element = str(ELEMENTS[case + '_element'])
+    z0, params, freq = float(ELEMENTS[case + '_z0']), ELEMENTS[case + '_params'], ELEMENTS[case + '_freq']
+    ref = ELEMENTS[case + '_s']
+    out = qmix_element(element, z0, params, freq)
+    if element == 'via':
+        np.testing.assert_allclose(out, ref, rtol=1e-14)
+    else:
+        np.testing.assert_allclose(out.z0, z0, rtol=0, atol=1e-12)
+        np.testing.assert_allclose(out.s, ref, rtol=0, atol=1e-13)

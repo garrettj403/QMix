@@ -520,3 +520,160 @@ def test_microstrip():
     assert np.linalg.svd(line.s, compute_uv=False).max() < 1                  # passive
     with pytest.raises(AssertionError):
         microstrip(freq, 5e-6, 0.25e-6, 3.8)  # no thickness
+
+
+# Passive elements (as in SuperMix; also checked against SuperMix in
+# tests/test_supermix_reference.py) -------------------------------------------
+
+import qmix.network as qn  # noqa: E402
+
+F_EL = np.geomspace(1e9, 1e12, 7)
+
+
+def test_lumped_elements():
+    """Series elements add their impedance to a load, shunt elements their
+    admittance; RLC combinations equal the elements connected separately."""
+
+    w = 2 * np.pi * F_EL
+    z_load = 30 - 20j
+    r, l, c = 12., 40e-12, 200e-15
+    for net, z in ((qn.resistor(F_EL, r), r), (qn.inductor(F_EL, l), 1j * w * l),
+                   (qn.capacitor(F_EL, c), 1 / (1j * w * c)),
+                   (qn.series_rlc(F_EL, r, l, c), r + 1j * w * l + 1 / (1j * w * c)),
+                   (qn.series_impedance(F_EL, 7 + 3j, z0=75.), 7 + 3j)):
+        np.testing.assert_allclose(net.impedance(1, {2: z_load}), z + z_load, rtol=1e-12)
+    y_load = 1 / z_load
+    for net, y in ((qn.resistor(F_EL, r, shunt=True), 1 / r), (qn.capacitor(F_EL, c, shunt=True), 1j * w * c),
+                   (qn.parallel_rlc(F_EL, r, l, c, shunt=True), 1 / r + 1j * w * c + 1 / (1j * w * l))):
+        np.testing.assert_allclose(net.impedance(1, {2: z_load}), 1 / (y + y_load), rtol=1e-12)
+
+    # Limits: open and short circuits
+    np.testing.assert_allclose(qn.capacitor(F_EL, 0.).s[:, 1, 0], 0)                # series open
+    np.testing.assert_allclose(qn.series_impedance(F_EL, np.inf).s[:, 0, 0], 1)
+    np.testing.assert_allclose(qn.shunt_impedance(F_EL, np.inf).s[:, 1, 0], 1)      # no element
+    np.testing.assert_allclose(qn.parallel_rlc(F_EL, 0., l, c).s[:, 1, 0], 1)        # short in series
+    np.testing.assert_allclose(qn.parallel_rlc(F_EL, l=l).impedance(1, {2: z_load}), 1j * w * l + z_load, rtol=1e-12)
+    np.testing.assert_allclose(qn.load(F_EL, np.inf).s[:, 0, 0], 1)
+    np.testing.assert_allclose(qn.load(F_EL, z_load, 30.).impedance(1), z_load, rtol=1e-12)
+    with pytest.raises(AssertionError):
+        qn.resistor(F_EL, 10., z0=50 + 1j)  # reference must be real
+
+
+def test_series_tee():
+    """Port 3 sees the loads of ports 1 and 2 in series."""
+
+    net = qn.series_tee(F_EL, 50.)
+    np.testing.assert_allclose(net.impedance(3, {1: 20 + 5j, 2: 7 - 30j}), 27 - 25j, rtol=1e-12)
+    np.testing.assert_allclose(net.s[0] @ net.s[0].conj().T, np.eye(3), atol=1e-15)  # lossless
+
+
+def test_ideal_components():
+    """Attenuator, delay, circulator and hybrids: the defining S-parameters;
+    the lossless ones are unitary; transformers match z1 and z2."""
+
+    np.testing.assert_allclose(np.abs(qn.attenuator(F_EL, 10.).s[:, 1, 0]) ** 2, 0.1, rtol=1e-14)
+    np.testing.assert_allclose(qn.time_delay(F_EL, 1e-12).s[:, 1, 0], np.exp(-2j * np.pi * F_EL * 1e-12))
+    for net in (qn.circulator(F_EL), qn.hybrid90(F_EL), qn.hybrid180(F_EL), qn.time_delay(F_EL, 1e-12),
+                qn.transformer(F_EL, 20 + 5j, 80 - 10j)):
+        n = net.num_ports
+        np.testing.assert_allclose(net.s @ np.conj(np.swapaxes(net.s, 1, 2)), np.broadcast_to(np.eye(n), net.s.shape),
+                                   atol=1e-14)
+    z1, z2 = 20 + 5j, 80 - 10j
+    t = qn.transformer(F_EL, z1, z2)
+    np.testing.assert_allclose(t.impedance(1, {2: np.conj(z2)}), z1, rtol=1e-12)
+    np.testing.assert_allclose(t.impedance(2, {1: np.conj(z1)}), z2, rtol=1e-12)
+
+
+def test_antennas():
+    """Slot antenna: with the RF port terminated by z0, the outputs see the
+    antenna impedance. Power divider: equal outputs. Twin slot antenna: the
+    RF power is split equally between the four outputs."""
+
+    z = 35 + 20j
+    sa = qn.slot_antenna(F_EL, z)
+    # Between ports 2 and 3 (port 1 terminated by z0): look into port 2 with
+    # port 3 shorted
+    np.testing.assert_allclose(sa.impedance(2, {3: 0.}), z, rtol=1e-12)
+    np.testing.assert_allclose(sa.impedance(3, {2: 0.}), z, rtol=1e-12)
+    pd = qn.power_divider(F_EL)
+    np.testing.assert_allclose(np.abs(pd.s[:, 1:, 0]) ** 2, 0.5)
+    tsa = qn.twin_slot_antenna(qn.load(F_EL, z))
+    assert tsa.num_ports == 5
+    np.testing.assert_allclose(np.abs(tsa.s[:, 0, 1:]), np.abs(tsa.s[:, 0, 1:2]) * np.ones(4), rtol=1e-12)
+
+
+def test_deembed():
+    """De-embedding recovers the device between known input and output
+    networks (also with complex reference impedances)."""
+
+    inp = qn.microstrip_line(F_EL, 50e-6, 3e-6, 0.25e-6, 3.8, thickness=0.3e-6)
+    out = qn.capacitor(F_EL, 30e-15, shunt=True, z0=20.)
+    dut = qn.series_rlc(F_EL, 10., 20e-12, 500e-15)
+    measured = inp.connect(2, dut, 1).connect(2, out, 1)
+    np.testing.assert_allclose(qn.deembed(measured, inp, out).s, dut.s, rtol=0, atol=1e-10)
+
+
+def test_rectangular_waveguide():
+    """Lossless TE10: beta = sqrt(k^2 - kc^2), power-voltage impedance
+    2 b / a * k Z_free / beta; evanescent below cutoff; losses attenuate."""
+
+    a, b = 1e-3, 0.5e-3
+    fc = qn.waveguide_cutoff(a)
+    np.testing.assert_allclose(fc, 299792458. / 2e-3)
+    freq = np.array([0.8, 1.5, 2.5]) * fc
+    zc, gamma = qn.rectangular_waveguide(freq, a, b)
+    k, kc = 2 * np.pi * freq / 299792458., np.pi / a
+    above = freq > fc
+    np.testing.assert_allclose(gamma[above], 1j * np.sqrt(k[above] ** 2 - kc ** 2), rtol=1e-14)
+    np.testing.assert_allclose(zc[above], 2 * b / a * k[above] * 376.730313 / np.sqrt(k[above] ** 2 - kc ** 2),
+                               rtol=1e-8)
+    np.testing.assert_allclose(gamma[~above], np.sqrt(kc ** 2 - k[~above] ** 2), rtol=1e-14)
+    assert (zc[~above].real == 0).all()
+    wg = qn.rectangular_waveguide_line(freq, 5e-3, a, b, z0=50.)
+    assert np.abs(wg.s[0, 1, 0]) < 1e-3                    # evanescent
+    kw = dict(wall=NormalFilm(1.7e-8, 2e-6), tan_d=1e-3)
+    _, gamma_lossy = qn.rectangular_waveguide(freq[above], a, b, **kw)
+    lossy = qn.rectangular_waveguide_line(freq[above], 5e-3, a, b, **kw)
+    np.testing.assert_allclose(np.abs(lossy.s[:, 1, 0]), np.exp(-gamma_lossy.real * 5e-3), rtol=1e-4)  # ~matched
+    assert (gamma_lossy.real > 0).all()
+
+
+def test_cpw():
+    """Lossless CPW: real impedance, TEM-like propagation with
+    1 < eps_eff < eps_r; a narrower gap lowers the impedance."""
+
+    zc, gamma = qn.cpw(F_EL, 10e-6, 5e-6, 200e-6, 11.9)
+    eps_eff = (gamma.imag * 299792458. / (2 * np.pi * F_EL)) ** 2
+    assert np.allclose(zc.imag, 0) and np.allclose(gamma.real, 0)
+    assert 1 < eps_eff[0] < 11.9 and np.allclose(eps_eff, eps_eff[0])
+    assert qn.cpw(F_EL, 10e-6, 2e-6, 200e-6, 11.9)[0][0].real < zc[0].real
+    line = qn.cpw_line(F_EL, 1e-3, 10e-6, 5e-6, 200e-6, 11.9, backed=True)
+    np.testing.assert_allclose(np.abs(line.s[:, 1, 0]), 1, rtol=1e-14)
+
+
+def test_radial_stub_and_via():
+    """An open radial stub looks like a short circuit near a quarter
+    wavelength; the via inductance is ~ tens of pH for a typical hole."""
+
+    freq = np.linspace(50e9, 800e9, 751)
+    stub = qn.radial_stub(freq, 60e-6, 70 * np.pi / 180, 10e-6, 3e-6, 0.25e-6, 3.8, thickness=0.3e-6)
+    z = stub.terminate(2, np.inf).impedance(1)
+    assert np.abs(z).min() < 0.05 * np.abs(z).max()
+    assert stub.num_ports == 2
+    with pytest.raises(AssertionError):
+        qn.radial_stub(freq, 1e-6, 0.5, 10e-6, 3e-6, 0.25e-6, 3.8, thickness=0.3e-6)  # smaller than the feed
+    lv = qn.via_inductance(200e-6, 300e-6)
+    assert 20e-12 < lv < 200e-12
+    with pytest.warns(UserWarning):
+        qn.via_inductance(10e-6, 50e-6)
+
+
+def test_ideal_line():
+    """ideal_line: electrical length theta at f_ref, loss per wavelength."""
+
+    net = qn.ideal_line(F_EL, 50., np.pi / 2, 230e9, loss=0.1)
+    assert net.num_ports == 2
+    # Power after one wavelength (theta = 2 pi): 1 - loss
+    one_wl = qn.ideal_line(np.array([230e9]), 50., 2 * np.pi, 230e9, loss=0.1)
+    np.testing.assert_allclose(np.abs(one_wl.s[0, 1, 0]) ** 2, 0.9, rtol=1e-14)
+    np.testing.assert_allclose(np.angle(qn.ideal_line(np.array([230e9]), 50., 1.0, 230e9).s[0, 1, 0]), -1.0)
