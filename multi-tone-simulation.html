@@ -58,6 +58,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#Perform-harmonic-balance">5.4. Perform harmonic balance</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#Calculate-tunnelling-currents">5.5. Calculate tunnelling currents</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#Calculate-mixer-gain">5.5.1. Calculate mixer gain</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Calculate-noise-temperature">5.5.2. Calculate noise temperature</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#Plot-Results">5.6. Plot Results</a></li>
@@ -109,8 +110,9 @@
 <li><p>The response function is generated from an experimental DC I-V curve.</p></li>
 <li><p>This simulation will calculate:</p>
 <ul>
-<li><p>the pumped I-V curve, and</p></li>
-<li><p>the mixer’s gain.</p></li>
+<li><p>the pumped I-V curve,</p></li>
+<li><p>the mixer’s gain, and</p></li>
+<li><p>the mixer’s noise temperature (from a small-signal analysis of the LO alone).</p></li>
 </ul>
 </li>
 </ul>
@@ -129,6 +131,8 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">qmix.qtcurrent</span><span class="w"> </span><span class="kn">import</span> <span class="n">qtcurrent</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">qmix.circuit</span><span class="w"> </span><span class="kn">import</span> <span class="n">EmbeddingCircuit</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">qmix.harmonic_balance</span><span class="w"> </span><span class="kn">import</span> <span class="n">harmonic_balance</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">qmix.small_signal</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">admittance_matrix</span><span class="p">,</span> <span class="n">noise_matrix</span><span class="p">,</span> <span class="n">sideband_impedances</span><span class="p">,</span> <span class="n">conversion_gain</span><span class="p">,</span>
+                               <span class="n">embedding_noise</span><span class="p">,</span> <span class="n">noise_temperature</span><span class="p">)</span>
 
 <span class="c1"># https://github.com/garrettj403/SciencePlots</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">scienceplots</span>
@@ -335,46 +339,45 @@ DC I-V data:</span>
 <div class="highlight"><pre>
 Running harmonic balance:
  - 3 tone(s) and 1 harmonic(s)
- - 7 calls to the quasiparticle tunneling current (qtc) function per iteration
+ - analytic Jacobian
  - max. iterations: 30
 Estimated time:
  - time per qtc call:     0.01 s /   0.00 min /  0.00 hrs
  - time per iteration:    0.04 s /   0.00 min /  0.00 hrs
- - max sim time:          1.31 s /   0.02 min /  0.00 hrs
+ - max sim time:          1.17 s /   0.02 min /  0.00 hrs
 Error after 0 iteration(s):
         f:1, p:1,   med. rel. error:     0.265,   max. rel. error:     1.069,     0.0 % complete
         f:2, p:1,   med. rel. error:     0.202,   max. rel. error:     0.811,     0.0 % complete
         f:3, p:1,   med. rel. error: 99999.999,   max. rel. error: 99999.999,     0.0 % complete
-Calculating inverse Jacobian |--------------------| 100.0% Complete
 Applying correction
 Error after 1 iteration(s):
-        f:1, p:1,   med. rel. error:     0.003,   max. rel. error:     0.156,    33.8 % complete
-        f:2, p:1,   med. rel. error:     0.014,   max. rel. error:     0.270,    14.9 % complete
-        f:3, p:1,   med. rel. error:     0.074,   max. rel. error:    20.721,     0.0 % complete
+        f:1, p:1,   med. rel. error:     0.003,   max. rel. error:     0.156,    33.3 % complete
+        f:2, p:1,   med. rel. error:     0.014,   max. rel. error:     0.271,    14.9 % complete
+        f:3, p:1,   med. rel. error:     0.075,   max. rel. error:    20.842,     0.0 % complete
 Reusing Jacobian from previous iteration
 Applying correction
 Error after 2 iteration(s):
-        f:1, p:1,   med. rel. error:     0.000,   max. rel. error:     0.048,    93.5 % complete
+        f:1, p:1,   med. rel. error:     0.000,   max. rel. error:     0.047,    93.5 % complete
         f:2, p:1,   med. rel. error:     0.000,   max. rel. error:     0.082,    68.7 % complete
-        f:3, p:1,   med. rel. error:     0.004,   max. rel. error:     4.713,    33.8 % complete
+        f:3, p:1,   med. rel. error:     0.004,   max. rel. error:     4.699,    33.8 % complete
 Reusing Jacobian from previous iteration
 Applying correction
 Error after 3 iteration(s):
         f:1, p:1,   med. rel. error:     0.000,   max. rel. error:     0.013,    98.0 % complete
         f:2, p:1,   med. rel. error:     0.000,   max. rel. error:     0.022,    89.6 % complete
-        f:3, p:1,   med. rel. error:     0.000,   max. rel. error:     1.477,    80.1 % complete
+        f:3, p:1,   med. rel. error:     0.000,   max. rel. error:     1.462,    80.1 % complete
 Reusing Jacobian from previous iteration
 Applying correction
 Error after 4 iteration(s):
         f:1, p:1,   med. rel. error:     0.000,   max. rel. error:     0.004,    99.0 % complete
         f:2, p:1,   med. rel. error:     0.000,   max. rel. error:     0.007,    98.0 % complete
-        f:3, p:1,   med. rel. error:     0.000,   max. rel. error:     0.422,    91.0 % complete
+        f:3, p:1,   med. rel. error:     0.000,   max. rel. error:     0.418,    91.0 % complete
 Reusing Jacobian from previous iteration
 Applying correction
 Error after 5 iteration(s):
         f:1, p:1,   med. rel. error:     0.000,   max. rel. error:     0.001,    99.5 % complete
         f:2, p:1,   med. rel. error:     0.000,   max. rel. error:     0.002,    99.5 % complete
-        f:3, p:1,   med. rel. error:     0.000,   max. rel. error:     0.120,    96.5 % complete
+        f:3, p:1,   med. rel. error:     0.000,   max. rel. error:     0.118,    96.5 % complete
 Reusing Jacobian from previous iteration
 Applying correction
 Error after 6 iteration(s):
@@ -400,9 +403,9 @@ Error after 9 iteration(s):
         f:2, p:1,   med. rel. error:     0.000,   max. rel. error:     0.000,   100.0 % complete
         f:3, p:1,   med. rel. error:     0.000,   max. rel. error:     0.001,   100.0 % complete
 Done: Minimum error target was achieved.
- - sim time:               0.15 s /   0.00 min /  0.00 hrs
+ - sim time:               0.13 s /   0.00 min /  0.00 hrs
  - 9 iterations required
- - time per iteration:     0.02 s /   0.00 min /  0.00 hrs
+ - time per iteration:     0.01 s /   0.00 min /  0.00 hrs
 </pre></div></div>
 </div>
 </section>
@@ -432,7 +435,7 @@ Calculating tunneling current...
  - 1 harmonic(s)
  - method: direct
 Done.
-Time: 0.0252 s
+Time: 0.0278 s
 
 </pre></div></div>
 </div>
@@ -455,11 +458,65 @@ Time: 0.0252 s
 </div>
 </div>
 </section>
+<section id="Calculate-noise-temperature">
+<h3><span class="section-number">5.5.2. </span>Calculate noise temperature<a class="headerlink" href="#Calculate-noise-temperature" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>The multi-tone simulation above doesn’t include the shot noise of the junction. The noise is calculated with a small-signal (Tucker) analysis instead (see the Theory section of the documentation): the LO alone is simulated with harmonic balance, and the RF and IF signals are then treated as small signals.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">admittance_matrix</span></code> gives the conversion admittance matrix between the sidebands <code class="docutils literal notranslate"><span class="pre">m</span> <span class="pre">*</span> <span class="pre">f_lo</span> <span class="pre">+</span> <span class="pre">f_if</span></code> (here, m = -1, 0, 1: the LSB, the IF and the USB), and <code class="docutils literal notranslate"><span class="pre">noise_matrix</span></code> the correlation matrix of the junction’s noise currents at these sidebands (shot noise, including its thermal and quantum limits), at the physical temperature of the junction.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sideband_impedances</span></code> collects the embedding impedances at the IF, USB and LSB. The LSB (228 GHz) isn’t one of the tones of the simulation above, so its voltage is zero there, i.e., it is shorted. The same is done here, so that the two calculations describe the same mixer: the small-signal gain should agree with the gain from above (up to the small error from the finite RF power).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">embedding_noise</span></code> adds the thermal noise of the embedding impedances (Callen-Welton), and <code class="docutils literal notranslate"><span class="pre">noise_temperature</span></code> gives the single-sideband (SSB) noise temperature for a USB input (without the noise of the source and of the IF load).</p></li>
+</ul>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">temp</span> <span class="o">=</span> <span class="mf">4.2</span>  <span class="c1"># physical temperature of the junction and the embedding circuit, in [K]</span>
+
+<span class="c1"># LO alone (same Thevenin circuit as above)</span>
+<span class="n">cct_lo</span> <span class="o">=</span> <span class="n">EmbeddingCircuit</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">fgap</span><span class="o">=</span><span class="n">fgap</span><span class="p">,</span> <span class="n">vgap</span><span class="o">=</span><span class="n">vgap</span><span class="p">,</span> <span class="n">rn</span><span class="o">=</span><span class="n">rn</span><span class="p">)</span>
+<span class="n">cct_lo</span><span class="o">.</span><span class="n">freq</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">f_lo</span>
+<span class="n">cct_lo</span><span class="o">.</span><span class="n">vt</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">cct</span><span class="o">.</span><span class="n">vt</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+<span class="n">cct_lo</span><span class="o">.</span><span class="n">zt</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">cct</span><span class="o">.</span><span class="n">zt</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+<span class="n">vj_lo</span> <span class="o">=</span> <span class="n">harmonic_balance</span><span class="p">(</span><span class="n">cct_lo</span><span class="p">,</span> <span class="n">resp</span><span class="p">,</span> <span class="n">num_b</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+<span class="c1"># Admittance and noise matrices of the pumped junction (sidebands m = -1, 0, 1)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">admittance_matrix</span><span class="p">(</span><span class="n">vj_lo</span><span class="p">,</span> <span class="n">cct_lo</span><span class="p">,</span> <span class="n">resp</span><span class="p">,</span> <span class="n">f_if</span><span class="p">,</span> <span class="n">num_b</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
+<span class="n">h</span> <span class="o">=</span> <span class="n">noise_matrix</span><span class="p">(</span><span class="n">vj_lo</span><span class="p">,</span> <span class="n">cct_lo</span><span class="p">,</span> <span class="n">resp</span><span class="p">,</span> <span class="n">f_if</span><span class="p">,</span> <span class="n">temp</span><span class="p">,</span> <span class="n">vgap</span><span class="p">)</span>
+
+<span class="c1"># Embedding impedances at the IF, USB and LSB (LSB shorted, as in the multi-tone simulation)</span>
+<span class="n">zt</span> <span class="o">=</span> <span class="n">sideband_impedances</span><span class="p">(</span><span class="n">impedance_if</span><span class="p">,</span> <span class="n">impedance_rf</span><span class="p">,</span> <span class="mf">0.</span><span class="p">)</span>
+<span class="n">v_noise</span> <span class="o">=</span> <span class="n">embedding_noise</span><span class="p">(</span><span class="n">zt</span><span class="p">,</span> <span class="n">temp</span><span class="p">,</span> <span class="n">f_lo</span><span class="p">,</span> <span class="n">f_if</span><span class="p">,</span> <span class="n">vgap</span><span class="p">)</span>
+
+<span class="c1"># Gain (USB -&gt; IF) and SSB noise temperature (USB input)</span>
+<span class="n">gain_ss</span> <span class="o">=</span> <span class="n">conversion_gain</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">zt</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">tn_ssb</span> <span class="o">=</span> <span class="n">noise_temperature</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">zt</span><span class="p">,</span> <span class="n">vgap</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">v_noise</span><span class="o">=</span><span class="n">v_noise</span><span class="p">)</span>
+
+<span class="c1"># Best bias point</span>
+<span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">gain_ss</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Best bias:          </span><span class="si">{:.2f}</span><span class="s2"> mV"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cct</span><span class="o">.</span><span class="n">vb</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">*</span> <span class="n">vgap</span> <span class="o">/</span> <span class="n">sc</span><span class="o">.</span><span class="n">milli</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Gain:               </span><span class="si">{:.1f}</span><span class="s2"> % (multi-tone: </span><span class="si">{:.1f}</span><span class="s2"> %)"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">gain_ss</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">*</span> <span class="mi">100</span><span class="p">,</span> <span class="n">gain</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">*</span> <span class="mi">100</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"SSB noise temp.:    </span><span class="si">{:.1f}</span><span class="s2"> K"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">tn_ssb</span><span class="p">[</span><span class="n">idx</span><span class="p">]))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Quantum limit h f / k at the USB: </span><span class="si">{:.1f}</span><span class="s2"> K"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">sc</span><span class="o">.</span><span class="n">h</span> <span class="o">*</span> <span class="n">f_rf</span> <span class="o">*</span> <span class="n">fgap</span> <span class="o">/</span> <span class="n">sc</span><span class="o">.</span><span class="n">k</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Best bias:          2.27 mV
+Gain:               32.6 % (multi-tone: 32.6 %)
+SSB noise temp.:    17.0 K
+Quantum limit h f / k at the USB: 11.1 K
+</pre></div></div>
+</div>
+</section>
 </section>
 <section id="Plot-Results">
 <h2><span class="section-number">5.6. </span>Plot Results<a class="headerlink" href="#Plot-Results" title="Link to this heading"></a></h2>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Conversion: normalized -&gt; de-normalized</span>
@@ -469,7 +526,7 @@ Time: 0.0252 s
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="p">((</span><span class="n">ax1</span><span class="p">,</span> <span class="n">ax2</span><span class="p">),</span> <span class="p">(</span><span class="n">ax3</span><span class="p">,</span> <span class="n">ax4</span><span class="p">))</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span><span class="mi">14</span><span class="p">))</span>
@@ -489,19 +546,20 @@ Time: 0.0252 s
 <span class="n">ax2</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">ylabel</span><span class="o">=</span><span class="s1">'AC Current (uA)'</span><span class="p">)</span>
 <span class="n">ax2</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">frameon</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">"@ LO frequency"</span><span class="p">)</span>
 
-<span class="c1"># Plot AC currents at IF frequency</span>
-<span class="n">ax3</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">cct</span><span class="o">.</span><span class="n">vb</span><span class="o">*</span><span class="n">vmv</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">iif</span><span class="p">),</span> <span class="s1">'k'</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">'Absolute'</span><span class="p">)</span>
-<span class="n">ax3</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">cct</span><span class="o">.</span><span class="n">vb</span><span class="o">*</span><span class="n">vmv</span><span class="p">,</span> <span class="n">iif</span><span class="o">.</span><span class="n">real</span><span class="p">,</span> <span class="s1">'r--'</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">'Real'</span><span class="p">)</span>
-<span class="n">ax3</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">cct</span><span class="o">.</span><span class="n">vb</span><span class="o">*</span><span class="n">vmv</span><span class="p">,</span> <span class="n">iif</span><span class="o">.</span><span class="n">imag</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">'-.'</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">'Imaginary'</span><span class="p">)</span>
+<span class="c1"># Plot gain of SIS junction (multi-tone simulation and small-signal analysis)</span>
+<span class="n">ax3</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">cct</span><span class="o">.</span><span class="n">vb</span><span class="o">*</span><span class="n">vmv</span><span class="p">,</span> <span class="n">gain</span><span class="o">*</span><span class="mi">100</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">'Multi-tone'</span><span class="p">)</span>
+<span class="n">ax3</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">cct</span><span class="o">.</span><span class="n">vb</span><span class="o">*</span><span class="n">vmv</span><span class="p">,</span> <span class="n">gain_ss</span><span class="o">*</span><span class="mi">100</span><span class="p">,</span> <span class="s1">'r--'</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">'Small-signal'</span><span class="p">)</span>
 <span class="n">ax3</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">xlim</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mf">4.5</span><span class="p">),</span> <span class="n">xlabel</span><span class="o">=</span><span class="s1">'Bias Voltage (mV)'</span><span class="p">)</span>
-<span class="n">ax3</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">ylabel</span><span class="o">=</span><span class="s1">'AC Current (uA)'</span><span class="p">)</span>
-<span class="n">ax3</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">frameon</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">"@ IF frequency"</span><span class="p">)</span>
+<span class="n">ax3</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">ylabel</span><span class="o">=</span><span class="s1">'Gain (%)'</span><span class="p">)</span>
+<span class="n">ax3</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">bottom</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">ax3</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">frameon</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
-<span class="c1"># Plot gain of SIS junction</span>
-<span class="n">ax4</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">cct</span><span class="o">.</span><span class="n">vb</span><span class="o">*</span><span class="n">vmv</span><span class="p">,</span> <span class="n">gain</span><span class="o">*</span><span class="mi">100</span><span class="p">)</span>
+<span class="c1"># Plot SSB noise temperature (small-signal analysis)</span>
+<span class="n">ax4</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">cct</span><span class="o">.</span><span class="n">vb</span><span class="o">*</span><span class="n">vmv</span><span class="p">,</span> <span class="n">tn_ssb</span><span class="p">,</span> <span class="s1">'k'</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">'SSB, USB input'</span><span class="p">)</span>
+<span class="n">ax4</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">sc</span><span class="o">.</span><span class="n">h</span> <span class="o">*</span> <span class="n">f_rf</span> <span class="o">*</span> <span class="n">fgap</span> <span class="o">/</span> <span class="n">sc</span><span class="o">.</span><span class="n">k</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">'gray'</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">':'</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">'Quantum limit, $hf/k$'</span><span class="p">)</span>
 <span class="n">ax4</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">xlim</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mf">4.5</span><span class="p">),</span> <span class="n">xlabel</span><span class="o">=</span><span class="s1">'Bias Voltage (mV)'</span><span class="p">)</span>
-<span class="n">ax4</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">ylabel</span><span class="o">=</span><span class="s1">'Gain (%)'</span><span class="p">)</span>
-<span class="n">ax4</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">bottom</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">ax4</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">ylim</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">100</span><span class="p">),</span> <span class="n">ylabel</span><span class="o">=</span><span class="s1">'Noise Temperature (K)'</span><span class="p">)</span>
+<span class="n">ax4</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">frameon</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
 <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s1">'multi-tone-results.png'</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s1">'tight'</span><span class="p">);</span>
 </pre></div>
@@ -511,7 +569,7 @@ Time: 0.0252 s
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="_images/multi-tone-simulation_17_0.png" src="_images/multi-tone-simulation_17_0.png" />
+<img alt="_images/multi-tone-simulation_19_0.png" src="_images/multi-tone-simulation_19_0.png" />
 </div>
 </div>
 </section>

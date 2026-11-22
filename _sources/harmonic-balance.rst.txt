@@ -112,6 +112,14 @@ and the unknowns are the voltages of all junctions. The current of each junction
 
    \frac{\partial e_{j,fp}}{\partial V_{J,l,q}} = - Z_{T,jl,fp} \, \frac{\partial I_{l,fp}}{\partial V_{J,l,q}} - \delta_{jl} \, \delta_{fp,q}.
 
+The junctions may be different. All values are normalized to one gap voltage :math:`V_\mathrm{gap}` and normal-state resistance :math:`R_n` (``cct.vgap``, ``cct.rn``). Junction :math:`j` has the normal-state conductance ``cct.area[j]`` :math:`= R_n / R_{n,j}`, the gap voltage ``cct.gap_voltage[j]`` :math:`= r_j = V_{\mathrm{gap},j} / V_\mathrm{gap}`, and its own response function :math:`\tilde{I}_j` (a list of response functions), normalized to its own gap voltage and normal-state resistance. In circuit units, its response function is
+
+.. math::
+
+   \tilde{I}(V) = r_j \, \tilde{I}_j(V / r_j),
+
+times ``area[j]`` (:class:`qmix.respfn.GapScaledRespFn`; :meth:`qmix.circuit.MultiJunctionCircuit.set_junction` sets ``area`` and ``gap_voltage`` from the physical values). The phase factor coefficients depend only on the ratio of the voltage to the frequency, so this is the same as simulating the junction in its own units, with all voltages and frequencies divided by :math:`r_j`.
+
 The derivatives of each junction's current are calculated as for one junction (analytically, or with ``jacobian='numerical'`` from the same perturbed voltages, signal :math:`q` of every junction at once, at a cost of :math:`2N` tunneling current calculations per junction). The Newton step, line search and restarts are the same. By default, each junction is voltage biased (``cct.vb[j]``; see below for a DC bias network). Each junction can have its own response function (pass a list as ``resp``) and a relative area (``cct.area[j]``, which scales its current), and the result is ``vj[j, f, p, i]``. :func:`qmix.network.set_thevenin` sets the Thevenin voltages and impedance matrices from an S-parameter network, with a list of junction ports.
 
 DC bias network

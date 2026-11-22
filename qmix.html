@@ -87,6 +87,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#qmix.circuit.MultiJunctionCircuit.vt"><code class="docutils literal notranslate"><span class="pre">MultiJunctionCircuit.vt</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#qmix.circuit.MultiJunctionCircuit.zt"><code class="docutils literal notranslate"><span class="pre">MultiJunctionCircuit.zt</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#qmix.circuit.MultiJunctionCircuit.area"><code class="docutils literal notranslate"><span class="pre">MultiJunctionCircuit.area</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#qmix.circuit.MultiJunctionCircuit.gap_voltage"><code class="docutils literal notranslate"><span class="pre">MultiJunctionCircuit.gap_voltage</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#qmix.circuit.MultiJunctionCircuit.dc_rhs"><code class="docutils literal notranslate"><span class="pre">MultiJunctionCircuit.dc_rhs</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#qmix.circuit.MultiJunctionCircuit.num_j"><code class="docutils literal notranslate"><span class="pre">MultiJunctionCircuit.num_j</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#qmix.circuit.MultiJunctionCircuit.num_f"><code class="docutils literal notranslate"><span class="pre">MultiJunctionCircuit.num_f</span></code></a></li>
@@ -98,6 +99,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#qmix.circuit.MultiJunctionCircuit.initialize_vj"><code class="docutils literal notranslate"><span class="pre">MultiJunctionCircuit.initialize_vj()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#qmix.circuit.MultiJunctionCircuit.junction"><code class="docutils literal notranslate"><span class="pre">MultiJunctionCircuit.junction()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#qmix.circuit.MultiJunctionCircuit.set_dc_network"><code class="docutils literal notranslate"><span class="pre">MultiJunctionCircuit.set_dc_network()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#qmix.circuit.MultiJunctionCircuit.set_junction"><code class="docutils literal notranslate"><span class="pre">MultiJunctionCircuit.set_junction()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#qmix.circuit.MultiJunctionCircuit.set_series_bias"><code class="docutils literal notranslate"><span class="pre">MultiJunctionCircuit.set_series_bias()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#qmix.circuit.MultiJunctionCircuit.vb"><code class="docutils literal notranslate"><span class="pre">MultiJunctionCircuit.vb</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#qmix.circuit.MultiJunctionCircuit.vb_npts"><code class="docutils literal notranslate"><span class="pre">MultiJunctionCircuit.vb_npts</span></code></a></li>
@@ -124,15 +126,42 @@
 <li class="toctree-l4"><a class="reference internal" href="#qmix.network.Network.terminate"><code class="docutils literal notranslate"><span class="pre">Network.terminate()</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="#qmix.network.attenuator"><code class="docutils literal notranslate"><span class="pre">attenuator()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#qmix.network.capacitor"><code class="docutils literal notranslate"><span class="pre">capacitor()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#qmix.network.circulator"><code class="docutils literal notranslate"><span class="pre">circulator()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#qmix.network.cpw"><code class="docutils literal notranslate"><span class="pre">cpw()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#qmix.network.cpw_line"><code class="docutils literal notranslate"><span class="pre">cpw_line()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#qmix.network.deembed"><code class="docutils literal notranslate"><span class="pre">deembed()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#qmix.network.embedding_impedance"><code class="docutils literal notranslate"><span class="pre">embedding_impedance()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#qmix.network.hybrid180"><code class="docutils literal notranslate"><span class="pre">hybrid180()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#qmix.network.hybrid90"><code class="docutils literal notranslate"><span class="pre">hybrid90()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#qmix.network.ideal_line"><code class="docutils literal notranslate"><span class="pre">ideal_line()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#qmix.network.impedance_matrix"><code class="docutils literal notranslate"><span class="pre">impedance_matrix()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#qmix.network.inductor"><code class="docutils literal notranslate"><span class="pre">inductor()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#qmix.network.load"><code class="docutils literal notranslate"><span class="pre">load()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#qmix.network.microstrip"><code class="docutils literal notranslate"><span class="pre">microstrip()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#qmix.network.microstrip_line"><code class="docutils literal notranslate"><span class="pre">microstrip_line()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#qmix.network.parallel_rlc"><code class="docutils literal notranslate"><span class="pre">parallel_rlc()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#qmix.network.power_divider"><code class="docutils literal notranslate"><span class="pre">power_divider()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#qmix.network.radial_stub"><code class="docutils literal notranslate"><span class="pre">radial_stub()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#qmix.network.read_touchstone"><code class="docutils literal notranslate"><span class="pre">read_touchstone()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#qmix.network.rectangular_waveguide"><code class="docutils literal notranslate"><span class="pre">rectangular_waveguide()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#qmix.network.rectangular_waveguide_line"><code class="docutils literal notranslate"><span class="pre">rectangular_waveguide_line()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#qmix.network.resistor"><code class="docutils literal notranslate"><span class="pre">resistor()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#qmix.network.series_impedance"><code class="docutils literal notranslate"><span class="pre">series_impedance()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#qmix.network.series_rlc"><code class="docutils literal notranslate"><span class="pre">series_rlc()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#qmix.network.series_tee"><code class="docutils literal notranslate"><span class="pre">series_tee()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#qmix.network.set_thevenin"><code class="docutils literal notranslate"><span class="pre">set_thevenin()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#qmix.network.shunt_impedance"><code class="docutils literal notranslate"><span class="pre">shunt_impedance()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#qmix.network.slot_antenna"><code class="docutils literal notranslate"><span class="pre">slot_antenna()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#qmix.network.tee"><code class="docutils literal notranslate"><span class="pre">tee()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#qmix.network.thevenin"><code class="docutils literal notranslate"><span class="pre">thevenin()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#qmix.network.time_delay"><code class="docutils literal notranslate"><span class="pre">time_delay()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#qmix.network.transformer"><code class="docutils literal notranslate"><span class="pre">transformer()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#qmix.network.transmission_line"><code class="docutils literal notranslate"><span class="pre">transmission_line()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#qmix.network.twin_slot_antenna"><code class="docutils literal notranslate"><span class="pre">twin_slot_antenna()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#qmix.network.via_inductance"><code class="docutils literal notranslate"><span class="pre">via_inductance()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#qmix.network.waveguide_cutoff"><code class="docutils literal notranslate"><span class="pre">waveguide_cutoff()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#module-qmix.qtcurrent">2.6. qmix.qtcurrent module</a><ul>
@@ -157,6 +186,14 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#module-qmix.respfn">2.7. qmix.respfn module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#qmix.respfn.GapScaledRespFn"><code class="docutils literal notranslate"><span class="pre">GapScaledRespFn</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#qmix.respfn.GapScaledRespFn.didc"><code class="docutils literal notranslate"><span class="pre">GapScaledRespFn.didc()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#qmix.respfn.GapScaledRespFn.dikk"><code class="docutils literal notranslate"><span class="pre">GapScaledRespFn.dikk()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#qmix.respfn.GapScaledRespFn.idc"><code class="docutils literal notranslate"><span class="pre">GapScaledRespFn.idc()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#qmix.respfn.GapScaledRespFn.ikk"><code class="docutils literal notranslate"><span class="pre">GapScaledRespFn.ikk()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#qmix.respfn.GapScaledRespFn.resp"><code class="docutils literal notranslate"><span class="pre">GapScaledRespFn.resp()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="#qmix.respfn.RespFn"><code class="docutils literal notranslate"><span class="pre">RespFn</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#qmix.respfn.RespFn.voltage"><code class="docutils literal notranslate"><span class="pre">RespFn.voltage</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#qmix.respfn.RespFn.current"><code class="docutils literal notranslate"><span class="pre">RespFn.current</span></code></a></li>
@@ -972,15 +1009,23 @@ numbered from 0: <code class="docutils literal notranslate"><span class="pre">vt
 (from <code class="docutils literal notranslate"><span class="pre">harmonic_balance</span></code>) have the same shape as for a single
 junction. The tone and harmonic axes are 1-indexed as in
 <code class="docutils literal notranslate"><span class="pre">EmbeddingCircuit</span></code>.</p>
-<p>All values are normalized, with one gap voltage and normal-state
-resistance for all junctions (the junctions are assumed to be made
-of the same materials). Junctions can have different areas
-(<code class="docutils literal notranslate"><span class="pre">area</span></code>, relative to the junction that defines <code class="docutils literal notranslate"><span class="pre">rn</span></code>): the
-tunneling current of junction <code class="docutils literal notranslate"><span class="pre">j</span></code> is <code class="docutils literal notranslate"><span class="pre">area[j]</span></code> times the
-current from its response function, i.e., its normal resistance is
-<code class="docutils literal notranslate"><span class="pre">rn</span> <span class="pre">/</span> <span class="pre">area[j]</span></code>. The response function can also be different for
-each junction (pass a list to <code class="docutils literal notranslate"><span class="pre">harmonic_balance</span></code> or
-<code class="docutils literal notranslate"><span class="pre">qmix.qtcurrent.qtcurrent</span></code>).</p>
+<p>All values are normalized to one gap voltage and normal-state
+resistance (<code class="docutils literal notranslate"><span class="pre">vgap</span></code> and <code class="docutils literal notranslate"><span class="pre">rn</span></code>). The junctions can be different:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">area[j]</span></code>: normal-state conductance relative to <code class="docutils literal notranslate"><span class="pre">1</span> <span class="pre">/</span> <span class="pre">rn</span></code>
+(the relative area, for junctions with the same R_n A), i.e., the
+normal resistance of junction <code class="docutils literal notranslate"><span class="pre">j</span></code> is <code class="docutils literal notranslate"><span class="pre">rn</span> <span class="pre">/</span> <span class="pre">area[j]</span></code>. It scales
+the tunneling current.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">gap_voltage[j]</span></code>: gap voltage relative to <code class="docutils literal notranslate"><span class="pre">vgap</span></code> (default 1).
+The response function of junction <code class="docutils literal notranslate"><span class="pre">j</span></code> (normalized to its own
+gap voltage) is evaluated at <code class="docutils literal notranslate"><span class="pre">v</span> <span class="pre">/</span> <span class="pre">gap_voltage[j]</span></code> and scaled
+by <code class="docutils literal notranslate"><span class="pre">gap_voltage[j]</span></code> (<code class="docutils literal notranslate"><span class="pre">qmix.respfn.GapScaledRespFn</span></code>).</p></li>
+<li><p>The response function (the shape of the I-V curve): pass a list
+to <code class="docutils literal notranslate"><span class="pre">harmonic_balance</span></code>, <code class="docutils literal notranslate"><span class="pre">qmix.qtcurrent.qtcurrent</span></code>, etc.</p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">set_junction</span></code> sets <code class="docutils literal notranslate"><span class="pre">area</span></code> and <code class="docutils literal notranslate"><span class="pre">gap_voltage</span></code> from the
+physical values (as in SuperMix, where each junction has its own
+gap voltage, normal resistance and I-V curve).</p>
 <p>By default, each junction is voltage biased: its DC voltage is set
 by <code class="docutils literal notranslate"><span class="pre">vb[j]</span></code>, and all junctions get the same bias sweep (a 1-D array
 is used for all junctions). For <code class="docutils literal notranslate"><span class="pre">N</span></code> identical, identically pumped
@@ -1066,8 +1111,21 @@ initial guess. Set <code class="docutils literal notranslate"><span class="pre">
 <dl class="py attribute">
 <dt class="sig sig-object py" id="qmix.circuit.MultiJunctionCircuit.area">
 <span class="sig-name descname"><span class="pre">area</span></span><a class="headerlink" href="#qmix.circuit.MultiJunctionCircuit.area" title="Link to this definition"></a></dt>
-<dd><p>Relative area of each junction (scales its
-tunneling current), default is 1.</p>
+<dd><p>Normal-state conductance of each junction
+relative to <code class="docutils literal notranslate"><span class="pre">1</span> <span class="pre">/</span> <span class="pre">rn</span></code> (relative area; scales its tunneling
+current), default is 1.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qmix.circuit.MultiJunctionCircuit.gap_voltage">
+<span class="sig-name descname"><span class="pre">gap_voltage</span></span><a class="headerlink" href="#qmix.circuit.MultiJunctionCircuit.gap_voltage" title="Link to this definition"></a></dt>
+<dd><p>Gap voltage of each junction relative
+to <code class="docutils literal notranslate"><span class="pre">vgap</span></code>, default is 1.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>numpy.ndarray</p>
@@ -1200,7 +1258,10 @@ or None (voltage bias, the default)</p>
 <code class="docutils literal notranslate"><span class="pre">qmix.qtcurrent.qtcurrent</span></code> with <code class="docutils literal notranslate"><span class="pre">vj[j]</span></code>). Its <code class="docutils literal notranslate"><span class="pre">vt</span></code> and <code class="docutils literal notranslate"><span class="pre">zt</span></code>
 are <code class="docutils literal notranslate"><span class="pre">vt[j]</span></code> and <code class="docutils literal notranslate"><span class="pre">zt[j,</span> <span class="pre">j]</span></code>. These are only the Thevenin
 equivalent circuit of the junction if it isn’t coupled to the other
-junctions.</p>
+junctions. Like all values of the circuit, it is normalized to
+<code class="docutils literal notranslate"><span class="pre">vgap</span></code> and <code class="docutils literal notranslate"><span class="pre">rn</span></code>: <code class="docutils literal notranslate"><span class="pre">area[j]</span></code> and <code class="docutils literal notranslate"><span class="pre">gap_voltage[j]</span></code> are not
+included (<code class="docutils literal notranslate"><span class="pre">qmix.qtcurrent.junction_resp</span></code> gives the response
+function of the junction in these units).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>j</strong> (<em>int</em>) – Junction (starting from 0)</p>
@@ -1237,6 +1298,27 @@ resistance), unless that is singular.</p>
 <li><p><strong>b</strong> (<em>ndarray</em>) – Coefficients of the DC currents, <code class="docutils literal notranslate"><span class="pre">num_j</span></code> x <code class="docutils literal notranslate"><span class="pre">num_j</span></code></p></li>
 <li><p><strong>rhs</strong> (<em>ndarray</em>) – Right-hand side, <code class="docutils literal notranslate"><span class="pre">rhs[r,</span> <span class="pre">i]</span></code>; a 1-D array of
 length <code class="docutils literal notranslate"><span class="pre">num_j</span></code> is used for all bias points</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qmix.circuit.MultiJunctionCircuit.set_junction">
+<span class="sig-name descname"><span class="pre">set_junction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">j</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vgap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rn</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.circuit.MultiJunctionCircuit.set_junction" title="Link to this definition"></a></dt>
+<dd><p>Set the gap voltage and normal-state resistance of junction <code class="docutils literal notranslate"><span class="pre">j</span></code>.</p>
+<p>Sets <code class="docutils literal notranslate"><span class="pre">gap_voltage[j]</span> <span class="pre">=</span> <span class="pre">vgap</span> <span class="pre">/</span> <span class="pre">self.vgap</span></code> and <code class="docutils literal notranslate"><span class="pre">area[j]</span> <span class="pre">=</span> <span class="pre">self.rn</span> <span class="pre">/</span>
+<span class="pre">rn</span></code>, so the circuit’s <code class="docutils literal notranslate"><span class="pre">vgap</span></code> and <code class="docutils literal notranslate"><span class="pre">rn</span></code> must be set. The response
+function of the junction should be normalized to its own gap voltage
+and normal-state resistance (e.g., <code class="docutils literal notranslate"><span class="pre">qmix.respfn.RespFnFromIVData</span></code>
+with its own <code class="docutils literal notranslate"><span class="pre">vgap</span></code> and <code class="docutils literal notranslate"><span class="pre">rn</span></code>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>j</strong> (<em>int</em>) – Junction (starting from 0)</p></li>
+<li><p><strong>vgap</strong> (<em>float</em><em>, </em><em>optional</em>) – Gap voltage of the junction, in [V]</p></li>
+<li><p><strong>rn</strong> (<em>float</em><em>, </em><em>optional</em>) – Normal-state resistance of the junction,
+in [ohms]</p></li>
 </ul>
 </dd>
 </dl>
@@ -1514,6 +1596,20 @@ changes the reference impedances.</p>
 <p>Ports are numbered from 1, as in Touchstone files. Frequencies are in
 [Hz] and impedances in [ohms] (not normalized), since these networks come
 from outside of QMix.</p>
+<p><strong>Circuit elements.</strong> Besides Touchstone files, networks can be built
+from SuperMix’s passive elements (all checked against SuperMix): lines
+(<code class="docutils literal notranslate"><span class="pre">transmission_line</span></code>, <code class="docutils literal notranslate"><span class="pre">ideal_line</span></code>, <code class="docutils literal notranslate"><span class="pre">microstrip_line</span></code>,
+<code class="docutils literal notranslate"><span class="pre">cpw_line</span></code>, <code class="docutils literal notranslate"><span class="pre">rectangular_waveguide_line</span></code>, <code class="docutils literal notranslate"><span class="pre">radial_stub</span></code>), lumped
+elements in series or shunt (<code class="docutils literal notranslate"><span class="pre">resistor</span></code>, <code class="docutils literal notranslate"><span class="pre">capacitor</span></code>, <code class="docutils literal notranslate"><span class="pre">inductor</span></code>,
+<code class="docutils literal notranslate"><span class="pre">series_rlc</span></code>, <code class="docutils literal notranslate"><span class="pre">parallel_rlc</span></code>, <code class="docutils literal notranslate"><span class="pre">series_impedance</span></code>,
+<code class="docutils literal notranslate"><span class="pre">shunt_impedance</span></code>; <code class="docutils literal notranslate"><span class="pre">via_inductance</span></code>), connections (<code class="docutils literal notranslate"><span class="pre">tee</span></code>,
+<code class="docutils literal notranslate"><span class="pre">series_tee</span></code>) and terminations (<code class="docutils literal notranslate"><span class="pre">load</span></code>), and ideal components
+(<code class="docutils literal notranslate"><span class="pre">attenuator</span></code>, <code class="docutils literal notranslate"><span class="pre">time_delay</span></code>, <code class="docutils literal notranslate"><span class="pre">transformer</span></code>, <code class="docutils literal notranslate"><span class="pre">circulator</span></code>,
+<code class="docutils literal notranslate"><span class="pre">hybrid90</span></code>, <code class="docutils literal notranslate"><span class="pre">hybrid180</span></code>, <code class="docutils literal notranslate"><span class="pre">power_divider</span></code>, <code class="docutils literal notranslate"><span class="pre">slot_antenna</span></code>,
+<code class="docutils literal notranslate"><span class="pre">twin_slot_antenna</span></code>), plus <code class="docutils literal notranslate"><span class="pre">deembed</span></code>. Unlike in SuperMix, elements
+don’t have their own temperatures: the thermal noise of a lossy network
+(<code class="docutils literal notranslate"><span class="pre">qmix.small_signal</span></code>) is calculated from its impedance matrix at one
+temperature.</p>
 </div>
 <dl class="py class">
 <dt class="sig sig-object py" id="qmix.network.Network">
@@ -1665,6 +1761,166 @@ order)</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="qmix.network.attenuator">
+<span class="sig-prename descclassname"><span class="pre">qmix.network.</span></span><span class="sig-name descname"><span class="pre">attenuator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">freq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.network.attenuator" title="Link to this definition"></a></dt>
+<dd><p>Matched attenuator (SuperMix’s <code class="docutils literal notranslate"><span class="pre">attenuator</span></code>):
+<code class="docutils literal notranslate"><span class="pre">S21</span> <span class="pre">=</span> <span class="pre">S12</span> <span class="pre">=</span> <span class="pre">10^(-dB</span> <span class="pre">/</span> <span class="pre">20)</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>freq</strong> (<em>ndarray</em>) – Frequencies, in [Hz]</p></li>
+<li><p><strong>db</strong> (<em>float</em>) – Attenuation, in [dB]</p></li>
+<li><p><strong>z0</strong> (<em>float</em><em>, </em><em>optional</em>) – Reference impedance, in [ohms]; default is 50</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>2-port network</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#qmix.network.Network" title="qmix.network.Network">Network</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="qmix.network.capacitor">
+<span class="sig-prename descclassname"><span class="pre">qmix.network.</span></span><span class="sig-name descname"><span class="pre">capacitor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">freq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shunt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.network.capacitor" title="Link to this definition"></a></dt>
+<dd><p>Capacitor in series (default) or in parallel (<code class="docutils literal notranslate"><span class="pre">shunt=True</span></code>) with a
+2-port (SuperMix’s <code class="docutils literal notranslate"><span class="pre">capacitor</span></code>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>freq</strong> (<em>ndarray</em>) – Frequencies, in [Hz]</p></li>
+<li><p><strong>c</strong> (<em>float</em>) – Capacitance, in [F]</p></li>
+<li><p><strong>shunt</strong> (<em>bool</em><em>, </em><em>optional</em>) – Parallel instead of series, default is False</p></li>
+<li><p><strong>z0</strong> (<em>float</em><em>, </em><em>optional</em>) – Reference impedance, in [ohms]; default is 50</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>2-port network</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#qmix.network.Network" title="qmix.network.Network">Network</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="qmix.network.circulator">
+<span class="sig-prename descclassname"><span class="pre">qmix.network.</span></span><span class="sig-name descname"><span class="pre">circulator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">freq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.network.circulator" title="Link to this definition"></a></dt>
+<dd><p>Ideal 3-port circulator, 1 -&gt; 2 -&gt; 3 -&gt; 1 (SuperMix’s
+<code class="docutils literal notranslate"><span class="pre">circulator</span></code>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>freq</strong> (<em>ndarray</em>) – Frequencies, in [Hz]</p></li>
+<li><p><strong>z0</strong> (<em>float</em><em>, </em><em>optional</em>) – Reference impedance, in [ohms]; default is 50</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>3-port network</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#qmix.network.Network" title="qmix.network.Network">Network</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="qmix.network.cpw">
+<span class="sig-prename descclassname"><span class="pre">qmix.network.</span></span><span class="sig-name descname"><span class="pre">cpw</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">freq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">space</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">height</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eps_r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.network.cpw" title="Link to this definition"></a></dt>
+<dd><p>Characteristic impedance and propagation constant of a lossless
+coplanar waveguide (SuperMix’s <code class="docutils literal notranslate"><span class="pre">cpw</span></code>).</p>
+<p>Quasi-static conformal mapping (Bahl &amp; Bhartia), on a substrate of
+finite thickness, without or with a conducting backing. The ratio of the
+complete elliptic integrals <code class="docutils literal notranslate"><span class="pre">K(k)</span> <span class="pre">/</span> <span class="pre">K'(k)</span></code> uses Hilberg’s
+approximation, and the free-space impedance is approximated as
+<code class="docutils literal notranslate"><span class="pre">120</span> <span class="pre">pi</span></code> ohms, as in SuperMix. Conductor and dielectric losses (and the
+kinetic inductance of superconductors) are not included.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>freq</strong> (<em>ndarray</em>) – Frequencies, in [Hz]</p></li>
+<li><p><strong>width</strong> (<em>float</em>) – Width of the center conductor, in [m]</p></li>
+<li><p><strong>space</strong> (<em>float</em>) – Gap between the center conductor and the ground
+planes, in [m]</p></li>
+<li><p><strong>height</strong> (<em>float</em>) – Thickness of the substrate, in [m]</p></li>
+<li><p><strong>eps_r</strong> (<em>float</em>) – Relative permittivity of the substrate</p></li>
+<li><p><strong>backed</strong> (<em>bool</em><em>, </em><em>optional</em>) – Conducting plane below the substrate,
+default is False</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>characteristic impedance <code class="docutils literal notranslate"><span class="pre">zc</span></code> in [ohms] and propagation</dt><dd><p>constant <code class="docutils literal notranslate"><span class="pre">gamma</span></code> in [1/m], one value per frequency (scalars for
+a scalar <code class="docutils literal notranslate"><span class="pre">freq</span></code>)</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="qmix.network.cpw_line">
+<span class="sig-prename descclassname"><span class="pre">qmix.network.</span></span><span class="sig-name descname"><span class="pre">cpw_line</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">freq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">length</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">space</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">height</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eps_r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.network.cpw_line" title="Link to this definition"></a></dt>
+<dd><p>Coplanar waveguide section (lossless; see <code class="docutils literal notranslate"><span class="pre">cpw</span></code>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>freq</strong> (<em>ndarray</em>) – Frequencies, in [Hz]</p></li>
+<li><p><strong>length</strong> (<em>float</em>) – Length, in [m]</p></li>
+<li><p><strong>width</strong> – see <code class="docutils literal notranslate"><span class="pre">cpw</span></code></p></li>
+<li><p><strong>space</strong> – see <code class="docutils literal notranslate"><span class="pre">cpw</span></code></p></li>
+<li><p><strong>height</strong> – see <code class="docutils literal notranslate"><span class="pre">cpw</span></code></p></li>
+<li><p><strong>eps_r</strong> – see <code class="docutils literal notranslate"><span class="pre">cpw</span></code></p></li>
+<li><p><strong>backed</strong> – see <code class="docutils literal notranslate"><span class="pre">cpw</span></code></p></li>
+<li><p><strong>z0</strong> (<em>complex</em><em> or </em><em>ndarray</em><em>, </em><em>optional</em>) – Reference impedances, see
+<code class="docutils literal notranslate"><span class="pre">transmission_line</span></code></p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>2-port network</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#qmix.network.Network" title="qmix.network.Network">Network</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="qmix.network.deembed">
+<span class="sig-prename descclassname"><span class="pre">qmix.network.</span></span><span class="sig-name descname"><span class="pre">deembed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">measured</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.network.deembed" title="Link to this definition"></a></dt>
+<dd><p>De-embed a 2-port from a measurement that includes known input and
+output 2-ports (SuperMix’s <code class="docutils literal notranslate"><span class="pre">deembed</span></code>):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">measured</span> <span class="o">=</span> <span class="nb">input</span> <span class="o">--</span> <span class="n">dut</span> <span class="o">--</span> <span class="n">output</span>
+</pre></div>
+</div>
+<p>The 2-ports are combined as ABCD (chain) matrices:
+<code class="docutils literal notranslate"><span class="pre">dut</span> <span class="pre">=</span> <span class="pre">input^-1</span> <span class="pre">measured</span> <span class="pre">output^-1</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>measured</strong> (<a class="reference internal" href="#qmix.network.Network" title="qmix.network.Network"><em>Network</em></a>) – The whole 2-port (e.g., measured with a VNA)</p></li>
+<li><p><strong>input</strong> (<a class="reference internal" href="#qmix.network.Network" title="qmix.network.Network"><em>Network</em></a>) – The known 2-port at port 1 of the device</p></li>
+<li><p><strong>output</strong> (<a class="reference internal" href="#qmix.network.Network" title="qmix.network.Network"><em>Network</em></a>) – The known 2-port at port 2 of the device</p></li>
+<li><p><strong>z0</strong> (<em>float</em><em>, </em><em>optional</em>) – Reference impedance of the result, in [ohms];
+default is 50</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the device, a 2-port network</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#qmix.network.Network" title="qmix.network.Network">Network</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="qmix.network.embedding_impedance">
 <span class="sig-prename descclassname"><span class="pre">qmix.network.</span></span><span class="sig-name descname"><span class="pre">embedding_impedance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">network</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">terminations</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.network.embedding_impedance" title="Link to this definition"></a></dt>
 <dd><p>Embedding impedance seen by a junction at one port of a network, as a
@@ -1692,6 +1948,79 @@ is 1</p></li>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>function</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="qmix.network.hybrid180">
+<span class="sig-prename descclassname"><span class="pre">qmix.network.</span></span><span class="sig-name descname"><span class="pre">hybrid180</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">freq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.network.hybrid180" title="Link to this definition"></a></dt>
+<dd><p>Ideal 180 degree hybrid coupler (SuperMix’s <code class="docutils literal notranslate"><span class="pre">hybrid180</span></code>):
+<code class="docutils literal notranslate"><span class="pre">S12</span> <span class="pre">=</span> <span class="pre">S13</span> <span class="pre">=</span> <span class="pre">S34</span> <span class="pre">=</span> <span class="pre">1</span> <span class="pre">/</span> <span class="pre">sqrt(2)</span></code>, <code class="docutils literal notranslate"><span class="pre">S24</span> <span class="pre">=</span> <span class="pre">-1</span> <span class="pre">/</span> <span class="pre">sqrt(2)</span></code>; 1 and 4, and
+2 and 3, are isolated.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>freq</strong> (<em>ndarray</em>) – Frequencies, in [Hz]</p></li>
+<li><p><strong>z0</strong> (<em>float</em><em>, </em><em>optional</em>) – Reference impedance, in [ohms]; default is 50</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>4-port network</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#qmix.network.Network" title="qmix.network.Network">Network</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="qmix.network.hybrid90">
+<span class="sig-prename descclassname"><span class="pre">qmix.network.</span></span><span class="sig-name descname"><span class="pre">hybrid90</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">freq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.network.hybrid90" title="Link to this definition"></a></dt>
+<dd><p>Ideal 90 degree hybrid coupler (SuperMix’s <code class="docutils literal notranslate"><span class="pre">hybrid90</span></code>): ports 1 and
+2, and 3 and 4, are coupled with <code class="docutils literal notranslate"><span class="pre">-j</span> <span class="pre">/</span> <span class="pre">sqrt(2)</span></code>, ports 1 and 3, and 2
+and 4, with <code class="docutils literal notranslate"><span class="pre">-1</span> <span class="pre">/</span> <span class="pre">sqrt(2)</span></code>; 1 and 4, and 2 and 3, are isolated.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>freq</strong> (<em>ndarray</em>) – Frequencies, in [Hz]</p></li>
+<li><p><strong>z0</strong> (<em>float</em><em>, </em><em>optional</em>) – Reference impedance, in [ohms]; default is 50</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>4-port network</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#qmix.network.Network" title="qmix.network.Network">Network</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="qmix.network.ideal_line">
+<span class="sig-prename descclassname"><span class="pre">qmix.network.</span></span><span class="sig-name descname"><span class="pre">ideal_line</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">freq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">theta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f_ref</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loss</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.network.ideal_line" title="Link to this definition"></a></dt>
+<dd><p>Transmission line from its electrical length at a reference frequency
+(SuperMix’s <code class="docutils literal notranslate"><span class="pre">trline</span></code>).</p>
+<p>The phase length is <code class="docutils literal notranslate"><span class="pre">theta</span> <span class="pre">*</span> <span class="pre">freq</span> <span class="pre">/</span> <span class="pre">f_ref</span></code>, and the line loses the
+fraction <code class="docutils literal notranslate"><span class="pre">loss</span></code> of the power per wavelength.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>freq</strong> (<em>ndarray</em>) – Frequencies, in [Hz]</p></li>
+<li><p><strong>zc</strong> (<em>complex</em>) – Characteristic impedance, in [ohms]</p></li>
+<li><p><strong>theta</strong> (<em>float</em>) – Electrical length at <code class="docutils literal notranslate"><span class="pre">f_ref</span></code>, in [radians]</p></li>
+<li><p><strong>f_ref</strong> (<em>float</em>) – Reference frequency, in [Hz]</p></li>
+<li><p><strong>loss</strong> (<em>float</em><em>, </em><em>optional</em>) – Fraction of the power lost per wavelength
+(0 &lt;= loss &lt; 1), default is 0</p></li>
+<li><p><strong>z0</strong> (<em>complex</em><em> or </em><em>ndarray</em><em>, </em><em>optional</em>) – Reference impedances, see
+<code class="docutils literal notranslate"><span class="pre">transmission_line</span></code></p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>2-port network</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#qmix.network.Network" title="qmix.network.Network">Network</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -1730,6 +2059,52 @@ see <code class="docutils literal notranslate"><span class="pre">Network.impedan
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="qmix.network.inductor">
+<span class="sig-prename descclassname"><span class="pre">qmix.network.</span></span><span class="sig-name descname"><span class="pre">inductor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">freq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">l</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shunt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.network.inductor" title="Link to this definition"></a></dt>
+<dd><p>Inductor in series (default) or in parallel (<code class="docutils literal notranslate"><span class="pre">shunt=True</span></code>) with a
+2-port (SuperMix’s <code class="docutils literal notranslate"><span class="pre">inductor</span></code>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>freq</strong> (<em>ndarray</em>) – Frequencies, in [Hz]</p></li>
+<li><p><strong>l</strong> (<em>float</em>) – Inductance, in [H]</p></li>
+<li><p><strong>shunt</strong> (<em>bool</em><em>, </em><em>optional</em>) – Parallel instead of series, default is False</p></li>
+<li><p><strong>z0</strong> (<em>float</em><em>, </em><em>optional</em>) – Reference impedance, in [ohms]; default is 50</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>2-port network</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#qmix.network.Network" title="qmix.network.Network">Network</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="qmix.network.load">
+<span class="sig-prename descclassname"><span class="pre">qmix.network.</span></span><span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">freq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.network.load" title="Link to this definition"></a></dt>
+<dd><p>One-port load (SuperMix’s <code class="docutils literal notranslate"><span class="pre">zterm</span></code>; <code class="docutils literal notranslate"><span class="pre">yterm</span></code> is <code class="docutils literal notranslate"><span class="pre">load(freq,</span> <span class="pre">1</span> <span class="pre">/</span>
+<span class="pre">y)</span></code>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>freq</strong> (<em>ndarray</em>) – Frequencies, in [Hz]</p></li>
+<li><p><strong>z</strong> (<em>complex</em><em> or </em><em>ndarray</em>) – Impedance, in [ohms] (<code class="docutils literal notranslate"><span class="pre">np.inf</span></code> for an open
+circuit)</p></li>
+<li><p><strong>z0</strong> (<em>float</em><em>, </em><em>optional</em>) – Reference impedance, in [ohms]; default is 50</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>1-port network</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#qmix.network.Network" title="qmix.network.Network">Network</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -1816,6 +2191,96 @@ impedance</p></li>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="qmix.network.parallel_rlc">
+<span class="sig-prename descclassname"><span class="pre">qmix.network.</span></span><span class="sig-name descname"><span class="pre">parallel_rlc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">freq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">inf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">l</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">inf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shunt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.network.parallel_rlc" title="Link to this definition"></a></dt>
+<dd><p>Parallel RLC circuit, <code class="docutils literal notranslate"><span class="pre">Y</span> <span class="pre">=</span> <span class="pre">1</span> <span class="pre">/</span> <span class="pre">R</span> <span class="pre">+</span> <span class="pre">j</span> <span class="pre">w</span> <span class="pre">C</span> <span class="pre">+</span> <span class="pre">1</span> <span class="pre">/</span> <span class="pre">(j</span> <span class="pre">w</span> <span class="pre">L)</span></code>, in series
+(default) or in parallel (<code class="docutils literal notranslate"><span class="pre">shunt=True</span></code>) with a 2-port (SuperMix’s
+<code class="docutils literal notranslate"><span class="pre">parallel_RLC</span></code>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>freq</strong> (<em>ndarray</em>) – Frequencies, in [Hz]</p></li>
+<li><p><strong>r</strong> (<em>float</em><em>, </em><em>optional</em>) – Resistance, in [ohms], default is <code class="docutils literal notranslate"><span class="pre">np.inf</span></code>
+(no resistor)</p></li>
+<li><p><strong>l</strong> (<em>float</em><em>, </em><em>optional</em>) – Inductance, in [H], default is <code class="docutils literal notranslate"><span class="pre">np.inf</span></code> (no
+inductor)</p></li>
+<li><p><strong>c</strong> (<em>float</em><em>, </em><em>optional</em>) – Capacitance, in [F], default is 0</p></li>
+<li><p><strong>shunt</strong> (<em>bool</em><em>, </em><em>optional</em>) – Parallel instead of series, default is False</p></li>
+<li><p><strong>z0</strong> (<em>float</em><em>, </em><em>optional</em>) – Reference impedance, in [ohms]; default is 50</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>2-port network</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#qmix.network.Network" title="qmix.network.Network">Network</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="qmix.network.power_divider">
+<span class="sig-prename descclassname"><span class="pre">qmix.network.</span></span><span class="sig-name descname"><span class="pre">power_divider</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">freq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.network.power_divider" title="Link to this definition"></a></dt>
+<dd><p>Ideal in-phase power divider (SuperMix’s <code class="docutils literal notranslate"><span class="pre">power_divider</span></code>):
+<code class="docutils literal notranslate"><span class="pre">S12</span> <span class="pre">=</span> <span class="pre">S13</span> <span class="pre">=</span> <span class="pre">1</span> <span class="pre">/</span> <span class="pre">sqrt(2)</span></code>, all ports matched, ports 2 and 3 isolated.</p>
+<p>It is lossy (an internal, antisymmetric-mode port is terminated by
+<code class="docutils literal notranslate"><span class="pre">z0</span></code>), so it has no impedance matrix.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>freq</strong> (<em>ndarray</em>) – Frequencies, in [Hz]</p></li>
+<li><p><strong>z0</strong> (<em>float</em><em>, </em><em>optional</em>) – Reference impedance, in [ohms]; default is 50</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>3-port network</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#qmix.network.Network" title="qmix.network.Network">Network</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="qmix.network.radial_stub">
+<span class="sig-prename descclassname"><span class="pre">qmix.network.</span></span><span class="sig-name descname"><span class="pre">radial_stub</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">freq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radius</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">angle</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">length</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">height</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eps_r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_sections</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">15</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.network.radial_stub" title="Link to this definition"></a></dt>
+<dd><p>Microstrip radial stub, fed by a microstrip line (SuperMix’s
+<code class="docutils literal notranslate"><span class="pre">radial_stub</span></code>).</p>
+<p>The stub is modeled as <code class="docutils literal notranslate"><span class="pre">num_sections</span></code> microstrip sections (annular
+slices of equal length, each as wide as the arc at its middle), starting
+at the radius <code class="docutils literal notranslate"><span class="pre">r0</span> <span class="pre">=</span> <span class="pre">width</span> <span class="pre">/</span> <span class="pre">sqrt(2</span> <span class="pre">angle</span> <span class="pre">tan(angle</span> <span class="pre">/</span> <span class="pre">2))</span></code> where the
+area of the feed line equals that of the sector it overlaps. Port 1 is
+the end of the feed line, port 2 the outer edge of the stub (usually
+left open: <code class="docutils literal notranslate"><span class="pre">terminate(2,</span> <span class="pre">np.inf)</span></code>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>freq</strong> (<em>ndarray</em>) – Frequencies, in [Hz]</p></li>
+<li><p><strong>radius</strong> (<em>float</em>) – Outer radius of the stub, in [m]</p></li>
+<li><p><strong>angle</strong> (<em>float</em>) – Opening angle, in [radians] (between 0 and pi)</p></li>
+<li><p><strong>length</strong> (<em>float</em>) – Length of the feed line, in [m]</p></li>
+<li><p><strong>width</strong> (<em>float</em>) – Width of the feed line, in [m]</p></li>
+<li><p><strong>height</strong> (<em>float</em>) – Thickness of the dielectric, in [m]</p></li>
+<li><p><strong>eps_r</strong> (<em>float</em>) – Relative permittivity of the dielectric</p></li>
+<li><p><strong>num_sections</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of sections, default is 15</p></li>
+<li><p><strong>z0</strong> (<em>complex</em><em> or </em><em>ndarray</em><em>, </em><em>optional</em>) – Reference impedances of the two
+ports, in [ohms]; default is the real part of the characteristic
+impedance of the feed line (port 1) and of the last section
+(port 2)</p></li>
+<li><p><strong>kwargs</strong> – Other arguments of <code class="docutils literal notranslate"><span class="pre">microstrip</span></code>: <code class="docutils literal notranslate"><span class="pre">thickness</span></code>, <code class="docutils literal notranslate"><span class="pre">strip</span></code>,
+<code class="docutils literal notranslate"><span class="pre">ground</span></code>, <code class="docutils literal notranslate"><span class="pre">temp</span></code>, <code class="docutils literal notranslate"><span class="pre">tan_d</span></code>, <code class="docutils literal notranslate"><span class="pre">eps_up</span></code>, <code class="docutils literal notranslate"><span class="pre">tan_up</span></code></p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>2-port network</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#qmix.network.Network" title="qmix.network.Network">Network</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="qmix.network.read_touchstone">
 <span class="sig-prename descclassname"><span class="pre">qmix.network.</span></span><span class="sig-name descname"><span class="pre">read_touchstone</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_ports</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.network.read_touchstone" title="Link to this definition"></a></dt>
 <dd><p>Read a Touchstone file (version 1, S-parameters).</p>
@@ -1835,6 +2300,183 @@ extension</p></li>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>network from the file</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#qmix.network.Network" title="qmix.network.Network">Network</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="qmix.network.rectangular_waveguide">
+<span class="sig-prename descclassname"><span class="pre">qmix.network.</span></span><span class="sig-name descname"><span class="pre">rectangular_waveguide</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">freq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eps_r</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tan_d</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wall</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4.2</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.network.rectangular_waveguide" title="Link to this definition"></a></dt>
+<dd><p>Characteristic impedance and propagation constant of the TE10 mode of
+a rectangular waveguide (SuperMix’s <code class="docutils literal notranslate"><span class="pre">r_waveguide</span></code>).</p>
+<p>The characteristic impedance is the power-voltage impedance,
+<code class="docutils literal notranslate"><span class="pre">Zc</span> <span class="pre">=</span> <span class="pre">2</span> <span class="pre">b</span> <span class="pre">/</span> <span class="pre">a</span> <span class="pre">Z_TE</span></code> (Z_TE: wave impedance). Above cutoff, the losses
+of the walls (from the real part of their surface impedance) and of the
+dielectric filling are included to first order; below cutoff, the mode
+is evanescent (real <code class="docutils literal notranslate"><span class="pre">gamma</span></code>, imaginary <code class="docutils literal notranslate"><span class="pre">Zc</span></code>) and the losses are
+ignored.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>freq</strong> (<em>ndarray</em>) – Frequencies, in [Hz]</p></li>
+<li><p><strong>a</strong> (<em>float</em>) – Broad dimension, in [m]</p></li>
+<li><p><strong>b</strong> (<em>float</em>) – Narrow dimension, in [m]</p></li>
+<li><p><strong>eps_r</strong> (<em>float</em><em>, </em><em>optional</em>) – Relative permittivity of the filling,
+default is 1 (vacuum)</p></li>
+<li><p><strong>tan_d</strong> (<em>float</em><em>, </em><em>optional</em>) – Loss tangent of the filling, default is 0</p></li>
+<li><p><strong>wall</strong> (<em>film</em><em>, </em><em>optional</em>) – Conductor of the walls (<code class="docutils literal notranslate"><span class="pre">zs(freq,</span> <span class="pre">temp)</span></code>
+method, e.g., <code class="docutils literal notranslate"><span class="pre">qmix.superconductor.NormalFilm</span></code>); default is a
+perfect conductor</p></li>
+<li><p><strong>temp</strong> (<em>float</em><em>, </em><em>optional</em>) – Temperature, in [K], passed to the wall;
+default is 4.2</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>characteristic impedance <code class="docutils literal notranslate"><span class="pre">zc</span></code> in [ohms] and propagation</dt><dd><p>constant <code class="docutils literal notranslate"><span class="pre">gamma</span></code> in [1/m] (waves vary as <code class="docutils literal notranslate"><span class="pre">exp(-gamma</span> <span class="pre">z)</span></code>),
+one value per frequency (scalars for a scalar <code class="docutils literal notranslate"><span class="pre">freq</span></code>)</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="qmix.network.rectangular_waveguide_line">
+<span class="sig-prename descclassname"><span class="pre">qmix.network.</span></span><span class="sig-name descname"><span class="pre">rectangular_waveguide_line</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">freq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">length</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.network.rectangular_waveguide_line" title="Link to this definition"></a></dt>
+<dd><p>Rectangular waveguide section (TE10; see <code class="docutils literal notranslate"><span class="pre">rectangular_waveguide</span></code>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>freq</strong> (<em>ndarray</em>) – Frequencies, in [Hz]</p></li>
+<li><p><strong>length</strong> (<em>float</em>) – Length, in [m]</p></li>
+<li><p><strong>a</strong> (<em>float</em>) – Broad dimension, in [m]</p></li>
+<li><p><strong>b</strong> (<em>float</em>) – Narrow dimension, in [m]</p></li>
+<li><p><strong>z0</strong> (<em>complex</em><em> or </em><em>ndarray</em><em>, </em><em>optional</em>) – Reference impedances, see
+<code class="docutils literal notranslate"><span class="pre">transmission_line</span></code></p></li>
+<li><p><strong>kwargs</strong> – Other arguments of <code class="docutils literal notranslate"><span class="pre">rectangular_waveguide</span></code>: <code class="docutils literal notranslate"><span class="pre">eps_r</span></code>,
+<code class="docutils literal notranslate"><span class="pre">tan_d</span></code>, <code class="docutils literal notranslate"><span class="pre">wall</span></code>, <code class="docutils literal notranslate"><span class="pre">temp</span></code></p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>2-port network</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#qmix.network.Network" title="qmix.network.Network">Network</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="qmix.network.resistor">
+<span class="sig-prename descclassname"><span class="pre">qmix.network.</span></span><span class="sig-name descname"><span class="pre">resistor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">freq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shunt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.network.resistor" title="Link to this definition"></a></dt>
+<dd><p>Resistor in series (default) or in parallel (<code class="docutils literal notranslate"><span class="pre">shunt=True</span></code>) with a
+2-port (SuperMix’s <code class="docutils literal notranslate"><span class="pre">resistor</span></code>; see <code class="docutils literal notranslate"><span class="pre">series_impedance</span></code>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>freq</strong> (<em>ndarray</em>) – Frequencies, in [Hz]</p></li>
+<li><p><strong>r</strong> (<em>float</em>) – Resistance, in [ohms]</p></li>
+<li><p><strong>shunt</strong> (<em>bool</em><em>, </em><em>optional</em>) – Parallel instead of series, default is False</p></li>
+<li><p><strong>z0</strong> (<em>float</em><em>, </em><em>optional</em>) – Reference impedance, in [ohms]; default is 50</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>2-port network</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#qmix.network.Network" title="qmix.network.Network">Network</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="qmix.network.series_impedance">
+<span class="sig-prename descclassname"><span class="pre">qmix.network.</span></span><span class="sig-name descname"><span class="pre">series_impedance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">freq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.network.series_impedance" title="Link to this definition"></a></dt>
+<dd><p>Impedance in series between two ports (SuperMix’s <code class="docutils literal notranslate"><span class="pre">spimp</span></code> in
+series mode):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">1</span> <span class="n">o</span><span class="o">--</span><span class="p">[</span> <span class="n">Z</span> <span class="p">]</span><span class="o">--</span><span class="n">o</span> <span class="mi">2</span>
+  <span class="n">o</span><span class="o">---------</span><span class="n">o</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>freq</strong> (<em>ndarray</em>) – Frequencies, in [Hz]</p></li>
+<li><p><strong>z</strong> (<em>complex</em><em> or </em><em>ndarray</em>) – Impedance, in [ohms] (scalar or one value
+per frequency; <code class="docutils literal notranslate"><span class="pre">np.inf</span></code> for an open circuit)</p></li>
+<li><p><strong>z0</strong> (<em>float</em><em>, </em><em>optional</em>) – Reference impedance of both ports, in [ohms];
+default is 50</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>2-port network</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#qmix.network.Network" title="qmix.network.Network">Network</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="qmix.network.series_rlc">
+<span class="sig-prename descclassname"><span class="pre">qmix.network.</span></span><span class="sig-name descname"><span class="pre">series_rlc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">freq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">l</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">inf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shunt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.network.series_rlc" title="Link to this definition"></a></dt>
+<dd><p>Series RLC circuit, <code class="docutils literal notranslate"><span class="pre">Z</span> <span class="pre">=</span> <span class="pre">R</span> <span class="pre">+</span> <span class="pre">j</span> <span class="pre">w</span> <span class="pre">L</span> <span class="pre">+</span> <span class="pre">1</span> <span class="pre">/</span> <span class="pre">(j</span> <span class="pre">w</span> <span class="pre">C)</span></code>, in series
+(default) or in parallel (<code class="docutils literal notranslate"><span class="pre">shunt=True</span></code>) with a 2-port (SuperMix’s
+<code class="docutils literal notranslate"><span class="pre">series_RLC</span></code>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>freq</strong> (<em>ndarray</em>) – Frequencies, in [Hz]</p></li>
+<li><p><strong>r</strong> (<em>float</em><em>, </em><em>optional</em>) – Resistance, in [ohms], default is 0</p></li>
+<li><p><strong>l</strong> (<em>float</em><em>, </em><em>optional</em>) – Inductance, in [H], default is 0</p></li>
+<li><p><strong>c</strong> (<em>float</em><em>, </em><em>optional</em>) – Capacitance, in [F], default is <code class="docutils literal notranslate"><span class="pre">np.inf</span></code> (no
+capacitor; <code class="docutils literal notranslate"><span class="pre">c</span> <span class="pre">=</span> <span class="pre">0</span></code> is an open circuit)</p></li>
+<li><p><strong>shunt</strong> (<em>bool</em><em>, </em><em>optional</em>) – Parallel instead of series, default is False</p></li>
+<li><p><strong>z0</strong> (<em>float</em><em>, </em><em>optional</em>) – Reference impedance, in [ohms]; default is 50</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>2-port network</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#qmix.network.Network" title="qmix.network.Network">Network</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="qmix.network.series_tee">
+<span class="sig-prename descclassname"><span class="pre">qmix.network.</span></span><span class="sig-name descname"><span class="pre">series_tee</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">freq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.network.series_tee" title="Link to this definition"></a></dt>
+<dd><p>Ideal series connection of three ports (SuperMix’s <code class="docutils literal notranslate"><span class="pre">series_tee</span></code>):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">1</span> <span class="n">o</span><span class="o">-------------+</span>
+  <span class="n">o</span><span class="o">----+</span>        <span class="o">|</span>
+       <span class="o">|</span>        <span class="o">+---</span><span class="n">o</span> <span class="mi">3</span>
+  <span class="n">o</span><span class="o">----+</span>        <span class="o">+---</span><span class="n">o</span>
+<span class="mi">2</span> <span class="n">o</span><span class="o">-------------+</span>
+</pre></div>
+</div>
+<p>The current of port 3 flows through ports 1 and 2 in series, and the
+voltage of port 3 is the sum of the voltages of ports 1 and 2. The
+ports are not equivalent. With the same real reference at all ports,
+the S-matrix doesn’t depend on it.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>freq</strong> (<em>ndarray</em>) – Frequencies, in [Hz]</p></li>
+<li><p><strong>z0</strong> (<em>float</em><em>, </em><em>optional</em>) – Reference impedance of all ports, in [ohms];
+default is 50</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>3-port network</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="#qmix.network.Network" title="qmix.network.Network">Network</a></p>
@@ -1875,6 +2517,68 @@ or <code class="docutils literal notranslate"><span class="pre">qmix.circuit.Mul
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>tuple</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="qmix.network.shunt_impedance">
+<span class="sig-prename descclassname"><span class="pre">qmix.network.</span></span><span class="sig-name descname"><span class="pre">shunt_impedance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">freq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.network.shunt_impedance" title="Link to this definition"></a></dt>
+<dd><p>Impedance in parallel across a 2-port (SuperMix’s <code class="docutils literal notranslate"><span class="pre">spimp</span></code> in
+parallel mode):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">1</span> <span class="n">o</span><span class="o">----+----</span><span class="n">o</span> <span class="mi">2</span>
+      <span class="p">[</span><span class="n">Z</span><span class="p">]</span>
+  <span class="n">o</span><span class="o">----+----</span><span class="n">o</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>freq</strong> (<em>ndarray</em>) – Frequencies, in [Hz]</p></li>
+<li><p><strong>z</strong> (<em>complex</em><em> or </em><em>ndarray</em>) – Impedance, in [ohms] (<code class="docutils literal notranslate"><span class="pre">np.inf</span></code> for an open
+circuit, i.e., no element)</p></li>
+<li><p><strong>z0</strong> (<em>float</em><em>, </em><em>optional</em>) – Reference impedance of both ports, in [ohms];
+default is 50</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>2-port network</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#qmix.network.Network" title="qmix.network.Network">Network</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="qmix.network.slot_antenna">
+<span class="sig-prename descclassname"><span class="pre">qmix.network.</span></span><span class="sig-name descname"><span class="pre">slot_antenna</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">freq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.network.slot_antenna" title="Link to this definition"></a></dt>
+<dd><p>Slot antenna with impedance <code class="docutils literal notranslate"><span class="pre">z</span></code> (SuperMix’s <code class="docutils literal notranslate"><span class="pre">slot_antenna</span></code>).</p>
+<p>Port 1 is the RF input; ports 2 and 3 are the out-of-phase and in-phase
+outputs. Driven from a source with impedance <code class="docutils literal notranslate"><span class="pre">z0</span></code> at port 1, the
+antenna presents the impedance <code class="docutils literal notranslate"><span class="pre">z</span></code> between ports 2 and 3 (an ideal
+transformer from <code class="docutils literal notranslate"><span class="pre">z0</span></code> to <code class="docutils literal notranslate"><span class="pre">z</span></code> in series with the outputs):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>        <span class="mi">1</span> <span class="p">(</span><span class="n">z0</span><span class="p">)</span>
+          <span class="o">|</span>
+     <span class="n">transformer</span>
+          <span class="o">|</span>  <span class="p">(</span><span class="n">z</span><span class="p">)</span>
+<span class="mi">2</span> <span class="n">o</span><span class="o">-------+</span>   <span class="o">+-------</span><span class="n">o</span> <span class="mi">3</span>
+  <span class="n">o</span><span class="o">-------------------</span><span class="n">o</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>freq</strong> (<em>ndarray</em>) – Frequencies, in [Hz]</p></li>
+<li><p><strong>z</strong> (<em>complex</em><em> or </em><em>ndarray</em>) – Antenna impedance, in [ohms]</p></li>
+<li><p><strong>z0</strong> (<em>float</em><em>, </em><em>optional</em>) – Reference impedance, in [ohms]; default is 50</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>3-port network</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#qmix.network.Network" title="qmix.network.Network">Network</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -1965,6 +2669,60 @@ shapes <code class="docutils literal notranslate"><span class="pre">freq.shape</
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="qmix.network.time_delay">
+<span class="sig-prename descclassname"><span class="pre">qmix.network.</span></span><span class="sig-name descname"><span class="pre">time_delay</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">freq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delay</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.network.time_delay" title="Link to this definition"></a></dt>
+<dd><p>Matched, lossless time delay (SuperMix’s <code class="docutils literal notranslate"><span class="pre">time_delay</span></code>):
+<code class="docutils literal notranslate"><span class="pre">S21</span> <span class="pre">=</span> <span class="pre">S12</span> <span class="pre">=</span> <span class="pre">exp(-j</span> <span class="pre">2</span> <span class="pre">pi</span> <span class="pre">f</span> <span class="pre">delay)</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>freq</strong> (<em>ndarray</em>) – Frequencies, in [Hz]</p></li>
+<li><p><strong>delay</strong> (<em>float</em>) – Delay, in [s]</p></li>
+<li><p><strong>z0</strong> (<em>float</em><em>, </em><em>optional</em>) – Reference impedance, in [ohms]; default is 50</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>2-port network</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#qmix.network.Network" title="qmix.network.Network">Network</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="qmix.network.transformer">
+<span class="sig-prename descclassname"><span class="pre">qmix.network.</span></span><span class="sig-name descname"><span class="pre">transformer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">freq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.network.transformer" title="Link to this definition"></a></dt>
+<dd><p>Ideal lossless transformer from <code class="docutils literal notranslate"><span class="pre">z1</span></code> (port 1) to <code class="docutils literal notranslate"><span class="pre">z2</span></code> (port 2)
+(SuperMix’s <code class="docutils literal notranslate"><span class="pre">transformer</span></code>).</p>
+<p>A lossless, reciprocal 2-port: with port 2 terminated by <code class="docutils literal notranslate"><span class="pre">z2^*</span></code>, port 1
+presents the impedance <code class="docutils literal notranslate"><span class="pre">z1</span></code>, and with port 1 terminated by <code class="docutils literal notranslate"><span class="pre">z1^*</span></code>,
+port 2 presents <code class="docutils literal notranslate"><span class="pre">z2</span></code>. For <code class="docutils literal notranslate"><span class="pre">z1</span> <span class="pre">=</span> <span class="pre">r1</span> <span class="pre">+</span> <span class="pre">j</span> <span class="pre">x1</span></code> and <code class="docutils literal notranslate"><span class="pre">z2</span> <span class="pre">=</span> <span class="pre">r2</span> <span class="pre">+</span> <span class="pre">j</span> <span class="pre">x2</span></code>,
+<code class="docutils literal notranslate"><span class="pre">S11</span> <span class="pre">=</span> <span class="pre">(zeta</span> <span class="pre">+</span> <span class="pre">j</span> <span class="pre">psi)</span> <span class="pre">/</span> <span class="pre">D</span></code>, <code class="docutils literal notranslate"><span class="pre">S22</span> <span class="pre">=</span> <span class="pre">(-zeta</span> <span class="pre">+</span> <span class="pre">j</span> <span class="pre">psi)</span> <span class="pre">/</span> <span class="pre">D</span></code> and
+<code class="docutils literal notranslate"><span class="pre">S12</span> <span class="pre">=</span> <span class="pre">S21</span> <span class="pre">=</span> <span class="pre">1</span> <span class="pre">/</span> <span class="pre">D</span></code>, where <code class="docutils literal notranslate"><span class="pre">zeta</span> <span class="pre">=</span> <span class="pre">(s</span> <span class="pre">-</span> <span class="pre">1</span> <span class="pre">/</span> <span class="pre">s)</span> <span class="pre">/</span> <span class="pre">2</span></code>,
+<code class="docutils literal notranslate"><span class="pre">psi</span> <span class="pre">=</span> <span class="pre">(x2</span> <span class="pre">s</span> <span class="pre">+</span> <span class="pre">x1</span> <span class="pre">/</span> <span class="pre">s)</span> <span class="pre">/</span> <span class="pre">2</span></code>, <code class="docutils literal notranslate"><span class="pre">D</span> <span class="pre">=</span> <span class="pre">sqrt(1</span> <span class="pre">+</span> <span class="pre">zeta^2)</span> <span class="pre">+</span> <span class="pre">j</span> <span class="pre">psi</span></code> and
+<code class="docutils literal notranslate"><span class="pre">s</span> <span class="pre">=</span> <span class="pre">sqrt(r1</span> <span class="pre">/</span> <span class="pre">r2)</span></code> (with <code class="docutils literal notranslate"><span class="pre">r</span></code> and <code class="docutils literal notranslate"><span class="pre">x</span></code> normalized to <code class="docutils literal notranslate"><span class="pre">z0</span></code>). For
+real <code class="docutils literal notranslate"><span class="pre">z1</span></code> and <code class="docutils literal notranslate"><span class="pre">z2</span></code>, it is an ideal transformer with the impedance
+ratio <code class="docutils literal notranslate"><span class="pre">z1</span> <span class="pre">/</span> <span class="pre">z2</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>freq</strong> (<em>ndarray</em>) – Frequencies, in [Hz]</p></li>
+<li><p><strong>z1</strong> (<em>complex</em>) – Impedance at port 1, in [ohms] (positive real part)</p></li>
+<li><p><strong>z2</strong> (<em>complex</em>) – Impedance at port 2, in [ohms] (positive real part)</p></li>
+<li><p><strong>z0</strong> (<em>float</em><em>, </em><em>optional</em>) – Reference impedance, in [ohms]; default is 50</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>2-port network</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#qmix.network.Network" title="qmix.network.Network">Network</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="qmix.network.transmission_line">
 <span class="sig-prename descclassname"><span class="pre">qmix.network.</span></span><span class="sig-name descname"><span class="pre">transmission_line</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">freq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gamma</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">length</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.network.transmission_line" title="Link to this definition"></a></dt>
 <dd><p>Transmission line from its characteristic impedance and propagation
@@ -1984,7 +2742,8 @@ one value per frequency)</p></li>
 <li><p><strong>z0</strong> (<em>complex</em><em> or </em><em>ndarray</em><em>, </em><em>optional</em>) – Reference impedances of the two
 ports, in [ohms] (as for <code class="docutils literal notranslate"><span class="pre">Network</span></code>); default is the real part
 of <code class="docutils literal notranslate"><span class="pre">zc</span></code>, so that a lossless line is matched
-(<code class="docutils literal notranslate"><span class="pre">S21</span> <span class="pre">=</span> <span class="pre">exp(-gamma</span> <span class="pre">length)</span></code>, <code class="docutils literal notranslate"><span class="pre">S11</span> <span class="pre">=</span> <span class="pre">0</span></code>)</p></li>
+(<code class="docutils literal notranslate"><span class="pre">S21</span> <span class="pre">=</span> <span class="pre">exp(-gamma</span> <span class="pre">length)</span></code>, <code class="docutils literal notranslate"><span class="pre">S11</span> <span class="pre">=</span> <span class="pre">0</span></code>), or <code class="docutils literal notranslate"><span class="pre">|zc|</span></code> where
+<code class="docutils literal notranslate"><span class="pre">zc</span></code> is purely reactive (e.g., a waveguide below cutoff)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1992,6 +2751,70 @@ of <code class="docutils literal notranslate"><span class="pre">zc</span></code>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="#qmix.network.Network" title="qmix.network.Network">Network</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="qmix.network.twin_slot_antenna">
+<span class="sig-prename descclassname"><span class="pre">qmix.network.</span></span><span class="sig-name descname"><span class="pre">twin_slot_antenna</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">antenna</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.network.twin_slot_antenna" title="Link to this definition"></a></dt>
+<dd><p>Twin-slot antenna with symmetric excitation (SuperMix’s
+<code class="docutils literal notranslate"><span class="pre">twin_slot_antenna</span></code>).</p>
+<p>Port 1 is the RF input; ports 2 and 3 are the out-of-phase and in-phase
+outputs of antenna 1, ports 4 and 5 those of antenna 2. The antisymmetric
+mode is terminated internally (matched), so the network is lossy.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>antenna</strong> (<a class="reference internal" href="#qmix.network.Network" title="qmix.network.Network"><em>Network</em></a>) – Response of the antenna pair: a 2-port (<code class="docutils literal notranslate"><span class="pre">S11</span></code>
+the self-, <code class="docutils literal notranslate"><span class="pre">S12</span></code> the mutual reflection, assumed reciprocal and
+symmetric) or a 1-port (no coupling between the antennas), with
+one real reference impedance at all frequencies and ports, which
+is also the reference of the result</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>5-port network</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#qmix.network.Network" title="qmix.network.Network">Network</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="qmix.network.via_inductance">
+<span class="sig-prename descclassname"><span class="pre">qmix.network.</span></span><span class="sig-name descname"><span class="pre">via_inductance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">diameter</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">height</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.network.via_inductance" title="Link to this definition"></a></dt>
+<dd><p>Inductance of a via hole to ground (Goldfarb &amp; Pucel 1991; SuperMix’s
+<code class="docutils literal notranslate"><span class="pre">L_via</span></code>).</p>
+<p><code class="docutils literal notranslate"><span class="pre">L</span> <span class="pre">=</span> <span class="pre">mu_0</span> <span class="pre">/</span> <span class="pre">(2</span> <span class="pre">pi)</span> <span class="pre">[h</span> <span class="pre">ln((h</span> <span class="pre">+</span> <span class="pre">sqrt(r^2</span> <span class="pre">+</span> <span class="pre">h^2))</span> <span class="pre">/</span> <span class="pre">r)</span> <span class="pre">+</span> <span class="pre">3</span> <span class="pre">/</span> <span class="pre">2</span> <span class="pre">(r</span> <span class="pre">-</span>
+<span class="pre">sqrt(r^2</span> <span class="pre">+</span> <span class="pre">h^2))]</span></code>, with <code class="docutils literal notranslate"><span class="pre">r</span> <span class="pre">=</span> <span class="pre">diameter</span> <span class="pre">/</span> <span class="pre">2</span></code>. The formula was fitted
+for 0.2 &lt; D / h &lt; 1.5, 100 um &lt; h &lt; 635 um and 2.2 &lt; eps_r &lt; 20; a
+warning is issued outside of the geometric ranges.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>diameter</strong> (<em>float</em>) – Diameter of the hole, in [m]</p></li>
+<li><p><strong>height</strong> (<em>float</em>) – Height of the hole (substrate thickness), in [m]</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Inductance, in [H] (e.g., for <code class="docutils literal notranslate"><span class="pre">inductor(...,</span> <span class="pre">shunt=True)</span></code>)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="qmix.network.waveguide_cutoff">
+<span class="sig-prename descclassname"><span class="pre">qmix.network.</span></span><span class="sig-name descname"><span class="pre">waveguide_cutoff</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eps_r</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.network.waveguide_cutoff" title="Link to this definition"></a></dt>
+<dd><p>Cutoff frequency of the TE10 mode of a rectangular waveguide, in [Hz].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>a</strong> (<em>float</em>) – Broad dimension, in [m]</p></li>
+<li><p><strong>eps_r</strong> (<em>float</em><em>, </em><em>optional</em>) – Relative permittivity of the filling</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -2248,18 +3071,25 @@ a list of these (one per junction) for a
 
 <dl class="py function">
 <dt class="sig sig-object py" id="qmix.qtcurrent.junction_resp">
-<span class="sig-prename descclassname"><span class="pre">qmix.qtcurrent.</span></span><span class="sig-name descname"><span class="pre">junction_resp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">resp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_j</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.qtcurrent.junction_resp" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">qmix.qtcurrent.</span></span><span class="sig-name descname"><span class="pre">junction_resp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">resp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_j</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gap_voltage</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.qtcurrent.junction_resp" title="Link to this definition"></a></dt>
 <dd><p>Response function of each junction.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>resp</strong> (<a class="reference internal" href="#qmix.respfn.RespFn" title="qmix.respfn.RespFn"><em>qmix.respfn.RespFn</em></a><em> or </em><em>list</em>) – One response function for all
-junctions, or a list with one per junction</p></li>
+junctions, or a list with one per junction (each normalized to
+the junction’s own gap voltage and normal-state resistance)</p></li>
 <li><p><strong>num_j</strong> (<em>int</em>) – Number of junctions</p></li>
+<li><p><strong>gap_voltage</strong> (<em>ndarray</em><em>, </em><em>optional</em>) – Gap voltage of each junction,
+relative to the normalizing gap voltage (e.g.,
+<code class="docutils literal notranslate"><span class="pre">cct.gap_voltage</span></code> of a <code class="docutils literal notranslate"><span class="pre">qmix.circuit.MultiJunctionCircuit</span></code>);
+the response functions of junctions with <code class="docutils literal notranslate"><span class="pre">gap_voltage</span> <span class="pre">!=</span> <span class="pre">1</span></code>
+are wrapped in <code class="docutils literal notranslate"><span class="pre">qmix.respfn.GapScaledRespFn</span></code></p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Response function of each junction</p>
+<dd class="field-even"><p>Response function of each junction (the same object for
+junctions with the same response function and gap voltage)</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>list</p>
@@ -2535,6 +3365,61 @@ array:</p>
 <p>Here, the real part is the KK transform (same as the previous
 <code class="docutils literal notranslate"><span class="pre">kk_current</span></code> results) and the imaginary part is the DC I-V curve (same as
 the previous <code class="docutils literal notranslate"><span class="pre">dc_current</span></code> results).</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="qmix.respfn.GapScaledRespFn">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">qmix.respfn.</span></span><span class="sig-name descname"><span class="pre">GapScaledRespFn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">resp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ratio</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.respfn.GapScaledRespFn" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Response function of a junction with a different gap voltage.</p>
+<p>QMix normalizes all voltages in a circuit to one gap voltage (<code class="docutils literal notranslate"><span class="pre">vgap</span></code>).
+A junction whose gap voltage is <code class="docutils literal notranslate"><span class="pre">ratio</span> <span class="pre">*</span> <span class="pre">vgap</span></code> (e.g., one junction of
+a <code class="docutils literal notranslate"><span class="pre">qmix.circuit.MultiJunctionCircuit</span></code> with <code class="docutils literal notranslate"><span class="pre">gap_voltage[j]</span> <span class="pre">=</span> <span class="pre">ratio</span></code>)
+has the response function <code class="docutils literal notranslate"><span class="pre">ratio</span> <span class="pre">*</span> <span class="pre">resp(v</span> <span class="pre">/</span> <span class="pre">ratio)</span></code> in these units,
+where <code class="docutils literal notranslate"><span class="pre">resp</span></code> is normalized to its own gap voltage and normal-state
+resistance. The current is then normalized to <code class="docutils literal notranslate"><span class="pre">vgap</span> <span class="pre">/</span> <span class="pre">Rn_j</span></code>; the
+normal-state conductance (<code class="docutils literal notranslate"><span class="pre">area</span></code>) is applied separately.</p>
+<p>Usually created by <code class="docutils literal notranslate"><span class="pre">qmix.qtcurrent.junction_resp</span></code>, not directly.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>resp</strong> (<a class="reference internal" href="#qmix.respfn.RespFn" title="qmix.respfn.RespFn"><em>qmix.respfn.RespFn</em></a>) – Response function, normalized to the
+junction’s own gap voltage and normal-state resistance</p></li>
+<li><p><strong>ratio</strong> (<em>float</em>) – Gap voltage of the junction, relative to the
+normalizing gap voltage</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="qmix.respfn.GapScaledRespFn.didc">
+<span class="sig-name descname"><span class="pre">didc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vbias</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.respfn.GapScaledRespFn.didc" title="Link to this definition"></a></dt>
+<dd><p>Derivative of the DC I-V curve (see <code class="docutils literal notranslate"><span class="pre">RespFn.didc</span></code>).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qmix.respfn.GapScaledRespFn.dikk">
+<span class="sig-name descname"><span class="pre">dikk</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vbias</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.respfn.GapScaledRespFn.dikk" title="Link to this definition"></a></dt>
+<dd><p>Derivative of the KK transform (see <code class="docutils literal notranslate"><span class="pre">RespFn.dikk</span></code>).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qmix.respfn.GapScaledRespFn.idc">
+<span class="sig-name descname"><span class="pre">idc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vbias</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.respfn.GapScaledRespFn.idc" title="Link to this definition"></a></dt>
+<dd><p>DC I-V curve (see <code class="docutils literal notranslate"><span class="pre">RespFn.idc</span></code>).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qmix.respfn.GapScaledRespFn.ikk">
+<span class="sig-name descname"><span class="pre">ikk</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vbias</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.respfn.GapScaledRespFn.ikk" title="Link to this definition"></a></dt>
+<dd><p>KK transform of the DC I-V curve (see <code class="docutils literal notranslate"><span class="pre">RespFn.ikk</span></code>).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qmix.respfn.GapScaledRespFn.resp">
+<span class="sig-name descname"><span class="pre">resp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vbias</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.respfn.GapScaledRespFn.resp" title="Link to this definition"></a></dt>
+<dd><p>Call self as a function.</p>
+</dd></dl>
+
+</dd></dl>
+
 <dl class="py class">
 <dt class="sig sig-object py" id="qmix.respfn.RespFn">
 <span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">qmix.respfn.</span></span><span class="sig-name descname"><span class="pre">RespFn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">voltage</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">params</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qmix.respfn.RespFn" title="Link to this definition"></a></dt>
@@ -3123,7 +4008,10 @@ LO harmonic p and bias voltage <code class="docutils literal notranslate"><span 
 <li><p><strong>cct</strong> (<a class="reference internal" href="#qmix.circuit.EmbeddingCircuit" title="qmix.circuit.EmbeddingCircuit"><em>qmix.circuit.EmbeddingCircuit</em></a>) – Embedding circuit with one tone
 (the LO); its harmonics are included in the LO state</p></li>
 <li><p><strong>resp</strong> (<a class="reference internal" href="#qmix.respfn.RespFn" title="qmix.respfn.RespFn"><em>qmix.respfn.RespFn</em></a>) – Response function</p></li>
-<li><p><strong>f_if</strong> (<em>float</em>) – IF frequency (normalized), with <code class="docutils literal notranslate"><span class="pre">0</span> <span class="pre">&lt;</span> <span class="pre">f_if</span> <span class="pre">&lt;</span> <span class="pre">f_lo</span></code></p></li>
+<li><p><strong>f_if</strong> (<em>float</em>) – IF frequency (normalized), with <code class="docutils literal notranslate"><span class="pre">0</span> <span class="pre">&lt;=</span> <span class="pre">f_if</span> <span class="pre">&lt;</span> <span class="pre">f_lo</span></code>;
+<code class="docutils literal notranslate"><span class="pre">f_if</span> <span class="pre">=</span> <span class="pre">0</span></code> gives the limit of a low IF (sidebands m and -m
+are then still treated as separate signals) and needs the
+derivatives of the response function</p></li>
 <li><p><strong>num_sb</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of sidebands on each side of the IF,
 default is <code class="docutils literal notranslate"><span class="pre">cct.num_p</span></code></p></li>
 <li><p><strong>num_b</strong> (<em>int</em><em>, </em><em>optional</em>) – Summation limit for the phase factor
@@ -3337,7 +4225,7 @@ Equivalent to SuperMix’s <code class="docutils literal notranslate"><span clas
 <code class="docutils literal notranslate"><span class="pre">admittance_matrix</span></code></p></li>
 <li><p><strong>cct</strong> (<a class="reference internal" href="#qmix.circuit.EmbeddingCircuit" title="qmix.circuit.EmbeddingCircuit"><em>qmix.circuit.EmbeddingCircuit</em></a>) – Embedding circuit with one tone</p></li>
 <li><p><strong>resp</strong> (<a class="reference internal" href="#qmix.respfn.RespFn" title="qmix.respfn.RespFn"><em>qmix.respfn.RespFn</em></a>) – Response function</p></li>
-<li><p><strong>f_if</strong> (<em>float</em>) – IF frequency (normalized), with <code class="docutils literal notranslate"><span class="pre">0</span> <span class="pre">&lt;</span> <span class="pre">f_if</span> <span class="pre">&lt;</span> <span class="pre">f_lo</span></code></p></li>
+<li><p><strong>f_if</strong> (<em>float</em>) – IF frequency (normalized), with <code class="docutils literal notranslate"><span class="pre">0</span> <span class="pre">&lt;=</span> <span class="pre">f_if</span> <span class="pre">&lt;</span> <span class="pre">f_lo</span></code></p></li>
 <li><p><strong>temp</strong> (<em>float</em>) – Physical temperature of the junction, in [K]</p></li>
 <li><p><strong>vgap</strong> (<em>float</em><em>, </em><em>optional</em>) – Gap voltage, in [V], default is <code class="docutils literal notranslate"><span class="pre">cct.vgap</span></code></p></li>
 <li><p><strong>num_sb</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of sidebands on each side of the IF,

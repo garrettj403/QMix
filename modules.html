@@ -148,6 +148,7 @@
 <li class="toctree-l4"><a class="reference internal" href="qmix.html#qmix.circuit.MultiJunctionCircuit.vt"><code class="docutils literal notranslate"><span class="pre">MultiJunctionCircuit.vt</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="qmix.html#qmix.circuit.MultiJunctionCircuit.zt"><code class="docutils literal notranslate"><span class="pre">MultiJunctionCircuit.zt</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="qmix.html#qmix.circuit.MultiJunctionCircuit.area"><code class="docutils literal notranslate"><span class="pre">MultiJunctionCircuit.area</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qmix.html#qmix.circuit.MultiJunctionCircuit.gap_voltage"><code class="docutils literal notranslate"><span class="pre">MultiJunctionCircuit.gap_voltage</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="qmix.html#qmix.circuit.MultiJunctionCircuit.dc_rhs"><code class="docutils literal notranslate"><span class="pre">MultiJunctionCircuit.dc_rhs</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="qmix.html#qmix.circuit.MultiJunctionCircuit.num_j"><code class="docutils literal notranslate"><span class="pre">MultiJunctionCircuit.num_j</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="qmix.html#qmix.circuit.MultiJunctionCircuit.num_f"><code class="docutils literal notranslate"><span class="pre">MultiJunctionCircuit.num_f</span></code></a></li>
@@ -159,6 +160,7 @@
 <li class="toctree-l4"><a class="reference internal" href="qmix.html#qmix.circuit.MultiJunctionCircuit.initialize_vj"><code class="docutils literal notranslate"><span class="pre">MultiJunctionCircuit.initialize_vj()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="qmix.html#qmix.circuit.MultiJunctionCircuit.junction"><code class="docutils literal notranslate"><span class="pre">MultiJunctionCircuit.junction()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="qmix.html#qmix.circuit.MultiJunctionCircuit.set_dc_network"><code class="docutils literal notranslate"><span class="pre">MultiJunctionCircuit.set_dc_network()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qmix.html#qmix.circuit.MultiJunctionCircuit.set_junction"><code class="docutils literal notranslate"><span class="pre">MultiJunctionCircuit.set_junction()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="qmix.html#qmix.circuit.MultiJunctionCircuit.set_series_bias"><code class="docutils literal notranslate"><span class="pre">MultiJunctionCircuit.set_series_bias()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="qmix.html#qmix.circuit.MultiJunctionCircuit.vb"><code class="docutils literal notranslate"><span class="pre">MultiJunctionCircuit.vb</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="qmix.html#qmix.circuit.MultiJunctionCircuit.vb_npts"><code class="docutils literal notranslate"><span class="pre">MultiJunctionCircuit.vb_npts</span></code></a></li>
@@ -185,15 +187,42 @@
 <li class="toctree-l4"><a class="reference internal" href="qmix.html#qmix.network.Network.terminate"><code class="docutils literal notranslate"><span class="pre">Network.terminate()</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="qmix.html#qmix.network.attenuator"><code class="docutils literal notranslate"><span class="pre">attenuator()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qmix.html#qmix.network.capacitor"><code class="docutils literal notranslate"><span class="pre">capacitor()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qmix.html#qmix.network.circulator"><code class="docutils literal notranslate"><span class="pre">circulator()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qmix.html#qmix.network.cpw"><code class="docutils literal notranslate"><span class="pre">cpw()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qmix.html#qmix.network.cpw_line"><code class="docutils literal notranslate"><span class="pre">cpw_line()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qmix.html#qmix.network.deembed"><code class="docutils literal notranslate"><span class="pre">deembed()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="qmix.html#qmix.network.embedding_impedance"><code class="docutils literal notranslate"><span class="pre">embedding_impedance()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qmix.html#qmix.network.hybrid180"><code class="docutils literal notranslate"><span class="pre">hybrid180()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qmix.html#qmix.network.hybrid90"><code class="docutils literal notranslate"><span class="pre">hybrid90()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qmix.html#qmix.network.ideal_line"><code class="docutils literal notranslate"><span class="pre">ideal_line()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="qmix.html#qmix.network.impedance_matrix"><code class="docutils literal notranslate"><span class="pre">impedance_matrix()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qmix.html#qmix.network.inductor"><code class="docutils literal notranslate"><span class="pre">inductor()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qmix.html#qmix.network.load"><code class="docutils literal notranslate"><span class="pre">load()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="qmix.html#qmix.network.microstrip"><code class="docutils literal notranslate"><span class="pre">microstrip()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="qmix.html#qmix.network.microstrip_line"><code class="docutils literal notranslate"><span class="pre">microstrip_line()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qmix.html#qmix.network.parallel_rlc"><code class="docutils literal notranslate"><span class="pre">parallel_rlc()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qmix.html#qmix.network.power_divider"><code class="docutils literal notranslate"><span class="pre">power_divider()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qmix.html#qmix.network.radial_stub"><code class="docutils literal notranslate"><span class="pre">radial_stub()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="qmix.html#qmix.network.read_touchstone"><code class="docutils literal notranslate"><span class="pre">read_touchstone()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qmix.html#qmix.network.rectangular_waveguide"><code class="docutils literal notranslate"><span class="pre">rectangular_waveguide()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qmix.html#qmix.network.rectangular_waveguide_line"><code class="docutils literal notranslate"><span class="pre">rectangular_waveguide_line()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qmix.html#qmix.network.resistor"><code class="docutils literal notranslate"><span class="pre">resistor()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qmix.html#qmix.network.series_impedance"><code class="docutils literal notranslate"><span class="pre">series_impedance()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qmix.html#qmix.network.series_rlc"><code class="docutils literal notranslate"><span class="pre">series_rlc()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qmix.html#qmix.network.series_tee"><code class="docutils literal notranslate"><span class="pre">series_tee()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="qmix.html#qmix.network.set_thevenin"><code class="docutils literal notranslate"><span class="pre">set_thevenin()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qmix.html#qmix.network.shunt_impedance"><code class="docutils literal notranslate"><span class="pre">shunt_impedance()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qmix.html#qmix.network.slot_antenna"><code class="docutils literal notranslate"><span class="pre">slot_antenna()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="qmix.html#qmix.network.tee"><code class="docutils literal notranslate"><span class="pre">tee()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="qmix.html#qmix.network.thevenin"><code class="docutils literal notranslate"><span class="pre">thevenin()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qmix.html#qmix.network.time_delay"><code class="docutils literal notranslate"><span class="pre">time_delay()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qmix.html#qmix.network.transformer"><code class="docutils literal notranslate"><span class="pre">transformer()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="qmix.html#qmix.network.transmission_line"><code class="docutils literal notranslate"><span class="pre">transmission_line()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qmix.html#qmix.network.twin_slot_antenna"><code class="docutils literal notranslate"><span class="pre">twin_slot_antenna()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qmix.html#qmix.network.via_inductance"><code class="docutils literal notranslate"><span class="pre">via_inductance()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qmix.html#qmix.network.waveguide_cutoff"><code class="docutils literal notranslate"><span class="pre">waveguide_cutoff()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="qmix.html#module-qmix.qtcurrent">2.6. qmix.qtcurrent module</a><ul>
@@ -218,6 +247,14 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="qmix.html#module-qmix.respfn">2.7. qmix.respfn module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="qmix.html#qmix.respfn.GapScaledRespFn"><code class="docutils literal notranslate"><span class="pre">GapScaledRespFn</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qmix.html#qmix.respfn.GapScaledRespFn.didc"><code class="docutils literal notranslate"><span class="pre">GapScaledRespFn.didc()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qmix.html#qmix.respfn.GapScaledRespFn.dikk"><code class="docutils literal notranslate"><span class="pre">GapScaledRespFn.dikk()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qmix.html#qmix.respfn.GapScaledRespFn.idc"><code class="docutils literal notranslate"><span class="pre">GapScaledRespFn.idc()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qmix.html#qmix.respfn.GapScaledRespFn.ikk"><code class="docutils literal notranslate"><span class="pre">GapScaledRespFn.ikk()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qmix.html#qmix.respfn.GapScaledRespFn.resp"><code class="docutils literal notranslate"><span class="pre">GapScaledRespFn.resp()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="qmix.html#qmix.respfn.RespFn"><code class="docutils literal notranslate"><span class="pre">RespFn</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="qmix.html#qmix.respfn.RespFn.voltage"><code class="docutils literal notranslate"><span class="pre">RespFn.voltage</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="qmix.html#qmix.respfn.RespFn.current"><code class="docutils literal notranslate"><span class="pre">RespFn.current</span></code></a></li>
