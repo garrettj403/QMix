@@ -41,6 +41,25 @@ Capabilities
 
 Many of these results are checked against [SuperMix](http://www.submm.caltech.edu/supermix/), an independent C++ library for SIS mixers.
 
+Limitations
+-----------
+
+**Physics**
+- Only the quasiparticle tunneling current is simulated: there is no Josephson (pair) current, so no Shapiro steps, Josephson noise or magnetic field.
+- The response function comes from one DC I-V curve, so heating and changes of the gap with LO power or temperature are not included.
+- Noise is only calculated by the small-signal analysis, which assumes a single LO (with harmonics) and weak signals. Multi-tone simulations give currents and gain, but not noise (e.g., under saturation or with a strong second tone).
+- Harmonic balance finds one solution per bias point, so hysteresis in series arrays (e.g., up/down bias sweeps) cannot be followed.
+
+**Embedding circuits**
+- The thermal noise of a lossy network is calculated at one temperature; elements don't have their own temperatures.
+- There are no active devices (e.g., IF amplifiers): the IF chain is described by its noise temperature only.
+- The coplanar waveguide model is lossless (no conductor loss or kinetic inductance), and there is no stripline model.
+
+**Numerics**
+- The cost of the tunneling current grows quickly with the number of tones and with strong pumping of low-frequency tones (many Bessel terms). The Fourier-shift method helps, but it is less accurate (~1e-7 to 1e-9).
+- Frequencies are matched after rounding, so tones closer than ~1e-4 of the gap frequency are treated as the same frequency.
+- Harmonic balance can converge slowly for very strong pumping, sharp gap knees and series arrays.
+
 Getting Started
 ---------------
 
