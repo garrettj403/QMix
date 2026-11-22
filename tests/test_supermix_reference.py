@@ -18,6 +18,7 @@ from types import SimpleNamespace
 
 import numpy as np
 import pytest
+from scipy.interpolate import CubicSpline
 
 from qmix.circuit import EmbeddingCircuit
 from qmix.harmonic_balance import harmonic_balance
@@ -52,6 +53,30 @@ class TableResp(object):
         return r.real + 1j * np.sign(vbias) * r.imag
 
     resp = __call__
+
+    # Derivatives (for the small-signal analysis at f_if = 0): SuperMix's
+    # cubic splines through the table, natural for Idc (odd, so Idc'' = 0 at
+    # v = 0) and with zero slope at v = 0 for Ikk (even). The right end
+    # conditions don't matter far from the end of the table.
+
+    @property
+    def _f_didc(self):
+        if not hasattr(self, '_splines'):
+            v = np.arange(len(self.table)) * self.step
+            self._splines = (CubicSpline(v, self.table.imag, bc_type='natural'),
+                             CubicSpline(v, self.table.real, bc_type=((1, 0.), (2, 0.))))
+        return self._splines[0]
+
+    @property
+    def _f_dikk(self):
+        self._f_didc
+        return self._splines[1]
+
+    def didc(self, vbias):
+        return self._f_didc(np.abs(vbias), 1)
+
+    def dikk(self, vbias):
+        return np.sign(vbias) * self._f_dikk(np.abs(vbias), 1)
 
 
 RESP = TableResp(float(DATA['v_step']), DATA['resp_table'])
@@ -192,7 +217,9 @@ YMATRIX_CASES = [str(name) for name in DATA['names'] if name.startswith('ymatrix
 @pytest.mark.parametrize('case', YMATRIX_CASES)
 def test_admittance_matrix(case):
     """Small-signal admittance matrix (Tucker theory) at SuperMix's LO state
-    (LO with 1-3 harmonics) vs SuperMix's sis_basic_device::small_signal."""
+    (LO with 1-3 harmonics) vs SuperMix's sis_basic_device::small_signal,
+    also at f_if = 0 (where the IF column needs the derivatives of the
+    response function)."""
 
     from qmix.small_signal import admittance_matrix
 

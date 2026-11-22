@@ -100,7 +100,10 @@ def admittance_matrix(vj, cct, resp, f_if, num_sb=None, num_b=15):
         cct (qmix.circuit.EmbeddingCircuit): Embedding circuit with one tone
             (the LO); its harmonics are included in the LO state
         resp (qmix.respfn.RespFn): Response function
-        f_if (float): IF frequency (normalized), with ``0 < f_if < f_lo``
+        f_if (float): IF frequency (normalized), with ``0 <= f_if < f_lo``;
+            ``f_if = 0`` gives the limit of a low IF (sidebands m and -m
+            are then still treated as separate signals) and needs the
+            derivatives of the response function
         num_sb (int, optional): Number of sidebands on each side of the IF,
             default is ``cct.num_p``
         num_b (int, optional): Summation limit for the phase factor
@@ -116,13 +119,13 @@ def admittance_matrix(vj, cct, resp, f_if, num_sb=None, num_b=15):
     """
 
     if _is_multi(cct):
-        resp_list = junction_resp(resp, cct.num_j)
+        resp_list = junction_resp(resp, cct.num_j, cct.gap_voltage)
         return np.array([cct.area[j] * admittance_matrix(vj[j], cct.junction(j), resp_list[j], f_if, num_sb, num_b)
                          for j in range(cct.num_j)])
 
     assert cct.num_f == 1, "The LO state must be a single tone (cct.num_f == 1)"
     f_lo = cct.freq[1]
-    assert 0 < f_if < f_lo, "The IF frequency must be between 0 and the LO frequency"
+    assert 0 <= f_if < f_lo, "The IF frequency must be between 0 and the LO frequency"
     if num_sb is None:
         num_sb = cct.num_p
     num_b = int(num_b)
@@ -155,9 +158,32 @@ def admittance_matrix(vj, cct, resp, f_if, num_sb=None, num_b=15):
             pair = c_k[k + num_b] * np.conj(c_k[k + d + num_b])
             term = (t_0[k + x_max] - t_m[k - n + x_max] +
                     np.conj(t_p[k + m + x_max]) - np.conj(t_0[k + m - n + x_max]))
+            if n == 0 and f_if == 0:
+                continue  # limit f_if -> 0, below
             y[m + num_sb, n + num_sb] = np.sum(pair * term, axis=0) / (2 * (n * f_lo + f_if))
 
+    # f_if = 0: in column n = 0, the bracket and the denominator 2 f_if both
+    # vanish. The limit is the derivative of the bracket with respect to f_if:
+    # Y[m, 0] = sum_k C_k C*_{k+m} [T'(k) + T'*(k+m)] / 2
+    if f_if == 0:
+        dt_0 = _resp_derivative(resp, voltage)
+        for m in range(-num_sb, num_sb + 1):
+            k = np.arange(max(-num_b, -num_b - m), min(num_b, num_b - m) + 1)
+            pair = c_k[k + num_b] * np.conj(c_k[k + m + num_b])
+            term = dt_0[k + x_max] + np.conj(dt_0[k + m + x_max])
+            y[m + num_sb, num_sb] = np.sum(pair * term, axis=0) / 2
+
     return y
+
+
+def _resp_derivative(resp, voltage):
+    """T'(v) = d/dv [-j * resp(v)] = Idc'(v) - j Ikk'(v)."""
+
+    if getattr(resp, '_f_didc', None) is None or getattr(resp, '_f_dikk', None) is None:
+        raise ValueError("f_if = 0 needs the derivatives of the response function, which this one doesn't have "
+                         "(e.g., RespFnPerfect without smearing)")
+
+    return resp.didc(voltage) - 1j * resp.dikk(voltage)
 
 
 def noise_matrix(vj, cct, resp, f_if, temp, vgap=None, num_sb=None, num_b=15):
@@ -176,7 +202,7 @@ def noise_matrix(vj, cct, resp, f_if, temp, vgap=None, num_sb=None, num_b=15):
             ``admittance_matrix``
         cct (qmix.circuit.EmbeddingCircuit): Embedding circuit with one tone
         resp (qmix.respfn.RespFn): Response function
-        f_if (float): IF frequency (normalized), with ``0 < f_if < f_lo``
+        f_if (float): IF frequency (normalized), with ``0 <= f_if < f_lo``
         temp (float): Physical temperature of the junction, in [K]
         vgap (float, optional): Gap voltage, in [V], default is ``cct.vgap``
         num_sb (int, optional): Number of sidebands on each side of the IF,
@@ -194,14 +220,14 @@ def noise_matrix(vj, cct, resp, f_if, temp, vgap=None, num_sb=None, num_b=15):
     """
 
     if _is_multi(cct):
-        resp_list = junction_resp(resp, cct.num_j)
+        resp_list = junction_resp(resp, cct.num_j, cct.gap_voltage)
         return np.array([cct.area[j] * noise_matrix(vj[j], cct.junction(j), resp_list[j], f_if, temp, vgap, num_sb,
                                                     num_b)
                          for j in range(cct.num_j)])
 
     assert cct.num_f == 1, "The LO state must be a single tone (cct.num_f == 1)"
     f_lo = cct.freq[1]
-    assert 0 < f_if < f_lo, "The IF frequency must be between 0 and the LO frequency"
+    assert 0 <= f_if < f_lo, "The IF frequency must be between 0 and the LO frequency"
     if vgap is None:
         vgap = cct.vgap
     assert vgap is not None, "The gap voltage is needed (vgap argument or cct.vgap)"

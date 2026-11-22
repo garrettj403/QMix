@@ -609,15 +609,23 @@ class MultiJunctionCircuit(object):
         junction. The tone and harmonic axes are 1-indexed as in
         ``EmbeddingCircuit``.
 
-        All values are normalized, with one gap voltage and normal-state
-        resistance for all junctions (the junctions are assumed to be made
-        of the same materials). Junctions can have different areas
-        (``area``, relative to the junction that defines ``rn``): the
-        tunneling current of junction ``j`` is ``area[j]`` times the
-        current from its response function, i.e., its normal resistance is
-        ``rn / area[j]``. The response function can also be different for
-        each junction (pass a list to ``harmonic_balance`` or
-        ``qmix.qtcurrent.qtcurrent``).
+        All values are normalized to one gap voltage and normal-state
+        resistance (``vgap`` and ``rn``). The junctions can be different:
+
+        - ``area[j]``: normal-state conductance relative to ``1 / rn``
+          (the relative area, for junctions with the same R_n A), i.e., the
+          normal resistance of junction ``j`` is ``rn / area[j]``. It scales
+          the tunneling current.
+        - ``gap_voltage[j]``: gap voltage relative to ``vgap`` (default 1).
+          The response function of junction ``j`` (normalized to its own
+          gap voltage) is evaluated at ``v / gap_voltage[j]`` and scaled
+          by ``gap_voltage[j]`` (``qmix.respfn.GapScaledRespFn``).
+        - The response function (the shape of the I-V curve): pass a list
+          to ``harmonic_balance``, ``qmix.qtcurrent.qtcurrent``, etc.
+
+        ``set_junction`` sets ``area`` and ``gap_voltage`` from the
+        physical values (as in SuperMix, where each junction has its own
+        gap voltage, normal resistance and I-V curve).
 
         By default, each junction is voltage biased: its DC voltage is set
         by ``vb[j]``, and all junctions get the same bias sweep (a 1-D array
@@ -670,8 +678,11 @@ class MultiJunctionCircuit(object):
             (normalized to the gap voltage).
         zt (numpy.ndarray): Thevenin impedance matrices, ``zt[j, l, f, p]``
             (normalized to the normal-state resistance).
-        area (numpy.ndarray): Relative area of each junction (scales its
-            tunneling current), default is 1.
+        area (numpy.ndarray): Normal-state conductance of each junction
+            relative to ``1 / rn`` (relative area; scales its tunneling
+            current), default is 1.
+        gap_voltage (numpy.ndarray): Gap voltage of each junction relative
+            to ``vgap``, default is 1.
         dc_a, dc_b (numpy.ndarray): DC bias network (``num_j`` x ``num_j``),
             or None (voltage bias, the default)
         dc_rhs (numpy.ndarray): Right-hand side of the DC bias network,
@@ -704,6 +715,7 @@ class MultiJunctionCircuit(object):
         self.vt = np.zeros((num_j, num_f + 1, num_p + 1), dtype=complex)
         self.zt = np.zeros((num_j, num_j, num_f + 1, num_p + 1), dtype=complex)
         self.area = np.ones(num_j, dtype=float)
+        self.gap_voltage = np.ones(num_j, dtype=float)
         self.vb = single.vb
         self.dc_a = None
         self.dc_b = None
@@ -864,6 +876,33 @@ class MultiJunctionCircuit(object):
         """Remove the DC bias network (back to voltage bias at ``vb``)."""
         self.dc_a, self.dc_b, self.dc_rhs = None, None, None
 
+    def set_junction(self, j, vgap=None, rn=None):
+        """Set the gap voltage and normal-state resistance of junction ``j``.
+
+        Sets ``gap_voltage[j] = vgap / self.vgap`` and ``area[j] = self.rn /
+        rn``, so the circuit's ``vgap`` and ``rn`` must be set. The response
+        function of the junction should be normalized to its own gap voltage
+        and normal-state resistance (e.g., ``qmix.respfn.RespFnFromIVData``
+        with its own ``vgap`` and ``rn``).
+
+        Args:
+            j (int): Junction (starting from 0)
+            vgap (float, optional): Gap voltage of the junction, in [V]
+            rn (float, optional): Normal-state resistance of the junction,
+                in [ohms]
+
+        """
+
+        assert 0 <= j < self.num_j, "Invalid junction: {} (junctions are numbered 0 ... {})".format(j, self.num_j - 1)
+        if vgap is not None:
+            assert self.vgap is not None, "The circuit's gap voltage (vgap) must be set"
+            assert vgap > 0, "The gap voltage must be positive"
+            self.gap_voltage[j] = vgap / self.vgap
+        if rn is not None:
+            assert self.rn is not None, "The circuit's normal-state resistance (rn) must be set"
+            assert rn > 0, "The normal-state resistance must be positive"
+            self.area[j] = self.rn / rn
+
     def junction(self, j):
         """Single-junction view of junction ``j`` (starting from 0).
 
@@ -872,7 +911,10 @@ class MultiJunctionCircuit(object):
         ``qmix.qtcurrent.qtcurrent`` with ``vj[j]``). Its ``vt`` and ``zt``
         are ``vt[j]`` and ``zt[j, j]``. These are only the Thevenin
         equivalent circuit of the junction if it isn't coupled to the other
-        junctions.
+        junctions. Like all values of the circuit, it is normalized to
+        ``vgap`` and ``rn``: ``area[j]`` and ``gap_voltage[j]`` are not
+        included (``qmix.qtcurrent.junction_resp`` gives the response
+        function of the junction in these units).
 
         Args:
             j (int): Junction (starting from 0)

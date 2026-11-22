@@ -490,3 +490,92 @@ def test_series_verbose_and_inputs(capsys):
     cct.dc_rhs = cct.dc_rhs[:, :-1]
     with pytest.raises(AssertionError):
         harmonic_balance(cct, RESP_LEAK, 15, verbose=False)
+
+
+# Junctions with different gap voltages -----------------------------------------
+
+def _own_units(cct, j, r):
+    """Junction j of cct (uncoupled) as a single-junction circuit normalized
+    to its own gap voltage (r * vgap) and normal resistance (rn / area)."""
+
+    own = qmix.circuit.EmbeddingCircuit(cct.num_f, cct.num_p, vb_npts=cct.vb_npts)
+    own.vb = cct.vb[j] / r
+    own.freq[:] = cct.freq / r
+    own.vt[:] = cct.vt[j] / r
+    own.zt[:] = cct.zt[j, j] * cct.area[j]
+    return own
+
+
+@pytest.mark.parametrize('method', ['direct', 'fourier'])
+def test_gap_voltage(method):
+    """A junction with gap voltage r * vgap is the same junction normalized to
+    its own gap voltage: voltages and frequencies scale with 1 / r, and the
+    current (normalized to vgap / rn) is area * r times its own."""
+
+    r = 1.15
+    cct = qmix.circuit.MultiJunctionCircuit(2, 1, 1, vb_min=0.1, vb_max=1.9, vb_npts=37)
+    cct.freq[1] = 0.3
+    cct.vt[:, 1, 1] = 0.45, 0.35
+    cct.zt[0, 0, 1] = 0.3 - 0.3j
+    cct.zt[1, 1, 1] = 0.5 + 0.2j
+    cct.area[1] = 1.3
+    cct.gap_voltage[1] = r
+    kw = dict(num_b=15, stop_rerror=1e-9, method=method, verbose=False)
+    vj = harmonic_balance(cct, RESP_LEAK, **kw)
+
+    own = _own_units(cct, 1, r)
+    vj_own = harmonic_balance(own, RESP_LEAK, **kw)
+    np.testing.assert_allclose(vj[1], r * vj_own, rtol=0, atol=1e-8)
+    vj_0 = harmonic_balance(_own_units(cct, 0, 1.), RESP_LEAK, **kw)
+    np.testing.assert_allclose(vj[0], vj_0, rtol=0, atol=1e-8)  # junction 0 unchanged
+
+    # Currents
+    ij = qtcurrent(vj, cct, RESP_LEAK, [0, 0.3], 15, method=method, verbose=False)
+    ij_own = qtcurrent(vj_own, own, RESP_LEAK, [0, 0.3 / r], 15, method=method, verbose=False)
+    np.testing.assert_allclose(ij[1], cct.area[1] * r * ij_own, rtol=0, atol=1e-8)
+    check_hb_error(vj, cct, RESP_LEAK, 15, stop_rerror=1e-6)
+
+
+def test_gap_voltage_series():
+    """Two junctions with different gap voltages and normal resistances in
+    series (set from physical values), unpumped: equal DC currents."""
+
+    from scipy.optimize import brentq
+
+    idc = RESP_LEAK.idc
+    cct = qmix.circuit.MultiJunctionCircuit(2, 1, 1, vb_npts=NPTS_DC, vgap=2.8e-3, rn=14.)
+    cct.freq[1] = 0.33
+    cct.zt[0, 0, 1, 1] = cct.zt[1, 1, 1, 1] = 0.3
+    cct.set_junction(1, vgap=3.08e-3, rn=10.)
+    np.testing.assert_allclose([cct.gap_voltage[1], cct.area[1]], [1.1, 1.4], rtol=1e-14)
+    cct.set_series_bias(VBIAS_DC)
+    _, vb, _, converged = harmonic_balance(cct, RESP_LEAK, 15, stop_rerror=1e-9, verbose=False, mode='x')
+    assert converged
+
+    def i1(v):
+        return 1.4 * 1.1 * idc(v / 1.1)
+    ref = [brentq(lambda v: idc(v) - i1(vt - v), 0, vt, xtol=1e-14) for vt in VBIAS_DC]
+    np.testing.assert_allclose(vb[0], ref, rtol=0, atol=1e-8)
+    np.testing.assert_allclose(vb.sum(axis=0), VBIAS_DC, rtol=0, atol=1e-12)
+
+    with pytest.raises(AssertionError):
+        qmix.circuit.MultiJunctionCircuit(2).set_junction(0, vgap=3e-3)  # circuit vgap not set
+
+
+def test_junction_resp():
+    """junction_resp wraps only junctions with gap_voltage != 1, and shares
+    the wrapper between junctions with the same response function and gap."""
+
+    from qmix.qtcurrent import junction_resp
+    from qmix.respfn import GapScaledRespFn
+
+    out = junction_resp(RESP, 4, [1., 1.2, 1.2, 0.9])
+    assert out[0] is RESP
+    assert isinstance(out[1], GapScaledRespFn) and out[1] is out[2] and out[3] is not out[1]
+    v = np.linspace(-3, 3, 31)
+    np.testing.assert_allclose(out[1](v), 1.2 * RESP(v / 1.2), rtol=0, atol=1e-15)
+    np.testing.assert_allclose(out[1].idc(v), out[1](v).imag, rtol=0, atol=1e-15)
+    np.testing.assert_allclose(out[1].ikk(v), out[1](v).real, rtol=0, atol=1e-15)
+    np.testing.assert_allclose(out[1].didc(v), RESP.didc(v / 1.2), rtol=0, atol=1e-15)
+    assert out[1].v_max == 1.2 * RESP.v_max
+    assert junction_resp([RESP, RESP], 2) == [RESP, RESP]

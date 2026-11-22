@@ -735,6 +735,7 @@ def _single_tone_guess(cct, resp, f, num_b, max_it, stop_rerror, damp_coeff, zj_
         cct_1 = MultiJunctionCircuit(cct.num_j, 1, cct.num_p, vb_npts=cct.vb_npts)
         cct_1.vb = cct.vb.copy()
         cct_1.area = cct.area.copy()
+        cct_1.gap_voltage = cct.gap_voltage.copy()
         cct_1.freq[1] = cct.freq[f]
         cct_1.vt[:, 1] = cct.vt[:, f]
         cct_1.zt[:, :, 1] = cct.zt[:, :, f]
@@ -806,7 +807,7 @@ class _MultiJunctionSystem(object):
         self.num_j, self.num_n, self.npts = cct.num_j, cct.num_n, cct.vb_npts
         self.num_b = num_b
         self.ccts = [cct.junction(j) for j in range(self.num_j)]
-        self.resp = junction_resp(resp, self.num_j)
+        self.resp = junction_resp(resp, self.num_j, cct.gap_voltage)
         self.resp_matrix = resp_matrix
         self.area = cct.area.copy()
         self.vt_2d = cct.vt[:, 1:, 1:].reshape(self.num_j * self.num_n)
@@ -917,7 +918,7 @@ class _DCBiasSystem(object):
         self.nb_list = _unpack_num_b(num_b, cct.num_f)
         self.freq = cct.freq.copy()
         self.ccts = [cct.junction(j) for j in range(self.num_j)]
-        self.resp = junction_resp(resp, self.num_j)
+        self.resp = junction_resp(resp, self.num_j, cct.gap_voltage)
         self.area = cct.area.copy()
         self.dc_a, self.dc_b, self.dc_rhs = cct.dc_a, cct.dc_b, cct.dc_rhs
         self.vt_2d = cct.vt[:, 1:, 1:].reshape(self.num_k)

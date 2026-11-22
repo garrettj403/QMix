@@ -66,12 +66,47 @@ def test_input_checks():
 
     cct, vj = _lo_state()
     with pytest.raises(AssertionError):
-        admittance_matrix(vj, cct, RESP, 0.)  # f_if must be > 0
+        admittance_matrix(vj, cct, RESP, -0.01)  # f_if must be >= 0
     with pytest.raises(AssertionError):
         admittance_matrix(vj, cct, RESP, 0.4)  # f_if must be < f_lo
     cct2 = EmbeddingCircuit(2, 1)
     with pytest.raises(AssertionError):
         admittance_matrix(cct2.initialize_vj(), cct2, RESP, F_IF)  # LO must be a single tone
+
+
+def test_zero_if():
+    """f_if = 0 is the limit of a low IF: linear extrapolation from small IFs
+    (the error is second order in f_if), with the symmetry Y[-m, -n] =
+    conj(Y[m, n]) of the sidebands, which become pairwise degenerate. Also
+    checked against SuperMix in tests/test_supermix_reference.py."""
+
+    from qmix.small_signal import noise_matrix
+
+    cct, vj = _lo_state(num_p=2, zt=[0.3 - 0.3j, 0.1])
+    y0 = admittance_matrix(vj, cct, RESP, 0., num_b=20)
+    eps = 1e-5
+    y_lim = 2 * admittance_matrix(vj, cct, RESP, eps, num_b=20) - admittance_matrix(vj, cct, RESP, 2 * eps, num_b=20)
+    np.testing.assert_allclose(y0, y_lim, rtol=0, atol=1e-6 * np.abs(y0).max())
+    np.testing.assert_allclose(y0[::-1, ::-1], np.conj(y0), rtol=0, atol=1e-14 * np.abs(y0).max())
+
+    # The IF element is the slope of the pumped dc I-V curve (sidebands shorted)
+    dv = 1e-6
+    idc = []
+    for shift in (dv, -dv):
+        cct_shift = EmbeddingCircuit(1, 2, vb_min=VBIAS[0] + shift, vb_max=VBIAS[-1] + shift, vb_npts=len(VBIAS))
+        cct_shift.freq[1] = F_LO
+        idc.append(qtcurrent(vj, cct_shift, RESP, 0., num_b=20, verbose=False).real)
+    np.testing.assert_allclose(y0[2, 2], (idc[0] - idc[1]) / (2 * dv), rtol=0, atol=1e-5)
+
+    # The noise matrix is continuous at f_if = 0
+    h0 = noise_matrix(vj, cct, RESP, 0., 4.2, vgap=VGAP, num_b=20)
+    h_lim = 2 * noise_matrix(vj, cct, RESP, eps, 4.2, vgap=VGAP, num_b=20) - \
+        noise_matrix(vj, cct, RESP, 2 * eps, 4.2, vgap=VGAP, num_b=20)
+    np.testing.assert_allclose(h0, h_lim, rtol=0, atol=1e-6 * np.abs(h0).max())
+
+    # Needs the derivatives of the response function
+    with pytest.raises(ValueError):
+        admittance_matrix(vj, cct, qmix.respfn.RespFnPerfect(verbose=False), 0., num_b=20)
 
 
 @pytest.mark.parametrize('lsb_is_tone', [False, True])
@@ -247,6 +282,32 @@ def test_multi_junction_matrices():
                                    rtol=1e-14)
         np.testing.assert_allclose(h[j], cct.area[j] * noise_matrix(vj[j], single, resp, F_IF, 4.2, vgap=VGAP,
                                                                     num_b=20), rtol=1e-14)
+
+
+def test_multi_junction_gap_voltage():
+    """A junction with gap voltage r * vgap: the same matrices as the junction
+    normalized to its own gap voltage (voltages and frequencies / r), with Y
+    scaled by the area and H (in units of e * Igap) by area * r."""
+
+    r = 1.2
+    cct, vj = _lo_state_multi(area=(1., 1.5))
+    cct.gap_voltage[1] = r
+    y = admittance_matrix(vj, cct, RESP, F_IF, num_b=20)
+    h = noise_matrix(vj, cct, RESP, F_IF, 4.2, num_b=20, vgap=VGAP)
+
+    own = cct.junction(1)
+    own.vb = own.vb / r
+    own.freq[:] = own.freq / r
+    y_own = admittance_matrix(vj[1] / r, own, RESP, F_IF / r, num_b=20)
+    h_own = noise_matrix(vj[1] / r, own, RESP, F_IF / r, 4.2, vgap=r * VGAP, num_b=20)
+    np.testing.assert_allclose(y[1], 1.5 * y_own, rtol=0, atol=1e-13 * np.abs(y).max())
+    np.testing.assert_allclose(h[1], 1.5 * r * h_own, rtol=0, atol=1e-13 * np.abs(h).max())
+    np.testing.assert_allclose(y[0], admittance_matrix(vj[0], cct.junction(0), RESP, F_IF, num_b=20), rtol=1e-14)
+
+    # f_if = 0 uses the derivatives of the scaled response function
+    y_0 = admittance_matrix(vj, cct, RESP, 0., num_b=20)
+    np.testing.assert_allclose(y_0[1], 1.5 * admittance_matrix(vj[1] / r, own, RESP, 0., num_b=20), rtol=0,
+                               atol=1e-13 * np.abs(y_0).max())
 
 
 def test_network_one_junction_lossless():
