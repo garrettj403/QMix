@@ -32,6 +32,8 @@ dependencies:
   - pytest
   - pytest-cov
   - pip:
+    # QMix dependency (installed from PyPI)
+    - mattis-bardeen>=1.0.0
     # plot styles used by the notebooks
     - scienceplots
     # for generating documentation

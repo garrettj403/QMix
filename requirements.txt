@@ -1,3 +1,4 @@
+mattis-bardeen>=1.0.0
 matplotlib
 numba
 numpy

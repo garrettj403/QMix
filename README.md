@@ -95,7 +95,7 @@ python -m pip install QMix
 python -m pip install git+https://github.com/garrettj403/QMix.git
 ```
 
-Take a look at the [QMix website](https://garrettj403.github.io/QMix/) for more information on how to use the QMix package and examples showing how to simulate SIS junctions. If you run into any problems, please create a new issue through the [issue tracker](https://github.com/garrettj403/QMix/issues) with the ``help wanted`` or ``question`` tag. In your message, make sure to include your operating system, Python version, and package versions for QMix, Numpy, SciPy and Matplotlib.
+Take a look at the [QMix website](https://garrettj403.github.io/QMix/) for more information on how to use the QMix package and examples showing how to simulate SIS junctions. If you run into any problems, please create a new issue through the [issue tracker](https://github.com/garrettj403/QMix/issues) with the ``help wanted`` or ``question`` tag. In your message, make sure to include your operating system, Python version, and package versions for QMix, NumPy, SciPy, Numba, Matplotlib and mattis-bardeen.
 
 Contributing to QMix
 --------------------
@@ -126,7 +126,7 @@ pytest --verbose --color=yes tests/
 Examples
 --------
 
-QMix can be used to simulate a wide variety of SIS junction behavior. A simple example is shown below for simulating an SIS mixer at 230 GHz. You can find more examples in the ``QMix/notebooks/`` directory or on the [QMix website](https://garrettj403.github.io/QMix/single-tone-simulation.html). 
+QMix can be used to simulate a wide variety of SIS junction behavior. A simple example is shown below for simulating an SIS mixer at 230 GHz. You can find more examples in the ``QMix/notebooks/`` directory or on the [QMix website](https://garrettj403.github.io/QMix/multi-tone-simulation.html).
 
 ![](https://raw.githubusercontent.com/garrettj403/QMix/master/notebooks/results/multi-tone-results.png)
 
