@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>6. Example #3: Analyzing experimental data &mdash; QMix latest documentation</title>
+  <title>7. Example #3: Analyzing experimental data &mdash; QMix latest documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="_static/nbsphinx-code-cells.css?v=2aa19091" />
@@ -23,8 +23,8 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="7. Example #4: Embedding impedance from HFSS" href="hfss-embedding-impedance.html" />
-    <link rel="prev" title="5. Example #2: Simulating an SIS mixer" href="multi-tone-simulation.html" /> 
+    <link rel="next" title="8. Example #4: Embedding impedance from HFSS" href="hfss-embedding-impedance.html" />
+    <link rel="prev" title="6. Example #2: Simulating an SIS mixer" href="multi-tone-simulation.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -48,29 +48,30 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="setup.html">1. Getting Started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="qmix.html">2. Package API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="theory.html">3. Theory</a></li>
-<li class="toctree-l1"><a class="reference internal" href="single-tone-simulation.html">4. Example #1: Creating a simple 1 tone simulation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="multi-tone-simulation.html">5. Example #2: Simulating an SIS mixer</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">6. Example #3: Analyzing experimental data</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#Analyzing-DC-data">6.1. Analyzing DC data</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#Properties-of-the-experimental-DC-data">6.1.1. Properties of the experimental DC data</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#Importing-the-experimental-DC-data">6.1.2. Importing the experimental DC data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="capabilities.html">2. Capabilities and Limitations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="qmix.html">3. Package API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="theory.html">4. Theory</a></li>
+<li class="toctree-l1"><a class="reference internal" href="single-tone-simulation.html">5. Example #1: Creating a simple 1 tone simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multi-tone-simulation.html">6. Example #2: Simulating an SIS mixer</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">7. Example #3: Analyzing experimental data</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#Analyzing-DC-data">7.1. Analyzing DC data</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Properties-of-the-experimental-DC-data">7.1.1. Properties of the experimental DC data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Importing-the-experimental-DC-data">7.1.2. Importing the experimental DC data</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#Analyzing-pumped-data-at-230-GHz">6.2. Analyzing pumped data at 230 GHz</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#Properties-of-the-experimental-data">6.2.1. Properties of the experimental data</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#Importing-the-experimental-data">6.2.2. Importing the experimental data</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#Impedance-recovery">6.2.3. Impedance recovery</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#Comparing-the-noise-with-a-simulation-of-the-mixer">6.2.4. Comparing the noise with a simulation of the mixer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Analyzing-pumped-data-at-230-GHz">7.2. Analyzing pumped data at 230 GHz</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Properties-of-the-experimental-data">7.2.1. Properties of the experimental data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Importing-the-experimental-data">7.2.2. Importing the experimental data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Impedance-recovery">7.2.3. Impedance recovery</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Comparing-the-noise-with-a-simulation-of-the-mixer">7.2.4. Comparing the noise with a simulation of the mixer</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="hfss-embedding-impedance.html">7. Example #4: Embedding impedance from HFSS</a></li>
-<li class="toctree-l1"><a class="reference internal" href="lo-saturation.html">8. Example #5: Power saturation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="multi-junction-mixer.html">9. Example #6: Multiple junctions</a></li>
-<li class="toctree-l1"><a class="reference internal" href="references.html">10. References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hfss-embedding-impedance.html">8. Example #4: Embedding impedance from HFSS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lo-saturation.html">9. Example #5: Power saturation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multi-junction-mixer.html">10. Example #6: Multiple junctions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="references.html">11. References</a></li>
 </ul>
 
         </div>
@@ -87,7 +88,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active"><span class="section-number">6. </span>Example #3: Analyzing experimental data</li>
+      <li class="breadcrumb-item active"><span class="section-number">7. </span>Example #3: Analyzing experimental data</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/analyze-experimental-data.ipynb.txt" rel="nofollow"> View page source</a>
       </li>
@@ -98,7 +99,7 @@
            <div itemprop="articleBody">
              
   <section id="Example-#3:-Analyzing-experimental-data">
-<h1><span class="section-number">6. </span>Example #3: Analyzing experimental data<a class="headerlink" href="#Example-#3:-Analyzing-experimental-data" title="Link to this heading"></a></h1>
+<h1><span class="section-number">7. </span>Example #3: Analyzing experimental data<a class="headerlink" href="#Example-#3:-Analyzing-experimental-data" title="Link to this heading"></a></h1>
 <p>This notebook will show a brief example of how QMix can be used to analyze experimental data.</p>
 <p>For the purposes of this notebook, example data has been included in a directory called <code class="docutils literal notranslate"><span class="pre">example-data/</span></code>. This is experimental data that was taken from an SIS device illuminated by a local-oscillator at 230 GHz (see Garrett 2018).</p>
 <p>QMix includes two classes that can be used to analyze this experimental data:</p>
@@ -124,10 +125,10 @@
 </div>
 </div>
 <section id="Analyzing-DC-data">
-<h2><span class="section-number">6.1. </span>Analyzing DC data<a class="headerlink" href="#Analyzing-DC-data" title="Link to this heading"></a></h2>
+<h2><span class="section-number">7.1. </span>Analyzing DC data<a class="headerlink" href="#Analyzing-DC-data" title="Link to this heading"></a></h2>
 <p>This is the data collected from the SIS device with <strong>no local-oscillator (LO) illumination.</strong></p>
 <section id="Properties-of-the-experimental-DC-data">
-<h3><span class="section-number">6.1.1. </span>Properties of the experimental DC data<a class="headerlink" href="#Properties-of-the-experimental-DC-data" title="Link to this heading"></a></h3>
+<h3><span class="section-number">7.1.1. </span>Properties of the experimental DC data<a class="headerlink" href="#Properties-of-the-experimental-DC-data" title="Link to this heading"></a></h3>
 <p>The DC experimental data is located in two different files:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">example/dciv.csv</span></code>: DC tunneling current vs. bias voltage</p></li>
@@ -237,7 +238,7 @@ DC Bias Voltage (mV), IF Power (A.U.)
 <p><strong>Note:</strong> For a full list of parameters, please see the documentation for <a class="reference external" href="https://garrettj403.github.io/QMix/qmix.exp.html#module-qmix.exp.parameters">qmix.exp.parameters</a>.</p>
 </section>
 <section id="Importing-the-experimental-DC-data">
-<h3><span class="section-number">6.1.2. </span>Importing the experimental DC data<a class="headerlink" href="#Importing-the-experimental-DC-data" title="Link to this heading"></a></h3>
+<h3><span class="section-number">7.1.2. </span>Importing the experimental DC data<a class="headerlink" href="#Importing-the-experimental-DC-data" title="Link to this heading"></a></h3>
 <p>We will now use the <code class="docutils literal notranslate"><span class="pre">DCData</span></code> class to load, filter, and analyze the DC data. It will also automatically correct any offsets in the current or voltage data, calculate the properties of the DC I-V curve, and calculate the IF noise based on the shot noise.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
@@ -333,10 +334,10 @@ DC I-V data:</span>
 </section>
 </section>
 <section id="Analyzing-pumped-data-at-230-GHz">
-<h2><span class="section-number">6.2. </span>Analyzing pumped data at 230 GHz<a class="headerlink" href="#Analyzing-pumped-data-at-230-GHz" title="Link to this heading"></a></h2>
+<h2><span class="section-number">7.2. </span>Analyzing pumped data at 230 GHz<a class="headerlink" href="#Analyzing-pumped-data-at-230-GHz" title="Link to this heading"></a></h2>
 <p>We will now use the <code class="docutils literal notranslate"><span class="pre">PumpedData</span></code> class to import I-V and IF data from the device when it is illuminated by an LO at 230 GHz.</p>
 <section id="Properties-of-the-experimental-data">
-<h3><span class="section-number">6.2.1. </span>Properties of the experimental data<a class="headerlink" href="#Properties-of-the-experimental-data" title="Link to this heading"></a></h3>
+<h3><span class="section-number">7.2.1. </span>Properties of the experimental data<a class="headerlink" href="#Properties-of-the-experimental-data" title="Link to this heading"></a></h3>
 <p>The experimental files are:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">f230.2_iv.csv</span></code>: the pumped I-V curve</p></li>
@@ -433,7 +434,7 @@ DC Bias Voltage (mV), IF Power (A.U.)
 </div>
 </section>
 <section id="Importing-the-experimental-data">
-<h3><span class="section-number">6.2.2. </span>Importing the experimental data<a class="headerlink" href="#Importing-the-experimental-data" title="Link to this heading"></a></h3>
+<h3><span class="section-number">7.2.2. </span>Importing the experimental data<a class="headerlink" href="#Importing-the-experimental-data" title="Link to this heading"></a></h3>
 <p>The <code class="docutils literal notranslate"><span class="pre">PumpedData</span></code> class will automatically load, filter and analyze the data. This includes calculating the noise temperature and the properties of the embedding circuit.</p>
 <p><strong>Note:</strong> that this experimental data is imported in the form of Numpy arrays. Each array has two columns with one for voltage and one for current or IF power (depending on the file).</p>
 <div class="nbinput docutils container">
@@ -512,7 +513,7 @@ DC Bias Voltage (mV), IF Power (A.U.)
 </div>
 </section>
 <section id="Impedance-recovery">
-<h3><span class="section-number">6.2.3. </span>Impedance recovery<a class="headerlink" href="#Impedance-recovery" title="Link to this heading"></a></h3>
+<h3><span class="section-number">7.2.3. </span>Impedance recovery<a class="headerlink" href="#Impedance-recovery" title="Link to this heading"></a></h3>
 <p>The <code class="docutils literal notranslate"><span class="pre">PumpedData</span></code> class also recovers the embedding circuit using the technique described by Skalare (1989) and Withington <em>et al.</em> (1995).</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
@@ -553,7 +554,7 @@ DC Bias Voltage (mV), IF Power (A.U.)
 </div>
 </section>
 <section id="Comparing-the-noise-with-a-simulation-of-the-mixer">
-<h3><span class="section-number">6.2.4. </span>Comparing the noise with a simulation of the mixer<a class="headerlink" href="#Comparing-the-noise-with-a-simulation-of-the-mixer" title="Link to this heading"></a></h3>
+<h3><span class="section-number">7.2.4. </span>Comparing the noise with a simulation of the mixer<a class="headerlink" href="#Comparing-the-noise-with-a-simulation-of-the-mixer" title="Link to this heading"></a></h3>
 <p>The recovered embedding circuit reproduces the pumped I-V curve. It can also be used to simulate the mixer itself: <code class="docutils literal notranslate"><span class="pre">mixer_noise</span></code> runs a harmonic balance of the LO with the recovered circuit and then a small-signal analysis (<code class="docutils literal notranslate"><span class="pre">qmix.small_signal</span></code>, Tucker theory), which gives the double-sideband (DSB) conversion gain of the mixer, <span class="math notranslate nohighlight">\(G_\mathrm{mix}\)</span>, and its DSB noise temperature from the junction’s shot noise, <span class="math notranslate nohighlight">\(T_\mathrm{mix}\)</span>.</p>
 <p>The measured gain and noise temperature describe the whole receiver, though. <code class="docutils literal notranslate"><span class="pre">mixer_noise</span></code> models the receiver as an RF/optics stage (gain <span class="math notranslate nohighlight">\(G_\mathrm{RF}\)</span>, noise temperature <span class="math notranslate nohighlight">\(T_\mathrm{RF}\)</span>) in front of the mixer, followed by the IF chain (noise temperature <span class="math notranslate nohighlight">\(T_\mathrm{IF}\)</span>, from the shot noise above):</p>
 <div class="math notranslate nohighlight">
@@ -623,8 +624,8 @@ Receiver noise:    35.5 K (measured)
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="multi-tone-simulation.html" class="btn btn-neutral float-left" title="5. Example #2: Simulating an SIS mixer" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="hfss-embedding-impedance.html" class="btn btn-neutral float-right" title="7. Example #4: Embedding impedance from HFSS" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="multi-tone-simulation.html" class="btn btn-neutral float-left" title="6. Example #2: Simulating an SIS mixer" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="hfss-embedding-impedance.html" class="btn btn-neutral float-right" title="8. Example #4: Embedding impedance from HFSS" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

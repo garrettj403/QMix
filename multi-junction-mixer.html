@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>9. Example #6: Multiple junctions &mdash; QMix latest documentation</title>
+  <title>10. Example #6: Multiple junctions &mdash; QMix latest documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="_static/nbsphinx-code-cells.css?v=2aa19091" />
@@ -23,8 +23,8 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="10. References" href="references.html" />
-    <link rel="prev" title="8. Example #5: Power saturation" href="lo-saturation.html" /> 
+    <link rel="next" title="11. References" href="references.html" />
+    <link rel="prev" title="9. Example #5: Power saturation" href="lo-saturation.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -48,25 +48,26 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="setup.html">1. Getting Started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="qmix.html">2. Package API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="theory.html">3. Theory</a></li>
-<li class="toctree-l1"><a class="reference internal" href="single-tone-simulation.html">4. Example #1: Creating a simple 1 tone simulation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="multi-tone-simulation.html">5. Example #2: Simulating an SIS mixer</a></li>
-<li class="toctree-l1"><a class="reference internal" href="analyze-experimental-data.html">6. Example #3: Analyzing experimental data</a></li>
-<li class="toctree-l1"><a class="reference internal" href="hfss-embedding-impedance.html">7. Example #4: Embedding impedance from HFSS</a></li>
-<li class="toctree-l1"><a class="reference internal" href="lo-saturation.html">8. Example #5: Power saturation</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">9. Example #6: Multiple junctions</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#The-junctions">9.1. The junctions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#The-twin-junction-tuning-circuit">9.2. The twin-junction tuning circuit</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#Pumping-the-junctions-with-the-LO">9.3. Pumping the junctions with the LO</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#Small-signal-analysis:-gain-and-noise">9.4. Small-signal analysis: gain and noise</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#Check:-multi-tone-simulation">9.5. Check: multi-tone simulation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#A-lossy-tuning-circuit">9.6. A lossy tuning circuit</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#A-superconducting-tuning-circuit">9.7. A superconducting tuning circuit</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#Summary">9.8. Summary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="capabilities.html">2. Capabilities and Limitations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="qmix.html">3. Package API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="theory.html">4. Theory</a></li>
+<li class="toctree-l1"><a class="reference internal" href="single-tone-simulation.html">5. Example #1: Creating a simple 1 tone simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multi-tone-simulation.html">6. Example #2: Simulating an SIS mixer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analyze-experimental-data.html">7. Example #3: Analyzing experimental data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hfss-embedding-impedance.html">8. Example #4: Embedding impedance from HFSS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lo-saturation.html">9. Example #5: Power saturation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">10. Example #6: Multiple junctions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#The-junctions">10.1. The junctions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#The-twin-junction-tuning-circuit">10.2. The twin-junction tuning circuit</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Pumping-the-junctions-with-the-LO">10.3. Pumping the junctions with the LO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Small-signal-analysis:-gain-and-noise">10.4. Small-signal analysis: gain and noise</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Check:-multi-tone-simulation">10.5. Check: multi-tone simulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#A-lossy-tuning-circuit">10.6. A lossy tuning circuit</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#A-superconducting-tuning-circuit">10.7. A superconducting tuning circuit</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Summary">10.8. Summary</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="references.html">10. References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="references.html">11. References</a></li>
 </ul>
 
         </div>
@@ -83,7 +84,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active"><span class="section-number">9. </span>Example #6: Multiple junctions</li>
+      <li class="breadcrumb-item active"><span class="section-number">10. </span>Example #6: Multiple junctions</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/multi-junction-mixer.ipynb.txt" rel="nofollow"> View page source</a>
       </li>
@@ -94,7 +95,7 @@
            <div itemprop="articleBody">
              
   <section id="Example-#6:-Multiple-junctions">
-<h1><span class="section-number">9. </span>Example #6: Multiple junctions<a class="headerlink" href="#Example-#6:-Multiple-junctions" title="Link to this heading"></a></h1>
+<h1><span class="section-number">10. </span>Example #6: Multiple junctions<a class="headerlink" href="#Example-#6:-Multiple-junctions" title="Link to this heading"></a></h1>
 <p>SIS mixers often use more than one junction: e.g., twin-junction tuning circuits, where two junctions are separated by a short inductive line that tunes out their capacitance, or series arrays. QMix can simulate several junctions in one linear embedding network:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">qmix.circuit.MultiJunctionCircuit</span></code> holds the embedding circuit: at each tone and harmonic, a <em>multi-port</em> Thevenin equivalent (a vector of open-circuit voltages and an impedance matrix that couples the junctions);</p></li>
@@ -135,7 +136,7 @@
 </div>
 </div>
 <section id="The-junctions">
-<h2><span class="section-number">9.1. </span>The junctions<a class="headerlink" href="#The-junctions" title="Link to this heading"></a></h2>
+<h2><span class="section-number">10.1. </span>The junctions<a class="headerlink" href="#The-junctions" title="Link to this heading"></a></h2>
 <p>The junctions use the shape of the measured DC I-V curve from Example #3 (with the same smearing), but here each junction has a normal resistance of 20 <span class="math notranslate nohighlight">\(\Omega\)</span> and a capacitance of 70 fF (<span class="math notranslate nohighlight">\(\omega R_n C \approx 2\)</span> at 230 GHz). All values in the simulation are normalized to one junction’s gap voltage and normal resistance (<code class="docutils literal notranslate"><span class="pre">rn</span></code>); junctions with different areas can be described with <code class="docutils literal notranslate"><span class="pre">cct.area</span></code>, which scales their currents (and noise), and each junction can have its own response
 function (pass a list as <code class="docutils literal notranslate"><span class="pre">resp</span></code>).</p>
 <div class="nbinput docutils container">
@@ -169,7 +170,7 @@ Gap voltage: 2.717 mV
 </div>
 </section>
 <section id="The-twin-junction-tuning-circuit">
-<h2><span class="section-number">9.2. </span>The twin-junction tuning circuit<a class="headerlink" href="#The-twin-junction-tuning-circuit" title="Link to this heading"></a></h2>
+<h2><span class="section-number">10.2. </span>The twin-junction tuning circuit<a class="headerlink" href="#The-twin-junction-tuning-circuit" title="Link to this heading"></a></h2>
 <p>The tuning circuit is built from ideal transmission lines with <code class="docutils literal notranslate"><span class="pre">qmix.network</span></code> (<code class="docutils literal notranslate"><span class="pre">transmission_line</span></code> and <code class="docutils literal notranslate"><span class="pre">tee</span></code>; superconducting lines follow below). Junction 0 sits at the end of a quarter-wave transformer from the RF port (a 35 <span class="math notranslate nohighlight">\(\Omega\)</span> source, e.g., a waveguide probe), and junction 1 is connected to junction 0 by a short line (<span class="math notranslate nohighlight">\(Z_c = 8~\Omega\)</span>). The length of this line is chosen so that the admittance at junction 0 is real at 230 GHz: its inductance resonates with the
 capacitance of the two junctions. The transformer then matches the remaining (small) resistance to the source.</p>
 <p>The junction capacitances are not part of the network: they are added in parallel with the junction ports (<code class="docutils literal notranslate"><span class="pre">cap</span></code> argument) when the Thevenin equivalent is calculated.</p>
@@ -262,7 +263,7 @@ tuning line.</p>
 </div>
 </section>
 <section id="Pumping-the-junctions-with-the-LO">
-<h2><span class="section-number">9.3. </span>Pumping the junctions with the LO<a class="headerlink" href="#Pumping-the-junctions-with-the-LO" title="Link to this heading"></a></h2>
+<h2><span class="section-number">10.3. </span>Pumping the junctions with the LO<a class="headerlink" href="#Pumping-the-junctions-with-the-LO" title="Link to this heading"></a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">set_thevenin</span></code> puts the Thevenin equivalent into a <code class="docutils literal notranslate"><span class="pre">MultiJunctionCircuit</span></code> (normalized), here for an LO at 230 GHz with an available power of 60 nW at the RF port. <code class="docutils literal notranslate"><span class="pre">harmonic_balance</span></code> then solves for the voltages across both junctions. Each junction is voltage biased: <code class="docutils literal notranslate"><span class="pre">cct.vb[j]</span></code> is the DC bias voltage of junction <code class="docutils literal notranslate"><span class="pre">j</span></code> (assigning a 1-D array, as here, biases both junctions at the same voltage).</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
@@ -326,7 +327,7 @@ Thevenin impedance matrix:
 </div>
 </section>
 <section id="Small-signal-analysis:-gain-and-noise">
-<h2><span class="section-number">9.4. </span>Small-signal analysis: gain and noise<a class="headerlink" href="#Small-signal-analysis:-gain-and-noise" title="Link to this heading"></a></h2>
+<h2><span class="section-number">10.4. </span>Small-signal analysis: gain and noise<a class="headerlink" href="#Small-signal-analysis:-gain-and-noise" title="Link to this heading"></a></h2>
 <p>For the small-signal analysis (Tucker theory), the junctions are coupled by the embedding network at every sideband (the IF, USB and LSB here). <code class="docutils literal notranslate"><span class="pre">admittance_matrix</span></code> and <code class="docutils literal notranslate"><span class="pre">noise_matrix</span></code> give the conversion admittance matrix and the current noise correlation matrix of each junction (<code class="docutils literal notranslate"><span class="pre">y[j,</span> <span class="pre">m,</span> <span class="pre">n,</span> <span class="pre">i]</span></code> for sidebands <span class="math notranslate nohighlight">\(m, n\)</span>), and the network at each sideband is described by its impedance matrix over the junction ports and one <em>external</em> port: the RF port at the USB and LSB, and the IF port at
 the IF. <code class="docutils literal notranslate"><span class="pre">qmix.network.impedance_matrix</span></code> gives this from the S-parameters (with the junction capacitances), and <code class="docutils literal notranslate"><span class="pre">sideband_networks</span></code> collects them in the order used by <code class="docutils literal notranslate"><span class="pre">qmix.small_signal</span></code> (complex conjugates at the LSB). <code class="docutils literal notranslate"><span class="pre">z_ext</span></code> holds the impedances that terminate the external ports: the source impedance at the RF sidebands and the IF load at the IF.</p>
 <p>At the IF (5 GHz), the tuning line is electrically short, so the junctions are connected in parallel to a 50 <span class="math notranslate nohighlight">\(\Omega\)</span> IF load. The IF circuit is a tee with the IF port, junction 0, and the tuning line to junction 1.</p>
@@ -414,7 +415,7 @@ DSB noise temperature: 4.4 K
 <p>This is the noise added by the mixer itself (with the noise of the RF inputs and of the IF load excluded). Since the tuning circuit is lossless, it is the shot noise of the junctions, coupled to the IF through the network. The receiver noise would also include the noise of the optics and of the IF amplifier.</p>
 </section>
 <section id="Check:-multi-tone-simulation">
-<h2><span class="section-number">9.5. </span>Check: multi-tone simulation<a class="headerlink" href="#Check:-multi-tone-simulation" title="Link to this heading"></a></h2>
+<h2><span class="section-number">10.5. </span>Check: multi-tone simulation<a class="headerlink" href="#Check:-multi-tone-simulation" title="Link to this heading"></a></h2>
 <p>The small-signal analysis assumes that the RF signal is weak. It can be checked with a multi-tone harmonic balance of both junctions with four tones (LO, USB, LSB and IF), a weak RF signal at the USB, and the IF load. <code class="docutils literal notranslate"><span class="pre">set_thevenin</span></code> without a <code class="docutils literal notranslate"><span class="pre">source_port</span></code> gives the Thevenin impedance matrix for the tones without a source (the LSB and the IF). The power in the IF load follows from the junction currents at the IF, <span class="math notranslate nohighlight">\(I_L = \sum_j Z_{x j} I_j / (Z_{xx} + R_\mathrm{IF})\)</span>, where <span class="math notranslate nohighlight">\(x\)</span> is
 the IF port.</p>
 <p>Note that at a low IF, the RF signal has to be <em>very</em> weak: the drive level of the IF tone, <span class="math notranslate nohighlight">\(|V_\mathrm{IF}| / V_\mathrm{ph,IF}\)</span>, is large even for a small IF voltage, since the IF photon voltage is small (0.007 <span class="math notranslate nohighlight">\(V_\mathrm{gap}\)</span> here). With 1 pW instead of 0.1 fW, the multi-tone gain differs from the small-signal gain by ~0.5%.</p>
@@ -468,7 +469,7 @@ Bias     Small-signal  Multi-tone  Rel. difference
 <p>The two agree to a few parts in 1e6 where the gain is large (the remaining difference is the effect of the finite RF signal and of the truncated sums), and the relative difference only grows where the gain is small. The small-signal analysis is much faster: it needs the harmonic balance of the LO alone, and it gives the gain and noise at any IF without frequency rounding.</p>
 </section>
 <section id="A-lossy-tuning-circuit">
-<h2><span class="section-number">9.6. </span>A lossy tuning circuit<a class="headerlink" href="#A-lossy-tuning-circuit" title="Link to this heading"></a></h2>
+<h2><span class="section-number">10.6. </span>A lossy tuning circuit<a class="headerlink" href="#A-lossy-tuning-circuit" title="Link to this heading"></a></h2>
 <p>The embedding network can also be lossy. A passive network at a physical temperature <span class="math notranslate nohighlight">\(T\)</span> has open-circuit noise voltages with the correlation matrix <span class="math notranslate nohighlight">\(2 k T_\mathrm{CW} (Z + Z^\dagger)\)</span> per unit bandwidth (Twiss’ theorem, with the Callen-Welton temperature <span class="math notranslate nohighlight">\(T_\mathrm{CW}\)</span>), which <code class="docutils literal notranslate"><span class="pre">network_output_noise</span></code> includes when <code class="docutils literal notranslate"><span class="pre">temp</span></code> is given. Here, the lines have an attenuation of 2% of their propagation constant (e.g., a normal-metal tuning circuit). The loss reduces the gain and
 adds the thermal noise of the network (the difference between the solid and the dashed red lines). Even without the network’s own noise, the noise temperature is higher, since the noise of the junctions is referred to the input through a lower gain. At 230 GHz, the Callen-Welton temperature of the network at 4.2 K is ~6.4 K, i.e., its zero-point fluctuations are a large part of its noise.</p>
 <div class="nbinput docutils container">
@@ -529,7 +530,7 @@ Lossy circuit at 0.740 Vgap: DSB gain 3.70 dB, noise 6.2 K (4.9 K without the ne
 </div>
 </section>
 <section id="A-superconducting-tuning-circuit">
-<h2><span class="section-number">9.7. </span>A superconducting tuning circuit<a class="headerlink" href="#A-superconducting-tuning-circuit" title="Link to this heading"></a></h2>
+<h2><span class="section-number">10.7. </span>A superconducting tuning circuit<a class="headerlink" href="#A-superconducting-tuning-circuit" title="Link to this heading"></a></h2>
 <p>Real tuning circuits are made from superconducting microstrip, e.g., Nb strips on a thin SiO<span class="math notranslate nohighlight">\(_2\)</span> dielectric above a Nb ground plane. Below the gap frequency of the films, the films have almost no loss, but the supercurrent stores kinetic energy: the penetration depth <span class="math notranslate nohighlight">\(\lambda\)</span> (~80 nm for Nb films) adds a <em>kinetic inductance</em> to the line, which slows the waves down. For a thin dielectric (<span class="math notranslate nohighlight">\(h \sim 3 \lambda\)</span>) this is a large effect. Above the gap frequency, photons break
 Cooper pairs and the films become lossy.</p>
 <p><code class="docutils literal notranslate"><span class="pre">qmix.superconductor.SuperconductingFilm</span></code> gives the surface impedance of a film from the Mattis-Bardeen theory (gap voltage, critical temperature, normal-state resistivity and thickness), and <code class="docutils literal notranslate"><span class="pre">qmix.network.microstrip</span></code> gives the characteristic impedance <span class="math notranslate nohighlight">\(Z_c\)</span> and propagation constant <span class="math notranslate nohighlight">\(\gamma = \alpha + j \beta\)</span> of a microstrip line with these films (the same model as SuperMix; see the Theory section). Here, the line is 6 <span class="math notranslate nohighlight">\(\mu\)</span>m wide on 250 nm of SiO<span class="math notranslate nohighlight">\(_2\)</span>: its phase
@@ -687,7 +688,7 @@ Nb microstrip  at 0.740 Vgap: DSB gain 4.55 dB, noise 4.56 K
 </div>
 </section>
 <section id="Summary">
-<h2><span class="section-number">9.8. </span>Summary<a class="headerlink" href="#Summary" title="Link to this heading"></a></h2>
+<h2><span class="section-number">10.8. </span>Summary<a class="headerlink" href="#Summary" title="Link to this heading"></a></h2>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">MultiJunctionCircuit(num_j,</span> <span class="pre">num_f,</span> <span class="pre">num_p)</span></code>: multi-port Thevenin equivalent at each tone and harmonic (<code class="docutils literal notranslate"><span class="pre">vt[j,</span> <span class="pre">f,</span> <span class="pre">p]</span></code>, <code class="docutils literal notranslate"><span class="pre">zt[j,</span> <span class="pre">l,</span> <span class="pre">f,</span> <span class="pre">p]</span></code>), bias voltage per junction (<code class="docutils literal notranslate"><span class="pre">vb[j,</span> <span class="pre">i]</span></code>), relative areas (<code class="docutils literal notranslate"><span class="pre">area</span></code>).</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">harmonic_balance</span></code> and <code class="docutils literal notranslate"><span class="pre">qtcurrent</span></code>: as for one junction, with the junction axis first (<code class="docutils literal notranslate"><span class="pre">vj[j,</span> <span class="pre">f,</span> <span class="pre">p,</span> <span class="pre">i]</span></code>); <code class="docutils literal notranslate"><span class="pre">resp</span></code> can be a list (one per junction).</p></li>
@@ -703,8 +704,8 @@ Nb microstrip  at 0.740 Vgap: DSB gain 4.55 dB, noise 4.56 K
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="lo-saturation.html" class="btn btn-neutral float-left" title="8. Example #5: Power saturation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="references.html" class="btn btn-neutral float-right" title="10. References" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="lo-saturation.html" class="btn btn-neutral float-left" title="9. Example #5: Power saturation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="references.html" class="btn btn-neutral float-right" title="11. References" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

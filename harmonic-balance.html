@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>3.2. Harmonic Balance &mdash; QMix latest documentation</title>
+  <title>4.2. Harmonic Balance &mdash; QMix latest documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
 
@@ -22,8 +22,8 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="3.3. Small-Signal Analysis" href="small-signal.html" />
-    <link rel="prev" title="3.1. Multi-Tone Spectral Domain Analysis" href="mtsda.html" /> 
+    <link rel="next" title="4.3. Small-Signal Analysis" href="small-signal.html" />
+    <link rel="prev" title="4.1. Multi-Tone Spectral Domain Analysis" href="mtsda.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -47,33 +47,34 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="setup.html">1. Getting Started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="qmix.html">2. Package API</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="theory.html">3. Theory</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="mtsda.html">3.1. Multi-Tone Spectral Domain Analysis</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">3.2. Harmonic Balance</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#the-embedding-circuit">3.2.1. The embedding circuit</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#the-harmonic-balance-equations">3.2.2. The harmonic balance equations</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#newton-s-method">3.2.3. Newton’s method</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#the-jacobian">3.2.4. The Jacobian</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#robustness">3.2.5. Robustness</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#convergence">3.2.6. Convergence</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#several-junctions">3.2.7. Several junctions</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#dc-bias-network">3.2.8. DC bias network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#choosing-the-parameters">3.2.9. Choosing the parameters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="capabilities.html">2. Capabilities and Limitations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="qmix.html">3. Package API</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="theory.html">4. Theory</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="mtsda.html">4.1. Multi-Tone Spectral Domain Analysis</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">4.2. Harmonic Balance</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#the-embedding-circuit">4.2.1. The embedding circuit</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#the-harmonic-balance-equations">4.2.2. The harmonic balance equations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#newton-s-method">4.2.3. Newton’s method</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#the-jacobian">4.2.4. The Jacobian</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#robustness">4.2.5. Robustness</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#convergence">4.2.6. Convergence</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#several-junctions">4.2.7. Several junctions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dc-bias-network">4.2.8. DC bias network</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#choosing-the-parameters">4.2.9. Choosing the parameters</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="small-signal.html">3.3. Small-Signal Analysis</a></li>
-<li class="toctree-l2"><a class="reference internal" href="superconducting-lines.html">3.4. Superconducting Transmission Lines</a></li>
-<li class="toctree-l2"><a class="reference internal" href="fourier-shift-method.html">3.5. The Fourier-Shift Method</a></li>
+<li class="toctree-l2"><a class="reference internal" href="small-signal.html">4.3. Small-Signal Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="superconducting-lines.html">4.4. Superconducting Transmission Lines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="fourier-shift-method.html">4.5. The Fourier-Shift Method</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="single-tone-simulation.html">4. Example #1: Creating a simple 1 tone simulation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="multi-tone-simulation.html">5. Example #2: Simulating an SIS mixer</a></li>
-<li class="toctree-l1"><a class="reference internal" href="analyze-experimental-data.html">6. Example #3: Analyzing experimental data</a></li>
-<li class="toctree-l1"><a class="reference internal" href="hfss-embedding-impedance.html">7. Example #4: Embedding impedance from HFSS</a></li>
-<li class="toctree-l1"><a class="reference internal" href="lo-saturation.html">8. Example #5: Power saturation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="multi-junction-mixer.html">9. Example #6: Multiple junctions</a></li>
-<li class="toctree-l1"><a class="reference internal" href="references.html">10. References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="single-tone-simulation.html">5. Example #1: Creating a simple 1 tone simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multi-tone-simulation.html">6. Example #2: Simulating an SIS mixer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analyze-experimental-data.html">7. Example #3: Analyzing experimental data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hfss-embedding-impedance.html">8. Example #4: Embedding impedance from HFSS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lo-saturation.html">9. Example #5: Power saturation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multi-junction-mixer.html">10. Example #6: Multiple junctions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="references.html">11. References</a></li>
 </ul>
 
         </div>
@@ -90,8 +91,8 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-          <li class="breadcrumb-item"><a href="theory.html"><span class="section-number">3. </span>Theory</a></li>
-      <li class="breadcrumb-item active"><span class="section-number">3.2. </span>Harmonic Balance</li>
+          <li class="breadcrumb-item"><a href="theory.html"><span class="section-number">4. </span>Theory</a></li>
+      <li class="breadcrumb-item active"><span class="section-number">4.2. </span>Harmonic Balance</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/harmonic-balance.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -102,16 +103,16 @@
            <div itemprop="articleBody">
              
   <section id="harmonic-balance">
-<span id="id1"></span><h1><span class="section-number">3.2. </span>Harmonic Balance<a class="headerlink" href="#harmonic-balance" title="Link to this heading"></a></h1>
+<span id="id1"></span><h1><span class="section-number">4.2. </span>Harmonic Balance<a class="headerlink" href="#harmonic-balance" title="Link to this heading"></a></h1>
 <p>The tunneling current calculation on the previous page needs the voltage across the junction. In practice, the junction is embedded in an RF circuit (the waveguide probe, tuning circuit, IF circuit, etc.), and the voltage across it depends on how much current it draws, which in turn depends on the voltage. Harmonic balance solves for the junction voltage that satisfies both at the same time.</p>
 <p>As before, all values are normalized to the gap voltage, gap current, normal-state resistance and gap frequency.</p>
 <section id="the-embedding-circuit">
-<h2><span class="section-number">3.2.1. </span>The embedding circuit<a class="headerlink" href="#the-embedding-circuit" title="Link to this heading"></a></h2>
+<h2><span class="section-number">4.2.1. </span>The embedding circuit<a class="headerlink" href="#the-embedding-circuit" title="Link to this heading"></a></h2>
 <p>The embedding circuit is linear, so at each frequency it can be reduced to a Thevenin equivalent: a voltage source <span class="math notranslate nohighlight">\(V_{T}\)</span> in series with an impedance <span class="math notranslate nohighlight">\(Z_{T}\)</span>. QMix uses one Thevenin circuit for every tone <span class="math notranslate nohighlight">\(f\)</span> and harmonic <span class="math notranslate nohighlight">\(p\)</span> (<a class="reference internal" href="qmix.html#qmix.circuit.EmbeddingCircuit" title="qmix.circuit.EmbeddingCircuit"><code class="xref py py-class docutils literal notranslate"><span class="pre">qmix.circuit.EmbeddingCircuit</span></code></a>, attributes <code class="docutils literal notranslate"><span class="pre">vt[f,</span> <span class="pre">p]</span></code> and <code class="docutils literal notranslate"><span class="pre">zt[f,</span> <span class="pre">p]</span></code>). A source can be zero: for example, a harmonic of the LO, or the IF of a mixer, is generated by the junction itself, and it develops a voltage only through the embedding impedance at that frequency.</p>
 <p>The DC bias is treated as an ideal voltage source, so the DC voltage across the junction is the bias voltage <span class="math notranslate nohighlight">\(V_0\)</span>.</p>
 </section>
 <section id="the-harmonic-balance-equations">
-<h2><span class="section-number">3.2.2. </span>The harmonic balance equations<a class="headerlink" href="#the-harmonic-balance-equations" title="Link to this heading"></a></h2>
+<h2><span class="section-number">4.2.2. </span>The harmonic balance equations<a class="headerlink" href="#the-harmonic-balance-equations" title="Link to this heading"></a></h2>
 <p>At each frequency, the junction voltage <span class="math notranslate nohighlight">\(V_{J}\)</span> and current <span class="math notranslate nohighlight">\(I_{J}\)</span> must satisfy Kirchhoff’s voltage law around the Thevenin circuit:</p>
 <div class="math notranslate nohighlight">
 \[V_{J,fp} = V_{T,fp} - Z_{T,fp} \, I_{J,fp}(\mathbf{V}_J),\]</div>
@@ -122,7 +123,7 @@
 <p>where the products are taken element by element.</p>
 </section>
 <section id="newton-s-method">
-<h2><span class="section-number">3.2.3. </span>Newton’s method<a class="headerlink" href="#newton-s-method" title="Link to this heading"></a></h2>
+<h2><span class="section-number">4.2.3. </span>Newton’s method<a class="headerlink" href="#newton-s-method" title="Link to this heading"></a></h2>
 <p><a class="reference internal" href="qmix.html#qmix.harmonic_balance.harmonic_balance" title="qmix.harmonic_balance.harmonic_balance"><code class="xref py py-func docutils literal notranslate"><span class="pre">qmix.harmonic_balance.harmonic_balance()</span></code></a> finds the root of <span class="math notranslate nohighlight">\(\mathbf{e}\)</span> with Newton’s method. The first guess treats the junction as a fixed impedance <span class="math notranslate nohighlight">\(Z_J\)</span> (<code class="docutils literal notranslate"><span class="pre">zj_guess</span></code>, 0.67 by default):</p>
 <div class="math notranslate nohighlight">
 \[\mathbf{V}_J^{(0)} = \mathbf{V}_T \, \frac{Z_J}{Z_J + \mathbf{Z}_T}.\]</div>
@@ -139,7 +140,7 @@
 \[\Delta \mathbf{V}_J = - \mathbf{J}^{-1} \, \mathbf{e}(\mathbf{V}_J).\]</div>
 </section>
 <section id="the-jacobian">
-<h2><span class="section-number">3.2.4. </span>The Jacobian<a class="headerlink" href="#the-jacobian" title="Link to this heading"></a></h2>
+<h2><span class="section-number">4.2.4. </span>The Jacobian<a class="headerlink" href="#the-jacobian" title="Link to this heading"></a></h2>
 <p>By default (<code class="docutils literal notranslate"><span class="pre">jacobian='analytic'</span></code>), QMix calculates the derivatives of the current analytically (<a class="reference internal" href="qmix.html#qmix.qtcurrent.qtcurrent_derivatives" title="qmix.qtcurrent.qtcurrent_derivatives"><code class="xref py py-func docutils literal notranslate"><span class="pre">qmix.qtcurrent.qtcurrent_derivatives()</span></code></a>). The voltage only enters the tunneling current through the phase factor coefficients of each tone (see <a class="reference internal" href="mtsda.html#mtsda"><span class="std std-ref">Multi-Tone Spectral Domain Analysis</span></a>). Changing harmonic <span class="math notranslate nohighlight">\(q\)</span> of a tone with frequency <span class="math notranslate nohighlight">\(\omega\)</span> by <span class="math notranslate nohighlight">\(\delta V_q\)</span> adds <span class="math notranslate nohighlight">\(\mathrm{Re}(\delta V_q \, e^{j q \omega t})\)</span> to the voltage, which multiplies the phase factor by <span class="math notranslate nohighlight">\(1 - j \, (\mathrm{Re}\,\delta V_q \sin q \omega t + \mathrm{Im}\,\delta V_q \cos q \omega t) / q \omega\)</span>, to first order. This shifts the coefficients by <span class="math notranslate nohighlight">\(\pm q\)</span>:</p>
 <div class="math notranslate nohighlight">
 \[\frac{\partial C_k}{\partial \, \mathrm{Re}\, V_q} = \frac{C_{k-q} - C_{k+q}}{2 q \omega},
@@ -151,7 +152,7 @@
 <p>Either way, building the Jacobian is a large part of the run time. QMix therefore keeps the same Jacobian for further iterations as long as each iteration still at least halves the largest relative error (<code class="docutils literal notranslate"><span class="pre">reuse_jacobian=True</span></code>, <code class="docutils literal notranslate"><span class="pre">JACOBIAN_REUSE_RATIO</span></code>). Near the solution, Newton’s method converges so quickly that an outdated Jacobian is usually good enough.</p>
 </section>
 <section id="robustness">
-<h2><span class="section-number">3.2.5. </span>Robustness<a class="headerlink" href="#robustness" title="Link to this heading"></a></h2>
+<h2><span class="section-number">4.2.5. </span>Robustness<a class="headerlink" href="#robustness" title="Link to this heading"></a></h2>
 <p>When the junction loads the embedding circuit strongly (e.g., a large embedding impedance near the gap voltage), the full Newton step can overshoot and the iteration can diverge. QMix guards against this in three ways (<code class="docutils literal notranslate"><span class="pre">line_search=True</span></code>, the default):</p>
 <ul class="simple">
 <li><p><strong>Line search.</strong> At each bias voltage, the Newton step is only accepted if it reduces the squared error <span class="math notranslate nohighlight">\(|\mathbf{e}|^2\)</span> enough (the sufficient decrease condition). Otherwise the step is shortened, by backtracking, until it does. The error at the accepted step is also the error for the next iteration, so full steps cost nothing extra.</p></li>
@@ -161,12 +162,12 @@
 <p>For multi-tone simulations with one strong tone (e.g., an LO with weak signals), <code class="docutils literal notranslate"><span class="pre">warm_start=True</span></code> first solves the strongest tone on its own, which is cheap, and uses the result as the starting point for that tone. This often cuts the number of multi-tone iterations by 2-3 times, but not always, so it is not the default.</p>
 </section>
 <section id="convergence">
-<h2><span class="section-number">3.2.6. </span>Convergence<a class="headerlink" href="#convergence" title="Link to this heading"></a></h2>
+<h2><span class="section-number">4.2.6. </span>Convergence<a class="headerlink" href="#convergence" title="Link to this heading"></a></h2>
 <p>The iteration stops when the relative error, <span class="math notranslate nohighlight">\(|e_{fp}| / |V_{J,fp}|\)</span>, is below <code class="docutils literal notranslate"><span class="pre">stop_rerror</span></code> (<span class="math notranslate nohighlight">\(10^{-3}\)</span> by default) for every signal and bias voltage, or after <code class="docutils literal notranslate"><span class="pre">max_it</span></code> iterations. Bias voltages that have converged keep being updated while the others are still converging, so most of them end up much more accurate than the tolerance (typically <span class="math notranslate nohighlight">\(\sim 10^{-12}\)</span>). The solution can be checked independently with <a class="reference internal" href="qmix.html#qmix.harmonic_balance.check_hb_error" title="qmix.harmonic_balance.check_hb_error"><code class="xref py py-func docutils literal notranslate"><span class="pre">qmix.harmonic_balance.check_hb_error()</span></code></a>.</p>
 <p>The result is the junction voltage <code class="docutils literal notranslate"><span class="pre">vj[f,</span> <span class="pre">p,</span> <span class="pre">i]</span></code> for every tone, harmonic and bias voltage. It can be passed to <a class="reference internal" href="qmix.html#qmix.qtcurrent.qtcurrent" title="qmix.qtcurrent.qtcurrent"><code class="xref py py-func docutils literal notranslate"><span class="pre">qmix.qtcurrent.qtcurrent()</span></code></a> to calculate the currents at any frequency, e.g., the DC current (the pumped I-V curve) or the current at the IF (the output power of a mixer).</p>
 </section>
 <section id="several-junctions">
-<h2><span class="section-number">3.2.7. </span>Several junctions<a class="headerlink" href="#several-junctions" title="Link to this heading"></a></h2>
+<h2><span class="section-number">4.2.7. </span>Several junctions<a class="headerlink" href="#several-junctions" title="Link to this heading"></a></h2>
 <p>With several junctions in one linear network (e.g., a twin-junction tuning circuit or a series array; <a class="reference internal" href="qmix.html#qmix.circuit.MultiJunctionCircuit" title="qmix.circuit.MultiJunctionCircuit"><code class="xref py py-class docutils literal notranslate"><span class="pre">qmix.circuit.MultiJunctionCircuit</span></code></a>), the embedding circuit at each signal is a multi-port Thevenin equivalent: a vector of open-circuit voltages and an impedance matrix. For junctions <span class="math notranslate nohighlight">\(j, l\)</span>,</p>
 <div class="math notranslate nohighlight">
 \[e_{j,fp} = V_{T,j,fp} - \sum_l Z_{T,jl,fp} \, I_{l,fp} - V_{J,j,fp},\]</div>
@@ -180,7 +181,7 @@
 <p>The derivatives of each junction’s current are calculated as for one junction (analytically, or with <code class="docutils literal notranslate"><span class="pre">jacobian='numerical'</span></code> from the same perturbed voltages, signal <span class="math notranslate nohighlight">\(q\)</span> of every junction at once, at a cost of <span class="math notranslate nohighlight">\(2N\)</span> tunneling current calculations per junction). The Newton step, line search and restarts are the same. By default, each junction is voltage biased (<code class="docutils literal notranslate"><span class="pre">cct.vb[j]</span></code>; see below for a DC bias network). Each junction can have its own response function (pass a list as <code class="docutils literal notranslate"><span class="pre">resp</span></code>) and a relative area (<code class="docutils literal notranslate"><span class="pre">cct.area[j]</span></code>, which scales its current), and the result is <code class="docutils literal notranslate"><span class="pre">vj[j,</span> <span class="pre">f,</span> <span class="pre">p,</span> <span class="pre">i]</span></code>. <a class="reference internal" href="qmix.html#qmix.network.set_thevenin" title="qmix.network.set_thevenin"><code class="xref py py-func docutils literal notranslate"><span class="pre">qmix.network.set_thevenin()</span></code></a> sets the Thevenin voltages and impedance matrices from an S-parameter network, with a list of junction ports.</p>
 </section>
 <section id="dc-bias-network">
-<h2><span class="section-number">3.2.8. </span>DC bias network<a class="headerlink" href="#dc-bias-network" title="Link to this heading"></a></h2>
+<h2><span class="section-number">4.2.8. </span>DC bias network<a class="headerlink" href="#dc-bias-network" title="Link to this heading"></a></h2>
 <p>Voltage bias fixes the DC voltage of each junction. In a series array, one source biases several junctions: the DC current is shared, and the bias voltage splits between the junctions according to their (pumped) DC I-V curves. Unless the junctions are identical and identically pumped, the split isn’t known in advance, so the DC voltages <span class="math notranslate nohighlight">\(V_{0,j}\)</span> become unknowns too. A linear DC network adds one equation per junction,</p>
 <div class="math notranslate nohighlight">
 \[e_{0,r} = b_r - \sum_l A_{rl} \, V_{0,l} - \sum_l B_{rl} \, I_{0,l} = 0,\]</div>
@@ -196,7 +197,7 @@
 <p>Typical cases take 15-30 iterations instead of ~5, so the default <code class="docutils literal notranslate"><span class="pre">max_it</span></code> is 60 with a DC bias network (30 otherwise). Each iteration solves all bias points at once, so this is still fast (1-2 s for a pumped pair over 40-200 bias points). Solving the bias points one at a time along the sweep (continuation, starting each from its neighbor) needs only 4-10 iterations per point, but was 4-8 times slower overall.</p>
 </section>
 <section id="choosing-the-parameters">
-<h2><span class="section-number">3.2.9. </span>Choosing the parameters<a class="headerlink" href="#choosing-the-parameters" title="Link to this heading"></a></h2>
+<h2><span class="section-number">4.2.9. </span>Choosing the parameters<a class="headerlink" href="#choosing-the-parameters" title="Link to this heading"></a></h2>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">num_b</span></code>: the summation limit for the phase factor coefficients, one value per tone or one for all. It must be larger than the drive level of each tone, <span class="math notranslate nohighlight">\(|V_{J,f1}| / \omega_f\)</span>. Tones that are driven hard at a low frequency need many terms, e.g., an IF tone with a large voltage swing. After a first solution, <a class="reference internal" href="qmix.html#qmix.qtcurrent.suggest_num_b" title="qmix.qtcurrent.suggest_num_b"><code class="xref py py-func docutils literal notranslate"><span class="pre">qmix.qtcurrent.suggest_num_b()</span></code></a> estimates the limits from the junction voltage. It uses the junction voltage rather than <code class="docutils literal notranslate"><span class="pre">vt</span></code>, since tones with no source can still have large voltages.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">num_p</span></code> (in <a class="reference internal" href="qmix.html#qmix.circuit.EmbeddingCircuit" title="qmix.circuit.EmbeddingCircuit"><code class="xref py py-class docutils literal notranslate"><span class="pre">qmix.circuit.EmbeddingCircuit</span></code></a>): the number of harmonics of each tone. Each harmonic adds unknowns and widens the range of the sums. One or two harmonics are usually enough, since the junction capacitance shorts out the higher harmonics.</p></li>
@@ -209,8 +210,8 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="mtsda.html" class="btn btn-neutral float-left" title="3.1. Multi-Tone Spectral Domain Analysis" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="small-signal.html" class="btn btn-neutral float-right" title="3.3. Small-Signal Analysis" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="mtsda.html" class="btn btn-neutral float-left" title="4.1. Multi-Tone Spectral Domain Analysis" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="small-signal.html" class="btn btn-neutral float-right" title="4.3. Small-Signal Analysis" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

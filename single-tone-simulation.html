@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>4. Example #1: Creating a simple 1 tone simulation &mdash; QMix latest documentation</title>
+  <title>5. Example #1: Creating a simple 1 tone simulation &mdash; QMix latest documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="_static/nbsphinx-code-cells.css?v=2aa19091" />
@@ -23,8 +23,8 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="5. Example #2: Simulating an SIS mixer" href="multi-tone-simulation.html" />
-    <link rel="prev" title="3.5. The Fourier-Shift Method" href="fourier-shift-method.html" /> 
+    <link rel="next" title="6. Example #2: Simulating an SIS mixer" href="multi-tone-simulation.html" />
+    <link rel="prev" title="4.5. The Fourier-Shift Method" href="fourier-shift-method.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -48,22 +48,23 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="setup.html">1. Getting Started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="qmix.html">2. Package API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="theory.html">3. Theory</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">4. Example #1: Creating a simple 1 tone simulation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#Generate-the-response-function">4.1. Generate the response function</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#Define-embedding-circuit">4.2. Define embedding circuit</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#Calculate-desired-tunnelling-currents">4.3. Calculate desired tunnelling currents</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#Plot-the-pumped-I-V-curve">4.4. Plot the pumped I-V curve</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#Plot-the-AC-tunneling-currents">4.5. Plot the AC tunneling currents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="capabilities.html">2. Capabilities and Limitations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="qmix.html">3. Package API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="theory.html">4. Theory</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">5. Example #1: Creating a simple 1 tone simulation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#Generate-the-response-function">5.1. Generate the response function</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Define-embedding-circuit">5.2. Define embedding circuit</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Calculate-desired-tunnelling-currents">5.3. Calculate desired tunnelling currents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Plot-the-pumped-I-V-curve">5.4. Plot the pumped I-V curve</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Plot-the-AC-tunneling-currents">5.5. Plot the AC tunneling currents</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="multi-tone-simulation.html">5. Example #2: Simulating an SIS mixer</a></li>
-<li class="toctree-l1"><a class="reference internal" href="analyze-experimental-data.html">6. Example #3: Analyzing experimental data</a></li>
-<li class="toctree-l1"><a class="reference internal" href="hfss-embedding-impedance.html">7. Example #4: Embedding impedance from HFSS</a></li>
-<li class="toctree-l1"><a class="reference internal" href="lo-saturation.html">8. Example #5: Power saturation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="multi-junction-mixer.html">9. Example #6: Multiple junctions</a></li>
-<li class="toctree-l1"><a class="reference internal" href="references.html">10. References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multi-tone-simulation.html">6. Example #2: Simulating an SIS mixer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analyze-experimental-data.html">7. Example #3: Analyzing experimental data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hfss-embedding-impedance.html">8. Example #4: Embedding impedance from HFSS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lo-saturation.html">9. Example #5: Power saturation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multi-junction-mixer.html">10. Example #6: Multiple junctions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="references.html">11. References</a></li>
 </ul>
 
         </div>
@@ -80,7 +81,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active"><span class="section-number">4. </span>Example #1: Creating a simple 1 tone simulation</li>
+      <li class="breadcrumb-item active"><span class="section-number">5. </span>Example #1: Creating a simple 1 tone simulation</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/single-tone-simulation.ipynb.txt" rel="nofollow"> View page source</a>
       </li>
@@ -91,7 +92,7 @@
            <div itemprop="articleBody">
              
   <section id="Example-#1:-Creating-a-simple-1-tone-simulation">
-<h1><span class="section-number">4. </span>Example #1: Creating a simple 1 tone simulation<a class="headerlink" href="#Example-#1:-Creating-a-simple-1-tone-simulation" title="Link to this heading"></a></h1>
+<h1><span class="section-number">5. </span>Example #1: Creating a simple 1 tone simulation<a class="headerlink" href="#Example-#1:-Creating-a-simple-1-tone-simulation" title="Link to this heading"></a></h1>
 <ul class="simple">
 <li><p>This notebook contains a very simple SIS simulation:</p>
 <ul>
@@ -132,7 +133,7 @@ OMP: Info #276: omp_set_nested routine deprecated, please use omp_set_max_active
 </pre></div></div>
 </div>
 <section id="Generate-the-response-function">
-<h2><span class="section-number">4.1. </span>Generate the response function<a class="headerlink" href="#Generate-the-response-function" title="Link to this heading"></a></h2>
+<h2><span class="section-number">5.1. </span>Generate the response function<a class="headerlink" href="#Generate-the-response-function" title="Link to this heading"></a></h2>
 <ul class="simple">
 <li><p>Here we will generate the response function using the polynomial model from Kennedy (1999).</p></li>
 <li><p>The <code class="docutils literal notranslate"><span class="pre">RespFnPolynomial</span></code> class will automatically generate the Kramers-Kronig transform of the DC I-V curve, and then setup the interpolation.</p></li>
@@ -176,7 +177,7 @@ Generating response function:
 </div>
 </section>
 <section id="Define-embedding-circuit">
-<h2><span class="section-number">4.2. </span>Define embedding circuit<a class="headerlink" href="#Define-embedding-circuit" title="Link to this heading"></a></h2>
+<h2><span class="section-number">5.2. </span>Define embedding circuit<a class="headerlink" href="#Define-embedding-circuit" title="Link to this heading"></a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">EmbeddingCircuit</span></code> class contains all of the information about the embedding circuit. This includes the Thevenin voltages, the Thevening impedances, and the frequencies of the applied signals. In this notebook, the Thevenin impedance is ignored. This means that the AC voltage across the junction is equal to the Thevenin voltage of the embedding circuit (no harmonic balance required).</p>
 <ul class="simple">
 <li><p>Note:</p>
@@ -223,7 +224,7 @@ Done.
 </div>
 </section>
 <section id="Calculate-desired-tunnelling-currents">
-<h2><span class="section-number">4.3. </span>Calculate desired tunnelling currents<a class="headerlink" href="#Calculate-desired-tunnelling-currents" title="Link to this heading"></a></h2>
+<h2><span class="section-number">5.3. </span>Calculate desired tunnelling currents<a class="headerlink" href="#Calculate-desired-tunnelling-currents" title="Link to this heading"></a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">qmix.qtcurrent.qtcurrent</span></code> will calculate the quasiparticle tunnelling current based on the voltage across the junction <code class="docutils literal notranslate"><span class="pre">vj</span></code>, the simulation parameters contained within <code class="docutils literal notranslate"><span class="pre">cct</span></code>, and the response function <code class="docutils literal notranslate"><span class="pre">resp</span></code>.</p>
 <ul class="simple">
 <li><p>Note:</p>
@@ -272,7 +273,7 @@ Time: 0.0009 s
 </div>
 </section>
 <section id="Plot-the-pumped-I-V-curve">
-<h2><span class="section-number">4.4. </span>Plot the pumped I-V curve<a class="headerlink" href="#Plot-the-pumped-I-V-curve" title="Link to this heading"></a></h2>
+<h2><span class="section-number">5.4. </span>Plot the pumped I-V curve<a class="headerlink" href="#Plot-the-pumped-I-V-curve" title="Link to this heading"></a></h2>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
@@ -317,7 +318,7 @@ Time: 0.0009 s
 </div>
 </section>
 <section id="Plot-the-AC-tunneling-currents">
-<h2><span class="section-number">4.5. </span>Plot the AC tunneling currents<a class="headerlink" href="#Plot-the-AC-tunneling-currents" title="Link to this heading"></a></h2>
+<h2><span class="section-number">5.5. </span>Plot the AC tunneling currents<a class="headerlink" href="#Plot-the-AC-tunneling-currents" title="Link to this heading"></a></h2>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
@@ -347,8 +348,8 @@ Time: 0.0009 s
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="fourier-shift-method.html" class="btn btn-neutral float-left" title="3.5. The Fourier-Shift Method" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="multi-tone-simulation.html" class="btn btn-neutral float-right" title="5. Example #2: Simulating an SIS mixer" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="fourier-shift-method.html" class="btn btn-neutral float-left" title="4.5. The Fourier-Shift Method" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="multi-tone-simulation.html" class="btn btn-neutral float-right" title="6. Example #2: Simulating an SIS mixer" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>3.4. Superconducting Transmission Lines &mdash; QMix latest documentation</title>
+  <title>4.4. Superconducting Transmission Lines &mdash; QMix latest documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
 
@@ -22,8 +22,8 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="3.5. The Fourier-Shift Method" href="fourier-shift-method.html" />
-    <link rel="prev" title="3.3. Small-Signal Analysis" href="small-signal.html" /> 
+    <link rel="next" title="4.5. The Fourier-Shift Method" href="fourier-shift-method.html" />
+    <link rel="prev" title="4.3. Small-Signal Analysis" href="small-signal.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -47,29 +47,30 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="setup.html">1. Getting Started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="qmix.html">2. Package API</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="theory.html">3. Theory</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="mtsda.html">3.1. Multi-Tone Spectral Domain Analysis</a></li>
-<li class="toctree-l2"><a class="reference internal" href="harmonic-balance.html">3.2. Harmonic Balance</a></li>
-<li class="toctree-l2"><a class="reference internal" href="small-signal.html">3.3. Small-Signal Analysis</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">3.4. Superconducting Transmission Lines</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#the-energy-gap">3.4.1. The energy gap</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#the-mattis-bardeen-conductivity">3.4.2. The Mattis-Bardeen conductivity</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#surface-impedance-of-a-film">3.4.3. Surface impedance of a film</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#microstrip-lines">3.4.4. Microstrip lines</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#comparison-with-supermix">3.4.5. Comparison with SuperMix</a></li>
+<li class="toctree-l1"><a class="reference internal" href="capabilities.html">2. Capabilities and Limitations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="qmix.html">3. Package API</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="theory.html">4. Theory</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="mtsda.html">4.1. Multi-Tone Spectral Domain Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="harmonic-balance.html">4.2. Harmonic Balance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="small-signal.html">4.3. Small-Signal Analysis</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">4.4. Superconducting Transmission Lines</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#the-energy-gap">4.4.1. The energy gap</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#the-mattis-bardeen-conductivity">4.4.2. The Mattis-Bardeen conductivity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#surface-impedance-of-a-film">4.4.3. Surface impedance of a film</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#microstrip-lines">4.4.4. Microstrip lines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#comparison-with-supermix">4.4.5. Comparison with SuperMix</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="fourier-shift-method.html">3.5. The Fourier-Shift Method</a></li>
+<li class="toctree-l2"><a class="reference internal" href="fourier-shift-method.html">4.5. The Fourier-Shift Method</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="single-tone-simulation.html">4. Example #1: Creating a simple 1 tone simulation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="multi-tone-simulation.html">5. Example #2: Simulating an SIS mixer</a></li>
-<li class="toctree-l1"><a class="reference internal" href="analyze-experimental-data.html">6. Example #3: Analyzing experimental data</a></li>
-<li class="toctree-l1"><a class="reference internal" href="hfss-embedding-impedance.html">7. Example #4: Embedding impedance from HFSS</a></li>
-<li class="toctree-l1"><a class="reference internal" href="lo-saturation.html">8. Example #5: Power saturation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="multi-junction-mixer.html">9. Example #6: Multiple junctions</a></li>
-<li class="toctree-l1"><a class="reference internal" href="references.html">10. References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="single-tone-simulation.html">5. Example #1: Creating a simple 1 tone simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multi-tone-simulation.html">6. Example #2: Simulating an SIS mixer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analyze-experimental-data.html">7. Example #3: Analyzing experimental data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hfss-embedding-impedance.html">8. Example #4: Embedding impedance from HFSS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lo-saturation.html">9. Example #5: Power saturation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multi-junction-mixer.html">10. Example #6: Multiple junctions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="references.html">11. References</a></li>
 </ul>
 
         </div>
@@ -86,8 +87,8 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-          <li class="breadcrumb-item"><a href="theory.html"><span class="section-number">3. </span>Theory</a></li>
-      <li class="breadcrumb-item active"><span class="section-number">3.4. </span>Superconducting Transmission Lines</li>
+          <li class="breadcrumb-item"><a href="theory.html"><span class="section-number">4. </span>Theory</a></li>
+      <li class="breadcrumb-item active"><span class="section-number">4.4. </span>Superconducting Transmission Lines</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/superconducting-lines.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -98,12 +99,12 @@
            <div itemprop="articleBody">
              
   <section id="superconducting-transmission-lines">
-<span id="superconducting-lines"></span><h1><span class="section-number">3.4. </span>Superconducting Transmission Lines<a class="headerlink" href="#superconducting-transmission-lines" title="Link to this heading"></a></h1>
+<span id="superconducting-lines"></span><h1><span class="section-number">4.4. </span>Superconducting Transmission Lines<a class="headerlink" href="#superconducting-transmission-lines" title="Link to this heading"></a></h1>
 <p>The tuning circuits of SIS mixers are usually made from superconducting microstrip: e.g., a Nb strip on a thin SiO<sub>2</sub> dielectric above a Nb ground plane. Below the gap frequency of the films, the films have very little loss, but they have a large <em>kinetic inductance</em>: the supercurrent penetrates the films to a depth <span class="math notranslate nohighlight">\(\lambda\)</span> (~80 nm for Nb films), and the kinetic energy of the Cooper pairs adds to the inductance of the line. When the dielectric is only a few penetration depths thick, the waves are slowed down by ~20%, which shifts the frequency at which a tuning circuit resonates by the same amount. Above the gap frequency (~700 GHz for Nb), photons break Cooper pairs and the films become lossy.</p>
 <p>QMix models these lines in three steps: the complex conductivity of the films (Mattis-Bardeen theory), the surface impedance of a film of finite thickness, and the microstrip line with these surface impedances. The functions are in <a class="reference internal" href="qmix.html#module-qmix.superconductor" title="qmix.superconductor"><code class="xref py py-mod docutils literal notranslate"><span class="pre">qmix.superconductor</span></code></a> (films) and <a class="reference internal" href="qmix.html#module-qmix.network" title="qmix.network"><code class="xref py py-mod docutils literal notranslate"><span class="pre">qmix.network</span></code></a> (lines). The conductivity, the energy gap and the film impedance are calculated by the <a class="reference external" href="https://github.com/garrettj403/Mattis-Bardeen">Mattis-Bardeen</a> package (<code class="docutils literal notranslate"><span class="pre">mattisbardeen</span></code>), which <a class="reference internal" href="qmix.html#module-qmix.superconductor" title="qmix.superconductor"><code class="xref py py-mod docutils literal notranslate"><span class="pre">qmix.superconductor</span></code></a> wraps. The model is the same as in SuperMix (Ward et al., 1999), and the results agree with it (see the end of this page).</p>
 <p>Unlike the rest of QMix, the values here are not normalized: frequencies are in Hz, temperatures in K, lengths in m and impedances in ohms. Complex values use the engineering convention <span class="math notranslate nohighlight">\(e^{+j\omega t}\)</span>, as for the impedances in the rest of QMix: inductive reactances are positive.</p>
 <section id="the-energy-gap">
-<h2><span class="section-number">3.4.1. </span>The energy gap<a class="headerlink" href="#the-energy-gap" title="Link to this heading"></a></h2>
+<h2><span class="section-number">4.4.1. </span>The energy gap<a class="headerlink" href="#the-energy-gap" title="Link to this heading"></a></h2>
 <p>The energy gap <span class="math notranslate nohighlight">\(\Delta(T)\)</span> of the superconductor decreases with temperature and vanishes at the critical temperature <span class="math notranslate nohighlight">\(T_c\)</span>. QMix takes the gap at zero temperature from the gap voltage of the film, <span class="math notranslate nohighlight">\(V_\mathrm{gap} = 2 \Delta(0) / e\)</span>, and its temperature dependence from the weak-coupling BCS gap equation,</p>
 <div class="math notranslate nohighlight">
 \[\ln \frac{\Delta(0)}{\Delta(T)} = 2 \int_0^\infty \frac{f(E)}{E} \, \mathrm{d}\xi,
@@ -112,7 +113,7 @@
 <p>where <span class="math notranslate nohighlight">\(f(E) = 1 / (e^{E / k_B T} + 1)\)</span> is the Fermi function and <span class="math notranslate nohighlight">\(\gamma_E\)</span> is Euler’s constant. With <span class="math notranslate nohighlight">\(\xi = \Delta \sinh u\)</span>, the integral becomes <span class="math notranslate nohighlight">\(2 \int_0^\infty f(\Delta \cosh u) \, \mathrm{d}u\)</span>, which <a class="reference internal" href="qmix.html#qmix.superconductor.energy_gap" title="qmix.superconductor.energy_gap"><code class="xref py py-func docutils literal notranslate"><span class="pre">qmix.superconductor.energy_gap()</span></code></a> solves for <span class="math notranslate nohighlight">\(\Delta(T) / \Delta(0)\)</span>. Only this ratio comes from BCS theory, so <span class="math notranslate nohighlight">\(V_\mathrm{gap}\)</span> and <span class="math notranslate nohighlight">\(T_c\)</span> don’t need to satisfy the BCS ratio (for Nb films, <span class="math notranslate nohighlight">\(2 \Delta(0) / k_B T_c \approx 3.5-3.9\)</span>). Near <span class="math notranslate nohighlight">\(T_c\)</span>, <span class="math notranslate nohighlight">\(\Delta(T) / \Delta(0) \approx 1.74 \sqrt{1 - T / T_c}\)</span>.</p>
 </section>
 <section id="the-mattis-bardeen-conductivity">
-<h2><span class="section-number">3.4.2. </span>The Mattis-Bardeen conductivity<a class="headerlink" href="#the-mattis-bardeen-conductivity" title="Link to this heading"></a></h2>
+<h2><span class="section-number">4.4.2. </span>The Mattis-Bardeen conductivity<a class="headerlink" href="#the-mattis-bardeen-conductivity" title="Link to this heading"></a></h2>
 <p>In the local (dirty) limit, i.e., when the mean free path of the electrons is much shorter than the penetration depth (true for most sputtered Nb and NbTiN films), the complex conductivity <span class="math notranslate nohighlight">\(\sigma = \sigma_1 - j \sigma_2\)</span> of a superconductor follows from the Mattis-Bardeen theory (Mattis and Bardeen, 1958; here in the form of Kautz, 1978). With energies normalized to <span class="math notranslate nohighlight">\(\Delta(T)\)</span>, the reduced frequency <span class="math notranslate nohighlight">\(\Omega = h f / \Delta(T)\)</span> and the reduced temperature <span class="math notranslate nohighlight">\(\tau = k_B T / \Delta(T)\)</span>,</p>
 <div class="math notranslate nohighlight">
 \[\frac{\sigma_1}{\sigma_n} = \frac{2}{\Omega} \int_1^\infty \frac{[f(x) - f(x + \Omega)] \, g(x)}{\sqrt{x^2 - 1} \sqrt{(x + \Omega)^2 - 1}} \, \mathrm{d}x
@@ -128,7 +129,7 @@
 <p>The integrals are evaluated with a fixed tanh-sinh (double-exponential) rule, vectorized over frequency (~30 us per frequency), and <a class="reference internal" href="qmix.html#qmix.superconductor.SuperconductingFilm" title="qmix.superconductor.SuperconductingFilm"><code class="xref py py-class docutils literal notranslate"><span class="pre">qmix.superconductor.SuperconductingFilm</span></code></a> caches the values.</p>
 </section>
 <section id="surface-impedance-of-a-film">
-<h2><span class="section-number">3.4.3. </span>Surface impedance of a film<a class="headerlink" href="#surface-impedance-of-a-film" title="Link to this heading"></a></h2>
+<h2><span class="section-number">4.4.3. </span>Surface impedance of a film<a class="headerlink" href="#surface-impedance-of-a-film" title="Link to this heading"></a></h2>
 <p>The surface impedance <span class="math notranslate nohighlight">\(Z_s\)</span> of a film is the ratio of the tangential electric field to the total surface current, at the surface that faces the dielectric of the line. For a local conductor, a plane wave in the metal has the wavenumber and wave impedance</p>
 <div class="math notranslate nohighlight">
 \[k_1 = k_0 \, n, \qquad Z_1 = \frac{Z_\mathrm{vac}}{n}, \qquad n = \sqrt{1 - j \frac{Z_\mathrm{vac} \, \sigma}{k_0}},\]</div>
@@ -139,7 +140,7 @@
 <p>This is <a class="reference internal" href="qmix.html#qmix.superconductor.film_impedance" title="qmix.superconductor.film_impedance"><code class="xref py py-func docutils literal notranslate"><span class="pre">qmix.superconductor.film_impedance()</span></code></a>. For stacks of films (<a class="reference internal" href="qmix.html#qmix.superconductor.Multilayer" title="qmix.superconductor.Multilayer"><code class="xref py py-class docutils literal notranslate"><span class="pre">qmix.superconductor.Multilayer</span></code></a>, e.g., a thin Nb film on NbTiN), the formula is applied layer by layer, from the back: the surface impedance of the layers behind a film is its termination. Limits: for a thick normal metal, <span class="math notranslate nohighlight">\(Z_s = (1 + j) \sqrt{\pi f \mu_0 \rho}\)</span> (skin effect); for a thick superconductor at low frequencies, <span class="math notranslate nohighlight">\(Z_s \approx j \omega \mu_0 \lambda\)</span>; and for a film much thinner than the skin or penetration depth, <span class="math notranslate nohighlight">\(Z_s \approx 1 / (\sigma t + 1 / Z_b)\)</span>. QMix uses SciPy’s physical constants. The thickness also enters the geometry of the strip (below).</p>
 </section>
 <section id="microstrip-lines">
-<h2><span class="section-number">3.4.4. </span>Microstrip lines<a class="headerlink" href="#microstrip-lines" title="Link to this heading"></a></h2>
+<h2><span class="section-number">4.4.4. </span>Microstrip lines<a class="headerlink" href="#microstrip-lines" title="Link to this heading"></a></h2>
 <p><a class="reference internal" href="qmix.html#qmix.network.microstrip" title="qmix.network.microstrip"><code class="xref py py-func docutils literal notranslate"><span class="pre">qmix.network.microstrip()</span></code></a> gives the characteristic impedance <span class="math notranslate nohighlight">\(Z_c\)</span> and the propagation constant <span class="math notranslate nohighlight">\(\gamma = \alpha + j \beta\)</span> (waves vary as <span class="math notranslate nohighlight">\(e^{-\gamma z}\)</span>) of a microstrip line: a strip of width <span class="math notranslate nohighlight">\(w\)</span> and thickness <span class="math notranslate nohighlight">\(t\)</span>, on a dielectric of thickness <span class="math notranslate nohighlight">\(h\)</span> and relative permittivity <span class="math notranslate nohighlight">\(\epsilon_r\)</span> (and loss tangent <span class="math notranslate nohighlight">\(\tan\delta\)</span>) above a ground plane, with an optional superstrate above the strip (default: vacuum). It combines:</p>
 <ol class="arabic simple">
 <li><p><strong>The effective permittivity</strong> <span class="math notranslate nohighlight">\(\epsilon_\mathrm{eff}\)</span> of the lossless line: the quasi-static value of Hammerstad and Jensen (1980), including the strip thickness as a correction to its width, with the dispersion of Kirschning and Jansen (1982) (<span class="math notranslate nohighlight">\(\epsilon_\mathrm{eff}\)</span> rises towards <span class="math notranslate nohighlight">\(\epsilon_r\)</span> at high frequencies).</p></li>
@@ -158,7 +159,7 @@ Y' = \frac{k}{Z_0} \left( 2 \delta + j (1 - \delta^2) \right),
 <p>The other passive elements of SuperMix are in <a class="reference internal" href="qmix.html#module-qmix.network" title="qmix.network"><code class="xref py py-mod docutils literal notranslate"><span class="pre">qmix.network</span></code></a> too, and give the same S-parameters as SuperMix to round-off: rectangular waveguide (TE10, with first-order wall and dielectric losses, <a class="reference internal" href="qmix.html#qmix.network.rectangular_waveguide" title="qmix.network.rectangular_waveguide"><code class="xref py py-func docutils literal notranslate"><span class="pre">qmix.network.rectangular_waveguide()</span></code></a>), lossless coplanar waveguide (<a class="reference internal" href="qmix.html#qmix.network.cpw" title="qmix.network.cpw"><code class="xref py py-func docutils literal notranslate"><span class="pre">qmix.network.cpw()</span></code></a>), microstrip radial stubs (<a class="reference internal" href="qmix.html#qmix.network.radial_stub" title="qmix.network.radial_stub"><code class="xref py py-func docutils literal notranslate"><span class="pre">qmix.network.radial_stub()</span></code></a>, made of annular microstrip sections), lines given by their electrical length (<a class="reference internal" href="qmix.html#qmix.network.ideal_line" title="qmix.network.ideal_line"><code class="xref py py-func docutils literal notranslate"><span class="pre">qmix.network.ideal_line()</span></code></a>), lumped elements in series or shunt (resistor, capacitor, inductor, series and parallel RLC; the inductance of a via hole), series and parallel connections, loads, attenuators, time delays, matching transformers, circulators, hybrids, slot and twin-slot antennas, a power divider, and de-embedding (<a class="reference internal" href="qmix.html#qmix.network.deembed" title="qmix.network.deembed"><code class="xref py py-func docutils literal notranslate"><span class="pre">qmix.network.deembed()</span></code></a>).</p>
 </section>
 <section id="comparison-with-supermix">
-<h2><span class="section-number">3.4.5. </span>Comparison with SuperMix<a class="headerlink" href="#comparison-with-supermix" title="Link to this heading"></a></h2>
+<h2><span class="section-number">4.4.5. </span>Comparison with SuperMix<a class="headerlink" href="#comparison-with-supermix" title="Link to this heading"></a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">profile/supermix/compare_lines.py</span></code> runs SuperMix’s <code class="docutils literal notranslate"><span class="pre">super_film</span></code>, <code class="docutils literal notranslate"><span class="pre">normal_film</span></code> and <code class="docutils literal notranslate"><span class="pre">microstrip</span></code> classes (<code class="docutils literal notranslate"><span class="pre">smx_lines.cc</span></code>) on several lines (Nb and NbTiN, narrow and wide strips, thin films, lossy dielectrics and superstrates, 10 GHz to 3 THz), and <code class="docutils literal notranslate"><span class="pre">tests/test_supermix_reference.py</span></code> checks QMix against the stored results. With SuperMix’s physical constants:</p>
 <ul class="simple">
 <li><p>For normal-metal films, the surface impedances and the line parameters agree to ~1e-15, so the microstrip model is the same.</p></li>
@@ -172,8 +173,8 @@ Y' = \frac{k}{Z_0} \left( 2 \delta + j (1 - \delta^2) \right),
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="small-signal.html" class="btn btn-neutral float-left" title="3.3. Small-Signal Analysis" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="fourier-shift-method.html" class="btn btn-neutral float-right" title="3.5. The Fourier-Shift Method" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="small-signal.html" class="btn btn-neutral float-left" title="4.3. Small-Signal Analysis" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="fourier-shift-method.html" class="btn btn-neutral float-right" title="4.5. The Fourier-Shift Method" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

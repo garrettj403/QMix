@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>3. Theory &mdash; QMix latest documentation</title>
+  <title>4. Theory &mdash; QMix latest documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
 
@@ -20,8 +20,8 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="3.1. Multi-Tone Spectral Domain Analysis" href="mtsda.html" />
-    <link rel="prev" title="2.1.3. qmix.misc package" href="qmix.misc.html" /> 
+    <link rel="next" title="4.1. Multi-Tone Spectral Domain Analysis" href="mtsda.html" />
+    <link rel="prev" title="3.1.3. qmix.misc package" href="qmix.misc.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -45,22 +45,23 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="setup.html">1. Getting Started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="qmix.html">2. Package API</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">3. Theory</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="mtsda.html">3.1. Multi-Tone Spectral Domain Analysis</a></li>
-<li class="toctree-l2"><a class="reference internal" href="harmonic-balance.html">3.2. Harmonic Balance</a></li>
-<li class="toctree-l2"><a class="reference internal" href="small-signal.html">3.3. Small-Signal Analysis</a></li>
-<li class="toctree-l2"><a class="reference internal" href="superconducting-lines.html">3.4. Superconducting Transmission Lines</a></li>
-<li class="toctree-l2"><a class="reference internal" href="fourier-shift-method.html">3.5. The Fourier-Shift Method</a></li>
+<li class="toctree-l1"><a class="reference internal" href="capabilities.html">2. Capabilities and Limitations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="qmix.html">3. Package API</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">4. Theory</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="mtsda.html">4.1. Multi-Tone Spectral Domain Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="harmonic-balance.html">4.2. Harmonic Balance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="small-signal.html">4.3. Small-Signal Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="superconducting-lines.html">4.4. Superconducting Transmission Lines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="fourier-shift-method.html">4.5. The Fourier-Shift Method</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="single-tone-simulation.html">4. Example #1: Creating a simple 1 tone simulation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="multi-tone-simulation.html">5. Example #2: Simulating an SIS mixer</a></li>
-<li class="toctree-l1"><a class="reference internal" href="analyze-experimental-data.html">6. Example #3: Analyzing experimental data</a></li>
-<li class="toctree-l1"><a class="reference internal" href="hfss-embedding-impedance.html">7. Example #4: Embedding impedance from HFSS</a></li>
-<li class="toctree-l1"><a class="reference internal" href="lo-saturation.html">8. Example #5: Power saturation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="multi-junction-mixer.html">9. Example #6: Multiple junctions</a></li>
-<li class="toctree-l1"><a class="reference internal" href="references.html">10. References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="single-tone-simulation.html">5. Example #1: Creating a simple 1 tone simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multi-tone-simulation.html">6. Example #2: Simulating an SIS mixer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analyze-experimental-data.html">7. Example #3: Analyzing experimental data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hfss-embedding-impedance.html">8. Example #4: Embedding impedance from HFSS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lo-saturation.html">9. Example #5: Power saturation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multi-junction-mixer.html">10. Example #6: Multiple junctions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="references.html">11. References</a></li>
 </ul>
 
         </div>
@@ -77,7 +78,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active"><span class="section-number">3. </span>Theory</li>
+      <li class="breadcrumb-item active"><span class="section-number">4. </span>Theory</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/theory.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -88,7 +89,7 @@
            <div itemprop="articleBody">
              
   <section id="theory">
-<span id="id1"></span><h1><span class="section-number">3. </span>Theory<a class="headerlink" href="#theory" title="Link to this heading"></a></h1>
+<span id="id1"></span><h1><span class="section-number">4. </span>Theory<a class="headerlink" href="#theory" title="Link to this heading"></a></h1>
 <p>This section describes the methods that QMix uses to simulate SIS junctions. A simulation has two parts, and a mixer simulation can add a third:</p>
 <ol class="arabic simple">
 <li><p><strong>Multi-tone spectral domain analysis (MTSDA)</strong> gives the quasiparticle tunneling current through the junction for a known voltage across it, with any number of tones and harmonics. This is what <a class="reference internal" href="qmix.html#qmix.qtcurrent.qtcurrent" title="qmix.qtcurrent.qtcurrent"><code class="xref py py-func docutils literal notranslate"><span class="pre">qmix.qtcurrent.qtcurrent()</span></code></a> calculates.</p></li>
@@ -99,49 +100,49 @@
 <p>The methods follow Kittara’s thesis (2002), Withington, Kittara and Yassin (2003), and Kittara, Withington and Yassin (2007); see <a class="reference internal" href="references.html#references"><span class="std std-ref">References</span></a>. Equation numbers in the text and in the QMix source code (e.g., “Eqn. 5.25”) refer to Chapter 5 of Kittara’s thesis.</p>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="mtsda.html">3.1. Multi-Tone Spectral Domain Analysis</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="mtsda.html#the-response-function">3.1.1. The response function</a></li>
-<li class="toctree-l2"><a class="reference internal" href="mtsda.html#one-tone">3.1.2. One tone</a></li>
-<li class="toctree-l2"><a class="reference internal" href="mtsda.html#one-tone-with-harmonics">3.1.3. One tone with harmonics</a></li>
-<li class="toctree-l2"><a class="reference internal" href="mtsda.html#multiple-tones">3.1.4. Multiple tones</a></li>
-<li class="toctree-l2"><a class="reference internal" href="mtsda.html#the-tunneling-current">3.1.5. The tunneling current</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mtsda.html">4.1. Multi-Tone Spectral Domain Analysis</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="mtsda.html#the-response-function">4.1.1. The response function</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mtsda.html#one-tone">4.1.2. One tone</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mtsda.html#one-tone-with-harmonics">4.1.3. One tone with harmonics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mtsda.html#multiple-tones">4.1.4. Multiple tones</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mtsda.html#the-tunneling-current">4.1.5. The tunneling current</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="harmonic-balance.html">3.2. Harmonic Balance</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="harmonic-balance.html#the-embedding-circuit">3.2.1. The embedding circuit</a></li>
-<li class="toctree-l2"><a class="reference internal" href="harmonic-balance.html#the-harmonic-balance-equations">3.2.2. The harmonic balance equations</a></li>
-<li class="toctree-l2"><a class="reference internal" href="harmonic-balance.html#newton-s-method">3.2.3. Newton’s method</a></li>
-<li class="toctree-l2"><a class="reference internal" href="harmonic-balance.html#the-jacobian">3.2.4. The Jacobian</a></li>
-<li class="toctree-l2"><a class="reference internal" href="harmonic-balance.html#robustness">3.2.5. Robustness</a></li>
-<li class="toctree-l2"><a class="reference internal" href="harmonic-balance.html#convergence">3.2.6. Convergence</a></li>
-<li class="toctree-l2"><a class="reference internal" href="harmonic-balance.html#several-junctions">3.2.7. Several junctions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="harmonic-balance.html#dc-bias-network">3.2.8. DC bias network</a></li>
-<li class="toctree-l2"><a class="reference internal" href="harmonic-balance.html#choosing-the-parameters">3.2.9. Choosing the parameters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="harmonic-balance.html">4.2. Harmonic Balance</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="harmonic-balance.html#the-embedding-circuit">4.2.1. The embedding circuit</a></li>
+<li class="toctree-l2"><a class="reference internal" href="harmonic-balance.html#the-harmonic-balance-equations">4.2.2. The harmonic balance equations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="harmonic-balance.html#newton-s-method">4.2.3. Newton’s method</a></li>
+<li class="toctree-l2"><a class="reference internal" href="harmonic-balance.html#the-jacobian">4.2.4. The Jacobian</a></li>
+<li class="toctree-l2"><a class="reference internal" href="harmonic-balance.html#robustness">4.2.5. Robustness</a></li>
+<li class="toctree-l2"><a class="reference internal" href="harmonic-balance.html#convergence">4.2.6. Convergence</a></li>
+<li class="toctree-l2"><a class="reference internal" href="harmonic-balance.html#several-junctions">4.2.7. Several junctions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="harmonic-balance.html#dc-bias-network">4.2.8. DC bias network</a></li>
+<li class="toctree-l2"><a class="reference internal" href="harmonic-balance.html#choosing-the-parameters">4.2.9. Choosing the parameters</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="small-signal.html">3.3. Small-Signal Analysis</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="small-signal.html#sidebands">3.3.1. Sidebands</a></li>
-<li class="toctree-l2"><a class="reference internal" href="small-signal.html#the-admittance-matrix">3.3.2. The admittance matrix</a></li>
-<li class="toctree-l2"><a class="reference internal" href="small-signal.html#one-junction">3.3.3. One junction</a></li>
-<li class="toctree-l2"><a class="reference internal" href="small-signal.html#several-junctions">3.3.4. Several junctions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="small-signal.html#limits-of-the-small-signal-analysis">3.3.5. Limits of the small-signal analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="small-signal.html">4.3. Small-Signal Analysis</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="small-signal.html#sidebands">4.3.1. Sidebands</a></li>
+<li class="toctree-l2"><a class="reference internal" href="small-signal.html#the-admittance-matrix">4.3.2. The admittance matrix</a></li>
+<li class="toctree-l2"><a class="reference internal" href="small-signal.html#one-junction">4.3.3. One junction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="small-signal.html#several-junctions">4.3.4. Several junctions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="small-signal.html#limits-of-the-small-signal-analysis">4.3.5. Limits of the small-signal analysis</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="superconducting-lines.html">3.4. Superconducting Transmission Lines</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="superconducting-lines.html#the-energy-gap">3.4.1. The energy gap</a></li>
-<li class="toctree-l2"><a class="reference internal" href="superconducting-lines.html#the-mattis-bardeen-conductivity">3.4.2. The Mattis-Bardeen conductivity</a></li>
-<li class="toctree-l2"><a class="reference internal" href="superconducting-lines.html#surface-impedance-of-a-film">3.4.3. Surface impedance of a film</a></li>
-<li class="toctree-l2"><a class="reference internal" href="superconducting-lines.html#microstrip-lines">3.4.4. Microstrip lines</a></li>
-<li class="toctree-l2"><a class="reference internal" href="superconducting-lines.html#comparison-with-supermix">3.4.5. Comparison with SuperMix</a></li>
+<li class="toctree-l1"><a class="reference internal" href="superconducting-lines.html">4.4. Superconducting Transmission Lines</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="superconducting-lines.html#the-energy-gap">4.4.1. The energy gap</a></li>
+<li class="toctree-l2"><a class="reference internal" href="superconducting-lines.html#the-mattis-bardeen-conductivity">4.4.2. The Mattis-Bardeen conductivity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="superconducting-lines.html#surface-impedance-of-a-film">4.4.3. Surface impedance of a film</a></li>
+<li class="toctree-l2"><a class="reference internal" href="superconducting-lines.html#microstrip-lines">4.4.4. Microstrip lines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="superconducting-lines.html#comparison-with-supermix">4.4.5. Comparison with SuperMix</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="fourier-shift-method.html">3.5. The Fourier-Shift Method</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="fourier-shift-method.html#the-sum-that-has-to-be-evaluated">3.5.1. The sum that has to be evaluated</a></li>
-<li class="toctree-l2"><a class="reference internal" href="fourier-shift-method.html#factorizing-the-shift">3.5.2. Factorizing the shift</a></li>
-<li class="toctree-l2"><a class="reference internal" href="fourier-shift-method.html#constructing-the-fourier-series">3.5.3. Constructing the Fourier series</a></li>
-<li class="toctree-l2"><a class="reference internal" href="fourier-shift-method.html#accuracy">3.5.4. Accuracy</a></li>
-<li class="toctree-l2"><a class="reference internal" href="fourier-shift-method.html#cost">3.5.5. Cost</a></li>
-<li class="toctree-l2"><a class="reference internal" href="fourier-shift-method.html#using-it">3.5.6. Using it</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fourier-shift-method.html">4.5. The Fourier-Shift Method</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="fourier-shift-method.html#the-sum-that-has-to-be-evaluated">4.5.1. The sum that has to be evaluated</a></li>
+<li class="toctree-l2"><a class="reference internal" href="fourier-shift-method.html#factorizing-the-shift">4.5.2. Factorizing the shift</a></li>
+<li class="toctree-l2"><a class="reference internal" href="fourier-shift-method.html#constructing-the-fourier-series">4.5.3. Constructing the Fourier series</a></li>
+<li class="toctree-l2"><a class="reference internal" href="fourier-shift-method.html#accuracy">4.5.4. Accuracy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="fourier-shift-method.html#cost">4.5.5. Cost</a></li>
+<li class="toctree-l2"><a class="reference internal" href="fourier-shift-method.html#using-it">4.5.6. Using it</a></li>
 </ul>
 </li>
 </ul>
@@ -152,8 +153,8 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="qmix.misc.html" class="btn btn-neutral float-left" title="2.1.3. qmix.misc package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="mtsda.html" class="btn btn-neutral float-right" title="3.1. Multi-Tone Spectral Domain Analysis" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="qmix.misc.html" class="btn btn-neutral float-left" title="3.1.3. qmix.misc package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="mtsda.html" class="btn btn-neutral float-right" title="4.1. Multi-Tone Spectral Domain Analysis" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>8. Example #5: Power saturation &mdash; QMix latest documentation</title>
+  <title>9. Example #5: Power saturation &mdash; QMix latest documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="_static/nbsphinx-code-cells.css?v=2aa19091" />
@@ -23,8 +23,8 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="9. Example #6: Multiple junctions" href="multi-junction-mixer.html" />
-    <link rel="prev" title="7. Example #4: Embedding impedance from HFSS" href="hfss-embedding-impedance.html" /> 
+    <link rel="next" title="10. Example #6: Multiple junctions" href="multi-junction-mixer.html" />
+    <link rel="prev" title="8. Example #4: Embedding impedance from HFSS" href="hfss-embedding-impedance.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -48,28 +48,29 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="setup.html">1. Getting Started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="qmix.html">2. Package API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="theory.html">3. Theory</a></li>
-<li class="toctree-l1"><a class="reference internal" href="single-tone-simulation.html">4. Example #1: Creating a simple 1 tone simulation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="multi-tone-simulation.html">5. Example #2: Simulating an SIS mixer</a></li>
-<li class="toctree-l1"><a class="reference internal" href="analyze-experimental-data.html">6. Example #3: Analyzing experimental data</a></li>
-<li class="toctree-l1"><a class="reference internal" href="hfss-embedding-impedance.html">7. Example #4: Embedding impedance from HFSS</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">8. Example #5: Power saturation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#Part-1:-LO-power">8.1. Part 1: LO power</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#Importing-the-data">8.2. Importing the data</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#The-embedding-circuit">8.3. The embedding circuit</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#Gain-and-noise-vs-LO-power">8.4. Gain and noise vs LO power</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#Part-2:-RF-power">8.5. Part 2: RF power</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#The-embedding-circuits-of-the-two-sources">8.5.1. The embedding circuits of the two sources</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#The-measured-IF-output">8.5.2. The measured IF output</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#The-RF-power">8.5.3. The RF power</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#Gain-compression">8.5.4. Gain compression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="capabilities.html">2. Capabilities and Limitations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="qmix.html">3. Package API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="theory.html">4. Theory</a></li>
+<li class="toctree-l1"><a class="reference internal" href="single-tone-simulation.html">5. Example #1: Creating a simple 1 tone simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multi-tone-simulation.html">6. Example #2: Simulating an SIS mixer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analyze-experimental-data.html">7. Example #3: Analyzing experimental data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hfss-embedding-impedance.html">8. Example #4: Embedding impedance from HFSS</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">9. Example #5: Power saturation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#Part-1:-LO-power">9.1. Part 1: LO power</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Importing-the-data">9.2. Importing the data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#The-embedding-circuit">9.3. The embedding circuit</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Gain-and-noise-vs-LO-power">9.4. Gain and noise vs LO power</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Part-2:-RF-power">9.5. Part 2: RF power</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#The-embedding-circuits-of-the-two-sources">9.5.1. The embedding circuits of the two sources</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#The-measured-IF-output">9.5.2. The measured IF output</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#The-RF-power">9.5.3. The RF power</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Gain-compression">9.5.4. Gain compression</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="multi-junction-mixer.html">9. Example #6: Multiple junctions</a></li>
-<li class="toctree-l1"><a class="reference internal" href="references.html">10. References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multi-junction-mixer.html">10. Example #6: Multiple junctions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="references.html">11. References</a></li>
 </ul>
 
         </div>
@@ -86,7 +87,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active"><span class="section-number">8. </span>Example #5: Power saturation</li>
+      <li class="breadcrumb-item active"><span class="section-number">9. </span>Example #5: Power saturation</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/lo-saturation.ipynb.txt" rel="nofollow"> View page source</a>
       </li>
@@ -97,14 +98,14 @@
            <div itemprop="articleBody">
              
   <section id="Example-#5:-Power-saturation">
-<h1><span class="section-number">8. </span>Example #5: Power saturation<a class="headerlink" href="#Example-#5:-Power-saturation" title="Link to this heading"></a></h1>
+<h1><span class="section-number">9. </span>Example #5: Power saturation<a class="headerlink" href="#Example-#5:-Power-saturation" title="Link to this heading"></a></h1>
 <p>QMix calculates the tunneling currents for any signal power, not just in the small-signal limit. This notebook uses this to simulate the saturation of an SIS mixer, and compares it with measurements:</p>
 <ol class="arabic simple">
 <li><p><strong>LO power:</strong> the gain and noise of the mixer as the LO power is increased, compared with hot/cold measurements.</p></li>
 <li><p><strong>RF power:</strong> the compression of the gain by a strong RF signal, compared with the measured IF output power.</p></li>
 </ol>
 <section id="Part-1:-LO-power">
-<h2><span class="section-number">8.1. </span>Part 1: LO power<a class="headerlink" href="#Part-1:-LO-power" title="Link to this heading"></a></h2>
+<h2><span class="section-number">9.1. </span>Part 1: LO power<a class="headerlink" href="#Part-1:-LO-power" title="Link to this heading"></a></h2>
 <p>The data are from device #5.6 (the same device as in Example #3, Garrett, 2018), measured at 255 GHz with 9 LO power levels. The example data are in <code class="docutils literal notranslate"><span class="pre">example-data/lo-saturation/</span></code>:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">dciv.csv</span></code>, <code class="docutils literal notranslate"><span class="pre">dcif.csv</span></code>: the unpumped DC I-V curve and IF power.</p></li>
@@ -164,7 +165,7 @@
 </div>
 </section>
 <section id="Importing-the-data">
-<h2><span class="section-number">8.2. </span>Importing the data<a class="headerlink" href="#Importing-the-data" title="Link to this heading"></a></h2>
+<h2><span class="section-number">9.2. </span>Importing the data<a class="headerlink" href="#Importing-the-data" title="Link to this heading"></a></h2>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
@@ -221,7 +222,7 @@ Rn = 14.01 ohms, Vgap = 2.690 mV
 </div>
 </section>
 <section id="The-embedding-circuit">
-<h2><span class="section-number">8.3. </span>The embedding circuit<a class="headerlink" href="#The-embedding-circuit" title="Link to this heading"></a></h2>
+<h2><span class="section-number">9.3. </span>The embedding circuit<a class="headerlink" href="#The-embedding-circuit" title="Link to this heading"></a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">PumpedData</span></code> recovers the embedding impedance and voltage at each power level. In principle, the embedding impedance shouldn’t depend on the LO power. At 255 GHz, however, the recovery is not well conditioned, and the recovered impedance drifts as the LO power increases:</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
@@ -342,7 +343,7 @@ Level   vt (Vgap)   rms I-V error (Igap)
 <p>With one fixed impedance, the Thevenin voltage alone reproduces the first photon step at every power level.</p>
 </section>
 <section id="Gain-and-noise-vs-LO-power">
-<h2><span class="section-number">8.4. </span>Gain and noise vs LO power<a class="headerlink" href="#Gain-and-noise-vs-LO-power" title="Link to this heading"></a></h2>
+<h2><span class="section-number">9.4. </span>Gain and noise vs LO power<a class="headerlink" href="#Gain-and-noise-vs-LO-power" title="Link to this heading"></a></h2>
 <p>Now, <code class="docutils literal notranslate"><span class="pre">mixer_noise</span></code> simulates the mixer at each power level with this embedding circuit (see Example #3). The gain and noise of the RF/optics stage in front of the mixer don’t depend on the LO power, so we fit them only to the three lowest power levels (0-2), at the best bias voltage of each level, and keep them fixed:</p>
 <ul class="simple">
 <li><p>gain: G = G_RF G_mix</p></li>
@@ -456,7 +457,7 @@ the optimum (e.g., 111 K measured vs 87 K simulated at level 4).</p>
 </div>
 </section>
 <section id="Part-2:-RF-power">
-<h2><span class="section-number">8.5. </span>Part 2: RF power<a class="headerlink" href="#Part-2:-RF-power" title="Link to this heading"></a></h2>
+<h2><span class="section-number">9.5. </span>Part 2: RF power<a class="headerlink" href="#Part-2:-RF-power" title="Link to this heading"></a></h2>
 <p>In a real receiver, a strong RF signal (e.g., a bright spectral line) also saturates the mixer. With multi-tone spectral domain analysis, the RF signal can be simulated as a tone of any power, so this saturation is included automatically (see Garrett et al., 2019, for simulations of this mixer).</p>
 <p>In this measurement, the mixer was pumped by an LO at 229.5 GHz (a Gubbins source), and a second strong source at 232.757 GHz (a Gunn oscillator) was used as the RF signal. The RF power was varied by rotating a wire grid from 0 to 90 degrees, and the IF output at 3.257 GHz was measured with a spectrum analyzer. The DC I-V curve has the same normal resistance and gap voltage as the device above, so this is most likely device #5.6 again. The example data are in <code class="docutils literal notranslate"><span class="pre">example-data/rf-saturation/</span></code>:</p>
 <ul class="simple">
@@ -465,7 +466,7 @@ the optimum (e.g., 111 K measured vs 87 K simulated at level 4).</p>
 <li><p><code class="docutils literal notranslate"><span class="pre">spectrum_gridN.csv</span></code>: the IF spectrum with both sources, with the grid at N = 0, 10, …, 90 degrees.</p></li>
 </ul>
 <section id="The-embedding-circuits-of-the-two-sources">
-<h3><span class="section-number">8.5.1. </span>The embedding circuits of the two sources<a class="headerlink" href="#The-embedding-circuits-of-the-two-sources" title="Link to this heading"></a></h3>
+<h3><span class="section-number">9.5.1. </span>The embedding circuits of the two sources<a class="headerlink" href="#The-embedding-circuits-of-the-two-sources" title="Link to this heading"></a></h3>
 <p>As in Example #3, the embedding circuit of each source is recovered from its own pumped I-V curve. Together, they then predict the I-V curve with both sources, and the IF output, with no free parameters (other than the IF load impedance).</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
@@ -588,7 +589,7 @@ Available power: LO -44.4 dBm, RF -47.6 dBm
 <p>The RF signal is almost as strong as the LO, so the I-V curve with both sources is not simply the sum of the two. With an IF load of a few ohms, the simulation reproduces it very closely, from the two single-source curves alone. With a 50 ohm IF load, the IF voltage is ~3 times larger, and it smooths the photon steps far more than measured (e.g., the current rises ~0.17 Vgap below the gap, the amplitude of the IF voltage).</p>
 </section>
 <section id="The-measured-IF-output">
-<h3><span class="section-number">8.5.2. </span>The measured IF output<a class="headerlink" href="#The-measured-IF-output" title="Link to this heading"></a></h3>
+<h3><span class="section-number">9.5.2. </span>The measured IF output<a class="headerlink" href="#The-measured-IF-output" title="Link to this heading"></a></h3>
 <p>The IF output was measured with a spectrum analyzer at each grid angle. The IF peak is at ~3.24 GHz (the spectra have a resolution of 20 MHz):</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
@@ -632,14 +633,14 @@ IF peak (dBm):      [ -6.42  -6.43  -6.62  -7.16  -8.12 -10.13 -13.2  -18.88 -29
 </div>
 </section>
 <section id="The-RF-power">
-<h3><span class="section-number">8.5.3. </span>The RF power<a class="headerlink" href="#The-RF-power" title="Link to this heading"></a></h3>
+<h3><span class="section-number">9.5.3. </span>The RF power<a class="headerlink" href="#The-RF-power" title="Link to this heading"></a></h3>
 <p>The RF source is linearly polarized and passes through the wire grid, and the mixer only receives one polarization. Rotating the grid by an angle <span class="math notranslate nohighlight">\(\theta\)</span> therefore reduces the field by <span class="math notranslate nohighlight">\(\cos\theta\)</span> twice: once in the grid, and once at the mixer, which gives a power of</p>
 <div class="math notranslate nohighlight">
 \[P_{RF}(\theta) = P_{RF}(0) \cos^4\theta.\]</div>
 <p>This is confirmed by a measurement on the same setup a month earlier (2017-04-10), where the pumped I-V curve with only the RF source was measured at each grid angle: the Thevenin voltages recovered from these curves give <span class="math notranslate nohighlight">\(|V_T(\theta) / V_T(0)|^2\)</span> = 0.18, 0.07 and 0.012 at 50, 60 and 70 degrees, compared to <span class="math notranslate nohighlight">\(\cos^4\theta\)</span> = 0.17, 0.06 and 0.014. (At 90 degrees, the measured IF power is set by leakage through the grid, so this point is not used.)</p>
 </section>
 <section id="Gain-compression">
-<h3><span class="section-number">8.5.4. </span>Gain compression<a class="headerlink" href="#Gain-compression" title="Link to this heading"></a></h3>
+<h3><span class="section-number">9.5.4. </span>Gain compression<a class="headerlink" href="#Gain-compression" title="Link to this heading"></a></h3>
 <p>Now we simulate the IF output power at each grid angle, with the Thevenin voltage of the RF source scaled by <span class="math notranslate nohighlight">\(\cos^2\theta\)</span>, for the IF load found above and for 50 ohms. The bias voltage of the spectra was not recorded, so the simulations are done at three bias voltages across the first photon step below the gap (2.0-2.3 mV); the shaded areas show the range. The gain is shown relative to its value with the weakest RF signal (80 degrees), for both the measurement and the simulations:</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
@@ -734,8 +735,8 @@ Compression at the highest RF power (dB):
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="hfss-embedding-impedance.html" class="btn btn-neutral float-left" title="7. Example #4: Embedding impedance from HFSS" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="multi-junction-mixer.html" class="btn btn-neutral float-right" title="9. Example #6: Multiple junctions" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="hfss-embedding-impedance.html" class="btn btn-neutral float-left" title="8. Example #4: Embedding impedance from HFSS" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="multi-junction-mixer.html" class="btn btn-neutral float-right" title="10. Example #6: Multiple junctions" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

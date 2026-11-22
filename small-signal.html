@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>3.3. Small-Signal Analysis &mdash; QMix latest documentation</title>
+  <title>4.3. Small-Signal Analysis &mdash; QMix latest documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
 
@@ -22,8 +22,8 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="3.4. Superconducting Transmission Lines" href="superconducting-lines.html" />
-    <link rel="prev" title="3.2. Harmonic Balance" href="harmonic-balance.html" /> 
+    <link rel="next" title="4.4. Superconducting Transmission Lines" href="superconducting-lines.html" />
+    <link rel="prev" title="4.2. Harmonic Balance" href="harmonic-balance.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -47,29 +47,30 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="setup.html">1. Getting Started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="qmix.html">2. Package API</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="theory.html">3. Theory</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="mtsda.html">3.1. Multi-Tone Spectral Domain Analysis</a></li>
-<li class="toctree-l2"><a class="reference internal" href="harmonic-balance.html">3.2. Harmonic Balance</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">3.3. Small-Signal Analysis</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#sidebands">3.3.1. Sidebands</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#the-admittance-matrix">3.3.2. The admittance matrix</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#one-junction">3.3.3. One junction</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#several-junctions">3.3.4. Several junctions</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#limits-of-the-small-signal-analysis">3.3.5. Limits of the small-signal analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="capabilities.html">2. Capabilities and Limitations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="qmix.html">3. Package API</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="theory.html">4. Theory</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="mtsda.html">4.1. Multi-Tone Spectral Domain Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="harmonic-balance.html">4.2. Harmonic Balance</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">4.3. Small-Signal Analysis</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#sidebands">4.3.1. Sidebands</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#the-admittance-matrix">4.3.2. The admittance matrix</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#one-junction">4.3.3. One junction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#several-junctions">4.3.4. Several junctions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#limits-of-the-small-signal-analysis">4.3.5. Limits of the small-signal analysis</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="superconducting-lines.html">3.4. Superconducting Transmission Lines</a></li>
-<li class="toctree-l2"><a class="reference internal" href="fourier-shift-method.html">3.5. The Fourier-Shift Method</a></li>
+<li class="toctree-l2"><a class="reference internal" href="superconducting-lines.html">4.4. Superconducting Transmission Lines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="fourier-shift-method.html">4.5. The Fourier-Shift Method</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="single-tone-simulation.html">4. Example #1: Creating a simple 1 tone simulation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="multi-tone-simulation.html">5. Example #2: Simulating an SIS mixer</a></li>
-<li class="toctree-l1"><a class="reference internal" href="analyze-experimental-data.html">6. Example #3: Analyzing experimental data</a></li>
-<li class="toctree-l1"><a class="reference internal" href="hfss-embedding-impedance.html">7. Example #4: Embedding impedance from HFSS</a></li>
-<li class="toctree-l1"><a class="reference internal" href="lo-saturation.html">8. Example #5: Power saturation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="multi-junction-mixer.html">9. Example #6: Multiple junctions</a></li>
-<li class="toctree-l1"><a class="reference internal" href="references.html">10. References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="single-tone-simulation.html">5. Example #1: Creating a simple 1 tone simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multi-tone-simulation.html">6. Example #2: Simulating an SIS mixer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analyze-experimental-data.html">7. Example #3: Analyzing experimental data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hfss-embedding-impedance.html">8. Example #4: Embedding impedance from HFSS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lo-saturation.html">9. Example #5: Power saturation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multi-junction-mixer.html">10. Example #6: Multiple junctions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="references.html">11. References</a></li>
 </ul>
 
         </div>
@@ -86,8 +87,8 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-          <li class="breadcrumb-item"><a href="theory.html"><span class="section-number">3. </span>Theory</a></li>
-      <li class="breadcrumb-item active"><span class="section-number">3.3. </span>Small-Signal Analysis</li>
+          <li class="breadcrumb-item"><a href="theory.html"><span class="section-number">4. </span>Theory</a></li>
+      <li class="breadcrumb-item active"><span class="section-number">4.3. </span>Small-Signal Analysis</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/small-signal.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -98,18 +99,18 @@
            <div itemprop="articleBody">
              
   <section id="small-signal-analysis">
-<span id="small-signal"></span><h1><span class="section-number">3.3. </span>Small-Signal Analysis<a class="headerlink" href="#small-signal-analysis" title="Link to this heading"></a></h1>
+<span id="small-signal"></span><h1><span class="section-number">4.3. </span>Small-Signal Analysis<a class="headerlink" href="#small-signal-analysis" title="Link to this heading"></a></h1>
 <p>In an SIS mixer, a strong local oscillator (LO) pumps the junction, and the signals (the RF input and the IF output) are weak. Harmonic balance can simulate the LO and the signals together as tones, but this is slow, since every tone multiplies the cost of the tunneling current calculation. If the signals are weak enough, they don’t change the LO state, and their response is linear. This is the small-signal analysis of Tucker (1979; Tucker and Feldman, 1985): from a single-tone harmonic balance of the LO alone, it gives the conversion gain and the noise of the mixer at any IF frequency. The functions are in <a class="reference internal" href="qmix.html#module-qmix.small_signal" title="qmix.small_signal"><code class="xref py py-mod docutils literal notranslate"><span class="pre">qmix.small_signal</span></code></a>.</p>
 <p>As on the previous pages, all values are normalized to the gap voltage, gap current, normal-state resistance and gap frequency. Phasors are peak amplitudes.</p>
 <section id="sidebands">
-<h2><span class="section-number">3.3.1. </span>Sidebands<a class="headerlink" href="#sidebands" title="Link to this heading"></a></h2>
+<h2><span class="section-number">4.3.1. </span>Sidebands<a class="headerlink" href="#sidebands" title="Link to this heading"></a></h2>
 <p>The LO at frequency <span class="math notranslate nohighlight">\(\omega\)</span> (with harmonics <span class="math notranslate nohighlight">\(p \omega\)</span>) mixes a weak signal at the IF frequency <span class="math notranslate nohighlight">\(\omega_\mathrm{IF}\)</span> with the sidebands of every LO harmonic. QMix labels them by an integer <span class="math notranslate nohighlight">\(m\)</span>, from <span class="math notranslate nohighlight">\(-M\)</span> to <span class="math notranslate nohighlight">\(M\)</span> (<code class="docutils literal notranslate"><span class="pre">num_sb</span></code>):</p>
 <div class="math notranslate nohighlight">
 \[\omega_m = m \, \omega + \omega_\mathrm{IF}.\]</div>
 <p>Sideband 0 is the IF, sideband <span class="math notranslate nohighlight">\(p &gt; 0\)</span> is the upper sideband (USB) of harmonic <span class="math notranslate nohighlight">\(p\)</span>, and sideband <span class="math notranslate nohighlight">\(-p\)</span> is its lower sideband (LSB). For <span class="math notranslate nohighlight">\(m &lt; 0\)</span> the frequency is negative, so the phasors at these sidebands are the complex conjugates of the phasors at the physical LSB frequency <span class="math notranslate nohighlight">\(p \omega - \omega_\mathrm{IF}\)</span>, and so are the impedances. The helper functions (<a class="reference internal" href="qmix.html#qmix.small_signal.sideband_impedances" title="qmix.small_signal.sideband_impedances"><code class="xref py py-func docutils literal notranslate"><span class="pre">qmix.small_signal.sideband_impedances()</span></code></a>, <a class="reference internal" href="qmix.html#qmix.small_signal.sideband_voltages" title="qmix.small_signal.sideband_voltages"><code class="xref py py-func docutils literal notranslate"><span class="pre">qmix.small_signal.sideband_voltages()</span></code></a> and <a class="reference internal" href="qmix.html#qmix.small_signal.sideband_networks" title="qmix.small_signal.sideband_networks"><code class="xref py py-func docutils literal notranslate"><span class="pre">qmix.small_signal.sideband_networks()</span></code></a>) take the physical values and do this conversion, and <a class="reference internal" href="qmix.html#qmix.small_signal.lsb" title="qmix.small_signal.lsb"><code class="xref py py-func docutils literal notranslate"><span class="pre">qmix.small_signal.lsb()</span></code></a> converts results back. Arrays over sidebands are stored in natural order: sideband <span class="math notranslate nohighlight">\(m\)</span> is at index <code class="docutils literal notranslate"><span class="pre">m</span> <span class="pre">+</span> <span class="pre">num_sb</span></code>.</p>
 </section>
 <section id="the-admittance-matrix">
-<h2><span class="section-number">3.3.2. </span>The admittance matrix<a class="headerlink" href="#the-admittance-matrix" title="Link to this heading"></a></h2>
+<h2><span class="section-number">4.3.2. </span>The admittance matrix<a class="headerlink" href="#the-admittance-matrix" title="Link to this heading"></a></h2>
 <p>The small signals at all sidebands are linearly related by the conversion admittance matrix:</p>
 <div class="math notranslate nohighlight">
 \[I_m = \sum_{n=-M}^{M} Y_{mn} V_n,\]</div>
@@ -136,7 +137,7 @@ H_{mn} = \sum_k C_k \, C^*_{k+m-n}
 <p>is the noise of the unpumped junction, with the normalized temperature <span class="math notranslate nohighlight">\(T = k_B T_\mathrm{phys} / e V_\mathrm{gap}\)</span>. This includes the thermal and quantum limits of shot noise, but not the noise of the embedding circuit. QMix calculates <span class="math notranslate nohighlight">\(H\)</span> with <a class="reference internal" href="qmix.html#qmix.small_signal.noise_matrix" title="qmix.small_signal.noise_matrix"><code class="xref py py-func docutils literal notranslate"><span class="pre">qmix.small_signal.noise_matrix()</span></code></a>, which needs the physical temperature and the gap voltage.</p>
 </section>
 <section id="one-junction">
-<h2><span class="section-number">3.3.3. </span>One junction<a class="headerlink" href="#one-junction" title="Link to this heading"></a></h2>
+<h2><span class="section-number">4.3.3. </span>One junction<a class="headerlink" href="#one-junction" title="Link to this heading"></a></h2>
 <p>At each sideband, the embedding circuit seen by the junction is a Thevenin equivalent circuit: a source voltage <span class="math notranslate nohighlight">\(V_{T,m}\)</span> in series with an impedance <span class="math notranslate nohighlight">\(Z_m\)</span> (<a class="reference internal" href="qmix.html#qmix.small_signal.sideband_impedances" title="qmix.small_signal.sideband_impedances"><code class="xref py py-func docutils literal notranslate"><span class="pre">qmix.small_signal.sideband_impedances()</span></code></a>). Usually, only the source at the input sideband is nonzero. The junction voltages satisfy <span class="math notranslate nohighlight">\(V_m = V_{T,m} - Z_m I_m\)</span>, so</p>
 <div class="math notranslate nohighlight">
 \[(\mathbf{1} + \mathbf{Z} \mathbf{Y}) \, \mathbf{V} = \mathbf{V}_T,\]</div>
@@ -160,7 +161,7 @@ T_{cw} = \frac{h f}{2 k_B} \coth\left( \frac{h f}{2 k_B T_\mathrm{phys}} \right)
 <p>without the noise of the load itself (<a class="reference internal" href="qmix.html#qmix.small_signal.output_noise" title="qmix.small_signal.output_noise"><code class="xref py py-func docutils literal notranslate"><span class="pre">qmix.small_signal.output_noise()</span></code></a>). The single-sideband (SSB) noise temperature of the mixer is the output noise, without the noise of the source at the input sideband, referred to the input: <span class="math notranslate nohighlight">\(T_\mathrm{SSB} = T_\mathrm{out} / G_{m' m}\)</span> (<a class="reference internal" href="qmix.html#qmix.small_signal.noise_temperature" title="qmix.small_signal.noise_temperature"><code class="xref py py-func docutils literal notranslate"><span class="pre">qmix.small_signal.noise_temperature()</span></code></a>). For the double-sideband (DSB) noise temperature, the noise of both sidebands is left out, and the output noise is divided by the sum of the gains from the USB and the LSB. With the junction noise only (<span class="math notranslate nohighlight">\(\mathbf{S} = 0\)</span>), the zero-point fluctuations of the embedding are missing, so the noise temperature can be below the quantum limit (<span class="math notranslate nohighlight">\(h f / 2 k_B\)</span> for a DSB mixer).</p>
 </section>
 <section id="several-junctions">
-<h2><span class="section-number">3.3.4. </span>Several junctions<a class="headerlink" href="#several-junctions" title="Link to this heading"></a></h2>
+<h2><span class="section-number">4.3.4. </span>Several junctions<a class="headerlink" href="#several-junctions" title="Link to this heading"></a></h2>
 <p>With several junctions (<a class="reference internal" href="qmix.html#qmix.circuit.MultiJunctionCircuit" title="qmix.circuit.MultiJunctionCircuit"><code class="xref py py-class docutils literal notranslate"><span class="pre">qmix.circuit.MultiJunctionCircuit</span></code></a>), each junction <span class="math notranslate nohighlight">\(j\)</span> has its own admittance and noise matrices, <span class="math notranslate nohighlight">\(\mathbf{Y}_j\)</span> and <span class="math notranslate nohighlight">\(\mathbf{H}_j\)</span>, from its own LO state. They are scaled by the relative area of the junction (<code class="docutils literal notranslate"><span class="pre">cct.area[j]</span></code>), and the noise of different junctions is uncorrelated. Junctions with a different gap voltage (<code class="docutils literal notranslate"><span class="pre">cct.gap_voltage[j]</span></code>) use the scaled response function described in <a class="reference internal" href="harmonic-balance.html#harmonic-balance"><span class="std std-ref">Harmonic Balance</span></a>. Since that function is in circuit units, the matrices need no other change (the temperature in <span class="math notranslate nohighlight">\(N(V)\)</span> is normalized with the circuit’s gap voltage, like <span class="math notranslate nohighlight">\(V\)</span>). <a class="reference internal" href="qmix.html#qmix.small_signal.admittance_matrix" title="qmix.small_signal.admittance_matrix"><code class="xref py py-func docutils literal notranslate"><span class="pre">qmix.small_signal.admittance_matrix()</span></code></a> and <a class="reference internal" href="qmix.html#qmix.small_signal.noise_matrix" title="qmix.small_signal.noise_matrix"><code class="xref py py-func docutils literal notranslate"><span class="pre">qmix.small_signal.noise_matrix()</span></code></a> return them as <code class="docutils literal notranslate"><span class="pre">y[j,</span> <span class="pre">m,</span> <span class="pre">n,</span> <span class="pre">i]</span></code> and <code class="docutils literal notranslate"><span class="pre">h[j,</span> <span class="pre">m,</span> <span class="pre">n,</span> <span class="pre">i]</span></code>.</p>
 <p>The junctions are coupled by the embedding network. At each sideband, the network is described by its impedance matrix over the <span class="math notranslate nohighlight">\(J\)</span> junction ports and one external port <span class="math notranslate nohighlight">\(x\)</span>: the RF input (or the image termination) at the RF sidebands, and the IF load at the IF. With the currents <span class="math notranslate nohighlight">\(I^\mathrm{net}\)</span> into the network and the open-circuit noise voltages <span class="math notranslate nohighlight">\(\mathbf{e}\)</span> of a lossy network,</p>
 <div class="math notranslate nohighlight">
@@ -198,7 +199,7 @@ T_{cw} = \frac{h f}{2 k_B} \coth\left( \frac{h f}{2 k_B T_\mathrm{phys}} \right)
 <p>These equations are checked in the test suite in four ways. One junction behind a lossless network gives the same gain and noise as the single-junction functions. Two identical junctions in parallel give the same results as one junction of twice the area. A multi-junction, multi-tone harmonic balance with a weak RF signal gives the same gain to about <span class="math notranslate nohighlight">\(10^{-6}\)</span>. In thermal equilibrium (unpumped junctions at zero bias, a lossy network and the terminations all at one temperature), the noise delivered to the IF load is <span class="math notranslate nohighlight">\(k_B T_{cw} (1 - |\Gamma|^2)\)</span>, where <span class="math notranslate nohighlight">\(\Gamma\)</span> is the reflection coefficient at the IF port. This holds in the quantum regime too, as the fluctuation-dissipation theorem requires.</p>
 </section>
 <section id="limits-of-the-small-signal-analysis">
-<h2><span class="section-number">3.3.5. </span>Limits of the small-signal analysis<a class="headerlink" href="#limits-of-the-small-signal-analysis" title="Link to this heading"></a></h2>
+<h2><span class="section-number">4.3.5. </span>Limits of the small-signal analysis<a class="headerlink" href="#limits-of-the-small-signal-analysis" title="Link to this heading"></a></h2>
 <ul class="simple">
 <li><p><strong>The signals must be weak.</strong> The analysis is linear in the signals and doesn’t include saturation. Use a multi-tone harmonic balance for strong signals, e.g., <a class="reference internal" href="lo-saturation.html"><span class="doc">Example #5: Power saturation</span></a>. At a low IF, “weak” is stricter than it seems: the IF photon voltage <span class="math notranslate nohighlight">\(\omega_\mathrm{IF}\)</span> is small, so even a small IF voltage gives a large IF drive level <span class="math notranslate nohighlight">\(|V_\mathrm{IF}| / \omega_\mathrm{IF}\)</span>. When comparing with a multi-tone simulation at a 5 GHz IF, an RF signal of 1 pW gave errors of 0.5%, and <span class="math notranslate nohighlight">\(10^{-16}\)</span> W was needed to agree to <span class="math notranslate nohighlight">\(10^{-6}\)</span>.</p></li>
 <li><p><strong>The number of sidebands.</strong> <code class="docutils literal notranslate"><span class="pre">num_sb</span></code> sets how many LO harmonics have sidebands, <span class="math notranslate nohighlight">\(M\)</span>. The default, the number of LO harmonics in the circuit (<code class="docutils literal notranslate"><span class="pre">cct.num_p</span></code>), is usually enough, since the junction capacitance shorts out the higher sidebands.</p></li>
@@ -212,8 +213,8 @@ T_{cw} = \frac{h f}{2 k_B} \coth\left( \frac{h f}{2 k_B T_\mathrm{phys}} \right)
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="harmonic-balance.html" class="btn btn-neutral float-left" title="3.2. Harmonic Balance" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="superconducting-lines.html" class="btn btn-neutral float-right" title="3.4. Superconducting Transmission Lines" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="harmonic-balance.html" class="btn btn-neutral float-left" title="4.2. Harmonic Balance" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="superconducting-lines.html" class="btn btn-neutral float-right" title="4.4. Superconducting Transmission Lines" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

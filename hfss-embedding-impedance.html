@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>7. Example #4: Embedding impedance from HFSS &mdash; QMix latest documentation</title>
+  <title>8. Example #4: Embedding impedance from HFSS &mdash; QMix latest documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="_static/nbsphinx-code-cells.css?v=2aa19091" />
@@ -23,8 +23,8 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="8. Example #5: Power saturation" href="lo-saturation.html" />
-    <link rel="prev" title="6. Example #3: Analyzing experimental data" href="analyze-experimental-data.html" /> 
+    <link rel="next" title="9. Example #5: Power saturation" href="lo-saturation.html" />
+    <link rel="prev" title="7. Example #3: Analyzing experimental data" href="analyze-experimental-data.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -48,25 +48,26 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="setup.html">1. Getting Started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="qmix.html">2. Package API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="theory.html">3. Theory</a></li>
-<li class="toctree-l1"><a class="reference internal" href="single-tone-simulation.html">4. Example #1: Creating a simple 1 tone simulation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="multi-tone-simulation.html">5. Example #2: Simulating an SIS mixer</a></li>
-<li class="toctree-l1"><a class="reference internal" href="analyze-experimental-data.html">6. Example #3: Analyzing experimental data</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">7. Example #4: Embedding impedance from HFSS</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#Reading-the-S-parameters">7.1. Reading the S-parameters</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#Connecting-the-networks">7.2. Connecting the networks</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#The-embedding-impedance">7.3. The embedding impedance</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#Comparing-with-the-recovered-impedances">7.4. Comparing with the recovered impedances</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#Driving-the-harmonic-balance-with-the-S-parameters">7.5. Driving the harmonic balance with the S-parameters</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#Sideband-impedances-in-the-noise-model">7.6. Sideband impedances in the noise model</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#The-embedding-impedance-at-the-sub-harmonic">7.7. The embedding impedance at the sub-harmonic</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#Simulating-the-broken-photon-step">7.8. Simulating the broken photon step</a></li>
+<li class="toctree-l1"><a class="reference internal" href="capabilities.html">2. Capabilities and Limitations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="qmix.html">3. Package API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="theory.html">4. Theory</a></li>
+<li class="toctree-l1"><a class="reference internal" href="single-tone-simulation.html">5. Example #1: Creating a simple 1 tone simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multi-tone-simulation.html">6. Example #2: Simulating an SIS mixer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analyze-experimental-data.html">7. Example #3: Analyzing experimental data</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">8. Example #4: Embedding impedance from HFSS</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#Reading-the-S-parameters">8.1. Reading the S-parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Connecting-the-networks">8.2. Connecting the networks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#The-embedding-impedance">8.3. The embedding impedance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Comparing-with-the-recovered-impedances">8.4. Comparing with the recovered impedances</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Driving-the-harmonic-balance-with-the-S-parameters">8.5. Driving the harmonic balance with the S-parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Sideband-impedances-in-the-noise-model">8.6. Sideband impedances in the noise model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#The-embedding-impedance-at-the-sub-harmonic">8.7. The embedding impedance at the sub-harmonic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Simulating-the-broken-photon-step">8.8. Simulating the broken photon step</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="lo-saturation.html">8. Example #5: Power saturation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="multi-junction-mixer.html">9. Example #6: Multiple junctions</a></li>
-<li class="toctree-l1"><a class="reference internal" href="references.html">10. References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lo-saturation.html">9. Example #5: Power saturation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multi-junction-mixer.html">10. Example #6: Multiple junctions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="references.html">11. References</a></li>
 </ul>
 
         </div>
@@ -83,7 +84,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active"><span class="section-number">7. </span>Example #4: Embedding impedance from HFSS</li>
+      <li class="breadcrumb-item active"><span class="section-number">8. </span>Example #4: Embedding impedance from HFSS</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/hfss-embedding-impedance.ipynb.txt" rel="nofollow"> View page source</a>
       </li>
@@ -94,7 +95,7 @@
            <div itemprop="articleBody">
              
   <section id="Example-#4:-Embedding-impedance-from-HFSS">
-<h1><span class="section-number">7. </span>Example #4: Embedding impedance from HFSS<a class="headerlink" href="#Example-#4:-Embedding-impedance-from-HFSS" title="Link to this heading"></a></h1>
+<h1><span class="section-number">8. </span>Example #4: Embedding impedance from HFSS<a class="headerlink" href="#Example-#4:-Embedding-impedance-from-HFSS" title="Link to this heading"></a></h1>
 <p>The previous example recovered the embedding impedance of an SIS mixer from its pumped I-V curve. This impedance can also be calculated from an electromagnetic simulation of the RF circuit. This notebook uses the <code class="docutils literal notranslate"><span class="pre">qmix.network</span></code> module to read the S-parameters of the 230 GHz mixer from HFSS, to calculate the embedding impedance seen by the junction, and to compare it with the impedances recovered from measurements over an LO sweep from 214 to 255 GHz. The impedances are then used for the
 sideband impedances in the noise model of the mixer (<code class="docutils literal notranslate"><span class="pre">PumpedData.mixer_noise</span></code>).</p>
 <p>The data are from the same device as in Example #3 (device #5.6 from Garrett, 2018). The example data are in <code class="docutils literal notranslate"><span class="pre">example-data/</span></code>:</p>
@@ -127,7 +128,7 @@ sideband impedances in the noise model of the mixer (<code class="docutils liter
 </div>
 </div>
 <section id="Reading-the-S-parameters">
-<h2><span class="section-number">7.1. </span>Reading the S-parameters<a class="headerlink" href="#Reading-the-S-parameters" title="Link to this heading"></a></h2>
+<h2><span class="section-number">8.1. </span>Reading the S-parameters<a class="headerlink" href="#Reading-the-S-parameters" title="Link to this heading"></a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">read_touchstone</span></code> reads Touchstone files. These files were exported from HFSS without renormalizing the ports, so the reference impedance of each port is its HFSS port impedance, which is listed for every frequency in the comments of the file (<code class="docutils literal notranslate"><span class="pre">!</span> <span class="pre">Port</span> <span class="pre">Impedance</span></code>). <code class="docutils literal notranslate"><span class="pre">read_touchstone</span></code> uses these when the option line doesn’t give a reference impedance.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
@@ -163,7 +164,7 @@ Port impedances at 230 GHz (ohms):
 <p><strong>Note:</strong> Touchstone files are often renormalized to 50 ohms. In that case, the waveguide port must be terminated in its own mode impedance, not in 50 ohms. Otherwise, the mismatch at the waveguide port creates ripples in the embedding impedance that aren’t there in the real mixer.</p>
 </section>
 <section id="Connecting-the-networks">
-<h2><span class="section-number">7.2. </span>Connecting the networks<a class="headerlink" href="#Connecting-the-networks" title="Link to this heading"></a></h2>
+<h2><span class="section-number">8.2. </span>Connecting the networks<a class="headerlink" href="#Connecting-the-networks" title="Link to this heading"></a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">Network.connect</span></code> connects port 2 of the tuner to port 2 of the finline. The ports of the result are the remaining ports of the tuner, followed by the remaining ports of the finline: port 1 is the junction, port 2 the IF, and port 3 the waveguide.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
@@ -184,7 +185,7 @@ RF circuit: 3 ports
 </div>
 </section>
 <section id="The-embedding-impedance">
-<h2><span class="section-number">7.3. </span>The embedding impedance<a class="headerlink" href="#The-embedding-impedance" title="Link to this heading"></a></h2>
+<h2><span class="section-number">8.3. </span>The embedding impedance<a class="headerlink" href="#The-embedding-impedance" title="Link to this heading"></a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">embedding_impedance</span></code> calculates the impedance seen at port 1, with the junction capacitance in parallel. Ports that are not terminated are matched to their reference impedance, so the waveguide (port 3) sees a matched load. Here, the IF port (port 2) is terminated by 50 ohms. The result is a function of frequency (in Hz) that returns the impedance in ohms.</p>
 <p>The nominal capacitance of the junction is the specific capacitance (80 fF/um^2) times the area (1.5 um^2).</p>
 <div class="nbinput docutils container">
@@ -216,7 +217,7 @@ RF circuit: 3 ports
 </div>
 </section>
 <section id="Comparing-with-the-recovered-impedances">
-<h2><span class="section-number">7.4. </span>Comparing with the recovered impedances<a class="headerlink" href="#Comparing-with-the-recovered-impedances" title="Link to this heading"></a></h2>
+<h2><span class="section-number">8.4. </span>Comparing with the recovered impedances<a class="headerlink" href="#Comparing-with-the-recovered-impedances" title="Link to this heading"></a></h2>
 <p>We will now recover the embedding impedance from the pumped I-V curve at each LO frequency, as in Example #3.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
@@ -359,7 +360,7 @@ Fitted capacitance:  144 fF, rms error 0.122 Rn
 <p>With the fitted capacitance (~140 fF), the HFSS model follows the recovered impedances much more closely than with the nominal capacitance, also at 252-255 GHz, which were not used in the fit. With the measured normal resistance (14.2 ohms, i.e., an area of ~1.4 um^2 for the nominal resistance-area product of 20 ohm um^2), this corresponds to a specific capacitance of ~100 fF/um^2.</p>
 </section>
 <section id="Driving-the-harmonic-balance-with-the-S-parameters">
-<h2><span class="section-number">7.5. </span>Driving the harmonic balance with the S-parameters<a class="headerlink" href="#Driving-the-harmonic-balance-with-the-S-parameters" title="Link to this heading"></a></h2>
+<h2><span class="section-number">8.5. </span>Driving the harmonic balance with the S-parameters<a class="headerlink" href="#Driving-the-harmonic-balance-with-the-S-parameters" title="Link to this heading"></a></h2>
 <p>So far, the S-parameters only gave the embedding impedance. They also give the Thevenin voltage, if we know the power of the source: <code class="docutils literal notranslate"><span class="pre">thevenin</span></code> calculates the Thevenin equivalent seen by the junction when a source (here, the LO) with a given available power drives another port of the network (here, the waveguide, port 3), and <code class="docutils literal notranslate"><span class="pre">set_thevenin</span></code> puts it into an <code class="docutils literal notranslate"><span class="pre">EmbeddingCircuit</span></code>. The simulation is then driven by the LO power in the waveguide, instead of a recovered Thevenin voltage.</p>
 <p>As an example, we will find the LO power in the waveguide at 220.1 GHz, where the HFSS embedding impedance (with the fitted capacitance) is close to the recovered one, by fitting the simulated pumped I-V curve to the measured one:</p>
 <div class="nbinput docutils container">
@@ -447,7 +448,7 @@ Thevenin voltage, the LO power in the waveguide is a physical quantity that can 
 <p>The same approach works for any number of tones and harmonics: call <code class="docutils literal notranslate"><span class="pre">set_thevenin</span></code> for each tone <code class="docutils literal notranslate"><span class="pre">f</span></code> and harmonic <code class="docutils literal notranslate"><span class="pre">p</span></code> (with <code class="docutils literal notranslate"><span class="pre">source_port=None</span></code> for frequencies without a source, e.g., the IF or the harmonics).</p>
 </section>
 <section id="Sideband-impedances-in-the-noise-model">
-<h2><span class="section-number">7.6. </span>Sideband impedances in the noise model<a class="headerlink" href="#Sideband-impedances-in-the-noise-model" title="Link to this heading"></a></h2>
+<h2><span class="section-number">8.6. </span>Sideband impedances in the noise model<a class="headerlink" href="#Sideband-impedances-in-the-noise-model" title="Link to this heading"></a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">PumpedData.mixer_noise</span></code> simulates the mixer with a small-signal analysis (see Example #3). By default, it uses the recovered embedding impedance at the LO for both sidebands. With <code class="docutils literal notranslate"><span class="pre">z_emb</span></code>, the sideband impedances are taken from a function of frequency instead, e.g., the HFSS embedding impedance. With <code class="docutils literal notranslate"><span class="pre">anchor_lo=True</span></code>, this function is shifted so that it matches the recovered impedance at the LO frequency.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
@@ -515,7 +516,7 @@ HFSS (fitted C), anchored      0.63-0.25j   0.42-0.43j   0.50  20.5 K   3.6 K
 <p>The S-parameters of the RF circuit can also be used to simulate the IF circuit (port 2), but for this mixer, the HFSS IF impedance (with the IF transformer into 50 ohms) is not consistent with the measured gain. The IF circuit is therefore still modelled by a fixed impedance (<code class="docutils literal notranslate"><span class="pre">z_if</span></code>).</p>
 </section>
 <section id="The-embedding-impedance-at-the-sub-harmonic">
-<h2><span class="section-number">7.7. </span>The embedding impedance at the sub-harmonic<a class="headerlink" href="#The-embedding-impedance-at-the-sub-harmonic" title="Link to this heading"></a></h2>
+<h2><span class="section-number">8.7. </span>The embedding impedance at the sub-harmonic<a class="headerlink" href="#The-embedding-impedance-at-the-sub-harmonic" title="Link to this heading"></a></h2>
 <p>Garrett et al. (2019) traced the broken photon steps of this mixer to a spurious harmonic of the LO source at 3/2 f_LO, made worse by the embedding impedance at the sub-harmonic, f_LO / 2. For LO frequencies of 236-255 GHz, the sub-harmonic (118-128 GHz) is below the cutoff frequency of the waveguide (136 GHz). The waveguide port then has an imaginary impedance. <code class="docutils literal notranslate"><span class="pre">qmix.network</span></code> connects such ports directly, without renormalizing them, so the embedding impedance can be calculated below cutoff
 too:</p>
 <div class="nbinput docutils container">
@@ -552,7 +553,7 @@ too:</p>
 <p>The embedding impedance is strongly inductive over exactly this range. (The HFSS data are on a 5 GHz grid, shown by the dots, so the shape of the resonance between the grid points is only approximate.) With <code class="docutils literal notranslate"><span class="pre">qmix.network</span></code>, this impedance can be used directly for a sub-harmonic tone in a multi-tone simulation.</p>
 </section>
 <section id="Simulating-the-broken-photon-step">
-<h2><span class="section-number">7.8. </span>Simulating the broken photon step<a class="headerlink" href="#Simulating-the-broken-photon-step" title="Link to this heading"></a></h2>
+<h2><span class="section-number">8.8. </span>Simulating the broken photon step<a class="headerlink" href="#Simulating-the-broken-photon-step" title="Link to this heading"></a></h2>
 <p>The broken photon step is visible in the pumped I-V curves of this device between ~235 and ~245 GHz: a notch in the first photon step below the gap, followed by a jump at <span class="math notranslate nohighlight">\(V_0 = V_\mathrm{gap} - h f_{LO} / 2e\)</span>, i.e., half a photon step below the gap. Here, we will simulate the pumped I-V curve at 240.0 GHz, following Garrett et al. (2019).</p>
 <p>Since the LO (f_LO), the sub-harmonic (f_LO / 2) and the spurious tone (3/2 f_LO) are all harmonics of f_LO / 2, this only needs one tone with three harmonics:</p>
 <ul class="simple">
@@ -678,8 +679,8 @@ the extra half-photon steps.</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="analyze-experimental-data.html" class="btn btn-neutral float-left" title="6. Example #3: Analyzing experimental data" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="lo-saturation.html" class="btn btn-neutral float-right" title="8. Example #5: Power saturation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="analyze-experimental-data.html" class="btn btn-neutral float-left" title="7. Example #3: Analyzing experimental data" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="lo-saturation.html" class="btn btn-neutral float-right" title="9. Example #5: Power saturation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

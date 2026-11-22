@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>2. Package API &mdash; QMix latest documentation</title>
+  <title>3. Package API &mdash; QMix latest documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
 
@@ -20,8 +20,8 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="2.1.1. qmix.exp package" href="qmix.exp.html" />
-    <link rel="prev" title="1. Getting Started" href="setup.html" /> 
+    <link rel="next" title="3.1.1. qmix.exp package" href="qmix.exp.html" />
+    <link rel="prev" title="2. Capabilities and Limitations" href="capabilities.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -45,15 +45,16 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="setup.html">1. Getting Started</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">2. Package API</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#subpackages">2.1. Subpackages</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="qmix.exp.html">2.1.1. qmix.exp package</a></li>
-<li class="toctree-l3"><a class="reference internal" href="qmix.mathfn.html">2.1.2. qmix.mathfn package</a></li>
-<li class="toctree-l3"><a class="reference internal" href="qmix.misc.html">2.1.3. qmix.misc package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="capabilities.html">2. Capabilities and Limitations</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">3. Package API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#subpackages">3.1. Subpackages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="qmix.exp.html">3.1.1. qmix.exp package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qmix.mathfn.html">3.1.2. qmix.mathfn package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qmix.misc.html">3.1.3. qmix.misc package</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#submodules">2.2. Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#module-qmix.circuit">2.3. qmix.circuit module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#submodules">3.2. Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-qmix.circuit">3.3. qmix.circuit module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#qmix.circuit.EmbeddingCircuit"><code class="docutils literal notranslate"><span class="pre">EmbeddingCircuit</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#qmix.circuit.EmbeddingCircuit.freq"><code class="docutils literal notranslate"><span class="pre">EmbeddingCircuit.freq</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#qmix.circuit.EmbeddingCircuit.vt"><code class="docutils literal notranslate"><span class="pre">EmbeddingCircuit.vt</span></code></a></li>
@@ -109,12 +110,12 @@
 <li class="toctree-l3"><a class="reference internal" href="#qmix.circuit.read_circuit"><code class="docutils literal notranslate"><span class="pre">read_circuit()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#module-qmix.harmonic_balance">2.4. qmix.harmonic_balance module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-qmix.harmonic_balance">3.4. qmix.harmonic_balance module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#qmix.harmonic_balance.check_hb_error"><code class="docutils literal notranslate"><span class="pre">check_hb_error()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#qmix.harmonic_balance.harmonic_balance"><code class="docutils literal notranslate"><span class="pre">harmonic_balance()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#module-qmix.network">2.5. qmix.network module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-qmix.network">3.5. qmix.network module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#qmix.network.Network"><code class="docutils literal notranslate"><span class="pre">Network</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#qmix.network.Network.connect"><code class="docutils literal notranslate"><span class="pre">Network.connect()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#qmix.network.Network.copy"><code class="docutils literal notranslate"><span class="pre">Network.copy()</span></code></a></li>
@@ -164,7 +165,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#qmix.network.waveguide_cutoff"><code class="docutils literal notranslate"><span class="pre">waveguide_cutoff()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#module-qmix.qtcurrent">2.6. qmix.qtcurrent module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-qmix.qtcurrent">3.6. qmix.qtcurrent module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#qmix.qtcurrent.FourierResp"><code class="docutils literal notranslate"><span class="pre">FourierResp</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#qmix.qtcurrent.FourierResp.coeff"><code class="docutils literal notranslate"><span class="pre">FourierResp.coeff</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#qmix.qtcurrent.FourierResp.tau"><code class="docutils literal notranslate"><span class="pre">FourierResp.tau</span></code></a></li>
@@ -185,7 +186,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#qmix.qtcurrent.suggest_num_b"><code class="docutils literal notranslate"><span class="pre">suggest_num_b()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#module-qmix.respfn">2.7. qmix.respfn module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-qmix.respfn">3.7. qmix.respfn module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#qmix.respfn.GapScaledRespFn"><code class="docutils literal notranslate"><span class="pre">GapScaledRespFn</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#qmix.respfn.GapScaledRespFn.didc"><code class="docutils literal notranslate"><span class="pre">GapScaledRespFn.didc()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#qmix.respfn.GapScaledRespFn.dikk"><code class="docutils literal notranslate"><span class="pre">GapScaledRespFn.dikk()</span></code></a></li>
@@ -218,7 +219,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#qmix.respfn.RespFnPolynomial"><code class="docutils literal notranslate"><span class="pre">RespFnPolynomial</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#module-qmix.small_signal">2.8. qmix.small_signal module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-qmix.small_signal">3.8. qmix.small_signal module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#qmix.small_signal.admittance_matrix"><code class="docutils literal notranslate"><span class="pre">admittance_matrix()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#qmix.small_signal.conversion_gain"><code class="docutils literal notranslate"><span class="pre">conversion_gain()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#qmix.small_signal.embedding_noise"><code class="docutils literal notranslate"><span class="pre">embedding_noise()</span></code></a></li>
@@ -235,7 +236,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#qmix.small_signal.solve_sidebands"><code class="docutils literal notranslate"><span class="pre">solve_sidebands()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#module-qmix.superconductor">2.9. qmix.superconductor module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-qmix.superconductor">3.9. qmix.superconductor module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#qmix.superconductor.Multilayer"><code class="docutils literal notranslate"><span class="pre">Multilayer</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#qmix.superconductor.Multilayer.thickness"><code class="docutils literal notranslate"><span class="pre">Multilayer.thickness</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#qmix.superconductor.Multilayer.zs"><code class="docutils literal notranslate"><span class="pre">Multilayer.zs()</span></code></a></li>
@@ -256,17 +257,17 @@
 <li class="toctree-l3"><a class="reference internal" href="#qmix.superconductor.mattis_bardeen"><code class="docutils literal notranslate"><span class="pre">mattis_bardeen()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#module-qmix">2.10. Module contents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-qmix">3.10. Module contents</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="theory.html">3. Theory</a></li>
-<li class="toctree-l1"><a class="reference internal" href="single-tone-simulation.html">4. Example #1: Creating a simple 1 tone simulation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="multi-tone-simulation.html">5. Example #2: Simulating an SIS mixer</a></li>
-<li class="toctree-l1"><a class="reference internal" href="analyze-experimental-data.html">6. Example #3: Analyzing experimental data</a></li>
-<li class="toctree-l1"><a class="reference internal" href="hfss-embedding-impedance.html">7. Example #4: Embedding impedance from HFSS</a></li>
-<li class="toctree-l1"><a class="reference internal" href="lo-saturation.html">8. Example #5: Power saturation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="multi-junction-mixer.html">9. Example #6: Multiple junctions</a></li>
-<li class="toctree-l1"><a class="reference internal" href="references.html">10. References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="theory.html">4. Theory</a></li>
+<li class="toctree-l1"><a class="reference internal" href="single-tone-simulation.html">5. Example #1: Creating a simple 1 tone simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multi-tone-simulation.html">6. Example #2: Simulating an SIS mixer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analyze-experimental-data.html">7. Example #3: Analyzing experimental data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hfss-embedding-impedance.html">8. Example #4: Embedding impedance from HFSS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lo-saturation.html">9. Example #5: Power saturation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multi-junction-mixer.html">10. Example #6: Multiple junctions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="references.html">11. References</a></li>
 </ul>
 
         </div>
@@ -283,7 +284,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active"><span class="section-number">2. </span>Package API</li>
+      <li class="breadcrumb-item active"><span class="section-number">3. </span>Package API</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/qmix.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -294,14 +295,14 @@
            <div itemprop="articleBody">
              
   <section id="package-api">
-<h1><span class="section-number">2. </span>Package API<a class="headerlink" href="#package-api" title="Link to this heading"></a></h1>
+<h1><span class="section-number">3. </span>Package API<a class="headerlink" href="#package-api" title="Link to this heading"></a></h1>
 <section id="subpackages">
-<h2><span class="section-number">2.1. </span>Subpackages<a class="headerlink" href="#subpackages" title="Link to this heading"></a></h2>
+<h2><span class="section-number">3.1. </span>Subpackages<a class="headerlink" href="#subpackages" title="Link to this heading"></a></h2>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="qmix.exp.html">2.1.1. qmix.exp package</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="qmix.exp.html#submodules">2.1.1.1. Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="qmix.exp.html#module-qmix.exp.clean_data">2.1.1.2. qmix.exp.clean_data module</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="qmix.exp.html">3.1.1. qmix.exp package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="qmix.exp.html#submodules">3.1.1.1. Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="qmix.exp.html#module-qmix.exp.clean_data">3.1.1.2. qmix.exp.clean_data module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="qmix.exp.html#qmix.exp.clean_data.clean_matrix"><code class="docutils literal notranslate"><span class="pre">clean_matrix()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="qmix.exp.html#qmix.exp.clean_data.clean_xy"><code class="docutils literal notranslate"><span class="pre">clean_xy()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="qmix.exp.html#qmix.exp.clean_data.matrix_to_xy"><code class="docutils literal notranslate"><span class="pre">matrix_to_xy()</span></code></a></li>
@@ -314,7 +315,7 @@
 <li class="toctree-l3"><a class="reference internal" href="qmix.exp.html#qmix.exp.clean_data.xy_to_matrix"><code class="docutils literal notranslate"><span class="pre">xy_to_matrix()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="qmix.exp.html#module-qmix.exp.exp_data">2.1.1.3. qmix.exp.exp_data module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="qmix.exp.html#module-qmix.exp.exp_data">3.1.1.3. qmix.exp.exp_data module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="qmix.exp.html#qmix.exp.exp_data.DCData"><code class="docutils literal notranslate"><span class="pre">DCData</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="qmix.exp.html#qmix.exp.exp_data.DCData.plot_all"><code class="docutils literal notranslate"><span class="pre">DCData.plot_all()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="qmix.exp.html#qmix.exp.exp_data.DCData.plot_dciv"><code class="docutils literal notranslate"><span class="pre">DCData.plot_dciv()</span></code></a></li>
@@ -359,7 +360,7 @@
 <li class="toctree-l3"><a class="reference internal" href="qmix.exp.html#qmix.exp.exp_data.plot_overall_results"><code class="docutils literal notranslate"><span class="pre">plot_overall_results()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="qmix.exp.html#module-qmix.exp.if_data">2.1.1.4. qmix.exp.if_data module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="qmix.exp.html#module-qmix.exp.if_data">3.1.1.4. qmix.exp.if_data module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="qmix.exp.html#qmix.exp.if_data.DCIFData"><code class="docutils literal notranslate"><span class="pre">DCIFData</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="qmix.exp.html#qmix.exp.if_data.DCIFData.corr"><code class="docutils literal notranslate"><span class="pre">DCIFData.corr</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="qmix.exp.html#qmix.exp.if_data.DCIFData.if_fit"><code class="docutils literal notranslate"><span class="pre">DCIFData.if_fit</span></code></a></li>
@@ -372,11 +373,11 @@
 <li class="toctree-l3"><a class="reference internal" href="qmix.exp.html#qmix.exp.if_data.if_data"><code class="docutils literal notranslate"><span class="pre">if_data()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="qmix.exp.html#module-qmix.exp.if_response">2.1.1.5. qmix.exp.if_response module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="qmix.exp.html#module-qmix.exp.if_response">3.1.1.5. qmix.exp.if_response module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="qmix.exp.html#qmix.exp.if_response.if_response"><code class="docutils literal notranslate"><span class="pre">if_response()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="qmix.exp.html#module-qmix.exp.iv_data">2.1.1.6. qmix.exp.iv_data module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="qmix.exp.html#module-qmix.exp.iv_data">3.1.1.6. qmix.exp.iv_data module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="qmix.exp.html#qmix.exp.iv_data.DCIVData"><code class="docutils literal notranslate"><span class="pre">DCIVData</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="qmix.exp.html#qmix.exp.iv_data.DCIVData.fgap"><code class="docutils literal notranslate"><span class="pre">DCIVData.fgap</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="qmix.exp.html#qmix.exp.iv_data.DCIVData.igap"><code class="docutils literal notranslate"><span class="pre">DCIVData.igap</span></code></a></li>
@@ -396,20 +397,20 @@
 <li class="toctree-l3"><a class="reference internal" href="qmix.exp.html#qmix.exp.iv_data.iv_curve"><code class="docutils literal notranslate"><span class="pre">iv_curve()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="qmix.exp.html#module-qmix.exp.parameters">2.1.1.7. qmix.exp.parameters module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="qmix.exp.html#module-qmix.exp.parameters">3.1.1.7. qmix.exp.parameters module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="qmix.exp.html#qmix.exp.parameters.params"><code class="docutils literal notranslate"><span class="pre">params</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="qmix.exp.html#module-qmix.exp">2.1.1.8. Module contents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="qmix.exp.html#module-qmix.exp">3.1.1.8. Module contents</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="qmix.mathfn.html">2.1.2. qmix.mathfn package</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="qmix.mathfn.html#submodules">2.1.2.1. Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="qmix.mathfn.html#module-qmix.mathfn.filters">2.1.2.2. qmix.mathfn.filters module</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="qmix.mathfn.html">3.1.2. qmix.mathfn package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="qmix.mathfn.html#submodules">3.1.2.1. Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="qmix.mathfn.html#module-qmix.mathfn.filters">3.1.2.2. qmix.mathfn.filters module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="qmix.mathfn.html#qmix.mathfn.filters.gauss_conv"><code class="docutils literal notranslate"><span class="pre">gauss_conv()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="qmix.mathfn.html#module-qmix.mathfn.ivcurve_models">2.1.2.3. qmix.mathfn.ivcurve_models module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="qmix.mathfn.html#module-qmix.mathfn.ivcurve_models">3.1.2.3. qmix.mathfn.ivcurve_models module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="qmix.mathfn.html#qmix.mathfn.ivcurve_models.expanded"><code class="docutils literal notranslate"><span class="pre">expanded()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="qmix.mathfn.html#qmix.mathfn.ivcurve_models.exponential"><code class="docutils literal notranslate"><span class="pre">exponential()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="qmix.mathfn.html#qmix.mathfn.ivcurve_models.perfect"><code class="docutils literal notranslate"><span class="pre">perfect()</span></code></a></li>
@@ -417,26 +418,26 @@
 <li class="toctree-l3"><a class="reference internal" href="qmix.mathfn.html#qmix.mathfn.ivcurve_models.polynomial"><code class="docutils literal notranslate"><span class="pre">polynomial()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="qmix.mathfn.html#module-qmix.mathfn.kktrans">2.1.2.4. qmix.mathfn.kktrans module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="qmix.mathfn.html#module-qmix.mathfn.kktrans">3.1.2.4. qmix.mathfn.kktrans module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="qmix.mathfn.html#qmix.mathfn.kktrans.kk_trans"><code class="docutils literal notranslate"><span class="pre">kk_trans()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="qmix.mathfn.html#qmix.mathfn.kktrans.kk_trans_trapz"><code class="docutils literal notranslate"><span class="pre">kk_trans_trapz()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="qmix.mathfn.html#module-qmix.mathfn.misc">2.1.2.5. qmix.mathfn.misc module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="qmix.mathfn.html#module-qmix.mathfn.misc">3.1.2.5. qmix.mathfn.misc module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="qmix.mathfn.html#qmix.mathfn.misc.slope"><code class="docutils literal notranslate"><span class="pre">slope()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="qmix.mathfn.html#qmix.mathfn.misc.slope_span_n"><code class="docutils literal notranslate"><span class="pre">slope_span_n()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="qmix.mathfn.html#module-qmix.mathfn">2.1.2.6. Module contents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="qmix.mathfn.html#module-qmix.mathfn">3.1.2.6. Module contents</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="qmix.misc.html">2.1.3. qmix.misc package</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="qmix.misc.html#submodules">2.1.3.1. Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="qmix.misc.html#module-qmix.misc.progbar">2.1.3.2. qmix.misc.progbar module</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="qmix.misc.html">3.1.3. qmix.misc package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="qmix.misc.html#submodules">3.1.3.1. Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="qmix.misc.html#module-qmix.misc.progbar">3.1.3.2. qmix.misc.progbar module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="qmix.misc.html#qmix.misc.progbar.progress_bar"><code class="docutils literal notranslate"><span class="pre">progress_bar()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="qmix.misc.html#module-qmix.misc.terminal">2.1.3.3. qmix.misc.terminal module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="qmix.misc.html#module-qmix.misc.terminal">3.1.3.3. qmix.misc.terminal module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="qmix.misc.html#qmix.misc.terminal.cprint"><code class="docutils literal notranslate"><span class="pre">cprint()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="qmix.misc.html#qmix.misc.terminal.header"><code class="docutils literal notranslate"><span class="pre">header()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="qmix.misc.html#qmix.misc.terminal.print_intro"><code class="docutils literal notranslate"><span class="pre">print_intro()</span></code></a></li>
@@ -446,17 +447,17 @@
 <li class="toctree-l3"><a class="reference internal" href="qmix.misc.html#qmix.misc.terminal.title"><code class="docutils literal notranslate"><span class="pre">title()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="qmix.misc.html#module-qmix.misc">2.1.3.4. Module contents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="qmix.misc.html#module-qmix.misc">3.1.3.4. Module contents</a></li>
 </ul>
 </li>
 </ul>
 </div>
 </section>
 <section id="submodules">
-<h2><span class="section-number">2.2. </span>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
+<h2><span class="section-number">3.2. </span>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
 </section>
 <section id="module-qmix.circuit">
-<span id="qmix-circuit-module"></span><h2><span class="section-number">2.3. </span>qmix.circuit module<a class="headerlink" href="#module-qmix.circuit" title="Link to this heading"></a></h2>
+<span id="qmix-circuit-module"></span><h2><span class="section-number">3.3. </span>qmix.circuit module<a class="headerlink" href="#module-qmix.circuit" title="Link to this heading"></a></h2>
 <p>This module contains classes and functions to describe the embedding
 circuit.</p>
 <p><strong>Description:</strong></p>
@@ -1402,7 +1403,7 @@ based on a file previously generated by the
 
 </section>
 <section id="module-qmix.harmonic_balance">
-<span id="qmix-harmonic-balance-module"></span><h2><span class="section-number">2.4. </span>qmix.harmonic_balance module<a class="headerlink" href="#module-qmix.harmonic_balance" title="Link to this heading"></a></h2>
+<span id="qmix-harmonic-balance-module"></span><h2><span class="section-number">3.4. </span>qmix.harmonic_balance module<a class="headerlink" href="#module-qmix.harmonic_balance" title="Link to this heading"></a></h2>
 <p>This module contains functions to perform harmonic balance of non-linear
 SIS mixer circuits.</p>
 <p><strong>Description</strong></p>
@@ -1548,7 +1549,7 @@ junction voltage (e.g., <code class="docutils literal notranslate"><span class="
 
 </section>
 <section id="module-qmix.network">
-<span id="qmix-network-module"></span><h2><span class="section-number">2.5. </span>qmix.network module<a class="headerlink" href="#module-qmix.network" title="Link to this heading"></a></h2>
+<span id="qmix-network-module"></span><h2><span class="section-number">3.5. </span>qmix.network module<a class="headerlink" href="#module-qmix.network" title="Link to this heading"></a></h2>
 <p>This module contains a class for linear networks described by scattering
 parameters (S-parameters), e.g., from electromagnetic simulations (HFSS) or
 measurements (VNA), and functions to read them from Touchstone files.</p>
@@ -2821,7 +2822,7 @@ warning is issued outside of the geometric ranges.</p>
 
 </section>
 <section id="module-qmix.qtcurrent">
-<span id="qmix-qtcurrent-module"></span><h2><span class="section-number">2.6. </span>qmix.qtcurrent module<a class="headerlink" href="#module-qmix.qtcurrent" title="Link to this heading"></a></h2>
+<span id="qmix-qtcurrent-module"></span><h2><span class="section-number">3.6. </span>qmix.qtcurrent module<a class="headerlink" href="#module-qmix.qtcurrent" title="Link to this heading"></a></h2>
 <p>This module contains functions to calculate the quasiparticle tunneling
 currents passing through an SIS junction.</p>
 <p>Description:</p>
@@ -3263,7 +3264,7 @@ is 50</p></li>
 
 </section>
 <section id="module-qmix.respfn">
-<span id="qmix-respfn-module"></span><h2><span class="section-number">2.7. </span>qmix.respfn module<a class="headerlink" href="#module-qmix.respfn" title="Link to this heading"></a></h2>
+<span id="qmix-respfn-module"></span><h2><span class="section-number">3.7. </span>qmix.respfn module<a class="headerlink" href="#module-qmix.respfn" title="Link to this heading"></a></h2>
 <p>This module contains classes to represent the response function of the
 SIS junction.</p>
 <p>There are several different types of response function classes:</p>
@@ -3917,7 +3918,7 @@ a Gaussian dist. with this std. dev.</p></li>
 
 </section>
 <section id="module-qmix.small_signal">
-<span id="qmix-small-signal-module"></span><h2><span class="section-number">2.8. </span>qmix.small_signal module<a class="headerlink" href="#module-qmix.small_signal" title="Link to this heading"></a></h2>
+<span id="qmix-small-signal-module"></span><h2><span class="section-number">3.8. </span>qmix.small_signal module<a class="headerlink" href="#module-qmix.small_signal" title="Link to this heading"></a></h2>
 <p>This module contains functions for the small-signal analysis of SIS
 mixers (Tucker theory).</p>
 <p>Description:</p>
@@ -4434,7 +4435,7 @@ order, with the complex conjugate for m &lt; 0)</p>
 
 </section>
 <section id="module-qmix.superconductor">
-<span id="qmix-superconductor-module"></span><h2><span class="section-number">2.9. </span>qmix.superconductor module<a class="headerlink" href="#module-qmix.superconductor" title="Link to this heading"></a></h2>
+<span id="qmix-superconductor-module"></span><h2><span class="section-number">3.9. </span>qmix.superconductor module<a class="headerlink" href="#module-qmix.superconductor" title="Link to this heading"></a></h2>
 <p>This module contains functions and classes for the surface impedance of
 superconducting and normal metal films, for use in transmission lines (e.g.,
 <code class="docutils literal notranslate"><span class="pre">qmix.network.microstrip</span></code>).</p>
@@ -4715,7 +4716,7 @@ the BCS ratio.</p>
 
 </section>
 <section id="module-qmix">
-<span id="module-contents"></span><h2><span class="section-number">2.10. </span>Module contents<a class="headerlink" href="#module-qmix" title="Link to this heading"></a></h2>
+<span id="module-contents"></span><h2><span class="section-number">3.10. </span>Module contents<a class="headerlink" href="#module-qmix" title="Link to this heading"></a></h2>
 <p>Quantum Mixing Software</p>
 <p>QMix is used to simulate Superconductor/Insulator/Superconductor (SIS) mixers.
 It uses multi-tone spectral domain analysis, which makes QMix ideal for
@@ -4728,8 +4729,8 @@ devices.</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="setup.html" class="btn btn-neutral float-left" title="1. Getting Started" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="qmix.exp.html" class="btn btn-neutral float-right" title="2.1.1. qmix.exp package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="capabilities.html" class="btn btn-neutral float-left" title="2. Capabilities and Limitations" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="qmix.exp.html" class="btn btn-neutral float-right" title="3.1.1. qmix.exp package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

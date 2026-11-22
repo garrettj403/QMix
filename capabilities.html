@@ -1,0 +1,245 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>2. Capabilities and Limitations &mdash; QMix latest documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=c6e86fd7"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="3. Package API" href="qmix.html" />
+    <link rel="prev" title="1. Getting Started" href="setup.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            QMix
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="setup.html">1. Getting Started</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">2. Capabilities and Limitations</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#capabilities">2.1. Capabilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#limitations">2.2. Limitations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#qmix-vs-supermix">2.3. QMix vs SuperMix</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="qmix.html">3. Package API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="theory.html">4. Theory</a></li>
+<li class="toctree-l1"><a class="reference internal" href="single-tone-simulation.html">5. Example #1: Creating a simple 1 tone simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multi-tone-simulation.html">6. Example #2: Simulating an SIS mixer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analyze-experimental-data.html">7. Example #3: Analyzing experimental data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hfss-embedding-impedance.html">8. Example #4: Embedding impedance from HFSS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lo-saturation.html">9. Example #5: Power saturation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multi-junction-mixer.html">10. Example #6: Multiple junctions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="references.html">11. References</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">QMix</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active"><span class="section-number">2. </span>Capabilities and Limitations</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/capabilities.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="capabilities-and-limitations">
+<span id="id1"></span><h1><span class="section-number">2. </span>Capabilities and Limitations<a class="headerlink" href="#capabilities-and-limitations" title="Link to this heading"></a></h1>
+<section id="capabilities">
+<h2><span class="section-number">2.1. </span>Capabilities<a class="headerlink" href="#capabilities" title="Link to this heading"></a></h2>
+<p><strong>Tunneling currents and harmonic balance</strong></p>
+<ul class="simple">
+<li><p>Quasiparticle tunneling currents for any number of tones and harmonics (multi-tone spectral domain analysis, <a class="reference internal" href="qmix.html#module-qmix.qtcurrent" title="qmix.qtcurrent"><code class="xref py py-mod docutils literal notranslate"><span class="pre">qmix.qtcurrent</span></code></a>), with a Fourier-shift method that keeps simulations with many tones practical.</p></li>
+<li><p>Harmonic balance with an analytic Jacobian and a line search, to find the junction voltages for a given embedding circuit (<a class="reference internal" href="qmix.html#module-qmix.harmonic_balance" title="qmix.harmonic_balance"><code class="xref py py-mod docutils literal notranslate"><span class="pre">qmix.harmonic_balance</span></code></a>).</p></li>
+<li><p>Response functions from ideal or model I-V curves, or from measured DC I-V data, including the Kramers-Kronig transform (<a class="reference internal" href="qmix.html#module-qmix.respfn" title="qmix.respfn"><code class="xref py py-mod docutils literal notranslate"><span class="pre">qmix.respfn</span></code></a>).</p></li>
+</ul>
+<p><strong>Mixer analysis</strong></p>
+<ul class="simple">
+<li><p>Small-signal (Tucker) analysis: conversion gain, shot noise (including its thermal and quantum limits) and noise temperature, at any IF frequency, including an IF of zero (<a class="reference internal" href="qmix.html#module-qmix.small_signal" title="qmix.small_signal"><code class="xref py py-mod docutils literal notranslate"><span class="pre">qmix.small_signal</span></code></a>).</p></li>
+<li><p>Thermal noise of the embedding circuit (Callen-Welton), and of lossy embedding networks.</p></li>
+</ul>
+<p><strong>Several junctions</strong></p>
+<ul class="simple">
+<li><p>Twin-junction circuits and series arrays, coupled through a multi-port embedding network (<a class="reference internal" href="qmix.html#qmix.circuit.MultiJunctionCircuit" title="qmix.circuit.MultiJunctionCircuit"><code class="xref py py-class docutils literal notranslate"><span class="pre">qmix.circuit.MultiJunctionCircuit</span></code></a>).</p></li>
+<li><p>Junctions with different areas, gap voltages, normal-state resistances and I-V curves.</p></li>
+<li><p>DC bias networks for series arrays (e.g., with a bias resistor).</p></li>
+</ul>
+<p><strong>Embedding circuits</strong></p>
+<ul class="simple">
+<li><p>S-parameter networks: read Touchstone files (e.g., from HFSS), connect and terminate networks, and get Thevenin equivalent circuits from them (<a class="reference internal" href="qmix.html#module-qmix.network" title="qmix.network"><code class="xref py py-mod docutils literal notranslate"><span class="pre">qmix.network</span></code></a>).</p></li>
+<li><p>Circuit elements: transmission lines, microstrip, coplanar waveguide, rectangular waveguide, radial stubs, lumped elements, and ideal components (transformers, hybrids, circulators, attenuators, antennas, de-embedding).</p></li>
+<li><p>Superconducting films: Mattis-Bardeen conductivity and surface impedance, including the kinetic inductance and loss of superconducting microstrip (<a class="reference internal" href="qmix.html#module-qmix.superconductor" title="qmix.superconductor"><code class="xref py py-mod docutils literal notranslate"><span class="pre">qmix.superconductor</span></code></a>).</p></li>
+</ul>
+<p><strong>Experimental data</strong></p>
+<ul class="simple">
+<li><p>Analysis of measured DC and pumped I-V curves and IF spectra: recover the embedding impedance and voltage, and the gain and noise temperature (Y-factor, shot-noise calibration) (<a class="reference internal" href="qmix.exp.html#module-qmix.exp" title="qmix.exp"><code class="xref py py-mod docutils literal notranslate"><span class="pre">qmix.exp</span></code></a>).</p></li>
+</ul>
+<p>Many of these results are checked against <a class="reference external" href="http://www.submm.caltech.edu/supermix/">SuperMix</a>, an independent C++ library for SIS mixers (see <a class="reference internal" href="#qmix-vs-supermix"><span class="std std-ref">QMix vs SuperMix</span></a> below).</p>
+</section>
+<section id="limitations">
+<h2><span class="section-number">2.2. </span>Limitations<a class="headerlink" href="#limitations" title="Link to this heading"></a></h2>
+<p><strong>Physics</strong></p>
+<ul class="simple">
+<li><p>Only the quasiparticle tunneling current is simulated: there is no Josephson (pair) current, so no Shapiro steps, Josephson noise or magnetic field.</p></li>
+<li><p>The response function comes from one DC I-V curve, so heating and changes of the gap with LO power or temperature are not included.</p></li>
+<li><p>Noise is only calculated by the small-signal analysis, which assumes a single LO (with harmonics) and weak signals. Multi-tone simulations give currents and gain, but not noise (e.g., under saturation or with a strong second tone).</p></li>
+<li><p>Harmonic balance finds one solution per bias point, so hysteresis in series arrays (e.g., up/down bias sweeps) cannot be followed.</p></li>
+</ul>
+<p><strong>Embedding circuits</strong></p>
+<ul class="simple">
+<li><p>The thermal noise of a lossy network is calculated at one temperature; elements don’t have their own temperatures.</p></li>
+<li><p>There are no active devices (e.g., IF amplifiers): the IF chain is described by its noise temperature only.</p></li>
+<li><p>The coplanar waveguide model is lossless (no conductor loss or kinetic inductance), and there is no stripline model.</p></li>
+</ul>
+<p><strong>Numerics</strong></p>
+<ul class="simple">
+<li><p>The cost of the tunneling current grows quickly with the number of tones and with strong pumping of low-frequency tones (many Bessel terms). The Fourier-shift method helps, but it is less accurate (~1e-7 to 1e-9).</p></li>
+<li><p>Frequencies are matched after rounding, so tones closer than ~1e-4 of the gap frequency are treated as the same frequency.</p></li>
+<li><p>Harmonic balance can converge slowly for very strong pumping, sharp gap knees and series arrays.</p></li>
+</ul>
+</section>
+<section id="qmix-vs-supermix">
+<span id="id2"></span><h2><span class="section-number">2.3. </span>QMix vs SuperMix<a class="headerlink" href="#qmix-vs-supermix" title="Link to this heading"></a></h2>
+<p><a class="reference external" href="http://www.submm.caltech.edu/supermix/">SuperMix</a> (Ward et al., 1999) is Caltech’s C++ library for simulating SIS mixers. The two packages overlap a lot, and QMix is checked against SuperMix (see <a class="reference external" href="https://github.com/garrettj403/QMix/tree/master/profile/supermix">profile/supermix/</a>), but they are built around different methods:</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 40.0%" />
+<col style="width: 30.0%" />
+<col style="width: 30.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"></th>
+<th class="head"><p>QMix</p></th>
+<th class="head"><p>SuperMix</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Language</p></td>
+<td><p>Python</p></td>
+<td><p>C++</p></td>
+</tr>
+<tr class="row-odd"><td><p>Large-signal simulation</p></td>
+<td><p>Any number of tones and harmonics (multi-tone spectral domain analysis)</p></td>
+<td><p>One LO and its harmonics (single-tone spectral domain analysis)</p></td>
+</tr>
+<tr class="row-even"><td><p>Strong second signals (saturation, two LOs, spurious tones)</p></td>
+<td><p>Yes</p></td>
+<td><p>No (signals must be weak)</p></td>
+</tr>
+<tr class="row-odd"><td><p>Small-signal gain and noise (Tucker theory)</p></td>
+<td><p>Yes</p></td>
+<td><p>Yes</p></td>
+</tr>
+<tr class="row-even"><td><p>Several junctions, with different properties</p></td>
+<td><p>Yes</p></td>
+<td><p>Yes</p></td>
+</tr>
+<tr class="row-odd"><td><p>Passive circuit elements</p></td>
+<td><p>Yes (SuperMix’s set)</p></td>
+<td><p>Yes</p></td>
+</tr>
+<tr class="row-even"><td><p>Superconducting films (Mattis-Bardeen)</p></td>
+<td><p>Yes</p></td>
+<td><p>Yes</p></td>
+</tr>
+<tr class="row-odd"><td><p>Noise temperature of each circuit element</p></td>
+<td><p>No (one temperature per network)</p></td>
+<td><p>Yes</p></td>
+</tr>
+<tr class="row-even"><td><p>Active devices (e.g., HEMT amplifiers)</p></td>
+<td><p>No</p></td>
+<td><p>Yes</p></td>
+</tr>
+<tr class="row-odd"><td><p>Optimizer, Monte Carlo, parameter sweeps</p></td>
+<td><p>No (use SciPy)</p></td>
+<td><p>Yes</p></td>
+</tr>
+<tr class="row-even"><td><p>Analysis of experimental data (I-V curves, IF spectra)</p></td>
+<td><p>Yes</p></td>
+<td><p>No</p></td>
+</tr>
+<tr class="row-odd"><td><p>Speed (single-tone harmonic balance)</p></td>
+<td><p>Slower</p></td>
+<td><p>Faster</p></td>
+</tr>
+</tbody>
+</table>
+<p>With the same inputs, the two agree to round-off or close to it: tunneling currents to ~1e-15, harmonic balance to ~1e-9, small-signal admittance and noise matrices to ~1e-14 (with SuperMix’s physical constants, which are older CODATA values), passive circuit elements to ~1e-14, and normal-metal lines to round-off. For superconducting films, the agreement is set by SuperMix’s numerical integration (~1e-8) and its table of the energy gap vs temperature (~1e-4 above T/Tc = 0.04; see <a class="reference internal" href="superconducting-lines.html#superconducting-lines"><span class="std std-ref">Superconducting Transmission Lines</span></a>).</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="setup.html" class="btn btn-neutral float-left" title="1. Getting Started" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="qmix.html" class="btn btn-neutral float-right" title="3. Package API" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2017-2026, John Garrett.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
