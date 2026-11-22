@@ -49,6 +49,17 @@ at `reference/supermix` (git-ignored), or set `SUPERMIXDIR`.
   SciPy's). `--save` writes SuperMix's results to
   `tests/supermix-data/supermix_lines.npz` (checked by `test_microstrip` in
   `tests/test_supermix_reference.py`). Doesn't need the tight build.
+- `smx_elements.cc` and `compare_elements.py`: SuperMix's passive circuit
+  elements (lumped R, L, C and RLC in series or shunt, `series_tee`,
+  `branch`, `zterm`/`yterm`, `attenuator`, `time_delay`, `transformer`,
+  `circulator`, `hybrid90`/`hybrid180`, `power_divider`, `slot_antenna`,
+  `twin_slot_antenna`, `deembed`, `trline`, `r_waveguide` with a lossy filling
+  and walls, lossless `cpw` with and without backing, `radial_stub`, `L_via`)
+  vs `qmix.network`, as S-parameters at 7-41 frequencies (SI units, SuperMix's
+  mu_0). The QMix side is `qmix_element` in `tests/test_supermix_reference.py`
+  (imported by the script). `--save` writes SuperMix's results to
+  `tests/supermix-data/supermix_elements.npz` (checked by
+  `test_passive_element`). Doesn't need the tight build.
 
 ## Usage
 
@@ -60,6 +71,7 @@ SMX_DRIVER=bin/smx_driver_tight python compare.py    # tight Bessel tolerance
 python compare.py --plot                             # also save plots to work/
 
 ./build.sh smx_lines.cc && python compare_lines.py   # films and microstrip
+./build.sh smx_elements.cc && python compare_elements.py   # passive elements
 ```
 
 SuperMix's own tests can be run against their stored outputs (e.g.,
@@ -133,3 +145,6 @@ I-V curve, order 50):
   Delta(T), which differs from QMix's BCS gap equation by up to ~8e-5 (4e-5 at
   4.2 K for Nb); the thermally excited quasiparticles scale as
   exp(-Delta / kT), so sigma differs by ~Delta / kT times that.
+- Passive elements (`compare_elements.py`, 38 cases): all S-parameters agree
+  to round-off, max |QMix - SuperMix| = 1.8e-14 (de-embedding; most elements
+  are ~1e-16, the waveguide, CPW and radial stub ~1e-14).

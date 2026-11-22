@@ -48,6 +48,21 @@ Note:
     [Hz] and impedances in [ohms] (not normalized), since these networks come
     from outside of QMix.
 
+    **Circuit elements.** Besides Touchstone files, networks can be built
+    from SuperMix's passive elements (all checked against SuperMix): lines
+    (``transmission_line``, ``ideal_line``, ``microstrip_line``,
+    ``cpw_line``, ``rectangular_waveguide_line``, ``radial_stub``), lumped
+    elements in series or shunt (``resistor``, ``capacitor``, ``inductor``,
+    ``series_rlc``, ``parallel_rlc``, ``series_impedance``,
+    ``shunt_impedance``; ``via_inductance``), connections (``tee``,
+    ``series_tee``) and terminations (``load``), and ideal components
+    (``attenuator``, ``time_delay``, ``transformer``, ``circulator``,
+    ``hybrid90``, ``hybrid180``, ``power_divider``, ``slot_antenna``,
+    ``twin_slot_antenna``), plus ``deembed``. Unlike in SuperMix, elements
+    don't have their own temperatures: the thermal noise of a lossy network
+    (``qmix.small_signal``) is calculated from its impedance matrix at one
+    temperature.
+
 """
 
 import numpy as np
@@ -575,7 +590,8 @@ def transmission_line(freq, zc, gamma, length, z0=None):
         z0 (complex or ndarray, optional): Reference impedances of the two
             ports, in [ohms] (as for ``Network``); default is the real part
             of ``zc``, so that a lossless line is matched
-            (``S21 = exp(-gamma length)``, ``S11 = 0``)
+            (``S21 = exp(-gamma length)``, ``S11 = 0``), or ``|zc|`` where
+            ``zc`` is purely reactive (e.g., a waveguide below cutoff)
 
     Returns:
         Network: 2-port network
@@ -585,7 +601,7 @@ def transmission_line(freq, zc, gamma, length, z0=None):
     freq = np.atleast_1d(np.asarray(freq, dtype=float))
     zc = np.asarray(zc, dtype=complex) * np.ones(freq.size)
     gl = np.asarray(gamma, dtype=complex) * length * np.ones(freq.size)
-    ref = zc.real
+    ref = np.where(zc.real > 0, zc.real, np.abs(zc))  # |zc| if zc is reactive (e.g., waveguide below cutoff)
 
     # ABCD matrix -> S-parameters with the (real) reference zc.real at both ports
     a = np.cosh(gl)
@@ -624,6 +640,825 @@ def tee(freq, z0=50., num_ports=3):
     s[:, idx, idx] -= 1
 
     return Network(freq, s, z0)
+
+
+def ideal_line(freq, zc, theta, f_ref, loss=0., z0=None):
+    """Transmission line from its electrical length at a reference frequency
+    (SuperMix's ``trline``).
+
+    The phase length is ``theta * freq / f_ref``, and the line loses the
+    fraction ``loss`` of the power per wavelength.
+
+    Args:
+        freq (ndarray): Frequencies, in [Hz]
+        zc (complex): Characteristic impedance, in [ohms]
+        theta (float): Electrical length at ``f_ref``, in [radians]
+        f_ref (float): Reference frequency, in [Hz]
+        loss (float, optional): Fraction of the power lost per wavelength
+            (0 <= loss < 1), default is 0
+        z0 (complex or ndarray, optional): Reference impedances, see
+            ``transmission_line``
+
+    Returns:
+        Network: 2-port network
+
+    """
+
+    assert 0 <= loss < 1, "The loss per wavelength must be between 0 and 1"
+    freq = np.atleast_1d(np.asarray(freq, dtype=float))
+    gamma = freq / f_ref * (-np.log(1 - loss) / (4 * np.pi) + 1j)
+
+    return transmission_line(freq, zc, gamma, theta, z0)
+
+
+# Lumped elements and ideal components (as in SuperMix) -----------------------
+#
+# Two-port elements have the same real reference impedance z0 at both ports
+# (default 50 ohms, SuperMix's default device::Z0). Where an impedance is
+# infinite (an open circuit), pass np.inf.
+
+def series_impedance(freq, z, z0=50.):
+    """Impedance in series between two ports (SuperMix's ``spimp`` in
+    series mode)::
+
+        1 o--[ Z ]--o 2
+          o---------o
+
+    Args:
+        freq (ndarray): Frequencies, in [Hz]
+        z (complex or ndarray): Impedance, in [ohms] (scalar or one value
+            per frequency; ``np.inf`` for an open circuit)
+        z0 (float, optional): Reference impedance of both ports, in [ohms];
+            default is 50
+
+    Returns:
+        Network: 2-port network
+
+    """
+
+    freq, z0 = _element_inputs(freq, z0)
+    z = _per_freq(z, freq)
+    inf = np.isinf(z)
+    zz = np.where(inf, 0., z)
+    s11 = np.where(inf, 1., zz / (2 * z0 + zz))
+    s21 = np.where(inf, 0., 2 * z0 / (2 * z0 + zz))
+
+    return _two_port(freq, s11, s21, s21, s11, z0)
+
+
+def shunt_impedance(freq, z, z0=50.):
+    """Impedance in parallel across a 2-port (SuperMix's ``spimp`` in
+    parallel mode)::
+
+        1 o----+----o 2
+              [Z]
+          o----+----o
+
+    Args:
+        freq (ndarray): Frequencies, in [Hz]
+        z (complex or ndarray): Impedance, in [ohms] (``np.inf`` for an open
+            circuit, i.e., no element)
+        z0 (float, optional): Reference impedance of both ports, in [ohms];
+            default is 50
+
+    Returns:
+        Network: 2-port network
+
+    """
+
+    freq, z0 = _element_inputs(freq, z0)
+    z = _per_freq(z, freq)
+    inf = np.isinf(z)
+    zz = np.where(inf, 0., z)
+    s11 = np.where(inf, 0., -z0 / (2 * zz + z0))
+    s21 = np.where(inf, 1., 2 * zz / (2 * zz + z0))
+
+    return _two_port(freq, s11, s21, s21, s11, z0)
+
+
+def resistor(freq, r, shunt=False, z0=50.):
+    """Resistor in series (default) or in parallel (``shunt=True``) with a
+    2-port (SuperMix's ``resistor``; see ``series_impedance``).
+
+    Args:
+        freq (ndarray): Frequencies, in [Hz]
+        r (float): Resistance, in [ohms]
+        shunt (bool, optional): Parallel instead of series, default is False
+        z0 (float, optional): Reference impedance, in [ohms]; default is 50
+
+    Returns:
+        Network: 2-port network
+
+    """
+
+    return _spimp(freq, r, shunt, z0)
+
+
+def capacitor(freq, c, shunt=False, z0=50.):
+    """Capacitor in series (default) or in parallel (``shunt=True``) with a
+    2-port (SuperMix's ``capacitor``).
+
+    Args:
+        freq (ndarray): Frequencies, in [Hz]
+        c (float): Capacitance, in [F]
+        shunt (bool, optional): Parallel instead of series, default is False
+        z0 (float, optional): Reference impedance, in [ohms]; default is 50
+
+    Returns:
+        Network: 2-port network
+
+    """
+
+    freq = np.atleast_1d(np.asarray(freq, dtype=float))
+
+    return _spimp(freq, _impedance(1j * 2 * np.pi * freq * c), shunt, z0)
+
+
+def inductor(freq, l, shunt=False, z0=50.):
+    """Inductor in series (default) or in parallel (``shunt=True``) with a
+    2-port (SuperMix's ``inductor``).
+
+    Args:
+        freq (ndarray): Frequencies, in [Hz]
+        l (float): Inductance, in [H]
+        shunt (bool, optional): Parallel instead of series, default is False
+        z0 (float, optional): Reference impedance, in [ohms]; default is 50
+
+    Returns:
+        Network: 2-port network
+
+    """
+
+    freq = np.atleast_1d(np.asarray(freq, dtype=float))
+
+    return _spimp(freq, 1j * 2 * np.pi * freq * l, shunt, z0)
+
+
+def series_rlc(freq, r=0., l=0., c=np.inf, shunt=False, z0=50.):
+    """Series RLC circuit, ``Z = R + j w L + 1 / (j w C)``, in series
+    (default) or in parallel (``shunt=True``) with a 2-port (SuperMix's
+    ``series_RLC``).
+
+    Args:
+        freq (ndarray): Frequencies, in [Hz]
+        r (float, optional): Resistance, in [ohms], default is 0
+        l (float, optional): Inductance, in [H], default is 0
+        c (float, optional): Capacitance, in [F], default is ``np.inf`` (no
+            capacitor; ``c = 0`` is an open circuit)
+        shunt (bool, optional): Parallel instead of series, default is False
+        z0 (float, optional): Reference impedance, in [ohms]; default is 50
+
+    Returns:
+        Network: 2-port network
+
+    """
+
+    freq = np.atleast_1d(np.asarray(freq, dtype=float))
+    w = 2 * np.pi * freq
+    z_c = np.zeros(freq.size, dtype=complex) if np.isinf(c) else _impedance(1j * w * c)
+
+    return _spimp(freq, r + 1j * w * l + z_c, shunt, z0)
+
+
+def parallel_rlc(freq, r=np.inf, l=np.inf, c=0., shunt=False, z0=50.):
+    """Parallel RLC circuit, ``Y = 1 / R + j w C + 1 / (j w L)``, in series
+    (default) or in parallel (``shunt=True``) with a 2-port (SuperMix's
+    ``parallel_RLC``).
+
+    Args:
+        freq (ndarray): Frequencies, in [Hz]
+        r (float, optional): Resistance, in [ohms], default is ``np.inf``
+            (no resistor)
+        l (float, optional): Inductance, in [H], default is ``np.inf`` (no
+            inductor)
+        c (float, optional): Capacitance, in [F], default is 0
+        shunt (bool, optional): Parallel instead of series, default is False
+        z0 (float, optional): Reference impedance, in [ohms]; default is 50
+
+    Returns:
+        Network: 2-port network
+
+    """
+
+    freq = np.atleast_1d(np.asarray(freq, dtype=float))
+    w = 2 * np.pi * freq
+    with np.errstate(divide='ignore'):
+        y_r = 0. if np.isinf(r) else (np.inf if r == 0 else 1 / r)
+        y_l = np.zeros(freq.size, dtype=complex) if np.isinf(l) else _impedance(1j * w * l)  # 1 / (j w L)
+    y = y_r + 1j * w * c + y_l
+
+    return _spimp(freq, _impedance(y), shunt, z0)
+
+
+def series_tee(freq, z0=50.):
+    """Ideal series connection of three ports (SuperMix's ``series_tee``)::
+
+        1 o-------------+
+          o----+        |
+               |        +---o 3
+          o----+        +---o
+        2 o-------------+
+
+    The current of port 3 flows through ports 1 and 2 in series, and the
+    voltage of port 3 is the sum of the voltages of ports 1 and 2. The
+    ports are not equivalent. With the same real reference at all ports,
+    the S-matrix doesn't depend on it.
+
+    Args:
+        freq (ndarray): Frequencies, in [Hz]
+        z0 (float, optional): Reference impedance of all ports, in [ohms];
+            default is 50
+
+    Returns:
+        Network: 3-port network
+
+    """
+
+    freq, z0 = _element_inputs(freq, z0)
+    s = np.array([[1, -2, 2], [-2, 1, 2], [2, 2, 1]], dtype=complex) / 3
+
+    return Network(freq, np.broadcast_to(s, (freq.size, 3, 3)), z0)
+
+
+def load(freq, z, z0=50.):
+    """One-port load (SuperMix's ``zterm``; ``yterm`` is ``load(freq, 1 /
+    y)``).
+
+    Args:
+        freq (ndarray): Frequencies, in [Hz]
+        z (complex or ndarray): Impedance, in [ohms] (``np.inf`` for an open
+            circuit)
+        z0 (float, optional): Reference impedance, in [ohms]; default is 50
+
+    Returns:
+        Network: 1-port network
+
+    """
+
+    freq, z0 = _element_inputs(freq, z0)
+    gamma = _reflection(_per_freq(z, freq), np.full(freq.size, z0, dtype=complex))
+
+    return Network(freq, gamma[:, None, None], z0)
+
+
+def attenuator(freq, db, z0=50.):
+    """Matched attenuator (SuperMix's ``attenuator``):
+    ``S21 = S12 = 10^(-dB / 20)``.
+
+    Args:
+        freq (ndarray): Frequencies, in [Hz]
+        db (float): Attenuation, in [dB]
+        z0 (float, optional): Reference impedance, in [ohms]; default is 50
+
+    Returns:
+        Network: 2-port network
+
+    """
+
+    freq, z0 = _element_inputs(freq, z0)
+    t = np.full(freq.size, 10 ** (-db / 20), dtype=complex)
+    zero = np.zeros(freq.size, dtype=complex)
+
+    return _two_port(freq, zero, t, t, zero, z0)
+
+
+def time_delay(freq, delay, z0=50.):
+    """Matched, lossless time delay (SuperMix's ``time_delay``):
+    ``S21 = S12 = exp(-j 2 pi f delay)``.
+
+    Args:
+        freq (ndarray): Frequencies, in [Hz]
+        delay (float): Delay, in [s]
+        z0 (float, optional): Reference impedance, in [ohms]; default is 50
+
+    Returns:
+        Network: 2-port network
+
+    """
+
+    freq, z0 = _element_inputs(freq, z0)
+    t = np.exp(-2j * np.pi * freq * delay)
+    zero = np.zeros(freq.size, dtype=complex)
+
+    return _two_port(freq, zero, t, t, zero, z0)
+
+
+def transformer(freq, z1, z2, z0=50.):
+    """Ideal lossless transformer from ``z1`` (port 1) to ``z2`` (port 2)
+    (SuperMix's ``transformer``).
+
+    A lossless, reciprocal 2-port: with port 2 terminated by ``z2^*``, port 1
+    presents the impedance ``z1``, and with port 1 terminated by ``z1^*``,
+    port 2 presents ``z2``. For ``z1 = r1 + j x1`` and ``z2 = r2 + j x2``,
+    ``S11 = (zeta + j psi) / D``, ``S22 = (-zeta + j psi) / D`` and
+    ``S12 = S21 = 1 / D``, where ``zeta = (s - 1 / s) / 2``,
+    ``psi = (x2 s + x1 / s) / 2``, ``D = sqrt(1 + zeta^2) + j psi`` and
+    ``s = sqrt(r1 / r2)`` (with ``r`` and ``x`` normalized to ``z0``). For
+    real ``z1`` and ``z2``, it is an ideal transformer with the impedance
+    ratio ``z1 / z2``.
+
+    Args:
+        freq (ndarray): Frequencies, in [Hz]
+        z1 (complex): Impedance at port 1, in [ohms] (positive real part)
+        z2 (complex): Impedance at port 2, in [ohms] (positive real part)
+        z0 (float, optional): Reference impedance, in [ohms]; default is 50
+
+    Returns:
+        Network: 2-port network
+
+    """
+
+    freq, z0 = _element_inputs(freq, z0)
+    z1, z2 = _per_freq(z1, freq) / z0, _per_freq(z2, freq) / z0
+    assert (z1.real > 0).all() and (z2.real > 0).all(), "The impedances must have a positive real part"
+    sr = np.sqrt(z1.real / z2.real)
+    zeta = 0.5 * (sr - 1 / sr)
+    psi = 0.5 * (z2.imag * sr + z1.imag / sr)
+    den = np.sqrt(1 + zeta ** 2) + 1j * psi
+
+    return _two_port(freq, (zeta + 1j * psi) / den, 1 / den, 1 / den, (-zeta + 1j * psi) / den, z0)
+
+
+def circulator(freq, z0=50.):
+    """Ideal 3-port circulator, 1 -> 2 -> 3 -> 1 (SuperMix's
+    ``circulator``).
+
+    Args:
+        freq (ndarray): Frequencies, in [Hz]
+        z0 (float, optional): Reference impedance, in [ohms]; default is 50
+
+    Returns:
+        Network: 3-port network
+
+    """
+
+    freq, z0 = _element_inputs(freq, z0)
+    s = np.zeros((3, 3), dtype=complex)
+    s[1, 0] = s[2, 1] = s[0, 2] = 1.
+
+    return Network(freq, np.broadcast_to(s, (freq.size, 3, 3)), z0)
+
+
+def hybrid90(freq, z0=50.):
+    """Ideal 90 degree hybrid coupler (SuperMix's ``hybrid90``): ports 1 and
+    2, and 3 and 4, are coupled with ``-j / sqrt(2)``, ports 1 and 3, and 2
+    and 4, with ``-1 / sqrt(2)``; 1 and 4, and 2 and 3, are isolated.
+
+    Args:
+        freq (ndarray): Frequencies, in [Hz]
+        z0 (float, optional): Reference impedance, in [ohms]; default is 50
+
+    Returns:
+        Network: 4-port network
+
+    """
+
+    freq, z0 = _element_inputs(freq, z0)
+    n = -1 / np.sqrt(2)
+    s = np.array([[0, 1j * n, n, 0], [1j * n, 0, 0, n], [n, 0, 0, 1j * n], [0, n, 1j * n, 0]], dtype=complex)
+
+    return Network(freq, np.broadcast_to(s, (freq.size, 4, 4)), z0)
+
+
+def hybrid180(freq, z0=50.):
+    """Ideal 180 degree hybrid coupler (SuperMix's ``hybrid180``):
+    ``S12 = S13 = S34 = 1 / sqrt(2)``, ``S24 = -1 / sqrt(2)``; 1 and 4, and
+    2 and 3, are isolated.
+
+    Args:
+        freq (ndarray): Frequencies, in [Hz]
+        z0 (float, optional): Reference impedance, in [ohms]; default is 50
+
+    Returns:
+        Network: 4-port network
+
+    """
+
+    freq, z0 = _element_inputs(freq, z0)
+    n = 1 / np.sqrt(2)
+    s = np.array([[0, n, n, 0], [n, 0, 0, -n], [n, 0, 0, n], [0, -n, n, 0]], dtype=complex)
+
+    return Network(freq, np.broadcast_to(s, (freq.size, 4, 4)), z0)
+
+
+def power_divider(freq, z0=50.):
+    """Ideal in-phase power divider (SuperMix's ``power_divider``):
+    ``S12 = S13 = 1 / sqrt(2)``, all ports matched, ports 2 and 3 isolated.
+
+    It is lossy (an internal, antisymmetric-mode port is terminated by
+    ``z0``), so it has no impedance matrix.
+
+    Args:
+        freq (ndarray): Frequencies, in [Hz]
+        z0 (float, optional): Reference impedance, in [ohms]; default is 50
+
+    Returns:
+        Network: 3-port network
+
+    """
+
+    freq, z0 = _element_inputs(freq, z0)
+    s = np.zeros((3, 3), dtype=complex)
+    s[0, 1] = s[1, 0] = s[0, 2] = s[2, 0] = 1 / np.sqrt(2)
+
+    return Network(freq, np.broadcast_to(s, (freq.size, 3, 3)), z0)
+
+
+def slot_antenna(freq, z, z0=50.):
+    """Slot antenna with impedance ``z`` (SuperMix's ``slot_antenna``).
+
+    Port 1 is the RF input; ports 2 and 3 are the out-of-phase and in-phase
+    outputs. Driven from a source with impedance ``z0`` at port 1, the
+    antenna presents the impedance ``z`` between ports 2 and 3 (an ideal
+    transformer from ``z0`` to ``z`` in series with the outputs)::
+
+                1 (z0)
+                  |
+             transformer
+                  |  (z)
+        2 o-------+   +-------o 3
+          o-------------------o
+
+    Args:
+        freq (ndarray): Frequencies, in [Hz]
+        z (complex or ndarray): Antenna impedance, in [ohms]
+        z0 (float, optional): Reference impedance, in [ohms]; default is 50
+
+    Returns:
+        Network: 3-port network
+
+    """
+
+    freq, z0 = _element_inputs(freq, z0)
+    g = (_per_freq(z, freq) - z0) / (_per_freq(z, freq) + z0)
+    c = 1 / (3 - g)
+    x = 2 * np.sqrt(1 - np.abs(g) ** 2)
+    s = np.empty((freq.size, 3, 3), dtype=complex)
+    s[:, 0, 0] = (1 - 3 * np.conj(g)) * c
+    s[:, 1, 1] = s[:, 2, 2] = (1 + g) * c
+    s[:, 0, 2] = s[:, 2, 0] = x * c
+    s[:, 0, 1] = s[:, 1, 0] = -x * c
+    s[:, 1, 2] = s[:, 2, 1] = 2 * (1 - g) * c
+
+    return Network(freq, s, z0)
+
+
+def twin_slot_antenna(antenna):
+    """Twin-slot antenna with symmetric excitation (SuperMix's
+    ``twin_slot_antenna``).
+
+    Port 1 is the RF input; ports 2 and 3 are the out-of-phase and in-phase
+    outputs of antenna 1, ports 4 and 5 those of antenna 2. The antisymmetric
+    mode is terminated internally (matched), so the network is lossy.
+
+    Args:
+        antenna (Network): Response of the antenna pair: a 2-port (``S11``
+            the self-, ``S12`` the mutual reflection, assumed reciprocal and
+            symmetric) or a 1-port (no coupling between the antennas), with
+            one real reference impedance at all frequencies and ports, which
+            is also the reference of the result
+
+    Returns:
+        Network: 5-port network
+
+    """
+
+    assert antenna.num_ports in (1, 2), "The antenna response must be a 1-port or a 2-port"
+    z0 = antenna.z0[0, 0]
+    assert np.all(antenna.z0 == z0) and z0.imag == 0 and z0.real > 0, \
+        "The antenna response needs one real reference impedance"
+    z0 = z0.real
+    freq = antenna.freq
+    s11 = antenna.s[:, 0, 0]
+    s12 = antenna.s[:, 0, 1] if antenna.num_ports == 2 else np.zeros(freq.size, dtype=complex)
+    a = np.empty((freq.size, 3, 3), dtype=complex)
+    a[:, 1, 1] = a[:, 2, 2] = s11
+    a[:, 1, 2] = a[:, 2, 1] = s12
+    a[:, 0, 0] = -np.conj(s11 + s12)
+    a[:, 0, 1] = a[:, 0, 2] = a[:, 1, 0] = a[:, 2, 0] = np.sqrt(0.5 - 0.5 * np.abs(a[:, 0, 0]) ** 2 + 0j)
+    net = Network(freq, a, z0)
+    net = net.connect(2, series_tee(freq, z0), 1)  # ports: RF, antenna 2 feed, ant. 1 -, ant. 1 +
+    net = net.connect(2, series_tee(freq, z0), 1)  # ports: RF, ant. 1 -, ant. 1 +, ant. 2 -, ant. 2 +
+
+    return net
+
+
+def deembed(measured, input, output, z0=50.):
+    """De-embed a 2-port from a measurement that includes known input and
+    output 2-ports (SuperMix's ``deembed``)::
+
+        measured = input -- dut -- output
+
+    The 2-ports are combined as ABCD (chain) matrices:
+    ``dut = input^-1 measured output^-1``.
+
+    Args:
+        measured (Network): The whole 2-port (e.g., measured with a VNA)
+        input (Network): The known 2-port at port 1 of the device
+        output (Network): The known 2-port at port 2 of the device
+        z0 (float, optional): Reference impedance of the result, in [ohms];
+            default is 50
+
+    Returns:
+        Network: the device, a 2-port network
+
+    """
+
+    for net in (measured, input, output):
+        assert net.num_ports == 2, "All networks must be 2-ports"
+        assert net.freq.shape == measured.freq.shape and np.allclose(net.freq, measured.freq), \
+            "The networks must have the same frequencies (use Network.interpolate)"
+    z0 = _check_z0(z0)
+    t = [_abcd(net.renormalize(z0).s, z0) for net in (measured, input, output)]
+    dut = np.linalg.solve(t[1], t[0]) @ np.linalg.inv(t[2])
+    a, b, c, d = dut[:, 0, 0], dut[:, 0, 1] / z0, dut[:, 1, 0] * z0, dut[:, 1, 1]
+    den = a + b + c + d
+
+    return _two_port(measured.freq, (a + b - c - d) / den, 2 / den, 2 * (a * d - b * c) / den,
+                     (-a + b - c + d) / den, z0)
+
+
+def via_inductance(diameter, height):
+    """Inductance of a via hole to ground (Goldfarb & Pucel 1991; SuperMix's
+    ``L_via``).
+
+    ``L = mu_0 / (2 pi) [h ln((h + sqrt(r^2 + h^2)) / r) + 3 / 2 (r -
+    sqrt(r^2 + h^2))]``, with ``r = diameter / 2``. The formula was fitted
+    for 0.2 < D / h < 1.5, 100 um < h < 635 um and 2.2 < eps_r < 20; a
+    warning is issued outside of the geometric ranges.
+
+    Args:
+        diameter (float): Diameter of the hole, in [m]
+        height (float): Height of the hole (substrate thickness), in [m]
+
+    Returns:
+        float: Inductance, in [H] (e.g., for ``inductor(..., shunt=True)``)
+
+    """
+
+    import warnings
+    if not 0.2 <= diameter / height <= 1.5 or not 100e-6 <= height <= 635e-6:
+        warnings.warn("The via formula is fitted for 0.2 < D/h < 1.5 and 100 um < h < 635 um")
+    r = diameter / 2
+    hyp = np.sqrt(r ** 2 + height ** 2)
+
+    return sc.mu_0 / (2 * np.pi) * (height * np.log((height + hyp) / r) + 1.5 * (r - hyp))
+
+
+def _element_inputs(freq, z0):
+    freq = np.atleast_1d(np.asarray(freq, dtype=float))
+    assert np.ndim(z0) == 0 and np.isreal(z0) and np.real(z0) > 0, \
+        "The reference impedance must be a real, positive scalar"
+    return freq, float(np.real(z0))
+
+
+def _check_z0(z0):
+    return _element_inputs(0., z0)[1]
+
+
+def _per_freq(x, freq):
+    return np.array(np.broadcast_to(np.asarray(x, dtype=complex), freq.shape))
+
+
+def _impedance(y):
+    """1 / y, infinite where y = 0 (and 0 where y is infinite)."""
+    y = np.asarray(y, dtype=complex)
+    with np.errstate(divide='ignore', invalid='ignore'):
+        z = 1 / np.where(y == 0, 1., y)
+    return np.where(y == 0, np.inf, np.where(np.isinf(y), 0., z))
+
+
+def _spimp(freq, z, shunt, z0):
+    return shunt_impedance(freq, z, z0) if shunt else series_impedance(freq, z, z0)
+
+
+def _two_port(freq, s11, s21, s12, s22, z0):
+    s = np.empty((freq.size, 2, 2), dtype=complex)
+    s[:, 0, 0], s[:, 1, 0], s[:, 0, 1], s[:, 1, 1] = s11, s21, s12, s22
+    return Network(freq, s, z0)
+
+
+def _abcd(s, z0):
+    """ABCD matrix of 2-ports from their S-parameters (real reference z0)."""
+    s11, s12, s21, s22 = s[:, 0, 0], s[:, 0, 1], s[:, 1, 0], s[:, 1, 1]
+    t = np.empty_like(s)
+    t[:, 0, 0] = ((1 + s11) * (1 - s22) + s12 * s21) / (2 * s21)
+    t[:, 0, 1] = ((1 + s11) * (1 + s22) - s12 * s21) * z0 / (2 * s21)
+    t[:, 1, 0] = ((1 - s11) * (1 - s22) - s12 * s21) / (2 * z0 * s21)
+    t[:, 1, 1] = ((1 - s11) * (1 + s22) + s12 * s21) / (2 * s21)
+    return t
+
+
+# Waveguides and planar lines -------------------------------------------------
+
+def rectangular_waveguide(freq, a, b, eps_r=1., tan_d=0., wall=None, temp=4.2):
+    """Characteristic impedance and propagation constant of the TE10 mode of
+    a rectangular waveguide (SuperMix's ``r_waveguide``).
+
+    The characteristic impedance is the power-voltage impedance,
+    ``Zc = 2 b / a Z_TE`` (Z_TE: wave impedance). Above cutoff, the losses
+    of the walls (from the real part of their surface impedance) and of the
+    dielectric filling are included to first order; below cutoff, the mode
+    is evanescent (real ``gamma``, imaginary ``Zc``) and the losses are
+    ignored.
+
+    Args:
+        freq (ndarray): Frequencies, in [Hz]
+        a (float): Broad dimension, in [m]
+        b (float): Narrow dimension, in [m]
+        eps_r (float, optional): Relative permittivity of the filling,
+            default is 1 (vacuum)
+        tan_d (float, optional): Loss tangent of the filling, default is 0
+        wall (film, optional): Conductor of the walls (``zs(freq, temp)``
+            method, e.g., ``qmix.superconductor.NormalFilm``); default is a
+            perfect conductor
+        temp (float, optional): Temperature, in [K], passed to the wall;
+            default is 4.2
+
+    Returns:
+        tuple: characteristic impedance ``zc`` in [ohms] and propagation
+            constant ``gamma`` in [1/m] (waves vary as ``exp(-gamma z)``),
+            one value per frequency (scalars for a scalar ``freq``)
+
+    """
+
+    scalar = np.ndim(freq) == 0
+    freq = np.atleast_1d(np.asarray(freq, dtype=float))
+    assert a > 0 and b > 0, "The dimensions must be positive"
+    n = np.sqrt(eps_r)
+    z_free = sc.mu_0 * sc.c / n
+    k = 2 * np.pi * freq * n / sc.c
+    kc = np.pi / a
+    below = k <= kc
+    with np.errstate(divide='ignore', invalid='ignore'):
+        beta = np.sqrt(np.abs(kc ** 2 - k ** 2))
+        rs = 0. if wall is None else wall.zs(freq, temp).real
+        alpha_c = rs * (2 * b * np.pi ** 2 / a ** 3 + k ** 2) / (b * k * z_free * beta)
+        alpha_d = k ** 2 * tan_d / (2 * beta)
+        gamma = np.where(below, beta, alpha_c + alpha_d + 1j * beta)
+        z_wave = np.where(below, -1j * k * z_free / beta,
+                          (k * z_free / beta) * (1 + 1j * (alpha_d - alpha_c * k / beta) / beta))
+    zc = 2 * b / a * z_wave
+
+    return (zc[0], gamma[0]) if scalar else (zc, gamma)
+
+
+def rectangular_waveguide_line(freq, length, a, b, z0=None, **kwargs):
+    """Rectangular waveguide section (TE10; see ``rectangular_waveguide``).
+
+    Args:
+        freq (ndarray): Frequencies, in [Hz]
+        length (float): Length, in [m]
+        a (float): Broad dimension, in [m]
+        b (float): Narrow dimension, in [m]
+        z0 (complex or ndarray, optional): Reference impedances, see
+            ``transmission_line``
+        kwargs: Other arguments of ``rectangular_waveguide``: ``eps_r``,
+            ``tan_d``, ``wall``, ``temp``
+
+    Returns:
+        Network: 2-port network
+
+    """
+
+    zc, gamma = rectangular_waveguide(freq, a, b, **kwargs)
+
+    return transmission_line(freq, zc, gamma, length, z0)
+
+
+def waveguide_cutoff(a, eps_r=1.):
+    """Cutoff frequency of the TE10 mode of a rectangular waveguide, in [Hz].
+
+    Args:
+        a (float): Broad dimension, in [m]
+        eps_r (float, optional): Relative permittivity of the filling
+
+    """
+
+    return sc.c / (2 * a * np.sqrt(eps_r))
+
+
+def cpw(freq, width, space, height, eps_r, backed=False):
+    """Characteristic impedance and propagation constant of a lossless
+    coplanar waveguide (SuperMix's ``cpw``).
+
+    Quasi-static conformal mapping (Bahl & Bhartia), on a substrate of
+    finite thickness, without or with a conducting backing. The ratio of the
+    complete elliptic integrals ``K(k) / K'(k)`` uses Hilberg's
+    approximation, and the free-space impedance is approximated as
+    ``120 pi`` ohms, as in SuperMix. Conductor and dielectric losses (and the
+    kinetic inductance of superconductors) are not included.
+
+    Args:
+        freq (ndarray): Frequencies, in [Hz]
+        width (float): Width of the center conductor, in [m]
+        space (float): Gap between the center conductor and the ground
+            planes, in [m]
+        height (float): Thickness of the substrate, in [m]
+        eps_r (float): Relative permittivity of the substrate
+        backed (bool, optional): Conducting plane below the substrate,
+            default is False
+
+    Returns:
+        tuple: characteristic impedance ``zc`` in [ohms] and propagation
+            constant ``gamma`` in [1/m], one value per frequency (scalars for
+            a scalar ``freq``)
+
+    """
+
+    scalar = np.ndim(freq) == 0
+    freq = np.atleast_1d(np.asarray(freq, dtype=float))
+    assert width > 0 and space > 0 and height > 0, "The dimensions must be positive"
+    a = width / 2
+    b = space + a
+    k = a / b
+    x_a, x_b = np.pi * a / (2 * height), np.pi * b / (2 * height)
+    if not backed:
+        k1 = np.sinh(x_a) / np.sinh(x_b)
+        eps_eff = 1 + 0.5 * (eps_r - 1) * _cefr(k1) / _cefr(k)
+        zc = 30 * np.pi / (np.sqrt(eps_eff) * _cefr(k))
+    else:
+        k1 = np.tanh(x_a) / np.tanh(x_b)
+        eps_eff = (1 + eps_r * _cefr(k1) / _cefr(k)) / (1 + _cefr(k1) / _cefr(k))
+        zc = 60 * np.pi / (np.sqrt(eps_eff) * (_cefr(k) + _cefr(k1)))
+    gamma = 1j * 2 * np.pi * freq * np.sqrt(eps_eff) / sc.c
+    zc = np.full(freq.size, zc, dtype=complex)
+
+    return (zc[0], gamma[0]) if scalar else (zc, gamma)
+
+
+def cpw_line(freq, length, width, space, height, eps_r, backed=False, z0=None):
+    """Coplanar waveguide section (lossless; see ``cpw``).
+
+    Args:
+        freq (ndarray): Frequencies, in [Hz]
+        length (float): Length, in [m]
+        width, space, height, eps_r, backed: see ``cpw``
+        z0 (complex or ndarray, optional): Reference impedances, see
+            ``transmission_line``
+
+    Returns:
+        Network: 2-port network
+
+    """
+
+    zc, gamma = cpw(freq, width, space, height, eps_r, backed)
+
+    return transmission_line(freq, zc, gamma, length, z0)
+
+
+def _cefr(k):
+    """K(k) / K'(k), the ratio of complete elliptic integrals of the first
+    kind (Hilberg's approximation, as in SuperMix)."""
+    if k < 1 / np.sqrt(2):
+        kp = np.sqrt(np.sqrt(1 - k * k))
+        return np.pi / np.log(2 * (1 + kp) / (1 - kp))
+    sk = np.sqrt(k)
+    return np.log(2 * (1 + sk) / (1 - sk)) / np.pi
+
+
+def radial_stub(freq, radius, angle, length, width, height, eps_r, num_sections=15, z0=None, **kwargs):
+    """Microstrip radial stub, fed by a microstrip line (SuperMix's
+    ``radial_stub``).
+
+    The stub is modeled as ``num_sections`` microstrip sections (annular
+    slices of equal length, each as wide as the arc at its middle), starting
+    at the radius ``r0 = width / sqrt(2 angle tan(angle / 2))`` where the
+    area of the feed line equals that of the sector it overlaps. Port 1 is
+    the end of the feed line, port 2 the outer edge of the stub (usually
+    left open: ``terminate(2, np.inf)``).
+
+    Args:
+        freq (ndarray): Frequencies, in [Hz]
+        radius (float): Outer radius of the stub, in [m]
+        angle (float): Opening angle, in [radians] (between 0 and pi)
+        length (float): Length of the feed line, in [m]
+        width (float): Width of the feed line, in [m]
+        height (float): Thickness of the dielectric, in [m]
+        eps_r (float): Relative permittivity of the dielectric
+        num_sections (int, optional): Number of sections, default is 15
+        z0 (complex or ndarray, optional): Reference impedances of the two
+            ports, in [ohms]; default is the real part of the characteristic
+            impedance of the feed line (port 1) and of the last section
+            (port 2)
+        kwargs: Other arguments of ``microstrip``: ``thickness``, ``strip``,
+            ``ground``, ``temp``, ``tan_d``, ``eps_up``, ``tan_up``
+
+    Returns:
+        Network: 2-port network
+
+    """
+
+    assert 0 < angle < np.pi, "The angle must be between 0 and pi"
+    r0 = width / np.sqrt(2 * angle * np.tan(angle / 2))
+    assert r0 < radius, "The radial stub is smaller than the line feeding it"
+    sect_len = (radius - r0) / num_sections
+    net = microstrip_line(freq, length, width, height, eps_r, **kwargs)
+    for i in range(1, num_sections + 1):
+        section = microstrip_line(freq, sect_len, angle * (r0 + (i - 0.5) * sect_len), height, eps_r, **kwargs)
+        net = net.connect(2, section, 1)
+
+    return net if z0 is None else net.renormalize(z0)
 
 
 def microstrip(freq, width, height, eps_r, thickness=None, strip=None, ground=None, temp=4.2,

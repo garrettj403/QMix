@@ -203,6 +203,31 @@ def main():
                      key + '_tout': c[num_p, num_p].real, key + '_tout_term': tout_term})
         print('{}: LO with {} harmonic(s), T = {} K, Z0 = {} Ohm, num_b {}'.format(key, num_p, temp, z0_ohm, num_b))
 
+    # Admittance matrices at f_if = 0 (SuperMix's branch with the derivatives
+    # of its I-V splines; added last so that the keys of the cases above don't
+    # change). SuperMix keeps the IF (DC) port as a plain value, not an RMS
+    # phasor, so its row is sqrt(2) times and its column 1/sqrt(2) times the
+    # QMix (peak phasor) values; converted here.
+    for num_p, zt_lo in ((1, [0.3 - 0.3j]), (2, [0.3 - 0.3j, 0.1 - 0.1j])):
+        vt_lo = np.r_[0, compare_multitone.VT_LO, np.zeros(num_p - 1)].astype(complex)
+        vj_lo, y, status = compare_multitone.supermix_small_signal(files, vb, vt_lo, np.r_[0, zt_lo], 0.)
+        assert (status == 0).all()
+        y[num_p, :] /= np.sqrt(2)
+        y[:, num_p] *= np.sqrt(2)
+        cct = qmix.circuit.EmbeddingCircuit(1, num_p, vb_min=vb[0], vb_max=vb[-1], vb_npts=len(vb))
+        cct.vb = vb.copy()
+        cct.freq[1] = compare_multitone.F_LO
+        vj3 = cct.initialize_vj()
+        vj3[1, 1:] = vj_lo[1:]
+        num_b = suggest_num_b(vj3, cct, tol=1e-15, max_b=60)[0]
+
+        key = 'ymatrix{}'.format(len(names))
+        names.append(key)
+        data.update({key + '_num_p': num_p, key + '_vb': vb, key + '_flo': compare_multitone.F_LO,
+                     key + '_fif': 0., key + '_vj': vj_lo, key + '_y': y, key + '_num_b': num_b})
+        print('{}: LO with {} harmonic(s), f_if = 0, num_b {}, max |Y| = {:.2f}'.format(
+              key, num_p, num_b, np.abs(y).max()))
+
     data['names'] = np.array(names)
     os.makedirs(os.path.dirname(OUTPUT), exist_ok=True)
     np.savez_compressed(OUTPUT, **data)

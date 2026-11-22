@@ -733,6 +733,70 @@ class RespFnPerfect(RespFn):
         return "Response function object: RespFnPerfect"
 
 
+class GapScaledRespFn(object):
+    """Response function of a junction with a different gap voltage.
+
+    QMix normalizes all voltages in a circuit to one gap voltage (``vgap``).
+    A junction whose gap voltage is ``ratio * vgap`` (e.g., one junction of
+    a ``qmix.circuit.MultiJunctionCircuit`` with ``gap_voltage[j] = ratio``)
+    has the response function ``ratio * resp(v / ratio)`` in these units,
+    where ``resp`` is normalized to its own gap voltage and normal-state
+    resistance. The current is then normalized to ``vgap / Rn_j``; the
+    normal-state conductance (``area``) is applied separately.
+
+    Usually created by ``qmix.qtcurrent.junction_resp``, not directly.
+
+    Args:
+        resp (qmix.respfn.RespFn): Response function, normalized to the
+            junction's own gap voltage and normal-state resistance
+        ratio (float): Gap voltage of the junction, relative to the
+            normalizing gap voltage
+
+    """
+
+    def __init__(self, resp, ratio):
+
+        assert ratio > 0, "The gap voltage ratio must be positive"
+        self.base = resp
+        self.ratio = float(ratio)
+        v_max = getattr(resp, 'v_max', None)
+        self.v_max = None if v_max is None else v_max * self.ratio
+
+    def __str__(self):  # pragma: no cover
+
+        return "Response function object: GapScaledRespFn (ratio {})".format(self.ratio)
+
+    def __call__(self, vbias):
+
+        return self.ratio * self.base(np.asarray(vbias) / self.ratio)
+
+    resp = __call__
+
+    def idc(self, vbias):
+        """DC I-V curve (see ``RespFn.idc``)."""
+        return self.ratio * self.base.idc(np.asarray(vbias) / self.ratio)
+
+    def ikk(self, vbias):
+        """KK transform of the DC I-V curve (see ``RespFn.ikk``)."""
+        return self.ratio * self.base.ikk(np.asarray(vbias) / self.ratio)
+
+    def didc(self, vbias):
+        """Derivative of the DC I-V curve (see ``RespFn.didc``)."""
+        return self.base.didc(np.asarray(vbias) / self.ratio)
+
+    def dikk(self, vbias):
+        """Derivative of the KK transform (see ``RespFn.dikk``)."""
+        return self.base.dikk(np.asarray(vbias) / self.ratio)
+
+    @property
+    def _f_didc(self):
+        return None if getattr(self.base, '_f_didc', None) is None else self.didc
+
+    @property
+    def _f_dikk(self):
+        return None if getattr(self.base, '_f_dikk', None) is None else self.dikk
+
+
 # Helper functions ------------------------------------------------------------
 
 def _setup_interpolation(voltage, current, current_kk, **params):

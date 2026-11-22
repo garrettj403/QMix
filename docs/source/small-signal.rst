@@ -36,7 +36,16 @@ where :math:`V_n` and :math:`I_n` are the small-signal voltage and current phaso
    \Big[ T(V_0 + k \omega) - T(V_0 + (k - n) \omega - \omega_\mathrm{IF})
    + T^*(V_0 + (k + m) \omega + \omega_\mathrm{IF}) - T^*(V_0 + (k + m - n) \omega) \Big],
 
-at bias voltage :math:`V_0`. This is Tucker's admittance matrix, written as one expression for sidebands of either sign. It is equivalent to Eqn. 29 of Rice et al. (1999) and to SuperMix's ``small_signal``. QMix calculates it with :func:`qmix.small_signal.admittance_matrix`, from the junction voltage of a single-tone harmonic balance (the LO and its harmonics). The matrix is real only in the classical limit; the Kramers-Kronig part of the response function makes it complex. It needs :math:`\omega_\mathrm{IF} > 0`. The limit :math:`\omega_\mathrm{IF} \to 0` would need the derivatives of the response function.
+at bias voltage :math:`V_0`. This is Tucker's admittance matrix, written as one expression for sidebands of either sign. It is equivalent to Eqn. 29 of Rice et al. (1999) and to SuperMix's ``small_signal``. QMix calculates it with :func:`qmix.small_signal.admittance_matrix`, from the junction voltage of a single-tone harmonic balance (the LO and its harmonics). The matrix is real only in the classical limit; the Kramers-Kronig part of the response function makes it complex. At :math:`\omega_\mathrm{IF} = 0`, the bracket in column :math:`n = 0` and the denominator :math:`2 \omega_0 = 2 \omega_\mathrm{IF}` both vanish, and the limit needs the derivatives of the response function:
+
+.. math::
+   :label: ss-admittance-zero-if
+
+   Y_{m0} = \frac{1}{2} \sum_k C_k \, C^*_{k+m}
+   \Big[ T'(V_0 + k \omega) + T'^*(V_0 + (k + m) \omega) \Big]
+   \qquad (\omega_\mathrm{IF} = 0).
+
+In particular, :math:`Y_{00} = \sum_k |C_k|^2 I_{dc}'(V_0 + k \omega)` is the slope of the pumped I-V curve. The other columns are given by Eqn. :eq:`ss-admittance` with :math:`\omega_\mathrm{IF} = 0`. This is the limit of a low IF: sidebands :math:`m` and :math:`-m` are still treated as separate signals, although their physical frequencies coincide (and :math:`Y_{-m,-n} = Y^*_{mn}`). :func:`qmix.small_signal.admittance_matrix` uses it for ``f_if=0``. It agrees with SuperMix's ``small_signal`` at :math:`f_\mathrm{IF} = 0` to round-off, once SuperMix's IF port, which is a plain DC value rather than an RMS phasor, is converted. The noise matrix :math:`\mathbf{H}` has no such singularity and is continuous at :math:`\omega_\mathrm{IF} = 0`.
 
 The junction also generates shot noise. The noise currents at different sidebands are correlated, because they come from the same pumped tunneling current. Their correlation matrix (Tucker and Feldman, 1985) is
 
@@ -100,7 +109,7 @@ without the noise of the load itself (:func:`qmix.small_signal.output_noise`). T
 Several junctions
 -----------------
 
-With several junctions (:class:`qmix.circuit.MultiJunctionCircuit`), each junction :math:`j` has its own admittance and noise matrices, :math:`\mathbf{Y}_j` and :math:`\mathbf{H}_j`, from its own LO state. They are scaled by the relative area of the junction (``cct.area[j]``), and the noise of different junctions is uncorrelated. :func:`qmix.small_signal.admittance_matrix` and :func:`qmix.small_signal.noise_matrix` return them as ``y[j, m, n, i]`` and ``h[j, m, n, i]``.
+With several junctions (:class:`qmix.circuit.MultiJunctionCircuit`), each junction :math:`j` has its own admittance and noise matrices, :math:`\mathbf{Y}_j` and :math:`\mathbf{H}_j`, from its own LO state. They are scaled by the relative area of the junction (``cct.area[j]``), and the noise of different junctions is uncorrelated. Junctions with a different gap voltage (``cct.gap_voltage[j]``) use the scaled response function described in :ref:`harmonic-balance`. Since that function is in circuit units, the matrices need no other change (the temperature in :math:`N(V)` is normalized with the circuit's gap voltage, like :math:`V`). :func:`qmix.small_signal.admittance_matrix` and :func:`qmix.small_signal.noise_matrix` return them as ``y[j, m, n, i]`` and ``h[j, m, n, i]``.
 
 The junctions are coupled by the embedding network. At each sideband, the network is described by its impedance matrix over the :math:`J` junction ports and one external port :math:`x`: the RF input (or the image termination) at the RF sidebands, and the IF load at the IF. With the currents :math:`I^\mathrm{net}` into the network and the open-circuit noise voltages :math:`\mathbf{e}` of a lossy network,
 

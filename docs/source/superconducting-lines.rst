@@ -86,6 +86,8 @@ where :math:`\delta` is the effective dielectric loss (the loss tangents of the 
 
 The strip and the ground plane can be any object with a surface impedance method ``zs(freq, temp)`` and a ``thickness``: :class:`qmix.superconductor.SuperconductingFilm`, :class:`qmix.superconductor.NormalFilm` or :class:`qmix.superconductor.Multilayer`; ``None`` means a perfect conductor. :func:`qmix.network.microstrip_line` returns the line as a 2-port :class:`qmix.network.Network`, which can be connected with other networks (e.g., :func:`qmix.network.tee`, :func:`qmix.network.transmission_line`) and used for the embedding circuit of the junctions (:func:`qmix.network.set_thevenin`, :func:`qmix.network.impedance_matrix`). Example #6 designs a twin-junction tuning circuit from Nb microstrip this way.
 
+The other passive elements of SuperMix are in :mod:`qmix.network` too, and give the same S-parameters as SuperMix to round-off: rectangular waveguide (TE10, with first-order wall and dielectric losses, :func:`qmix.network.rectangular_waveguide`), lossless coplanar waveguide (:func:`qmix.network.cpw`), microstrip radial stubs (:func:`qmix.network.radial_stub`, made of annular microstrip sections), lines given by their electrical length (:func:`qmix.network.ideal_line`), lumped elements in series or shunt (resistor, capacitor, inductor, series and parallel RLC; the inductance of a via hole), series and parallel connections, loads, attenuators, time delays, matching transformers, circulators, hybrids, slot and twin-slot antennas, a power divider, and de-embedding (:func:`qmix.network.deembed`).
+
 Comparison with SuperMix
 ------------------------
 

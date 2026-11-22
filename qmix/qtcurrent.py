@@ -61,6 +61,8 @@ import numpy as np
 from scipy.special import jv as bessel
 from scipy.special import j0, j1
 
+from qmix.respfn import GapScaledRespFn
+
 
 # round frequency values to this number of decimal places
 # required when comparing frequency to frequency_list
@@ -447,7 +449,7 @@ def interpolate_respfn(cct, resp, num_b, method='auto', num_modes=None, verbose=
     if _is_multi(cct):
         # One per junction; junctions with the same response function and
         # bias voltages share it
-        resp_list = junction_resp(resp, cct.num_j)
+        resp_list = junction_resp(resp, cct.num_j, cct.gap_voltage)
         out = []
         for j in range(cct.num_j):
             for i in range(j):
@@ -473,31 +475,51 @@ def _is_multi(cct):
     return hasattr(cct, 'num_j')
 
 
-def junction_resp(resp, num_j):
+def junction_resp(resp, num_j, gap_voltage=None):
     """Response function of each junction.
 
     Args:
         resp (qmix.respfn.RespFn or list): One response function for all
-            junctions, or a list with one per junction
+            junctions, or a list with one per junction (each normalized to
+            the junction's own gap voltage and normal-state resistance)
         num_j (int): Number of junctions
+        gap_voltage (ndarray, optional): Gap voltage of each junction,
+            relative to the normalizing gap voltage (e.g.,
+            ``cct.gap_voltage`` of a ``qmix.circuit.MultiJunctionCircuit``);
+            the response functions of junctions with ``gap_voltage != 1``
+            are wrapped in ``qmix.respfn.GapScaledRespFn``
 
     Returns:
-        list: Response function of each junction
+        list: Response function of each junction (the same object for
+        junctions with the same response function and gap voltage)
 
     """
 
     if isinstance(resp, (list, tuple)):
         assert len(resp) == num_j, "Need one response function per junction ({} given for {} junctions)".format(
             len(resp), num_j)
-        return list(resp)
-    return [resp] * num_j
+        resp_list = list(resp)
+    else:
+        resp_list = [resp] * num_j
+    if gap_voltage is None:
+        return resp_list
+
+    gap_voltage = np.broadcast_to(np.asarray(gap_voltage, dtype=float), (num_j,))
+    scaled = {}
+    for j in range(num_j):
+        if gap_voltage[j] != 1:
+            key = (id(resp_list[j]), gap_voltage[j])
+            if key not in scaled:
+                scaled[key] = GapScaledRespFn(resp_list[j], gap_voltage[j])
+            resp_list[j] = scaled[key]
+    return resp_list
 
 
 def _qtcurrent_multi(vj, cct, resp, freq_list, num_b, verbose, resp_matrix, method, num_modes, mixing_tol):
     """Tunneling currents of all junctions (junction axis first)."""
 
     assert vj.ndim == 4 and vj.shape[0] == cct.num_j, "vj needs the junction axis first: vj[j, f, p, i]"
-    resp_list = junction_resp(resp, cct.num_j)
+    resp_list = junction_resp(resp, cct.num_j, cct.gap_voltage)
     if resp_matrix is None:
         resp_matrix = interpolate_respfn(cct, resp, num_b, method=method, num_modes=num_modes, verbose=verbose)
     assert len(resp_matrix) == cct.num_j, "resp_matrix: need one per junction (from interpolate_respfn)"
